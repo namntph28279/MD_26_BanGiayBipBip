@@ -538,6 +538,18 @@ app.put('/profile/edit', async (req, res) => {
     }
 });
 
-
+//Tìm kiếm sản phẩm theo tiêu đề
+app.get('/products/search', async (req, res) => {
+    const { title } = req.body;
+  
+    try {
+      const searchString = String(title);
+      const products = await Product.find({ product_title: { $regex: searchString, $options: 'i' } });
+      res.json(products);
+    } catch (error) {
+      console.log(error);
+      res.status(500).json({ message: error.message });
+    }
+  });
 
 module.exports = app;
