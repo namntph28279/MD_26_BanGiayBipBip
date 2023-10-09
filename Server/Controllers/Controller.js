@@ -5,6 +5,8 @@ const Order = require('../Models/Order');
 const User = require('../Models/User');
 const Address = require('../Models/Address');
 const Profile = require('../Models/Profile');
+const Color = require('../Models/Color');
+const Size = require('../Models/Size');
 const auth = require('../authenticateToken');
 
 const express = require('express');
@@ -78,22 +80,60 @@ app.delete('/delete/:id', async (req, res) => {
     }
 });
 
-// Hiển thị chi tiết một sản phẩm
-app.get('/product/:id', async (req, res) => {
-    const productId = req.params.id;
+// // Hiển thị chi tiết một sản phẩm
+// app.get('/product/:id', async (req, res) => {
+//     const productId = req.params.id;
 
+//     try {
+//         // Tìm sản phẩm theo ID
+//         const product = await Product.findById(productId);
+
+//         if (!product) {
+//             // Sản phẩm không tồn tại
+//             res.status(404).json({ message: 'Sản phẩm không tồn tại' });
+//         } else {
+//             res.json(product);
+//         }
+//     } catch (error) {
+//         res.status(500).json({ message: error.message });
+//     }
+// });
+
+app.get('/product/:id', async (req, res) => {
     try {
-        // Tìm sản phẩm theo ID
+        const productId = req.params.id;
+
+        // Lấy thông tin sản phẩm
         const product = await Product.findById(productId);
 
-        if (!product) {
-            // Sản phẩm không tồn tại
-            res.status(404).json({ message: 'Sản phẩm không tồn tại' });
-        } else {
-            res.json(product);
-        }
+        // Lấy thông tin kích thước của sản phẩm
+        const sizes = await Size.find({ product: productId });
+        const sizeQuantity = sizes.reduce((total, size) => total + size.size_quantity, 0);
+        console.log("size: ", sizeQuantity);
+
+        // Lấy thông tin màu sắc của sản phẩm
+        const colors = await Color.find({ product: productId });
+        const colorQuantity = colors.reduce((total, color) => total + color.color_quantity, 0);
+        console.log("color: ", colorQuantity);
+        // Tính toán product_quantity
+        // const productQuantity = sizeQuantity + colorQuantity;
+        // Tính toán product_quantity
+        const productQuantity = sizes.length + colors.length;
+
+        // Kết hợp thông tin sản phẩm, kích thước và màu sắc
+        const productWithDetails = {
+            _id: product._id,
+            product_title: product.product_title,
+            product_price: product.product_price,
+            product_image: product.product_image,
+            product_quantity: productQuantity,
+            sizes,
+            colors
+        };
+
+        res.json(productWithDetails);
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        res.status(500).json({ error: 'Lỗi server' });
     }
 });
 
@@ -223,18 +263,33 @@ app.post('/order/add', async (req, res) => {
         if (foundProducts.length !== products.length) {
             res.status(404).json({ message: 'Một hoặc nhiều sản phẩm không tồn tại' });
         } else {
+            // Tạo danh sách sản phẩm và số lượng tương ứng
+            const orderedProducts = [];
+
+            for (const item of products) {
+                const foundProduct = foundProducts.find(product => product._id.equals(item.product_id));
+                const { colorId } = item;
+
+                // Trừ số lượng từ size_quantity thông qua colorId
+                const size = await Size.findOneAndUpdate(
+                    { colorId, product: foundProduct._id },
+                    { $inc: { size_quantity: -item.quantity } }
+                );
+
+                if (!size) {
+                    res.status(404).json({ message: 'Không tìm thấy kích thước phù hợp cho sản phẩm' });
+                    return;
+                }
+
+                orderedProducts.push({ product: foundProduct._id, quantity: item.quantity });
+            }
+
             // Tìm địa chỉ theo ID
             const address = await Address.findById(address_id);
 
             if (!address) {
                 res.status(404).json({ message: 'Địa chỉ không tồn tại' });
             } else {
-                // Tạo danh sách sản phẩm và số lượng tương ứng
-                const orderedProducts = products.map(item => {
-                    const foundProduct = foundProducts.find(product => product._id.equals(item.product_id));
-                    return { product: foundProduct._id, quantity: item.quantity };
-                });
-
                 // Tạo đơn hàng mới
                 const order = new Order({
                     customer_email,
@@ -255,7 +310,6 @@ app.post('/order/add', async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 });
-
 
 // Lấy toàn bộ đơn hàng
 app.get('/order', async (req, res) => {
@@ -349,7 +403,7 @@ app.post('/logout', auth, async (req, res) => {
 
         res.sendStatus(200);
     } catch (error) {
-        
+
         console.log(error);
         res.status(500).json({ message: error.message });
     }
@@ -541,15 +595,149 @@ app.put('/profile/edit', async (req, res) => {
 //Tìm kiếm sản phẩm theo tiêu đề
 app.get('/products/search', async (req, res) => {
     const { title } = req.body;
-  
-    try {
-      const searchString = String(title);
-      const products = await Product.find({ product_title: { $regex: searchString, $options: 'i' } });
-      res.json(products);
-    } catch (error) {
-      console.log(error);
-      res.status(500).json({ message: error.message });
-    }
-  });
 
+    try {
+        const searchString = String(title);
+        const products = await Product.find({ product_title: { $regex: searchString, $options: 'i' } });
+        res.json(products);
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ message: error.message });
+    }
+});
+
+// Tạo màu sắc mới cho sản phẩm
+app.post('/colors/add/:productId', async (req, res) => {
+    try {
+        const { productId } = req.params;
+        const { color_name } = req.body;
+
+        // Tạo màu sắc mới
+        const color = await Color.create({ color_name, product: productId });
+
+        // Cập nhật mảng colors của sản phẩm
+        await Product.findByIdAndUpdate(productId, { $push: { colors: color._id } });
+
+        res.status(201).json(color);
+    } catch (error) {
+        res.status(500).json({ error: 'Lỗi server' });
+    }
+});
+
+// Sửa đổi thông tin màu sắc
+app.put('/colors/edit/:colorId', async (req, res) => {
+    try {
+        const { colorId } = req.params;
+        const { color_name } = req.body;
+
+        // Tìm và cập nhật thông tin màu sắc
+        const color = await Color.findByIdAndUpdate(colorId, { color_name }, { new: true });
+
+        res.json(color);
+    } catch (error) {
+        res.status(500).json({ error: 'Lỗi server' });
+    }
+});
+
+// Xóa màu sắc
+app.delete('/colors/delete/:colorId', async (req, res) => {
+    try {
+        const { colorId } = req.params;
+
+        // Xóa màu sắc
+        await Color.findByIdAndDelete(colorId);
+
+        res.sendStatus(204);
+    } catch (error) {
+        res.status(500).json({ error: 'Lỗi server' });
+    }
+});
+
+// Lấy về toàn bộ dữ liệu từ bảng Color
+app.get('/colors/getAll', async (req, res) => {
+    try {
+        const colors = await Color.find();
+        res.json(colors);
+    } catch (error) {
+        res.status(500).json({ error: 'Lỗi server' });
+    }
+});
+
+// Tạo kích thước mới cho sản phẩm
+app.post('/sizes/add/:colorId', async (req, res) => {
+    try {
+        const { colorId } = req.params;
+        const { size_name, size_quantity } = req.body;
+
+        // Tạo kích thước mới
+        const newSize = new Size({
+            size_name,
+            size_quantity,
+            colorId
+        });
+
+        const savedSize = await newSize.save();
+
+        res.status(201).json(savedSize);
+    } catch (error) {
+        res.status(500).json({ error: 'Lỗi server' });
+    }
+});
+
+// Sửa đổi thông tin kích thước
+app.put('/sizes/edit/:sizeId', async (req, res) => {
+    try {
+        const { sizeId } = req.params;
+        const { size_name, size_quantity } = req.body;
+
+        // Tìm và cập nhật thông tin kích thước
+        const updatedSize = await Size.findByIdAndUpdate(
+            sizeId,
+            { size_name, size_quantity },
+            { new: true }
+        );
+
+        res.json(updatedSize);
+    } catch (error) {
+        res.status(500).json({ error: 'Lỗi server' });
+    }
+});
+
+// Xóa kích thước
+app.delete('/sizes/delete/:sizeId', async (req, res) => {
+    try {
+        const { sizeId } = req.params;
+
+        // Xóa kích thước
+        await Size.findByIdAndDelete(sizeId);
+
+        res.sendStatus(204);
+    } catch (error) {
+        res.status(500).json({ error: 'Lỗi server' });
+    }
+});
+
+// Lấy về toàn bộ size
+app.get('/sizes/getAll', async (req, res) => {
+    try {
+        const sizes = await Size.find();
+        res.json(sizes);
+    } catch (error) {
+        res.status(500).json({ error: 'Lỗi server' });
+    }
+});
+
+// Lấy về size theo color
+app.get('/sizes/:colorId', async (req, res) => {
+    try {
+        const { colorId } = req.params;
+
+        // Tìm các kích thước dựa trên colorId
+        const sizes = await Size.find({ colorId });
+
+        res.json(sizes);
+    } catch (error) {
+        res.status(500).json({ error: 'Lỗi server' });
+    }
+});
 module.exports = app;
