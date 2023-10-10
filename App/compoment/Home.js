@@ -1,11 +1,43 @@
-import React, { useEffect, useState, useRef } from 'react';
-import { StyleSheet, Text, View, ScrollView, Image, TouchableOpacity, } from 'react-native';
-import { FontAwesome } from '@expo/vector-icons';
+import React, {useEffect, useState, useRef} from 'react';
+import {StyleSheet, Text, View, ScrollView, Image, TouchableOpacity, FlatList,} from 'react-native';
+import {FontAwesome, FontAwesome5, MaterialCommunityIcons, MaterialIcons} from '@expo/vector-icons';
 import Swiper from 'react-native-swiper'
+import {Dropdown} from "react-native-element-dropdown";
+import {getMonney} from "../util/money";
 
-function Home({ navigation }) {
+function Home() {
+
+    const sortBy = [
+        { label: 'Nổi bật', value: '1' },
+        { label: 'Giá Cao - Thấp', value: '2' },
+        { label: 'Giá Thấp - Cao ', value: '3' }
+    ];
+    const Filter = [
+        { label: 'Tất cả', value: '1' },
+        { label: 'Nam', value: '2' },
+        { label: 'Nữ', value: '3' }
+    ];
+
+
     const [products, setProducts] = useState([]);
+
+    const [valueSortBy, setValueSortBy] = useState(null);
+    const [valueFilter, setValueFilter] = useState(null);
     const swiperRef = useRef(null);
+    const renderItemSortBy = item => {
+        return (
+            <View style={styles.item}>
+                <Text style={styles.textItem}>{item.label}</Text>
+            </View>
+        );
+    };
+    const renderItemFilter = item => {
+        return (
+            <View style={styles.item}>
+                <Text style={styles.textItem}>{item.label}</Text>
+            </View>
+        );
+    };
 
     useEffect(() => {
         fetch('https://hungnttg.github.io/shopgiay.json')
@@ -14,68 +46,122 @@ function Home({ navigation }) {
             .catch((error) => {
                 console.error(error);
             });
+
         const interval = setInterval(() => {
             if (swiperRef.current && swiperRef.current.scrollBy) {
                 swiperRef.current.scrollBy(1); //di chuyen anh tiep
             }
-        }, 2000); // Thời gian tự động chuyển ảnh (ms)
+        }, 5000); // Thời gian tự động chuyển ảnh (ms)
 
         return () => clearInterval(interval);
     }, []);
 
-    const handleProductPress = (product) => {
-        navigation.navigate('ProductDetail', { product });
-    };
+    const Itemlistnew = ({ item }) => {
+        return (
+            <View style={styles.productContainer}>
+                <TouchableOpacity key={item.id} >
+                    <View style={{width:190,height:254,borderRadius:10}}>
+                        <MaterialIcons name={"favorite-outline"} size={30} color="black" style={{ marginLeft: 10,marginTop:7 }}/>
 
-    return (
-        <View style={styles.container}>
-            <Text style={styles.title}>Danh Mục Sản Phẩm</Text>
+                        <Image source={{ uri: item.search_image }} style={{width:'100%',height:'60%' }} />
+                        <View>
+                            <Text numberOfLines={1} style={{marginLeft:15,marginTop:7,fontSize:17, fontWeight:'bold'}}>{item.product_additional_info}</Text>
+                               <View style={{flexDirection:"row",alignItems:'center',marginTop:7}}>
+                                   <Text style={{marginLeft:15,width:140}}>Giá: {getMonney(item.price)}</Text>
+                                   <FontAwesome5 name="cart-plus" size={24} color="black"  />
+                               </View>
+                        </View>
+                    </View>
 
-            <View style={{ width: '100%', backgroundColor: 'black', height: 1 }} />
-            <View style={styles.slide}>
-                <Swiper
-                    ref={swiperRef}
-                    autoplay={false} // Tắt chế độ autoplay của Swiper
-                    showsPagination={true}
-                >
-                    <View style={styles.slide_img}>
-                        <Image source={require('../image/logo.png')} style={styles.imageBackground} />
-                        <View style={styles.button_slide}>
-                            <Text style={styles.text_slide}>Buy Now</Text>
-                        </View>
-                    </View>
-                    <View style={styles.slide_img}>
-                        <Image source={require('../image/logo1.png')} style={styles.imageBackground} />
-                        <View style={styles.button_slide}>
-                            <Text style={styles.text_slide}>Buy Now</Text>
-                        </View>
-                    </View>
-                    <View style={styles.slide_img}>
-                        <Image source={require('../image/logo2.png')} style={styles.imageBackground} />
-                        <View style={styles.button_slide}>
-                            <Text style={styles.text_slide}>Buy Now</Text>
-                        </View>
-                    </View>
-                </Swiper>
-            </View>
-            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-                <Text style={styles.title1}>Sản Phẩm Thịnh Hành</Text>
-                <TouchableOpacity onPress={()=>{ navigation.navigate('AllShoes' );}}>
-                    <Text style={{ marginRight: 18 }}>Xem tất cả</Text>
                 </TouchableOpacity>
             </View>
-            <ScrollView contentContainerStyle={styles.contentContainer} horizontal={true} showsHorizontalScrollIndicator={false}>
-                {products.map((product) => (
-                    <TouchableOpacity key={product.styleid} style={styles.productItem} onPress={() => handleProductPress(product)}>
-                        <View style={styles.productFrame}>
-                            <Image source={{ uri: product.search_image }} style={styles.productImage} />
-                            <Text style={styles.productName}>{product.brands_filter_facet}</Text>
-                            <Text style={styles.productPrice}>{product.price}</Text>
-                            <Text style={styles.productAdditionalInfo}>{product.product_additional_info}</Text>
-                        </View>
-                    </TouchableOpacity>
-                ))}
-            </ScrollView>
+        );
+    };
+    return (
+        <View style={styles.container}>
+
+           <View style={{alignItems:'center'}}>
+               <View style={styles.slide}>
+                   <Swiper
+                       ref={swiperRef}
+                       autoplay={false} // Tắt chế độ autoplay của Swiper
+                       showsPagination={true}
+                   >
+
+                       <Image source={require('../image/logo.png')} style={styles.imageBackground} />
+
+                       <Image source={require('../image/logo1.png')} style={styles.imageBackground} />
+
+                       <Image source={require('../image/logo2.png')} style={styles.imageBackground} />
+
+                   </Swiper>
+               </View>
+           </View>
+
+            <View style={styles.option}>
+                <View style={styles.select}>
+                    <Image source={require('../image/All.jpg')} style={styles.icon}/>
+                    <Text>ALL</Text>
+                </View>
+                <View style={styles.select}>
+                    <Image source={require('../image/Running.jpg')} style={styles.icon}/>
+                    <Text>Running</Text>
+                </View>
+                <View style={styles.select}>
+                    <Image source={require('../image/Boots.jpg')} style={styles.icon}/>
+                    <Text>Boots</Text>
+                </View>
+                <View style={styles.select}>
+                    <Image source={require('../image/Dress.jpg')} style={styles.icon}/>
+                    <Text>Dress</Text>
+                </View>
+                <View style={styles.select}>
+                    <Image source={require('../image/Kids.jpg')} style={styles.icon}/>
+                    <Text>Kids</Text>
+                </View>
+            </View>
+
+            <View style={{flexDirection:'row',marginLeft:15,marginTop:10}}>
+
+                <Dropdown
+                    style={styles.dropdown}
+                    data={sortBy}
+                    maxHeight={300}
+                    labelField="label"
+                    valueField="value"
+                    placeholder="Sắp xếp"
+                    value={valueSortBy}
+                    onChange={item => {
+                        setValueSortBy(item.value);
+                    }}
+                    renderItem={renderItemSortBy}
+                />
+
+                <Dropdown
+                    style={[styles.dropdown,{width:90},{  marginLeft: 7}]}
+                    data={Filter}
+                    maxHeight={300}
+                    labelField="label"
+                    valueField="value"
+                    placeholder="Lọc"
+                    value={valueFilter}
+                    labelStyle={{ fontWeight: 'bold' }}
+                    onChange={item => {
+                        setValueFilter(item.value);
+                    }}
+                    renderItem={renderItemFilter}
+                />
+            </View>
+
+           <View style={{width:'100%',alignItems:'center',marginTop:14}}>
+               <FlatList
+                   data={products}
+                   renderItem={Itemlistnew}
+                   keyExtractor={item => item.id}
+                   numColumns={2}
+               />
+           </View>
+
 
         </View>
     );
@@ -84,90 +170,61 @@ function Home({ navigation }) {
 export default Home;
 
 const styles = StyleSheet.create({
+    slide: {
+        height: 200,
+        width: '95%',
+        backgroundColor: 'white',
+        borderRadius: 30,
+        marginTop:8
+    },
+
+    productContainer: {
+        width: 190,
+        height: 254,
+        borderRadius: 10,
+        backgroundColor: 'white', // Màu nền của View
+        elevation: 5, // Độ đổ bóng
+        shadowColor: 'gray', // Màu đổ bóng
+        shadowOffset: { width: 0, height: 2 }, // Độ dịch chuyển đổ bóng
+        shadowOpacity: 0.5, // Độ trong suốt của đổ bóng
+        shadowRadius: 5, // Độ mờ của đổ bóng
+        marginRight: 10,
+        marginBottom:10
+    },
     container: {
+        paddingTop: 15,
         flex: 1,
         backgroundColor: '#DDD',
     },
-    userIconContainer: {},
-    cartIconContainer: {
-        marginBottom: 10,
-        position: 'relative',
+    textArrange:{
+        fontSize:15,
+        fontWeight:'bold',
+        color:'white'
     },
-    contentContainer: {
-        height: 400,
-        marginTop: 15
+    arrange:{
+        backgroundColor:'#362C2C',
+        padding:8,
+        marginRight:14,
+        borderRadius:10
     },
-    productFrame: {
-        width: 250,
-        height: 400,
-        marginHorizontal: 10,
-        borderRadius: 16,
-        backgroundColor: 'white',
-        alignItems: 'center'
+    icon: {
+        width: 60,
+        height: 60,
+        borderRadius: 100,
+        margin: 7
     },
-    productImage: {
-        width: '90%',
-        height: 200,
-        borderRadius: 16,
-        marginHorizontal: '5%',
-        marginTop: '5%'
-    },
-    productName: {
-        fontSize: 20,
-        fontWeight: 'bold',
-        marginTop: 18,
-
-    },
-    productPrice: {
-        fontSize: 18,
-        color: '#888',
-        marginTop: 10,
-
-    },
-    productAdditionalInfo: {
-        fontSize: 14,
-        color: '#888',
-        marginTop: 10,
-
-    },
-    title: {
-        fontSize: 23,
-        fontWeight: 'bold',
-        marginTop: 40,
-        marginLeft: 15,
-        marginBottom: 7
-    },
-    title1: {
-        fontSize: 20,
-        fontWeight: 'bold',
-        marginLeft: 20
-    },
-    slide: {
-        height: 200,
-        width: '90%',
-        marginHorizontal: '5%',
-        backgroundColor: 'white',
-        borderRadius: 30,
-        marginVertical: 20
-    },
-    imageBackground: {
-        height: 150,
-        width: '60%',
-        marginLeft: 10,
-        marginTop: 10,
-        borderRadius: 30
-    },
-    slide_img: {
-        flexDirection: 'row',
-        paddingBottom: 10
+    select: {
+        alignItems: "center"
     },
     button_slide: {
         height: 50,
         width: 120,
-        backgroundColor: 'black',
-        borderRadius: 15,
-        marginHorizontal: 10,
-        marginTop: 50
+        backgroundColor: 'red',
+        position: 'absolute',
+        zIndex: 2,
+        marginTop: 139,
+        marginLeft: 35,
+        borderRadius: 10
     },
     text_slide: {
         color: 'white',
@@ -176,14 +233,42 @@ const styles = StyleSheet.create({
         marginTop: 10,
         fontWeight: 'bold'
     },
-    paginationDot: {
-        marginVertical: 10
+    imageBackground: {
+        width: '100%',
+        height: 200,
+        borderRadius: 10
     },
-    paginationActiveDot: {
-        backgroundColor: '#038C7F',
-        width: 16,
-        height: 8,
-        borderRadius: 4,
-        marginTop: 10
+    option: {
+        flexDirection: "row",
+        justifyContent: "center"
     },
+
+    dropdown: {
+        marginTop:14,
+        height: 50,
+        width:160,
+        backgroundColor: 'white',
+        borderRadius: 12,
+        padding: 12,
+        shadowColor: '#000',
+        shadowOffset: {
+            width: 0,
+            height: 1,
+        },
+        shadowOpacity: 0.2,
+        shadowRadius: 1.41,
+
+        elevation: 2,
+    },
+
+    item: {
+        padding: 17,
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+    },
+    textItem: {
+        flex: 1,
+        fontSize: 16,
+    }
 });
