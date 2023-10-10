@@ -54,8 +54,8 @@ function ProductDetail({ route, navigation }) {
         }
     };
 
-    const colorOptions = ['đỏ', 'xanh', 'vàng'];
     const sizeOptions = ['28', '29', '30', '31'];
+    const colorOptions = ['Đỏ', 'xanh', 'vàng'];
 
     const selectColor = (color) => {
         setSelectedColor(color);
@@ -112,162 +112,86 @@ function ProductDetail({ route, navigation }) {
     return (
         <View style={styles.container}>
             <Image source={{ uri: product.search_image }} style={styles.productImage} />
-            <TouchableOpacity style={{ position: 'absolute', marginTop: 16, marginLeft: 350 }} onPress={addToFavo}>
-                <Image source={require('../image/fa.png')} style={{ height: 40, width: 40, }} />
-            </TouchableOpacity>
-            <View style={{ flexDirection: 'row' }}>
-                <Text style={styles.productName}>{product.brands_filter_facet}</Text>
-                <Text style={styles.productPrice}>{product.price}</Text>
-            </View>
+
             <Text style={styles.productAdditionalInfo}>{product.product_additional_info}</Text>
 
-            <TouchableOpacity style={styles.addToCartButton} onPress={toggleModal}>
-                <Text style={styles.addToCartButtonText}>Thêm vào giỏ hàng</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.addToCartButton} onPress={buyNow}>
-                <Text style={styles.addToCartButtonText}>Mua Ngay</Text>
-            </TouchableOpacity>
+            <View style={{ flexDirection: 'row' }}>
+                {/* <Text style={styles.productName}>{product.brands_filter_facet}</Text> */}
+                <Text style={styles.productPrice}>₫{product.price}</Text>
 
-            <Modal visible={isModalVisible} transparent animationType="slide">
-                <View style={styles.modalContainer}>
-                    <View style={styles.modalContent}>
-                        <TouchableOpacity
-                            style={styles.closeModalButton}
-                            onPress={toggleModal}>
-                            <Text style={styles.closeModalButtonText}>X</Text>
-                        </TouchableOpacity>
-                        <Text style={styles.modalTitle}>Bảng Chọn Kích Cỡ</Text>
-                        <Text style={{fontSize:15}}>Màu Sắc:</Text>
-                        <ScrollView
-                            style={styles.colorOptionsContainer}
-                            horizontal={true}
-                            showsHorizontalScrollIndicator={false}>
-                            {colorOptions.map((color, index) => (
-                                <TouchableOpacity
-                                    key={index}
-                                    style={[
-                                        styles.optionButton,
-                                        selectedColor === color && styles.selectedOption,
-                                    ]}
-                                    onPress={() => selectColor(color)}>
-                                    <Text>{color}</Text>
-                                </TouchableOpacity>
-                            ))}
-                        </ScrollView>
+                {/* Trái tim yêu thích */}
+                <TouchableOpacity style={{ position: 'absolute', marginTop: 16, marginLeft: 350 }} onPress={addToFavo}>
+                    <Image source={require('../image/fa.png')} style={{ height: 30, width: 30 }} />
+                </TouchableOpacity>
+            </View>
 
-                        <Text style={{fontSize:15}}>Size:</Text>
-                        <ScrollView
-                            style={styles.sizeOptionsContainer}
-                            horizontal={true}
-                            showsHorizontalScrollIndicator={false}>
-                            {sizeOptions.map((size, index) => (
-                                <TouchableOpacity
-                                    key={index}
-                                    style={[
-                                        styles.optionButton,
-                                        selectedSize === size && styles.selectedOption,
-                                    ]}
-                                    onPress={() => selectSize(size)}>
-                                    <Text>{size}</Text>
-                                </TouchableOpacity>
-                            ))}
-                        </ScrollView>
+            {/* <View>
+                <Text style= {{marginLeft:20, marginTop:15}}>
+                    Chỗ này thêm mô tả của giày
+                </Text>
+            </View> */}
 
-                        <View style={styles.quantityContainer}>
-                            <Text>Số Lượng:</Text>
-                            <TouchableOpacity
-                                style={styles.quantityButton}
-                                onPress={decreaseQuantity}>
-                                <Text style={styles.quantityButtonText}>-</Text>
-                            </TouchableOpacity>
-                            <Text style={styles.quantityText}>{quantity}</Text>
-                            <TouchableOpacity
-                                style={styles.quantityButton}
-                                onPress={increaseQuantity}>
-                                <Text style={styles.quantityButtonText}>+</Text>
-                            </TouchableOpacity>
-                        </View>
-                        <TouchableOpacity
-                            style={styles.addToCartButton}
-                            onPress={() => {
-                                addToCart();
-                                toggleModal();
-                            }}>
-                            <Text style={styles.addToCartButtonText}>Thêm vào Giỏ hàng</Text>
-                        </TouchableOpacity>
-                    </View>
-                </View>
-            </Modal>
-            <Modal visible={isBuyNowModalVisible} transparent animationType="slide">
-                <View style={styles.modalContainer}>
-                    <View style={styles.modalContent}>
-                        <TouchableOpacity
-                            style={styles.closeModalButton}
-                            onPress={toggleBuyNowModal}>
-                            <Text style={styles.closeModalButtonText}>X</Text>
-                        </TouchableOpacity>
-                        <Text style={styles.modalTitle}>Bảng Chọn Kích Cỡ</Text>
-                        <Text style={{fontSize:15}}>Màu Sắc:</Text>
-                        <ScrollView
-                            style={styles.colorOptionsContainer}
-                            horizontal={true}
-                            showsHorizontalScrollIndicator={false}>
-                            {colorOptions.map((color, index) => (
-                                <TouchableOpacity
-                                    key={index}
-                                    style={[
-                                        styles.optionButton,
-                                        selectedColor === color && styles.selectedOption,
-                                    ]}
-                                    onPress={() => selectColor(color)}>
-                                    <Text>{color}</Text>
-                                </TouchableOpacity>
-                            ))}
-                        </ScrollView>
 
-                        <Text style={{fontSize:15}}>Size:</Text>
-                        <ScrollView
-                            style={styles.sizeOptionsContainer}
-                            horizontal={true}
-                            showsHorizontalScrollIndicator={false}>
-                            {sizeOptions.map((size, index) => (
-                                <TouchableOpacity
-                                    key={index}
-                                    style={[
-                                        styles.optionButton,
-                                        selectedSize === size && styles.selectedOption,
-                                    ]}
-                                    onPress={() => selectSize(size)}>
-                                    <Text>{size}</Text>
-                                </TouchableOpacity>
-                            ))}
-                        </ScrollView>
+            {/* chọn màu */}
+            <ScrollView
+                style={[
+                    styles.colorOptionsContainer,
+                    selectedColor === 'Đỏ' && { backgroundColor: 'red' },
+                    selectedColor === 'xanh' && { backgroundColor: 'blue' },
+                    selectedColor === 'vàng' && { backgroundColor: 'yellow' },
+                ]}
+                horizontal={true}
+                showsHorizontalScrollIndicator={false}>
+                {colorOptions.map((color, index) => (
+                    <TouchableOpacity
+                        key={index}
+                        style={[
+                            styles.optionButton,
+                            selectedColor === color && styles.selectedOption,
+                        ]}
+                        onPress={() => selectColor(color)}>
+                        <Text>{color}</Text>
+                    </TouchableOpacity>
+                ))}
+            </ScrollView>
 
-                        <View style={styles.quantityContainer}>
-                            <Text>Số Lượng:</Text>
-                            <TouchableOpacity
-                                style={styles.quantityButton}
-                                onPress={decreaseQuantity}>
-                                <Text style={styles.quantityButtonText}>-</Text>
-                            </TouchableOpacity>
-                            <Text style={styles.quantityText}>{quantity}</Text>
-                            <TouchableOpacity
-                                style={styles.quantityButton}
-                                onPress={increaseQuantity}>
-                                <Text style={styles.quantityButtonText}>+</Text>
-                            </TouchableOpacity>
-                        </View>
-                        <TouchableOpacity
-                            style={styles.addToCartButton}
-                            onPress={() => {
-                                buyNow();
-                                toggleBuyNowModal();
-                            }}>
-                            <Text style={styles.addToCartButtonText}>Mua Ngay</Text>
-                        </TouchableOpacity>
-                    </View>
-                </View>
-            </Modal>
+            {/* Chọn size */}
+            <ScrollView
+                style={styles.sizeOptionsContainer}
+                horizontal={true}
+                showsHorizontalScrollIndicator={false}>
+                {sizeOptions.map((size, index) => (
+                    <TouchableOpacity
+                        key={index}
+                        style={[
+                            styles.optionButton,
+                            selectedSize === size && styles.selectedOptionSize,
+                        ]}
+                        onPress={() => selectSize(size)}>
+                        <Text>{size}</Text>
+                    </TouchableOpacity>
+                ))}
+            </ScrollView>
+
+            {/* tăng giảm số lượng */}
+            <View style={styles.quantityContainer}>
+                <TouchableOpacity style={styles.quantityButton} onPress={decreaseQuantity}>
+                    <Text style={styles.quantityButtonText}>-</Text>
+                </TouchableOpacity>
+                <Text style={styles.quantityText}>{quantity}</Text>
+                <TouchableOpacity style={styles.quantityButton} onPress={increaseQuantity}>
+                    <Text style={styles.quantityButtonText}>+</Text>
+                </TouchableOpacity>
+            </View>
+
+            <View style={{ flexDirection: 'row' }}>
+                <TouchableOpacity style={styles.addToCartButton} onPress={addToCart}>
+                    <Text style={styles.addToCartButtonText}>Thêm vào giỏ hàng</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.addToCartButton} onPress={buyNow}>
+                    <Text style={styles.addToCartButtonText}>Mua Ngay</Text>
+                </TouchableOpacity>
+            </View>
         </View>
     );
 }
@@ -305,21 +229,24 @@ const styles = StyleSheet.create({
         marginLeft: 16
     },
     productPrice: {
-        fontSize: 18,
+        fontSize: 22,
         color: '#990000',
-        marginTop: 20,
-        marginLeft: 40
+        marginTop: 10,
+        marginLeft: 20
     },
     productAdditionalInfo: {
-        fontSize: 14,
+        fontSize: 24,
         marginTop: 8,
         marginLeft: 16
     },
     addToCartButton: {
+        width: 200,
+        height: 60,
         backgroundColor: '#666',
         paddingHorizontal: 20,
         paddingVertical: 18,
         borderRadius: 20,
+        marginLeft: 28,
         marginTop: 26,
     },
     addToCartButtonText: {
@@ -349,10 +276,17 @@ const styles = StyleSheet.create({
     colorOptionsContainer: {
         flexDirection: 'row',
         marginBottom: 10,
+        marginLeft: 20,
+        marginTop: 15,
+        borderRadius: 8,
+        width:175
     },
     sizeOptionsContainer: {
         flexDirection: 'row',
         marginBottom: 10,
+        marginLeft: 20,
+        marginTop: 10,
+
     },
     optionButton: {
         paddingVertical: 8,
@@ -360,15 +294,16 @@ const styles = StyleSheet.create({
         borderRadius: 8,
         marginVertical: 4,
     },
-    selectedOption: {
+    selectedOptionSize: {
         backgroundColor: '#666',
         color: 'white',
     },
     quantityContainer: {
         flexDirection: 'row',
         alignItems: 'center',
-        marginBottom: 10,
-        marginTop:5,
+        marginBottom: 5,
+        marginTop: 15,
+        marginLeft: 14
     },
     quantityButton: {
         backgroundColor: '#666',
@@ -400,4 +335,6 @@ const styles = StyleSheet.create({
         fontSize: 30,
         fontWeight: 'bold',
     },
+
+
 });
