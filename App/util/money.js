@@ -4,5 +4,5 @@ export function getMonney(monney) {
         currency: 'VND',
         minimumFractionDigits: 0,
     });
-    return formatter.format(monney).replace(/\s/g, '.');
+    return formatter.format(monney).replace(/\s/g, ' ');
 }
