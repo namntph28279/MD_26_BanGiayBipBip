@@ -11,7 +11,7 @@ const auth = require('../authenticateToken');
 
 const express = require('express');
 const app = express();
-const bcrypt = require('bcrypt');
+// const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
 
@@ -357,40 +357,40 @@ app.get('/top-selling', async (req, res) => {
 });
 
 
-// Đăng nhập
-app.post('/login', async (req, res) => {
-    const { username, password } = req.body;
+// // Đăng nhập
+// app.post('/login', async (req, res) => {
+//     const { username, password } = req.body;
 
-    try {
-        // Tìm người dùng với username được cung cấp
-        const user = await User.findOne({ username });
+//     try {
+//         // Tìm người dùng với username được cung cấp
+//         const user = await User.findOne({ username });
 
-        if (!user) {
-            // Người dùng không tồn tại
-            res.status(404).json({ message: 'Tài khoản không tồn tại' });
-        } else {
-            // Kiểm tra mật khẩu
-            const isPasswordMatch = await bcrypt.compare(password, user.password);
+//         if (!user) {
+//             // Người dùng không tồn tại
+//             res.status(404).json({ message: 'Tài khoản không tồn tại' });
+//         } else {
+//             // Kiểm tra mật khẩu
+//             const isPasswordMatch = await bcrypt.compare(password, user.password);
 
-            if (!isPasswordMatch) {
-                // Sai mật khẩu
-                res.status(401).json({ message: 'Sai mật khẩu' });
-            } else {
-                // Đăng nhập thành công, tạo token và cập nhật token cho user
-                const token = jwt.sign({ userId: user._id }, 'your-secret-key');
+//             if (!isPasswordMatch) {
+//                 // Sai mật khẩu
+//                 res.status(401).json({ message: 'Sai mật khẩu' });
+//             } else {
+//                 // Đăng nhập thành công, tạo token và cập nhật token cho user
+//                 const token = jwt.sign({ userId: user._id }, 'your-secret-key');
 
-                await User.updateOne({ username: username }, {
-                    tokens: token
-                });
+//                 await User.updateOne({ username: username }, {
+//                     tokens: token
+//                 });
 
-                // Trả về token cho client
-                res.json({ token });
-            }
-        }
-    } catch (error) {
-        res.status(500).json({ message: error.message });
-    }
-});
+//                 // Trả về token cho client
+//                 res.json({ token });
+//             }
+//         }
+//     } catch (error) {
+//         res.status(500).json({ message: error.message });
+//     }
+// });
 
 // Đăng xuất
 app.post('/logout', auth, async (req, res) => {
@@ -409,70 +409,70 @@ app.post('/logout', auth, async (req, res) => {
     }
 });
 
-// Đăng ký
-app.post('/register', async (req, res) => {
-    const { username, password } = req.body;
+// // Đăng ký
+// app.post('/register', async (req, res) => {
+//     const { username, password } = req.body;
 
-    try {
-        // Kiểm tra xem username đã tồn tại hay chưa
-        const existingUser = await User.findOne({ username });
+//     try {
+//         // Kiểm tra xem username đã tồn tại hay chưa
+//         const existingUser = await User.findOne({ username });
 
-        if (existingUser) {
-            // Username đã tồn tại
-            res.status(409).json({ message: 'Username đã tồn tại' });
-        } else {
-            // Mã hóa mật khẩu
-            const hashedPassword = await bcrypt.hash(password, 10);
+//         if (existingUser) {
+//             // Username đã tồn tại
+//             res.status(409).json({ message: 'Username đã tồn tại' });
+//         } else {
+//             // Mã hóa mật khẩu
+//             const hashedPassword = await bcrypt.hash(password, 10);
 
-            // Tạo người dùng mới
-            const user = new User({
-                username,
-                password: hashedPassword
-            });
+//             // Tạo người dùng mới
+//             const user = new User({
+//                 username,
+//                 password: hashedPassword
+//             });
 
-            // Lưu người dùng vào cơ sở dữ liệu
-            await user.save();
+//             // Lưu người dùng vào cơ sở dữ liệu
+//             await user.save();
 
-            res.sendStatus(201);
-        }
-    } catch (error) {
-        res.status(500).json({ message: error.message });
-    }
-});
+//             res.sendStatus(201);
+//         }
+//     } catch (error) {
+//         res.status(500).json({ message: error.message });
+//     }
+// });
 
-// Đổi mật khẩu
-app.post('/changepassword', async (req, res) => {
-    const { username, oldPassword, newPassword } = req.body;
+// // Đổi mật khẩu
+// app.post('/changepassword', async (req, res) => {
+//     const { username, oldPassword, newPassword } = req.body;
 
-    try {
-        // Tìm người dùng với username được cung cấp
-        const user = await User.findOne({ username });
+//     try {
+//         // Tìm người dùng với username được cung cấp
+//         const user = await User.findOne({ username });
 
-        if (!user) {
-            // Người dùng không tồn tại
-            res.status(404).json({ message: 'Tài khoản không tồn tại' });
-        } else {
-            // Kiểm tra mật khẩu cũ
-            const isPasswordMatch = await bcrypt.compare(oldPassword, user.password);
+//         if (!user) {
+//             // Người dùng không tồn tại
+//             res.status(404).json({ message: 'Tài khoản không tồn tại' });
+//         } else {
+//             // Kiểm tra mật khẩu cũ
+//             const isPasswordMatch = await bcrypt.compare(oldPassword, user.password);
 
-            if (!isPasswordMatch) {
-                // Sai mật khẩu cũ
-                res.status(401).json({ message: 'Sai mật khẩu cũ' });
-            } else {
-                // Mã hóa mật khẩu mới
-                const hashedPassword = await bcrypt.hash(newPassword, 10);
+//             if (!isPasswordMatch) {
+//                 // Sai mật khẩu cũ
+//                 res.status(401).json({ message: 'Sai mật khẩu cũ' });
+//             } else {
+//                 // Mã hóa mật khẩu mới
+//                 const hashedPassword = await bcrypt.hash(newPassword, 10);
 
-                // Cập nhật mật khẩu mới cho người dùng
-                user.password = hashedPassword;
-                await user.save();
+//                 // Cập nhật mật khẩu mới cho người dùng
+//                 user.password = hashedPassword;
+//                 await user.save();
 
-                res.sendStatus(200);
-            }
-        }
-    } catch (error) {
-        res.status(500).json({ message: error.message });
-    }
-});
+//                 res.sendStatus(200);
+//             }
+//         }
+//     } catch (error) {
+//         res.status(500).json({ message: error.message });
+//     }
+// });
 
 // lấy toàn bộ user
 app.get('/user', async (req, res) => {
