@@ -20,6 +20,7 @@ import { getMonney } from "../util/money";
 
 function Home() {
   const [products, setProducts] = useState([]);
+  const [listData, setListData] = useState([]);
 
   const [valueSortBy, setValueSortBy] = useState(0);
   const [valueFilter, setValueFilter] = useState(null);
@@ -28,7 +29,10 @@ function Home() {
   useEffect(() => {
     fetch("https://md26bipbip-496b6598561d.herokuapp.com/")
       .then((response) => response.json())
-      .then((data) => setProducts(data))
+      .then((data) => {
+        setProducts(data);
+        setListData(data);
+      })
       .catch((error) => {
         console.error(error);
       });
@@ -52,10 +56,10 @@ function Home() {
     { label: "Tất cả", value: "1" },
     { label: "Nam", value: "2" },
     { label: "Nữ", value: "3" },
+    { label: "Trẻ em", value: "4" },
   ];
 
   //Chưa có nổi bật nên chỉ sắp sếp theo giá
-  //Chưa có bộ lọc
   const sortByPrice = (item) => {
     setValueSortBy(item.value);
     if (item.value == 2) {
@@ -65,6 +69,33 @@ function Home() {
       products.sort((a, b) => (a.product_price > b.product_price ? 1 : -1));
     }
   };
+
+  const filterByCategory = (value) => {
+    setValueFilter(value);
+
+    if (value == 1) {
+      return setProducts(listData);
+    }
+    if (value == 2) {
+      const arrFilter = listData.filter(
+        (data) => data.product_category == "men"
+      );
+      return setProducts(arrFilter);
+    }
+    if (value == 3) {
+      const arrFilter = listData.filter(
+        (data) => data.product_category == "women"
+      );
+      return setProducts(arrFilter);
+    }
+    if (value == 4) {
+      const arrFilter = listData.filter(
+        (data) => data.product_category == "children"
+      );
+      return setProducts(arrFilter);
+    }
+  };
+
 
   //item layout
   const renderItemSortBy = (item) => {
@@ -217,7 +248,7 @@ function Home() {
           />
 
           <Dropdown
-            style={[styles.dropdown, { width: 90 }, { marginLeft: 10 }]}
+            style={[styles.dropdown, { width: 100 }, { marginLeft: 10 }]}
             data={Filter}
             maxHeight={300}
             labelField="label"
@@ -226,7 +257,7 @@ function Home() {
             value={valueFilter}
             labelStyle={{ fontWeight: "bold" }}
             onChange={(item) => {
-              setValueFilter(item.value);
+              filterByCategory(item.value);
             }}
             renderItem={renderItemFilter}
           />
