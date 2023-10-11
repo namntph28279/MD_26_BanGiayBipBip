@@ -20,13 +20,14 @@ app.use(express.json());
 
 // Thêm sản phẩm
 app.post('/add', async (req, res) => {
-    const { product_title, product_price, product_image, product_quantity } = req.body;
+    const { product_title, product_price, product_image, product_quantity, product_category } = req.body;
 
     const product = new Product({
         product_title,
         product_price,
         product_image,
-        product_quantity
+        product_quantity,
+        product_category
     });
 
     try {
