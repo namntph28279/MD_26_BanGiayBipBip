@@ -15,6 +15,9 @@ const useScheme = new mongoose.Schema({
     product_quantity: {
         type: Number,
         required: true
+    },
+    product_category:{
+        type: String
     }
 })
 //câu lệnh tạo bảng

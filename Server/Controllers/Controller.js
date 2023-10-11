@@ -51,14 +51,15 @@ app.get('/', async (req, res) => {
 // Định nghĩa endpoint để sửa dữ liệu
 app.put('/edit/:id', async (req, res) => {
     const id = req.params.id;
-    const { product_title, product_price, product_image, product_quantity } = req.body;
+    const { product_title, product_price, product_image, product_quantity, product_category } = req.body;
 
     try {
         const result = await Product.updateOne({ _id: id }, {
             product_title,
             product_price,
             product_image,
-            product_quantity
+            product_quantity,
+            product_category
         });
         res.sendStatus(200);
     } catch (err) {
@@ -106,19 +107,31 @@ app.get('/product/:id', async (req, res) => {
         // Lấy thông tin sản phẩm
         const product = await Product.findById(productId);
 
-        // Lấy thông tin kích thước của sản phẩm
-        const sizes = await Size.find({ product: productId });
-        const sizeQuantity = sizes.reduce((total, size) => total + size.size_quantity, 0);
-        console.log("size: ", sizeQuantity);
+        if (!product) {
+            return res.status(404).json({ error: 'Không tìm thấy sản phẩm' });
+        }
 
         // Lấy thông tin màu sắc của sản phẩm
         const colors = await Color.find({ product: productId });
-        const colorQuantity = colors.reduce((total, color) => total + color.color_quantity, 0);
-        console.log("color: ", colorQuantity);
-        // Tính toán product_quantity
-        // const productQuantity = sizeQuantity + colorQuantity;
-        // Tính toán product_quantity
-        const productQuantity = sizes.length + colors.length;
+
+        // Tạo mảng chứa thông tin kích thước của sản phẩm
+        const sizes = [];
+
+        // Lấy thông tin kích thước của từng màu sắc
+        for (const color of colors) {
+            const colorId = color._id;
+            const colorSizes = await Size.find({ colorId });
+            sizes.push(...colorSizes);
+        }
+
+        // Tính toán tổng số lượng màu sắc
+        const colorQuantity = colors.length;
+
+        // Tính toán tổng số lượng kích thước
+        const sizeQuantity = sizes.reduce((total, size) => total + size.size_quantity, 0);
+
+        // Tính toán tổng số lượng sản phẩm
+        const productQuantity = colorQuantity + sizeQuantity;
 
         // Kết hợp thông tin sản phẩm, kích thước và màu sắc
         const productWithDetails = {
@@ -133,6 +146,7 @@ app.get('/product/:id', async (req, res) => {
 
         res.json(productWithDetails);
     } catch (error) {
+        console.error(error);
         res.status(500).json({ error: 'Lỗi server' });
     }
 });
