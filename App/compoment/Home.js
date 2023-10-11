@@ -235,7 +235,6 @@ function Home() {
         <View
           style={styles.columnsContainer}
         >
-
           {products.map((item) => (
               <View key={item._id} style={styles.columnItem}>
                 {renderProductItem(item)}
