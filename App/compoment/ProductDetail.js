@@ -11,6 +11,8 @@ import {
 import firebase from '../config/FirebaseConfig';
 import { getDatabase, ref, push, get, child, onValue } from 'firebase/database';
 import { getAuth } from 'firebase/auth';
+import Icon from 'react-native-vector-icons/FontAwesome';
+
 
 function ProductDetail({ route, navigation }) {
     const { product } = route.params;
@@ -23,6 +25,21 @@ function ProductDetail({ route, navigation }) {
     const toggleModal = () => {
         setModalVisible(!isModalVisible);
     };
+
+    //Hình trái tim
+    const HeartIcon = ({ isLiked, onPress }) => (
+        <TouchableOpacity onPress={onPress}>
+            <Icon name={isLiked ? 'heart' : 'heart-o'} size={30} color={isLiked ? 'red' : 'black'} />
+        </TouchableOpacity>
+    );
+
+    const [isLiked, setIsLiked] = useState(false);
+
+    const handlePress = () => {
+        setIsLiked(!isLiked);
+    };
+    // 
+
 
     const addToCart = () => {
         if (selectedColor && selectedSize) {
@@ -118,11 +135,6 @@ function ProductDetail({ route, navigation }) {
             <View style={{ flexDirection: 'row' }}>
                 {/* <Text style={styles.productName}>{product.brands_filter_facet}</Text> */}
                 <Text style={styles.productPrice}>₫{product.price}</Text>
-
-                {/* Trái tim yêu thích */}
-                <TouchableOpacity style={{ position: 'absolute', marginTop: 16, marginLeft: 350 }} onPress={addToFavo}>
-                    <Image source={require('../image/fa.png')} style={{ height: 30, width: 30 }} />
-                </TouchableOpacity>
             </View>
 
             {/* <View>
@@ -182,13 +194,19 @@ function ProductDetail({ route, navigation }) {
                 <TouchableOpacity style={styles.quantityButton} onPress={increaseQuantity}>
                     <Text style={styles.quantityButtonText}>+</Text>
                 </TouchableOpacity>
+
+                {/* Trái tim yêu thích */}
+                <TouchableOpacity style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }} onPress={addToFavo}>
+                    <HeartIcon isLiked={isLiked} onPress={handlePress} />
+                </TouchableOpacity>
+
             </View>
 
             <View style={{ flexDirection: 'row' }}>
                 <TouchableOpacity style={styles.addToCartButton} onPress={addToCart}>
                     <Text style={styles.addToCartButtonText}>Thêm vào giỏ hàng</Text>
                 </TouchableOpacity>
-                <TouchableOpacity style={styles.addToCartButton} onPress={buyNow}>
+                <TouchableOpacity style={styles.addToCartButtonBuy} onPress={buyNow}>
                     <Text style={styles.addToCartButtonText}>Mua Ngay</Text>
                 </TouchableOpacity>
             </View>
@@ -240,14 +258,23 @@ const styles = StyleSheet.create({
         marginLeft: 16
     },
     addToCartButton: {
-        width: 200,
-        height: 60,
         backgroundColor: '#666',
         paddingHorizontal: 20,
         paddingVertical: 18,
         borderRadius: 20,
-        marginLeft: 28,
         marginTop: 26,
+        marginHorizontal: 16,
+        width: '50%',
+        marginLeft:15
+    },
+    addToCartButtonBuy: {
+        backgroundColor: '#666',
+        paddingHorizontal: 20,
+        paddingVertical: 18,
+        borderRadius: 20,
+        marginTop: 26,
+        marginHorizontal: 16,
+        width: '29%',
     },
     addToCartButtonText: {
         color: 'white',
@@ -279,7 +306,7 @@ const styles = StyleSheet.create({
         marginLeft: 20,
         marginTop: 15,
         borderRadius: 8,
-        width:175
+        width: 175
     },
     sizeOptionsContainer: {
         flexDirection: 'row',
