@@ -20,13 +20,14 @@ app.use(express.json());
 
 // Thêm sản phẩm
 app.post('/add', async (req, res) => {
-    const { product_title, product_price, product_image, product_quantity } = req.body;
+    const { product_title, product_price, product_image, product_quantity, product_category } = req.body;
 
     const product = new Product({
         product_title,
         product_price,
         product_image,
-        product_quantity
+        product_quantity,
+        product_category
     });
 
     try {
@@ -100,6 +101,7 @@ app.delete('/delete/:id', async (req, res) => {
 //     }
 // });
 
+//getOneProduct
 app.get('/product/:id', async (req, res) => {
     try {
         const productId = req.params.id;
@@ -145,6 +147,21 @@ app.get('/product/:id', async (req, res) => {
         };
 
         res.json(productWithDetails);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Lỗi server' });
+    }
+});
+
+//lọc product theo loại
+app.get('/products/:category', async (req, res) => {
+    try {
+        const category = req.params.category;
+
+        // Lấy danh sách sản phẩm theo danh mục
+        const products = await Product.find({ product_category: category });
+
+        res.json(products);
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: 'Lỗi server' });
