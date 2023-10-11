@@ -82,7 +82,7 @@ function Home() {
     );
   };
 
-  const Itemlistnew = ({ item }) => {
+  const renderProductItem = ( item ) => {
     return (
       <View style={styles.productContainer}>
         <TouchableOpacity key={item._id}>
@@ -233,18 +233,14 @@ function Home() {
         </View>
 
         <View
-          style={{
-            width: "100%",
-            alignItems: "center",
-            marginTop: 14,
-          }}
+          style={styles.columnsContainer}
         >
-          <FlatList
-            data={products}
-            renderItem={Itemlistnew}
-            keyExtractor={(item) => item.id}
-            numColumns={2}
-          />
+
+          {products.map((item) => (
+              <View key={item._id} style={styles.columnItem}>
+                {renderProductItem(item)}
+              </View>
+          ))}
         </View>
       </ScrollView>
     </View>
@@ -254,6 +250,17 @@ function Home() {
 export default Home;
 
 const styles = StyleSheet.create({
+  columnsContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'flex-start',
+    marginTop:10
+  },
+  columnItem: {
+    width: '48%', // Display two items per row
+    marginTop: 10,
+    marginLeft:7
+  },
   slide: {
     height: 200,
     width: "95%",
@@ -263,7 +270,7 @@ const styles = StyleSheet.create({
   },
 
   productContainer: {
-    width: "47.5%",
+    width: "100%",
     borderRadius: 10,
     backgroundColor: "white", // Màu nền của View
     elevation: 5, // Độ đổ bóng
@@ -271,8 +278,6 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 }, // Độ dịch chuyển đổ bóng
     shadowOpacity: 0.5, // Độ trong suốt của đổ bóng
     shadowRadius: 5, // Độ mờ của đổ bóng
-    marginHorizontal: 5,
-    marginBottom: 10,
   },
   container: {
     paddingTop: 15,
