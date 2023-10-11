@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import {
     StyleSheet,
     View,
@@ -9,7 +9,7 @@ import {
     ScrollView,
 } from 'react-native';
 import firebase from '../config/FirebaseConfig';
-import { getDatabase, ref, push, get, child, onValue } from 'firebase/database';
+import {getDatabase, ref, push, get, child, onValue, remove} from 'firebase/database';
 import { getAuth } from 'firebase/auth';
 import Icon from 'react-native-vector-icons/FontAwesome';
 
@@ -26,19 +26,50 @@ function ProductDetail({ route, navigation }) {
         setModalVisible(!isModalVisible);
     };
 
-    //Hình trái tim
+    // Hình trái tim
     const HeartIcon = ({ isLiked, onPress }) => (
         <TouchableOpacity onPress={onPress}>
-            <Icon name={isLiked ? 'heart' : 'heart-o'} size={30} color={isLiked ? 'red' : 'black'} />
+            <Icon
+                name={isLiked ? 'heart' : 'heart-o'}
+                size={30}
+                color={isLiked ? 'red' : 'black'}
+            />
         </TouchableOpacity>
     );
 
     const [isLiked, setIsLiked] = useState(false);
+    const checkIfProductIsLiked = () => {
+        const auth = getAuth(firebase);
+        const userId = auth.currentUser ? auth.currentUser.uid : null;
+        if (userId) {
+            const database = getDatabase(firebase);
+            const favoRef = ref(database, `Favourite/${userId}`);
+
+            get(favoRef).then((snapshot) => {
+                if (snapshot.exists()) {
+                    const favoItems = snapshot.val();
+                    const productIds = Object.keys(favoItems);
+                    if (productIds.includes(product.id)) {
+                        // Sản phẩm đã tồn tại trong danh sách yêu thích, cập nhật trạng thái isLiked
+                        setIsLiked(true);
+                    }
+                }
+            });
+        }
+    };
+
+    useEffect(() => {
+        checkIfProductIsLiked();
+    }, []);
 
     const handlePress = () => {
-        setIsLiked(!isLiked);
+        if (isLiked) {
+            removeProductFromFavo();
+        } else {
+            addToFavo();
+        }
     };
-    // 
+    //
 
 
     const addToCart = () => {
@@ -92,31 +123,55 @@ function ProductDetail({ route, navigation }) {
         }
     };
     const addToFavo = () => {
-        // Xử lý thêm sản phẩm vào giỏ hàng
         const auth = getAuth(firebase);
-
-        // const userId = auth.currentUser.uid;
         const userId = auth.currentUser ? auth.currentUser.uid : null;
         if (userId) {
             const database = getDatabase(firebase);
             const productWithQuantity = { ...product, quantity };
-            console.log(product);
+
+            // Thêm sản phẩm vào danh sách yêu thích
             push(ref(database, `Favourite/${userId}`), productWithQuantity)
                 .then((newRef) => {
                     const cartItemId = newRef.key;
-                    console.log('người dùng với id:', userId);
+                    console.log('Người dùng với id:', userId);
                     console.log('Đã thêm sản phẩm vào yêu thích:', productWithQuantity);
                     console.log('ID của sản phẩm trong yêu thích:', cartItemId);
+
+                    // Sau khi thêm vào danh sách yêu thích, cập nhật trạng thái isLiked
+                    setIsLiked(true);
                 })
                 .catch((error) => {
                     console.error('Lỗi thêm sản phẩm vào yêu thích:', error);
                 });
         } else {
-
             console.log('Người dùng chưa đăng nhập');
             alert('Chưa đăng nhập, vui lòng đăng nhập');
             navigation.navigate('Login');
+        }
+    };
 
+
+    const removeProductFromFavo = () => {
+        // Xóa sản phẩm khỏi danh sách yêu thích
+        const auth = getAuth(firebase);
+        const userId = auth.currentUser ? auth.currentUser.uid : null;
+        if (userId) {
+            const database = getDatabase(firebase);
+            const favoRef = ref(database, `Favourite/${userId}/${product.id}`);
+
+            // Xóa sản phẩm
+            remove(favoRef)
+                .then(() => {
+                    console.log('Sản phẩm đã bị xóa khỏi danh sách yêu thích');
+                    setIsLiked(false); // Cập nhật trạng thái isLiked
+                })
+                .catch((error) => {
+                    console.error('Lỗi xóa sản phẩm khỏi danh sách yêu thích:', error);
+                });
+        } else {
+            console.log('Người dùng chưa đăng nhập');
+            alert('Chưa đăng nhập, vui lòng đăng nhập');
+            navigation.navigate('Login');
         }
     };
     const toggleBuyNowModal = () => {

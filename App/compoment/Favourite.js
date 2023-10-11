@@ -464,13 +464,6 @@ const styles = StyleSheet.create({
   modalOptionText: {
     fontSize: 19,
   },
-  title: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginTop: 40,
-    marginLeft: 15,
-    marginBottom: 7,
-  },
   titleDivider: {
     width: '100%',
     backgroundColor: 'black',
