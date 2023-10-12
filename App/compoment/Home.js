@@ -18,7 +18,7 @@ import Swiper from "react-native-swiper";
 import {Dropdown} from "react-native-element-dropdown";
 import {getMonney} from "../util/money";
 
-function Home() {
+function Home({navigation}) {
     const [products, setProducts] = useState([]);
     const [listData, setListData] = useState([]);
 
@@ -114,7 +114,11 @@ function Home() {
     const renderProductItem = (item) => {
         return (
             <View style={styles.productContainer}>
-                <TouchableOpacity key={item._id}>
+                <TouchableOpacity key={item._id}
+                                  onPress={() => {
+                                      navigation.navigate("ProductDetail", { productId: item._id });
+                                  }}
+                >
                     <View
                         style={{
                             width: "100%",
