@@ -56,7 +56,6 @@ function Home() {
     { label: "Tất cả", value: "1" },
     { label: "Nam", value: "2" },
     { label: "Nữ", value: "3" },
-    { label: "Trẻ em", value: "4" },
   ];
 
   //Chưa có nổi bật nên chỉ sắp sếp theo giá
@@ -88,14 +87,7 @@ function Home() {
       );
       return setProducts(arrFilter);
     }
-    if (value == 4) {
-      const arrFilter = listData.filter(
-        (data) => data.product_category == "children"
-      );
-      return setProducts(arrFilter);
-    }
   };
-
 
   //item layout
   const renderItemSortBy = (item) => {
@@ -113,7 +105,7 @@ function Home() {
     );
   };
 
-  const renderProductItem = ( item ) => {
+  const renderProductItem = (item) => {
     return (
       <View style={styles.productContainer}>
         <TouchableOpacity key={item._id}>
@@ -263,13 +255,11 @@ function Home() {
           />
         </View>
 
-        <View
-          style={styles.columnsContainer}
-        >
+        <View style={styles.columnsContainer}>
           {products.map((item) => (
-              <View key={item._id} style={styles.columnItem}>
-                {renderProductItem(item)}
-              </View>
+            <View key={item._id} style={styles.columnItem}>
+              {renderProductItem(item)}
+            </View>
           ))}
         </View>
       </ScrollView>
@@ -281,15 +271,15 @@ export default Home;
 
 const styles = StyleSheet.create({
   columnsContainer: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'flex-start',
-    marginTop:10
+    flexDirection: "row",
+    flexWrap: "wrap",
+    justifyContent: "flex-start",
+    marginTop: 10,
   },
   columnItem: {
-    width: '48%', // Display two items per row
+    width: "48%", // Display two items per row
     marginTop: 10,
-    marginLeft:7
+    marginLeft: 7,
   },
   slide: {
     height: 200,
