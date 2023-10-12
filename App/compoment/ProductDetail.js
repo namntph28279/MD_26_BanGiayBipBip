@@ -286,7 +286,7 @@ function ProductDetail({ route, navigation }) {
                             <Text style={styles.addToCartButtonText}>Thêm vào giỏ hàng</Text>
                         </TouchableOpacity>
                         <TouchableOpacity style={styles.addToCartButtonBuy} onPress={buyNow}>
-                            <Text style={styles.addToCartButtonText}>Mua Ngay</Text>
+                            <Text style={styles.addToCartButtonText1}>Mua Ngay</Text>
                         </TouchableOpacity>
 
                     </View>
@@ -359,8 +359,7 @@ const styles = StyleSheet.create({
     },
     addToCartButtonBuy: {
         flex: 1,
-        backgroundColor: 'red',
-        // backgroundColor: '#666',
+        backgroundColor: '#666',
         paddingHorizontal: 20,
         paddingVertical: 18,
         borderRadius: 20,
@@ -372,6 +371,14 @@ const styles = StyleSheet.create({
     addToCartButtonText: {
         color: 'white',
         fontSize: 16,
+        fontWeight: 'bold',
+        textAlign: 'center',
+        alignContent:'center'
+    },
+    addToCartButtonText1: {
+        color: 'white',
+        fontSize: 16,
+        marginTop: 10,
         fontWeight: 'bold',
         textAlign: 'center',
         alignContent:'center'
