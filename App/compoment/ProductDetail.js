@@ -8,6 +8,7 @@ import {
     Modal,
     ScrollView,
 } from 'react-native';
+import axios from 'axios';
 import firebase from '../config/FirebaseConfig';
 import {getDatabase, ref, push, get, child, onValue, remove} from 'firebase/database';
 import { getAuth } from 'firebase/auth';
@@ -15,13 +16,28 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 
 
 function ProductDetail({ route, navigation }) {
-    const { product } = route.params;
-
+    const { productId } = route.params;
+    const [product, setProduct] = useState(null);
     const [quantity, setQuantity] = useState(1);
     const [selectedColor, setSelectedColor] = useState(null);
     const [selectedSize, setSelectedSize] = useState(null);
     const [isModalVisible, setModalVisible] = useState(false);
     const [isBuyNowModalVisible, setBuyNowModalVisible] = useState(false);
+    useEffect(() => {
+        const apiUrl = `https://md26bipbip-496b6598561d.herokuapp.com/product/${productId}`;
+
+        fetch(apiUrl)
+            .then((response) => response.json())
+            .then((data) => {
+                setProduct(data);
+            })
+            .catch((error) => {
+                console.error('Lôi:', error);
+                return;
+            });
+    }, [productId]);
+
+
     const toggleModal = () => {
         setModalVisible(!isModalVisible);
     };
@@ -183,13 +199,20 @@ function ProductDetail({ route, navigation }) {
 
     return (
         <View style={styles.container}>
-            <Image source={{ uri: product.search_image }} style={styles.productImage} />
+            {product && (
+                <Image source={{ uri: product.product_image }} style={styles.productImage} />
+            )}
 
-            <Text style={styles.productAdditionalInfo}>{product.product_additional_info}</Text>
+
+            {product && (
+                <Text style={styles.productAdditionalInfo}>{product.product_title}</Text>
+            )}
 
             <View style={{ flexDirection: 'row' }}>
                 {/* <Text style={styles.productName}>{product.brands_filter_facet}</Text> */}
-                <Text style={styles.productPrice}>₫{product.price}</Text>
+                {product && (
+                    <Text style={styles.productPrice}>₫{product.product_price}</Text>
+                )}
             </View>
 
             {/* <View>
