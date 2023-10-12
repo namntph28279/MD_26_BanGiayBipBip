@@ -15,12 +15,12 @@ const TabNavi = ({ route }) => {
     return (
         <Tab.Navigator
             initialRouteName={"Trang Chủ"}
-            screenOptions={{ headerShown: false }}
-            tabBarOptions={{
-                keyboardHidesTabBar: true,
-                activeTintColor: 'black',
-                inactiveTintColor: 'grey',
-                labelStyle: { paddingBottom: 10, fontSize: 10 },
+            screenOptions={{
+                headerShown: false,
+                tabBarActiveTintColor: 'black',
+                tabBarInactiveTintColor: 'gray',
+                tabBarLabelStyle: { marginBottom: 5 }, // Điều chỉnh khoảng cách giữa icon và title
+                tabBarLabelPosition: 'below-icon', // Đặt vị trí của title
             }}>
 
             <Tab.Screen name={"Trang Chủ"} component={Home}
