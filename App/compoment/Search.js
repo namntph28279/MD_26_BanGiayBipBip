@@ -20,8 +20,10 @@ function Search() {
     return (
       <View style={styles.productContainer}>
         <Image source={{ uri: item.product_image }} style={styles.productImage} />
+        <View style={styles.productDetails}>
         <Text style={styles.productTitle}>{item.product_title}</Text>
         <Text style={styles.productPrice}>Giá: {item.product_price}</Text>
+        </View>
       </View>
     );
   };
@@ -55,6 +57,7 @@ const styles = StyleSheet.create({
   container: {
     paddingTop: 15,
     backgroundColor: "#DDD",
+    marginBottom: 70
   },
   searchInput: {
     margin: 10,
@@ -66,7 +69,7 @@ const styles = StyleSheet.create({
   productContainer: {
     width: "90%",
     margin: 10,
-    marginLeft: 15,
+    marginLeft: "5%", // Canh giữa sản phẩm theo chiều ngang
     padding: 10,
     backgroundColor: "white",
     elevation: 5,
@@ -74,21 +77,24 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.5,
     shadowRadius: 5,
+    flexDirection: "row", // Sử dụng flexbox để căn giữa theo chiều ngang
+    alignItems: "center", // Căn giữa theo chiều dọc
+    borderRadius: 10,
   },
   productImage: {
-    width: "50%",
+    width: 100,
     height: 100,
     borderRadius: 10,
-    alignItems: "center",
+  },
+  productDetails: {
+    width: "70%", // Đặt chiều rộng của productDetails là 50% để nó nằm bên phải
+    padding: 10,
   },
   productTitle: {
-    marginLeft: 15,
-    marginTop: 7,
     fontSize: 17,
     fontWeight: "bold",
   },
   productPrice: {
-    marginLeft: 15,
     width: 140,
   },
   //...
