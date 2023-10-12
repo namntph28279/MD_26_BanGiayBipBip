@@ -295,7 +295,7 @@ function ProductDetail({ route, navigation }) {
             )}
         </View>
     );
-
+//hiển
 }
 
 export default ProductDetail;
