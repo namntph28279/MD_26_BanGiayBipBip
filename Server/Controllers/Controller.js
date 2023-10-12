@@ -694,6 +694,23 @@ app.get('/colors/getAll', async (req, res) => {
     }
 });
 
+//lấy color theo productId
+app.get('/api/colors/:productId', async (req, res) => {
+    try {
+      const productId = req.params.productId;
+  
+      // Sử dụng phương thức find với điều kiện productId
+      const colors = await Color.find({ product: productId });
+  
+      // Trả về danh sách màu sắc
+      res.json(colors);
+    } catch (error) {
+      // Xử lý lỗi nếu có
+      console.error('Error getting colors', error);
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  });
+
 // Tạo kích thước mới cho sản phẩm
 app.post('/sizes/add/:colorId', async (req, res) => {
     try {
