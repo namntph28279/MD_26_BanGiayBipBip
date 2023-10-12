@@ -1,120 +1,95 @@
-import React, { useState, useEffect } from 'react';
-import { View, TextInput, Button, FlatList, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
+import React, { useEffect, useState } from "react";
+import { StyleSheet, View, ScrollView, Text, Image, TextInput, FlatList } from "react-native";
 
-const Search = () => {
-  const [searchText, setSearchText] = useState('');
+function Search() {
   const [products, setProducts] = useState([]);
+  const [searchText, setSearchText] = useState(""); // State để lưu giá trị của thanh tìm kiếm
 
   useEffect(() => {
-    fetch('https://hungnttg.github.io/shopgiay.json')
+    fetch("https://md26bipbip-496b6598561d.herokuapp.com/")
       .then((response) => response.json())
-      .then((data) => setProducts(data.products))
+      .then((data) => {
+        setProducts(data);
+      })
       .catch((error) => {
         console.error(error);
       });
   }, []);
 
-  const searchProducts = async () => {
-
-    try {
-      const response = await fetch('https://hungnttg.github.io/shopgiay.json');
-      const data = await response.json();
-      if (data && data.products) {
-        const filteredProducts = data.products.filter((product) => product.product_additional_info.toLowerCase().indexOf(searchText.toLowerCase()) !== -1);
-        setProducts(filteredProducts);
-      } else {
-        console.error('Invalid data format or missing "products" property');
-      }
-    } catch (error) {
-      console.error(error);
-    }
-
+  const renderProductItem = ({ item }) => {
+    return (
+      <View style={styles.productContainer}>
+        <Image source={{ uri: item.product_image }} style={styles.productImage} />
+        <Text style={styles.productTitle}>{item.product_title}</Text>
+        <Text style={styles.productPrice}>Giá: {item.product_price}</Text>
+      </View>
+    );
   };
 
-  const renderItem = ({ item }) => (
-    <View style={styles.productFrame}>
-      <Image source={{ uri: item.search_image }} style={styles.productImage} />
-      <View style={{ flexDirection: 'column' }}>
-        <Text style={styles.productAdditionalInfo}>{item.product_additional_info}</Text>
-        <Text style={styles.price}>Price: {item.price}</Text>
-      </View>
-    </View>
+  const filteredProducts = products.filter((item) =>
+    item.product_title.toLowerCase().includes(searchText.toLowerCase())
   );
 
   return (
-    <View>
-      <View style={{ flexDirection: 'row' }}>
-        <TextInput
-          style={styles.textInput}
-          placeholder="Search"
-          value={searchText}
-          onChangeText={setSearchText}
-        />
-        <View style={styles.search}>
-          <TouchableOpacity onPress={searchProducts}>
-            <Image source={require('../image/search.png')} />
-          </TouchableOpacity>
-        </View>
-      </View>
-      {products.length < 1 && <Text style={{fontSize: 20, textAlign: 'center', }}>ko có sp nào</Text>}
+    <View style={styles.container}>
+      {/* Thanh tìm kiếm */}
+      <TextInput
+        style={styles.searchInput}
+        placeholder="Tìm kiếm sản phẩm..."
+        value={searchText}
+        onChangeText={(text) => setSearchText(text)}
+      />
+
       <FlatList
-        data={products}
-        renderItem={renderItem}
-        keyExtractor={(item) => item.styleid.toString()}
+        data={filteredProducts} // Sử dụng filteredProducts thay vì products
+        keyExtractor={(item) => item._id}
+        renderItem={renderProductItem}
       />
     </View>
   );
-};
+}
+
+export default Search;
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    padding: 16,
+    paddingTop: 15,
+    backgroundColor: "#DDD",
   },
-  textInput: {
-    height: 40,
+  searchInput: {
+    margin: 10,
+    padding: 10,
     borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 16,
-    paddingHorizontal: 8,
-    marginBottom: 16,
-    width: 320,
-    marginLeft: 16,
-    marginTop: 35
+    borderColor: "#999",
+    borderRadius: 10,
   },
-  productFrame: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 16,
-    marginLeft: 10
+  productContainer: {
+    width: "90%",
+    margin: 10,
+    marginLeft: 15,
+    padding: 10,
+    backgroundColor: "white",
+    elevation: 5,
+    shadowColor: "gray",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.5,
+    shadowRadius: 5,
   },
   productImage: {
-    width: 80,
-    height: 80,
-    marginRight: 16,
-    borderRadius: 4,
-    borderWidth: 1,
-    borderColor: 'gray'
+    width: "50%",
+    height: 100,
+    borderRadius: 10,
+    alignItems: "center",
   },
-  productName: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    marginBottom: 8,
+  productTitle: {
+    marginLeft: 15,
+    marginTop: 7,
+    fontSize: 17,
+    fontWeight: "bold",
   },
-  productAdditionalInfo: {
-    fontSize: 14,
-    color: 'gray',
+  productPrice: {
+    marginLeft: 15,
+    width: 140,
   },
-  price:{
-    fontSize: 14,
-    color: 'black',
-  },
-  search: {
-    height: 40,
-    width: 40,
-    marginLeft: 20,
-    marginTop: 42
-  }
+  //...
 });
-
-export default Search;
