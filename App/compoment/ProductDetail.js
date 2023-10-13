@@ -5,6 +5,7 @@ import {
     Image,
     Text,
     TouchableOpacity,
+    ActivityIndicator,
     Modal,
     ScrollView,
 } from 'react-native';
@@ -23,6 +24,8 @@ function ProductDetail({ route, navigation }) {
     const [selectedSize, setSelectedSize] = useState(null);
     const [isModalVisible, setModalVisible] = useState(false);
     const [isBuyNowModalVisible, setBuyNowModalVisible] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
+    const [colorOptions, setColorOptions] = useState([]);
     useEffect(() => {
         const apiUrl = `https://md26bipbip-496b6598561d.herokuapp.com/product/${productId}`;
 
@@ -30,10 +33,15 @@ function ProductDetail({ route, navigation }) {
             .then((response) => response.json())
             .then((data) => {
                 setProduct(data);
+                setIsLoading(false);
+                if (data && data.colors) {
+                    setColorOptions(data.colors.map((color) => color.color_name));
+                    setSelectedColor(data.colors[0].color_name);
+                }
             })
             .catch((error) => {
                 console.error('Lôi:', error);
-                return;
+                setIsLoading(false);
             });
     }, [productId]);
 
@@ -119,7 +127,7 @@ function ProductDetail({ route, navigation }) {
     };
 
     const sizeOptions = ['28', '29', '30', '31'];
-    const colorOptions = ['Đỏ', 'xanh', 'vàng'];
+    // const colorOptions = ['Đỏ', 'xanh', 'vàng'];
 
     const selectColor = (color) => {
         setSelectedColor(color);
@@ -199,97 +207,95 @@ function ProductDetail({ route, navigation }) {
 
     return (
         <View style={styles.container}>
-            {product && (
-                <Image source={{ uri: product.product_image }} style={styles.productImage} />
-            )}
-
-
-            {product && (
-                <Text style={styles.productAdditionalInfo}>{product.product_title}</Text>
-            )}
-
-            <View style={{ flexDirection: 'row' }}>
-                {/* <Text style={styles.productName}>{product.brands_filter_facet}</Text> */}
-                {product && (
-                    <Text style={styles.productPrice}>₫{product.product_price}</Text>
-                )}
-            </View>
-
-            {/* <View>
-                <Text style= {{marginLeft:20, marginTop:15}}>
-                    Chỗ này thêm mô tả của giày
-                </Text>
-            </View> */}
-
-
-            {/* chọn màu */}
-            <ScrollView
-                style={[
-                    styles.colorOptionsContainer,
-                    selectedColor === 'Đỏ' && { backgroundColor: 'red' },
-                    selectedColor === 'xanh' && { backgroundColor: 'blue' },
-                    selectedColor === 'vàng' && { backgroundColor: 'yellow' },
-                ]}
-                horizontal={true}
-                showsHorizontalScrollIndicator={false}>
-                {colorOptions.map((color, index) => (
+            {isLoading ? (
+                <ActivityIndicator size="large" color="#0000ff" />
+            ) : (
+                <>
+                    {product && (
+                        <Image source={{ uri: product.product_image }} style={styles.productImage} />
+                    )}
+                    {product && (
+                        <Text style={styles.productAdditionalInfo}>{product.product_title}</Text>
+                    )}
                     <TouchableOpacity
-                        key={index}
-                        style={[
-                            styles.optionButton,
-                            selectedColor === color && styles.selectedOption,
-                        ]}
-                        onPress={() => selectColor(color)}>
-                        <Text>{color}</Text>
+                        style={styles.favoriteButton}
+                        onPress={addToFavo}
+                    >
+                        <HeartIcon isLiked={isLiked} onPress={handlePress} />
                     </TouchableOpacity>
-                ))}
-            </ScrollView>
+                    <View style={styles.priceContainer}>
+                        {product && (
+                            <Text style={styles.productPrice}>₫{product.product_price}</Text>
+                        )}
+                    </View>
+                    {/* Add a product description */}
+                    {product && (
+                        <Text style={styles.productDescription}>{product.product_description}</Text>
+                    )}
+                    <ScrollView
+                        style={styles.colorOptionsContainer}
+                        horizontal={true}
+                        showsHorizontalScrollIndicator={false}
+                    >
+                        {colorOptions.map((color, index) => (
+                            <TouchableOpacity
+                                key={index}
+                                style={[
+                                    styles.optionButton,
+                                    selectedColor === color && styles.selectedOption,
+                                ]}
+                                onPress={() => selectColor(color)}
+                            >
+                                <Text>{color}</Text>
+                            </TouchableOpacity>
+                        ))}
+                    </ScrollView>
 
-            {/* Chọn size */}
-            <ScrollView
-                style={styles.sizeOptionsContainer}
-                horizontal={true}
-                showsHorizontalScrollIndicator={false}>
-                {sizeOptions.map((size, index) => (
-                    <TouchableOpacity
-                        key={index}
-                        style={[
-                            styles.optionButton,
-                            selectedSize === size && styles.selectedOptionSize,
-                        ]}
-                        onPress={() => selectSize(size)}>
-                        <Text>{size}</Text>
-                    </TouchableOpacity>
-                ))}
-            </ScrollView>
+                    <ScrollView
+                        style={styles.sizeOptionsContainer}
+                        horizontal={true}
+                        showsHorizontalScrollIndicator={false}
+                    >
+                        {sizeOptions.map((size, index) => (
+                            <TouchableOpacity
+                                key={index}
+                                style={[
+                                    styles.optionButton,
+                                    selectedSize === size && styles.selectedOptionSize,
+                                ]}
+                                onPress={() => selectSize(size)}
+                            >
+                                <Text>{size}</Text>
+                            </TouchableOpacity>
+                        ))}
+                    </ScrollView>
 
-            {/* tăng giảm số lượng */}
-            <View style={styles.quantityContainer}>
-                <TouchableOpacity style={styles.quantityButton} onPress={decreaseQuantity}>
-                    <Text style={styles.quantityButtonText}>-</Text>
-                </TouchableOpacity>
-                <Text style={styles.quantityText}>{quantity}</Text>
-                <TouchableOpacity style={styles.quantityButton} onPress={increaseQuantity}>
-                    <Text style={styles.quantityButtonText}>+</Text>
-                </TouchableOpacity>
 
-                {/* Trái tim yêu thích */}
-                <TouchableOpacity style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }} onPress={addToFavo}>
-                    <HeartIcon isLiked={isLiked} onPress={handlePress} />
-                </TouchableOpacity>
+                    <View style={styles.quantityContainer}>
+                        <TouchableOpacity style={styles.quantityButton} onPress={decreaseQuantity}>
+                            <Text style={styles.quantityButtonText}>-</Text>
+                        </TouchableOpacity>
+                        <Text style={styles.quantityText}>{quantity}</Text>
+                        <TouchableOpacity style={styles.quantityButton} onPress={increaseQuantity}>
+                            <Text style={styles.quantityButtonText}>+</Text>
+                        </TouchableOpacity>
 
-            </View>
+                    </View>
+                    <View style={styles.buttonContainer}>
+                        <TouchableOpacity style={styles.addToCartButton} onPress={addToCart}>
+                            <Text style={styles.addToCartButtonText}>Thêm vào giỏ hàng</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity style={styles.addToCartButtonBuy} onPress={buyNow}>
+                            <Text style={styles.addToCartButtonText1}>Mua Ngay</Text>
+                        </TouchableOpacity>
 
-            <View style={{ flexDirection: 'row' }}>
-                <TouchableOpacity style={styles.addToCartButton} onPress={addToCart}>
-                    <Text style={styles.addToCartButtonText}>Thêm vào giỏ hàng</Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.addToCartButtonBuy} onPress={buyNow}>
-                    <Text style={styles.addToCartButtonText}>Mua Ngay</Text>
-                </TouchableOpacity>
-            </View>
+                    </View>
+
+                </>
+            )}
         </View>
     );
+//hiển
 }
 
 export default ProductDetail;
@@ -336,29 +342,46 @@ const styles = StyleSheet.create({
         marginLeft: 16
     },
     addToCartButton: {
+        flex: 1,
         backgroundColor: '#666',
         paddingHorizontal: 20,
         paddingVertical: 18,
         borderRadius: 20,
         marginTop: 26,
         marginHorizontal: 16,
-        width: '50%',
+        width: '40%',
         marginLeft:15
     },
+    buttonContainer: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+    },
     addToCartButtonBuy: {
+        flex: 1,
         backgroundColor: '#666',
         paddingHorizontal: 20,
         paddingVertical: 18,
         borderRadius: 20,
         marginTop: 26,
         marginHorizontal: 16,
-        width: '29%',
+        height:'75%',
+        width: '40%',
     },
     addToCartButtonText: {
         color: 'white',
         fontSize: 16,
         fontWeight: 'bold',
         textAlign: 'center',
+        alignContent:'center'
+    },
+    addToCartButtonText1: {
+        color: 'white',
+        fontSize: 16,
+        marginTop: 10,
+        fontWeight: 'bold',
+        textAlign: 'center',
+        alignContent:'center'
     },
     modalContainer: {
         flex: 1,
@@ -384,7 +407,7 @@ const styles = StyleSheet.create({
         marginLeft: 20,
         marginTop: 15,
         borderRadius: 8,
-        width: 175
+        width: 200
     },
     sizeOptionsContainer: {
         flexDirection: 'row',
@@ -398,6 +421,10 @@ const styles = StyleSheet.create({
         paddingHorizontal: 16,
         borderRadius: 8,
         marginVertical: 4,
+    },
+    selectedOption: {
+        backgroundColor: 'grey',
+        color: 'black',
     },
     selectedOptionSize: {
         backgroundColor: '#666',
@@ -440,6 +467,7 @@ const styles = StyleSheet.create({
         fontSize: 30,
         fontWeight: 'bold',
     },
+
 
 
 });
