@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { StyleSheet, View, ScrollView, Text, Image, TextInput, FlatList } from "react-native";
+import { StyleSheet, View, ScrollView, Text, Image, TextInput, FlatList , TouchableOpacity, } from "react-native";
 
-function Search() {
+function Search({ navigation }) {
   const [products, setProducts] = useState([]);
   const [searchText, setSearchText] = useState(""); // State để lưu giá trị của thanh tìm kiếm
 
@@ -18,13 +18,19 @@ function Search() {
 
   const renderProductItem = ({ item }) => {
     return (
-      <View style={styles.productContainer}>
-        <Image source={{ uri: item.product_image }} style={styles.productImage} />
-        <View style={styles.productDetails}>
-        <Text style={styles.productTitle}>{item.product_title}</Text>
-        <Text style={styles.productPrice}>Giá: {item.product_price}</Text>
-        </View>
-      </View>
+     
+        <TouchableOpacity style={styles.productContainer}
+          key={item._id}
+          onPress={() => {
+            navigation.navigate("ProductDetail", { productId: item._id });
+          }}>
+          <Image source={{ uri: item.product_image }} style={styles.productImage} />
+          <View style={styles.productDetails}>
+            <Text style={styles.productTitle}>{item.product_title}</Text>
+            <Text style={styles.productPrice}>Giá: {item.product_price}</Text>
+          </View>
+        </TouchableOpacity>
+      
     );
   };
 
