@@ -641,13 +641,13 @@ app.get('/products/search', async (req, res) => {
 app.post('/colors/add/:productId', async (req, res) => {
     try {
         const { productId } = req.params;
-        const { color_name } = req.body;
+        const { color_name, color_image } = req.body;
 
         // Tạo màu sắc mới
-        const color = await Color.create({ color_name, product: productId });
+        const color = await Color.create({ color_name, product: productId, color_image });
 
-        // Cập nhật mảng colors của sản phẩm
-        await Product.findByIdAndUpdate(productId, { $push: { colors: color._id } });
+        // // Cập nhật mảng colors của sản phẩm
+        // await Product.findByIdAndUpdate(productId, { $push: { colors: color._id } });
 
         res.status(201).json(color);
     } catch (error) {
@@ -659,10 +659,10 @@ app.post('/colors/add/:productId', async (req, res) => {
 app.put('/colors/edit/:colorId', async (req, res) => {
     try {
         const { colorId } = req.params;
-        const { color_name } = req.body;
+        const { color_name, color_image } = req.body;
 
         // Tìm và cập nhật thông tin màu sắc
-        const color = await Color.findByIdAndUpdate(colorId, { color_name }, { new: true });
+        const color = await Color.findByIdAndUpdate(colorId, { color_name , color_image}, { new: true });
 
         res.json(color);
     } catch (error) {
