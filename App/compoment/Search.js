@@ -1,13 +1,16 @@
 import React, { useEffect, useState } from "react";
 import { StyleSheet, View, ScrollView, Text, Image, TextInput, FlatList, TouchableOpacity } from "react-native";
-
+import { getMonney } from "../util/money";
 function Search({ navigation }) {
   const [products, setProducts] = useState([]);
   const [searchText, setSearchText] = useState("");
   const [isSearching, setIsSearching] = useState(false);
   const [filteredProducts, setFilteredProducts] = useState([]);
+  const [topSellingProducts, setTopSellingProducts] = useState([]);
+  const [topSellingInProducts, setTopSellingInProducts] = useState([]);
 
-  useEffect(() => {
+ 
+ useEffect(() => {
     fetch("https://md26bipbip-496b6598561d.herokuapp.com/")
       .then((response) => response.json())
       .then((data) => {
@@ -17,6 +20,31 @@ function Search({ navigation }) {
         console.error(error);
       });
   }, []);
+ useEffect(() => {
+    fetch("https://md26bipbip-496b6598561d.herokuapp.com/top-selling")
+      .then((response) => response.json())
+      .then((data) => {
+        setTopSellingProducts(data);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+      //console.log("Số phần tử trong topSelling", topSellingProducts.length);
+  }, []);
+  useEffect(() => {
+    const filteredTopSellingProducts = topSellingProducts.map(item => {
+      const matchingProduct = products.find(product => product._id === item.productId);
+      return matchingProduct || null;
+    });
+    const filteredTopSellingInProducts = filteredTopSellingProducts.filter(product => product !== null);
+    const limitedTopSellingInProducts = filteredTopSellingInProducts.slice(0, 4);
+  
+    setTopSellingInProducts(limitedTopSellingInProducts);
+  
+    //console.log("Số phần tử trong topSellingInProducts:", limitedTopSellingInProducts.length);
+  }, [topSellingProducts, products]);
+
+ 
 
   const renderProductItem = ({ item }) => {
     return (
@@ -35,6 +63,31 @@ function Search({ navigation }) {
     );
   };
 
+  const renderTopSellingProductItem = ({ item }) => {
+    return (
+      <TouchableOpacity
+        onPress={() => {
+          navigation.navigate("ProductDetail", { productId: item._id });
+        }}
+        style={styles.saleProductContainer}
+      >
+        <View style={styles.saleImageContainer}>
+          <Image
+            source={{ uri: item.product_image }}
+            style={styles.saleProductImage}
+          />
+          <View style={styles.saleProductInfo}>
+            <Text numberOfLines={1} style={styles.saleProductTitle}>
+              {item.product_title}
+            </Text>
+            <Text style={styles.saleProductPrice}>
+              Giá: {getMonney(item.product_price)}
+            </Text>
+          </View>
+        </View>
+      </TouchableOpacity>
+    );
+  };
   const handleSearch = () => {
     setFilteredProducts(products.filter((item) =>
       item.product_title.toLowerCase().includes(searchText.toLowerCase()))
@@ -61,7 +114,20 @@ function Search({ navigation }) {
             </View>
           </TouchableOpacity>
         </View>
+        <View>
         <FlatList
+          data={topSellingInProducts}
+          keyExtractor={(item) => item._id}
+          renderItem={renderTopSellingProductItem}
+          numColumns={2} // Hiển thị thành 2 cột
+        />
+        <TouchableOpacity 
+              style={styles.showAll}
+            onPress={()=>{
+              navigation.navigate("AllShoes");}}
+          ><Text>xem tất cả</Text></TouchableOpacity>
+        </View>
+        <FlatList  style={styles.prodList}
           data={isSearching ? filteredProducts : products}
           keyExtractor={(item) => item._id}
           renderItem={renderProductItem}
@@ -82,12 +148,13 @@ const styles = StyleSheet.create({
   searchContainer: {
     flexDirection: "row",
   },
-  
+
   mainContainer: {
     height: "100%",
     backgroundColor: "#dddddd",
+    
   },
- 
+
   searchInput: {
     margin: 10,
     padding: 10,
@@ -97,16 +164,18 @@ const styles = StyleSheet.create({
     width: "80%"
   },
   searchButton: {
-    marginTop:14,
+    marginTop: 14,
     alignItems: "center",
     justifyContent: "center",
     width: 40,
     height: 40,
     backgroundColor: "blue",
     borderRadius: 5,
-    
+
   },
- 
+  prodList:{
+    marginBottom: 400
+  },
   searchButtonText: {
     color: "white",
   },
@@ -124,6 +193,12 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     borderRadius: 10,
+    marginHorizontal: 200
+  },
+  showAll:{
+    alignSelf: 'flex-end',
+    marginTop: 0,
+    width: 90,
   },
   productImage: {
     width: 100,
@@ -141,5 +216,42 @@ const styles = StyleSheet.create({
   productPrice: {
     width: 140,
   },
-  //...
+  saleProductContainer: {
+    height: "95%",
+    marginTop: 0,
+    flex: 1,
+    alignItems: "center",
+    margin: 5,
+    borderRadius: 10,
+    backgroundColor: "white",
+    shadowColor: "gray",
+   
+   
+    
+  },
+  saleImageContainer: {
+    margin: 0,
+    width: "100%",
+    height: 200,
+    paddingBottom: 3,
+    borderRadius: 10,
+  },
+  saleProductImage: {
+    width: "100%",
+    height: "70%",
+    borderRadius: 10,
+  },
+  saleProductInfo: {
+    marginTop: 3,
+  },
+  saleProductTitle: {
+    marginLeft: 15,
+    marginTop: 3,
+    fontSize: 17,
+    fontWeight: "bold",
+  },
+  saleProductPrice: {
+    marginLeft: 15,
+    width: 140,
+  },
 });
