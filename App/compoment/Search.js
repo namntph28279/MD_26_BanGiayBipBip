@@ -9,8 +9,8 @@ function Search({ navigation }) {
   const [topSellingProducts, setTopSellingProducts] = useState([]);
   const [topSellingInProducts, setTopSellingInProducts] = useState([]);
 
- 
- useEffect(() => {
+
+  useEffect(() => {
     fetch("https://md26bipbip-496b6598561d.herokuapp.com/")
       .then((response) => response.json())
       .then((data) => {
@@ -20,7 +20,7 @@ function Search({ navigation }) {
         console.error(error);
       });
   }, []);
- useEffect(() => {
+  useEffect(() => {
     fetch("https://md26bipbip-496b6598561d.herokuapp.com/top-selling")
       .then((response) => response.json())
       .then((data) => {
@@ -29,7 +29,7 @@ function Search({ navigation }) {
       .catch((error) => {
         console.error(error);
       });
-      //console.log("Số phần tử trong topSelling", topSellingProducts.length);
+    //console.log("Số phần tử trong topSelling", topSellingProducts.length);
   }, []);
   useEffect(() => {
     const filteredTopSellingProducts = topSellingProducts.map(item => {
@@ -38,13 +38,13 @@ function Search({ navigation }) {
     });
     const filteredTopSellingInProducts = filteredTopSellingProducts.filter(product => product !== null);
     const limitedTopSellingInProducts = filteredTopSellingInProducts.slice(0, 4);
-  
+
     setTopSellingInProducts(limitedTopSellingInProducts);
-  
+
     //console.log("Số phần tử trong topSellingInProducts:", limitedTopSellingInProducts.length);
   }, [topSellingProducts, products]);
 
- 
+
 
   const renderProductItem = ({ item }) => {
     return (
@@ -109,25 +109,33 @@ function Search({ navigation }) {
             style={styles.searchButton}
             onPress={handleSearch}
           >
-            <View style={styles.searchButtonSquare}>
-              <Text style={styles.searchButtonText}>Tìm</Text>
+            <View >
+              {/* <Text style={styles.searchButtonText}>Tìm</Text> */}
+              <Image
+                source={require("../image/search.png")}
+                // style={styles.imageBackground}
+              />
             </View>
           </TouchableOpacity>
         </View>
+
+        <Text style={{fontSize:20, fontWeight:500, marginLeft: 20, marginTop:10}}>Sản phẩm bán chạy</Text>
         <View>
-        <FlatList
-          data={topSellingInProducts}
-          keyExtractor={(item) => item._id}
-          renderItem={renderTopSellingProductItem}
-          numColumns={2} // Hiển thị thành 2 cột
-        />
-        <TouchableOpacity 
-              style={styles.showAll}
-            onPress={()=>{
-              navigation.navigate("AllShoes");}}
-          ><Text>xem tất cả</Text></TouchableOpacity>
+          <FlatList
+          style={styles.list}
+            data={topSellingInProducts}
+            keyExtractor={(item) => item._id}
+            renderItem={renderTopSellingProductItem}
+            numColumns={2} // Hiển thị thành 2 cột
+          />
+          <TouchableOpacity
+            style={styles.showAll}
+            onPress={() => {
+              navigation.navigate("AllShoes");
+            }}
+          ><Text style={{fontSize:18, fontWeight:500}}>Xem tất cả</Text></TouchableOpacity>
         </View>
-        <FlatList  style={styles.prodList}
+        <FlatList style={styles.prodList}
           data={isSearching ? filteredProducts : products}
           keyExtractor={(item) => item._id}
           renderItem={renderProductItem}
@@ -147,12 +155,13 @@ const styles = StyleSheet.create({
   },
   searchContainer: {
     flexDirection: "row",
+    paddingHorizontal:16
   },
 
   mainContainer: {
     height: "100%",
     backgroundColor: "#dddddd",
-    
+
   },
 
   searchInput: {
@@ -169,12 +178,10 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     width: 40,
     height: 40,
-    backgroundColor: "blue",
-    borderRadius: 5,
-
   },
-  prodList:{
-    marginBottom: 400
+  prodList: {
+    marginBottom: 400,
+    height: 500
   },
   searchButtonText: {
     color: "white",
@@ -195,10 +202,10 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     marginHorizontal: 200
   },
-  showAll:{
+  showAll: {
     alignSelf: 'flex-end',
-    marginTop: 0,
-    width: 90,
+    marginVertical: 10,
+    marginRight:18,
   },
   productImage: {
     width: 100,
@@ -218,21 +225,17 @@ const styles = StyleSheet.create({
   },
   saleProductContainer: {
     height: "95%",
-    marginTop: 0,
+    marginTop: 10,
     flex: 1,
     alignItems: "center",
     margin: 5,
     borderRadius: 10,
     backgroundColor: "white",
     shadowColor: "gray",
-   
-   
-    
   },
   saleImageContainer: {
-    margin: 0,
     width: "100%",
-    height: 200,
+    height: 160,
     paddingBottom: 3,
     borderRadius: 10,
   },
@@ -254,4 +257,7 @@ const styles = StyleSheet.create({
     marginLeft: 15,
     width: 140,
   },
+  list:{
+   marginHorizontal:16
+  }
 });
