@@ -29,7 +29,7 @@ function Search({ navigation }) {
         <Image source={{ uri: item.product_image }} style={styles.productImage} />
         <View style={styles.productDetails}>
           <Text style={styles.productTitle}>{item.product_title}</Text>
-          <Text style={styles.productPrice}>Giá: {item.product_price}</Text>
+          <Text style={styles.productPrice}>Giá: {item.product_price} đ</Text>
         </View>
       </TouchableOpacity>
     );
