@@ -7,6 +7,7 @@ import {
   Image,
   TouchableOpacity,
   FlatList,
+  ActivityIndicator,
 } from "react-native";
 import {
   FontAwesome,
@@ -20,7 +21,8 @@ import { getMonney } from "../util/money";
 
 function Home({ navigation }) {
   const [products, setProducts] = useState([]);
-//   const [listBackground, setListBackground] = useState([]);
+  const [listBackground, setListBackground] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   const [valueSortBy, setValueSortBy] = useState(0);
   const [valueFilter, setValueFilter] = useState(null);
@@ -37,9 +39,12 @@ function Home({ navigation }) {
       .then((response) => response.json())
       .then((data) => {
         setProducts(data);
+        setIsLoading(false);
+        setListBackground(data);
       })
       .catch((error) => {
         console.error(error);
+        setIsLoading(false);
       });
 
     const interval = setInterval(() => {
@@ -50,6 +55,7 @@ function Home({ navigation }) {
 
     return () => clearInterval(interval);
   }, []);
+
 
   //array for dropdown
   const sortBy = [
@@ -239,32 +245,40 @@ function Home({ navigation }) {
     );
   };
 
+  //swiper layout
+  const setSwiper = () => {
+    const arrLength = listBackground.length;
+    const arrSwiper = listBackground.slice(arrLength-3,arrLength);
+    if (isLoading) {
+      return (
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color="blue" />
+        </View>
+      );
+    }
+    return (
+      <Swiper
+        ref={swiperRef}
+        autoplay={false} // Tắt chế độ autoplay của Swiper
+        showsPagination={true}
+      >
+        {arrSwiper.map((item) => (
+          <View key={item._id}>
+            <Image
+              source={{ uri: item.product_image }}
+              style={styles.imageBackground}
+            />
+          </View>
+        ))}
+      </Swiper>
+    );
+  };
+
   return (
     <View style={styles.container}>
       <ScrollView>
         <View style={{ alignItems: "center" }}>
-          <View style={styles.slide}>
-            <Swiper
-              ref={swiperRef}
-              autoplay={false} // Tắt chế độ autoplay của Swiper
-              showsPagination={true}
-            >
-              <Image
-                source={require("../image/logo.png")}
-                style={styles.imageBackground}
-              />
-
-              <Image
-                source={require("../image/logo1.png")}
-                style={styles.imageBackground}
-              />
-
-              <Image
-                source={require("../image/logo2.png")}
-                style={styles.imageBackground}
-              />
-            </Swiper>
-          </View>
+          <View style={styles.slide}>{setSwiper()}</View>
         </View>
 
         <View style={styles.option}>
@@ -467,5 +481,11 @@ const styles = StyleSheet.create({
   textItem: {
     flex: 1,
     fontSize: 16,
+  },
+
+  loadingContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
   },
 });
