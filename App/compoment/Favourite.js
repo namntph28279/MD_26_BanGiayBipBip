@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react'
 import { View, StyleSheet, Text, ScrollView, Image, TouchableHighlight, TouchableOpacity, Modal } from "react-native";
 import firebase from '../config/FirebaseConfig';
 import { getDatabase, off, onValue, remove, ref, push } from 'firebase/database';
-
+import { getMonney } from "../util/money";
 export default function Favourite({ navigation }) {
   const [favProducts, setFavProducts] = useState([]);
   const [showDialog, setshowDialog] = useState(false);
@@ -52,7 +52,7 @@ export default function Favourite({ navigation }) {
 
     for (let i = 0; i < n - 1; i++) {
       for (let j = 0; j < n - i - 1; j++) {
-        if (sortedProducts[j].price > sortedProducts[j + 1].price) {
+        if (sortedProducts[j].product_price > sortedProducts[j + 1].product_price) {
           // Hoán đổi vị trí
           const temp = sortedProducts[j];
           sortedProducts[j] = sortedProducts[j + 1];
@@ -69,7 +69,7 @@ export default function Favourite({ navigation }) {
 
     for (let i = 0; i < n - 1; i++) {
       for (let j = 0; j < n - i - 1; j++) {
-        if (sortedProducts[j].price < sortedProducts[j + 1].price) {
+        if (sortedProducts[j].product_price < sortedProducts[j + 1].product_price) {
           // Hoán đổi vị trí
           const temp = sortedProducts[j];
           sortedProducts[j] = sortedProducts[j + 1];
@@ -106,9 +106,9 @@ export default function Favourite({ navigation }) {
     const database = getDatabase(firebase);
 
     push(ref(database, `Cart/${userId}`), {
-      search_image: product.search_image,
-      price: product.price,
-      brands_filter_facet: product.brands_filter_facet,
+      search_image: product.product_image,
+      price: product.product_price,
+      brands_filter_facet: product.product_category,
       quantity: product.quantity
     })
       .then((newRef) => {
@@ -347,36 +347,32 @@ export default function Favourite({ navigation }) {
 
           <ScrollView style={styles.frame}>
             {favProducts.map((product) => (
-              <View key={product.id} style={styles.productContainer}>
+              <TouchableOpacity key={product._id}
+                onPress={() => {
+                  navigation.navigate("ProductDetail", { productId: product._id });
+                }} style={styles.productContainer}>
                 <View style={styles.productBox}>
-                  <Image source={{ uri: product.search_image }} style={styles.productImage} />
+                  <Image source={{ uri: product.product_image }} style={styles.productImage} />
                   <View style={styles.productInfo}>
-                    <Text style={styles.productName}>{product.brands_filter_facet}</Text>
-                    <Text style={styles.productPrice}>Giá: {product.price} VNĐ</Text>
-                    <View style={styles.addButton}>
-                      <Text style={styles.addButtonLabel} onPress={() => addToCart(product)}>Thêm vào giỏ</Text>
-                      <Image style={styles.addButtonIcon} source={require('../image/addcar.png')} />
-
-                    </View>
+                    <Text style={styles.productName}>{product.product_title}</Text>
+                    <Text style={styles.productPrice}>{getMonney(product.product_price)}</Text>
                   </View>
 
                   <TouchableHighlight
                     activeOpacity={0.6}
-                    underlayColor="white"
+                    underlayColor="while"
                     onPress={() => {
                       setshowDialogtc(true),
                         setid(product.id),
-                        setImg(product.search_image),
-                        setName(product.brands_filter_facet),
-                        setpice(product.price)
+                        setImg(product.product_image),
+                        setName(product.product_title),
+                        setpice(product.product_price)
                     }}
                   >
                     <Image source={require('../image/More.png')} />
                   </TouchableHighlight>
-
-
                 </View>
-              </View>
+              </TouchableOpacity>
             ))}
           </ScrollView>
         </View>)}
@@ -505,9 +501,10 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   productPrice: {
-    fontWeight: 'bold',
+    // fontWeight: 'bold',
     marginTop: 3,
     marginBottom: 3,
+    color: 'red',
   },
   addButton: {
     flexDirection: 'row',
