@@ -92,7 +92,7 @@ export default function Favourite({ navigation }) {
 
     remove(favRef)
       .then(() => {
-        console.log('Đã xóa sản phẩm thành công');
+        console.log('Đã xóa sản phẩm thành công',productId);
         setshowDialogtc(false)
       })
       .catch((error) => {

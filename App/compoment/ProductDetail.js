@@ -27,6 +27,7 @@ function ProductDetail({ route, navigation }) {
     const [isBuyNowModalVisible, setBuyNowModalVisible] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
     const [colorOptions, setColorOptions] = useState([]);
+    const [cartItemId1, setCartItemId] = useState(null);
     useEffect(() => {
         const apiUrl = `https://md26bipbip-496b6598561d.herokuapp.com/product/${productId}`;
 
@@ -87,12 +88,18 @@ function ProductDetail({ route, navigation }) {
         checkIfProductIsLiked();
     }, []);
 
-    const handlePress = () => {
+    const toggleFavoStatus = () => {
         if (isLiked) {
+            // Sản phẩm đã tồn tại trong danh sách yêu thích, xóa nó ra khỏi danh sách
             removeProductFromFavo();
         } else {
+            // Sản phẩm chưa tồn tại trong danh sách yêu thích, thêm nó vào danh sách
             addToFavo();
         }
+    };
+
+    const handlePress = () => {
+        toggleFavoStatus();
     };
     //
 
@@ -172,6 +179,7 @@ function ProductDetail({ route, navigation }) {
           push(ref(database, `Favourite/${userId}`), productWithQuantity)
             .then((newRef) => {
               const cartItemId = newRef.key;
+                setCartItemId(cartItemId);
               console.log('Người dùng với id:', userId);
               console.log('Đã thêm sản phẩm vào yêu thích:', productWithQuantity);
               console.log('ID của sản phẩm trong yêu thích:', cartItemId);
@@ -207,9 +215,32 @@ function ProductDetail({ route, navigation }) {
     navigation.navigate('Login');
   }
 };
+    const removeProductFromFavo = () => {
+        // Xóa sản phẩm khỏi danh sách yêu thích
+        const auth = getAuth(firebase);
+        const userId = auth.currentUser ? auth.currentUser.uid : null;
+        if (userId) {
+            const database = getDatabase(firebase);
+            const favoRef = ref(database, `Favourite/${userId}/${cartItemId1}`);
 
-      
-      
+            // Xóa sản phẩm
+            remove(favoRef)
+                .then(() => {
+                    console.log('Sản phẩm đã bị xóa khỏi danh sách yêu thích',product._id);
+                    setIsLiked(false); // Cập nhật trạng thái isLiked
+                })
+                .catch((error) => {
+                    console.error('Lỗi xóa sản phẩm khỏi danh sách yêu thích:', error);
+                });
+        } else {
+            console.log('Người dùng chưa đăng nhập');
+            alert('Chưa đăng nhập, vui lòng đăng nhập');
+            navigation.navigate('Login');
+        }
+    };
+
+
+
                 const toggleBuyNowModal = () => {
                     setBuyNowModalVisible(!isBuyNowModalVisible);
                 };
@@ -231,7 +262,7 @@ function ProductDetail({ route, navigation }) {
                                 )}
                                 <TouchableOpacity
                                     style={styles.favoriteButton}
-                                    onPress={addToFavo}
+                                    onPress={handlePress}
                                 >
                                     <HeartIcon isLiked={isLiked} onPress={handlePress} />
                                 </TouchableOpacity>
