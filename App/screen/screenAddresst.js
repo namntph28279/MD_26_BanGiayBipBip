@@ -5,7 +5,6 @@ import { TextInput } from 'react-native-paper';
 export default function ScreenAddresst() {
     const resdt = /^(0|84)(3[2-9]|5[2689]|7[06-9]|8[1-9]|9[0-9])[0-9]{7}$/;
 
-
     const [name, setName] = useState('');
     const [phone, setPhone] = useState('');
     const [tinh, setTinh] = useState('');
