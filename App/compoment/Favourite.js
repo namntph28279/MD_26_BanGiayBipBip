@@ -15,13 +15,12 @@ export default function Favourite({ navigation }) {
   const [pice, setpice] = useState();
   const [img, setImg] = useState();
   const [check, setCheck] = useState([]);
-  const [products, setProducts] = useState([]);
 
   useEffect(() => {
     fetch("https://md26bipbip-496b6598561d.herokuapp.com/favourite")
       .then((response) => response.json())
       .then((data) => {
-        setProducts(data);
+        setFavProducts(data);
       })
       .catch((error) => {
         console.error(error);
@@ -103,7 +102,7 @@ export default function Favourite({ navigation }) {
 
     remove(favRef)
       .then(() => {
-        console.log('Đã xóa sản phẩm thành công',productId);
+        console.log('Đã xóa sản phẩm thành công');
         setshowDialogtc(false)
       })
       .catch((error) => {
