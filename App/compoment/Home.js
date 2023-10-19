@@ -233,7 +233,8 @@ function Home({ navigation }) {
             // onPress={} add to favorites
           }
         >
-          <MaterialIcons name={"favorite-outline"} size={30} color="black" />
+        {/* HÌnh trái tim */}
+          {/* <MaterialIcons name={"favorite-outline"} size={30} color="black" /> */}
         </TouchableOpacity>
         {/* <TouchableOpacity
                     style={{position: "absolute", right: 10, bottom: 7}}

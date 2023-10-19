@@ -14,8 +14,19 @@ export default function Favourite({ navigation }) {
   const [name, setName] = useState();
   const [pice, setpice] = useState();
   const [img, setImg] = useState();
+  const [check, setCheck] = useState([]);
+  const [products, setProducts] = useState([]);
 
-  const [check, setCheck] = useState([])
+  useEffect(() => {
+    fetch("https://md26bipbip-496b6598561d.herokuapp.com/favourite")
+      .then((response) => response.json())
+      .then((data) => {
+        setProducts(data);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  }, []);
 
   useEffect(() => {
     upData();
@@ -179,8 +190,6 @@ export default function Favourite({ navigation }) {
             <Text style={styles.Conten}>
               Nhấp vào biểu tượng yêu thích để lưu mặt hàng
             </Text>
-
-
 
             <TouchableOpacity
               activeOpacity={0.6}
