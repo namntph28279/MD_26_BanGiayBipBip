@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
-import { StyleSheet, View, ScrollView, Text, Image, TextInput, FlatList, TouchableOpacity } from "react-native";
+import { StyleSheet, View, ScrollView, Text, Image, TextInput, FlatList, TouchableOpacity,LogBox } from "react-native";
 import { getMonney } from "../util/money";
 import axios from 'axios';
 import _ from 'lodash';
+
 
 function Search({ navigation }) {
   const [products, setProducts] = useState([]);
@@ -11,6 +12,7 @@ function Search({ navigation }) {
   const [filteredProducts, setFilteredProducts] = useState([]);
   const [topSellingProducts, setTopSellingProducts] = useState([]);
   const [topSellingInProducts, setTopSellingInProducts] = useState([]);
+  LogBox.ignoreLogs(['VirtualizedLists should never be nested inside plain ScrollViews']);
 
 
   useEffect(() => {
@@ -95,41 +97,47 @@ function Search({ navigation }) {
       </TouchableOpacity>
     );
   };
-  const handleSearch = () => {
-    if (!searchText) {
-      setIsSearching(false);
-      setFilteredProducts([]); // Clear the filtered products
-    } else {
-      setFilteredProducts(
-        products.filter((item) =>
-          item.product_title.toLowerCase().includes(searchText.toLowerCase())
-        )
-      );
-      setIsSearching(true);
+  // const handleSearch = () => {
+  //   if (!searchText) {
+  //     setIsSearching(false);
+  //     setFilteredProducts([]); // Clear the filtered products
+  //   } else {
+  //     setFilteredProducts(
+  //       products.filter((item) =>
+  //         item.product_title.toLowerCase().includes(searchText.toLowerCase())
+  //       )
+  //     );
+  //     setIsSearching(true);
 
-    }
-
-  };
-  // const handleSearch = async () => {
-  //   try {
-  //     if (!searchText) {
-  //       setIsSearching(false);
-  //       setFilteredProducts([]); // Clear the filtered products
-  //     } else {
-  //       const response = await axios.post('https://md26bipbip-496b6598561d.herokuapp.com/products/search', {
-  //         title: searchText,
-  //       });
-
-  //       // Assuming the response data is an array of products
-  //       const products = response.data;
-
-  //       setFilteredProducts(products);
-  //       setIsSearching(true);
-  //     }
-  //   } catch (error) {
-  //     console.error(error);
   //   }
+
   // };
+  const handleSearch = async () => {
+    try {
+      if (!searchText) {
+        setIsSearching(false);
+        setFilteredProducts([]); // Clear the filtered products
+      } else {
+        const requestData = {
+          title: searchText,
+        };
+  
+        const response = await axios.post('https://md26bipbip-496b6598561d.herokuapp.com/products/search', requestData, {
+          headers: {
+            'Content-Type': 'application/json', // Đảm bảo rằng dữ liệu được gửi dưới dạng JSON
+          }
+        });
+  
+        // Assuming the response data is an array of products
+        const products = response.data;
+  
+        setFilteredProducts(products);
+        setIsSearching(true);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
   return (
     <View style={styles.mainContainer}>
       <View style={styles.container}>
