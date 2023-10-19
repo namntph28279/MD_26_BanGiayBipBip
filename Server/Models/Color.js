@@ -9,6 +9,10 @@ const ColorSchema = new mongoose.Schema({
   color_name: {
     type: String,
     required: true
+  },
+  color_image: {
+    type: String,
+    required: true
   }
 });
 

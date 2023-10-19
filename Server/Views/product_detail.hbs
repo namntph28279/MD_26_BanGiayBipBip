@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Chi tiết sản phẩm</title>
+    <!-- Tệp CSS Bootstrap -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+    <style>
+        .product-image {
+            max-width: 100%;
+        }
+
+        .color-list {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        .color-list li {
+            display: inline-block;
+            margin-right: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6">
+                <!-- Hiển thị hình ảnh sản phẩm -->
+                <img src="{{productWithDetails.product_image}}" alt="{{productWithDetails.product_title}}"
+                    class="img-fluid product-image">
+            </div>
+            <div class="col-md-6">
+                <!-- Hiển thị thông tin chi tiết sản phẩm -->
+                <h2>Tên: {{productWithDetails.product_title}}</h2>
+                <p>Giá: {{productWithDetails.product_price}} đ</p>
+                <p>Số lượng: {{productWithDetails.product_quantity}}</p>
+                <!-- Nút thêm sản phẩm -->
+                <button class="btn btn-success mb-3" data-toggle="modal" data-target="#addProductModal">Thêm
+                    màu</button>
+
+                <h4>Bảng màu sắc:</h4>
+
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <td>Hình ảnh</td>
+                            <td>Tên màu</td>
+                            {{!-- <td>Thao tác</td> --}}
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        {{#each productWithDetails.colors}}
+                        <tr>
+                            <td><img src="{{this.color_image}}" alt="{{this.color_name}}"
+                                    style="width: 100px; height: 100px; "></td>
+                            <td>
+                                <h6>{{this.color_name}}</h6>
+                            </td>
+                            {{!-- <td>
+                                <a href="#" class="btn btn-primary btn-sm" data-toggle="modal"
+                                    data-target="#edit{{this._id}}" data-product-title="Tiêu đề sản phẩm"
+                                    data-product-price="Giá sản phẩm">Sửa</a>
+                                <a href="#" class="btn btn-danger btn-sm" data-toggle="modal"
+                                    data-target="#delete{{this._id}}" data-product-name="Tên sản phẩm">Xóa</a>
+                                <a href="/home/detail/{{this._id}}" class="btn btn-info btn-sm">Xem chi tiết</a>
+                            </td> --}}
+                        </tr>
+
+                        <!-- Modal cho việc xóa sản phẩm -->
+                        <div class="modal fade" id="delete{{this._id}}" tabindex="-1" role="dialog"
+                            aria-labelledby="deleteProductModalLabel">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="deleteProductModalLabel">Xóa sản phẩm</h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <p>Bạn có chắc chắn muốn xóa sản phẩm {{this.color_name}} ?</p>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary"
+                                            data-dismiss="modal">Huỷ</button>
+                                        <form action="/home/detail/colors/delete/{{this._id}}" method="POST"
+                                            class="mb-3" id="addProductForm">
+                                            <button type="submit" class="btn btn-danger">Xóa</button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Modal sửa sản phẩm -->
+                        <div class="modal fade" id="edit{{this._id}}" tabindex="-1" role="dialog"
+                            aria-labelledby="addProductModalLabel" aria-hidden="true">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="addProductModalLabel">Sửa màu sắc</h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <form action="/home/detail/colors/edit/{{this._id}}" method="POST" class="mb-3"
+                                            id="addProductForm">
+                                            <div class="form-group">
+                                                <label for="color_image">Ảnh</label>
+                                                <input type="text" class="form-control" id="color_image"
+                                                    name="color_image" value="{{color_image}}" required>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="color_name">Tên</label>
+                                                <input type="text" class="form-control" id="color_name"
+                                                    name="color_name" value="{{color_name}}" required>
+                                            </div>
+                                            <button type="button" class="btn btn-secondary"
+                                                data-dismiss="modal">Huỷ</button>
+                                            <button type="submit" class="btn btn-primary">Sửa</button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {{/each}}
+                    </tbody>
+                </table>
+
+                <!-- Modal Thêm sản phẩm -->
+                <div class="modal fade" id="addProductModal" tabindex="-1" role="dialog"
+                    aria-labelledby="addProductModalLabel" aria-hidden="true">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="addProductModalLabel">Thêm màu</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <form action="/home/detail/color/add/{{productWithDetails._id}}" method="POST"
+                                    class="mb-3" id="addProductForm">
+                                    <div class="form-group">
+                                        <label for="color_image">Ảnh</label>
+                                        <input type="text" class="form-control" id="color_image" name="color_image"
+                                            required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="color_name">Tên</label>
+                                        <input type="text" class="form-control" id="color_name" name="color_name"
+                                            required>
+                                    </div>
+
+                                    <button type="submit" class="btn btn-primary">Thêm</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+    <!-- Tệp JavaScript Bootstrap -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+</body>
+
+</html>
