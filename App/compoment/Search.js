@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
-import { StyleSheet, View, ScrollView, Text, Image, TextInput, FlatList, TouchableOpacity } from "react-native";
+import { StyleSheet, View, ScrollView, Text, Image, TextInput, FlatList, TouchableOpacity,LogBox } from "react-native";
 import { getMonney } from "../util/money";
 import axios from 'axios';
 import _ from 'lodash';
+
 
 function Search({ navigation }) {
   const [products, setProducts] = useState([]);
@@ -11,6 +12,7 @@ function Search({ navigation }) {
   const [filteredProducts, setFilteredProducts] = useState([]);
   const [topSellingProducts, setTopSellingProducts] = useState([]);
   const [topSellingInProducts, setTopSellingInProducts] = useState([]);
+  LogBox.ignoreLogs(['VirtualizedLists should never be nested inside plain ScrollViews']);
 
 
   useEffect(() => {

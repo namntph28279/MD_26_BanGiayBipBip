@@ -23,7 +23,7 @@ export default function App() {
   const Stack = createNativeStackNavigator();
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName='ScreenAddresst'>
+      <Stack.Navigator initialRouteName='SplashScreen'>
         <Stack.Screen name='SplashScreen' component={SplashScreen} options={{ headerShown: false }} />
         <Stack.Screen name='SplashScreen2' component={SplapshScreen2} options={{ headerShown: false }} />
         <Stack.Screen name='AllShoes' component={AllShoes} options={{ title: 'Sản phẩm' }} />
