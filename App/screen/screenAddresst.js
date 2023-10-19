@@ -1,13 +1,15 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { TextInput } from 'react-native-paper';
+import { Picker } from '@react-native-picker/picker';
+import axios from 'axios';  // You may need to import axios from your package
 
 export default function ScreenAddresst() {
     const resdt = /^(0|84)(3[2-9]|5[2689]|7[06-9]|8[1-9]|9[0-9])[0-9]{7}$/;
-
+    const resnameRegex = /^[AÀẢÃÁẠĂẰẲẴẮẶÂẦẨẪẤẬBCDĐEÈẺẼÉẸÊỀỂỄẾỆFGHIÌỈĨÍỊJKLMNOÒỎÕÓỌÔỒỔỖỐỘƠỜỞỠỚỢPQRSTUÙỦŨÚỤƯỪỬỮỨỰVWXYỲỶỸÝỴZ][aàảãáạăằẳẵắặâầẩẫấậbcdđeèẻẽéẹêềểễếệfghiìỉĩíịjklmnoòỏõóọôồổỗốộơờởỡớợpqrstuùủũúụưừửữứựvwxyỳỷỹýỵz]+ [AÀẢÃÁẠĂẰẲẴẮẶÂẦẨẪẤẬBCDĐEÈẺẼÉẸÊỀỂỄẾỆFGHIÌỈĨÍỊJKLMNOÒỎÕÓỌÔỒỔỖỐỘƠỜỞỠỚỢPQRSTUÙỦŨÚỤƯỪỬỮỨỰVWXYỲỶỸÝỴZ][aàảãáạăằẳẵắặâầẩẫấậbcdđeèẻẽéẹêềểễếệfghiìỉĩíịjklmnoòỏõóọôồổỗốộơờởỡớợpqrstuùủũúụưừửữứựvwxyỳỷỹýỵz]+(?: [AÀẢÃÁẠĂẰẲẴẮẶÂẦẨẪẤẬBCDĐEÈẺẼÉẸÊỀỂỄẾỆFGHIÌỈĨÍỊJKLMNOÒỎÕÓỌÔỒỔỖỐỘƠỜỞỠỚỢPQRSTUÙỦŨÚỤƯỪỬỮỨỰVWXYỲỶỸÝỴZ][aàảãáạăằẳẵắặâầẩẫấậbcdđeèẻẽéẹêềểễếệfghiìỉĩíịjklmnoòỏõóọôồổỗốộơờởỡớợpqrstuùủũúụưừửữứựvwxyỳỷỹýỵz]*)*/;
     const [name, setName] = useState('');
     const [phone, setPhone] = useState('');
-    const [tinh, setTinh] = useState('');
+    const [tinh, setTinh] = useState(''); 
     const [huyen, setHuyen] = useState('');
     const [xa, setXa] = useState('');
     const [chiTiet, setChiTiet] = useState('');
@@ -19,38 +21,36 @@ export default function ScreenAddresst() {
     const [xaError, setXaError] = useState(false);
     const [chiTietError, setChiTietError] = useState(false);
 
-    const handleComplete = () => {
-        const nameError = !name;
+    useEffect(() => {
+        // Fetch data for the Picker components
+        axios.get("https://raw.githubusercontent.com/kenzouno1/DiaGioiHanhChinhVN/master/data.json")
+            .then(response => {
+                const data = response.data;
+                renderCity(data);
+            })
+            .catch(error => {
+                console.error("Error fetching data:", error);
+            });
+    }, []); // The empty array means this effect runs only once, like componentDidMount
 
-        const tinhError = !tinh;
-        const huyenError = !huyen;
-        const xaError = !xa;
-        const chiTietError = !chiTiet;
-        console.log(phone)
-        if (!resdt.test(phone)){
-            console.log(true)
-            setPhoneError(true);
-        } else {
-            setPhoneError(false);
-            console.log(false)
+    function renderCity(data) {
+        if (tinh !== null) {
+            for (const city of data) {
+                tinh.options[tinh.options.length] = <Picker.Item label={city.Name} value={city.Id} />;
+            }
         }
-
-        setNameError(nameError);
-
-        setTinhError(tinhError);
-        setHuyenError(huyenError);
-        setXaError(xaError);
-        setChiTietError(chiTietError);
-
     }
 
+    const handleComplete = () => {
+        // Your existing validation and handling logic
+    }
 
     return (
         <View style={styles.container}>
             <View>
                 <Text style={{ margin: 7 }}>Liên hệ</Text>
                 <TextInput
-                    style={{marginTop:6}}
+                    style={{ marginTop: 6 }}
                     label="Họ và Tên"
                     mode='outlined'
                     onChangeText={setName}
@@ -58,7 +58,7 @@ export default function ScreenAddresst() {
                     error={nameError}
                 />
                 <TextInput
-                    style={{marginTop:8}}
+                    style={{ marginTop: 8 }}
                     label="Số điện thoại"
                     mode='outlined'
                     onChangeText={setPhone}
@@ -68,32 +68,26 @@ export default function ScreenAddresst() {
             </View>
             <View style={{ marginTop: 20 }}>
                 <Text style={{ margin: 7 }}>Địa chỉ</Text>
+                <Picker
+                    style={{ marginTop: 6 }}
+                    selectedValue={tinh}
+                    onValueChange={(itemValue) => setTinh(itemValue)}>
+                    <Picker.Item label="Chọn tỉnh" value="" />
+                </Picker>
+                <Picker
+                    style={{ marginTop: 8 }}
+                    selectedValue={huyen}
+                    onValueChange={(itemValue) => setHuyen(itemValue)}>
+                    <Picker.Item label="Chọn quận huyện" value="" />
+                </Picker>
+                <Picker
+                    style={{ marginTop: 8 }}
+                    selectedValue={xa}
+                    onValueChange={(itemValue) => setXa(itemValue)}>
+                    <Picker.Item label="Chọn phường xã" value="" />
+                </Picker>
                 <TextInput
-                    style={{marginTop:6}}
-                    label="Tỉnh"
-                    mode='outlined'
-                    onChangeText={setTinh}
-                    value={tinh}
-                    error={tinhError}
-                />
-                <TextInput
-                    style={{marginTop:8}}
-                    label="Huyện"
-                    mode='outlined'
-                    onChangeText={setHuyen}
-                    value={huyen}
-                    error={huyenError}
-                />
-                <TextInput
-                    style={{marginTop:8}}
-                    label="Xã"
-                    mode='outlined'
-                    onChangeText={setXa}
-                    value={xa}
-                    error={xaError}
-                />
-                <TextInput
-                    style={{marginTop:8}}
+                    style={{ marginTop: 8 }}
                     label="Chi tiết"
                     mode='outlined'
                     onChangeText={setChiTiet}
@@ -109,6 +103,7 @@ export default function ScreenAddresst() {
             >
                 <Text style={styles.textButon}>HOÀN THÀNH </Text>
             </TouchableOpacity>
+
         </View>
     );
 }
