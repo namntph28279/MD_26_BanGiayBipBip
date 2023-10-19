@@ -1,9 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState ,useEffect} from 'react';
 import { Button, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { TextInput } from 'react-native-paper';
+import axios from 'axios';
 
 export default function ScreenAddresst() {
-    const resdt = /^(0|84)(3[2-9]|5[2689]|7[06-9]|8[1-9]|9[0-9])[0-9]{7}$/;
+    const resdt =  /(84|0[3|5|7|8|9])+([0-9]{8})\b/g;
+    const resnameRegex = /^[AÀẢÃÁẠĂẰẲẴẮẶÂẦẨẪẤẬBCDĐEÈẺẼÉẸÊỀỂỄẾỆFGHIÌỈĨÍỊJKLMNOÒỎÕÓỌÔỒỔỖỐỘƠỜỞỠỚỢPQRSTUÙỦŨÚỤƯỪỬỮỨỰVWXYỲỶỸÝỴZ][aàảãáạăằẳẵắặâầẩẫấậbcdđeèẻẽéẹêềểễếệfghiìỉĩíịjklmnoòỏõóọôồổỗốộơờởỡớợpqrstuùủũúụưừửữứựvwxyỳỷỹýỵz]+ [AÀẢÃÁẠĂẰẲẴẮẶÂẦẨẪẤẬBCDĐEÈẺẼÉẸÊỀỂỄẾỆFGHIÌỈĨÍỊJKLMNOÒỎÕÓỌÔỒỔỖỐỘƠỜỞỠỚỢPQRSTUÙỦŨÚỤƯỪỬỮỨỰVWXYỲỶỸÝỴZ][aàảãáạăằẳẵắặâầẩẫấậbcdđeèẻẽéẹêềểễếệfghiìỉĩíịjklmnoòỏõóọôồổỗốộơờởỡớợpqrstuùủũúụưừửữứựvwxyỳỷỹýỵz]+(?: [AÀẢÃÁẠĂẰẲẴẮẶÂẦẨẪẤẬBCDĐEÈẺẼÉẸÊỀỂỄẾỆFGHIÌỈĨÍỊJKLMNOÒỎÕÓỌÔỒỔỖỐỘƠỜỞỠỚỢPQRSTUÙỦŨÚỤƯỪỬỮỨỰVWXYỲỶỸÝỴZ][aàảãáạăằẳẵắặâầẩẫấậbcdđeèẻẽéẹêềểễếệfghiìỉĩíịjklmnoòỏõóọôồổỗốộơờởỡớợpqrstuùủũúụưừửữứựvwxyỳỷỹýỵz]*)*/;
 
     const [name, setName] = useState('');
     const [phone, setPhone] = useState('');
@@ -17,30 +19,61 @@ export default function ScreenAddresst() {
     const [tinhError, setTinhError] = useState(false);
     const [huyenError, setHuyenError] = useState(false);
     const [xaError, setXaError] = useState(false);
-    const [chiTietError, setChiTietError] = useState(false);
+    const [address,setAdddress] = useState('');
+    // const [chiTietError, setChiTietError] = useState(false);
+
+    useEffect(() => {
+        const newAddress = `${xa} ${huyen} ${tinh}`;
+        setAdddress(newAddress);
+      }, [xa, huyen, tinh]);
 
     const handleComplete = () => {
         const nameError = !name;
-
+        
         const tinhError = !tinh;
         const huyenError = !huyen;
         const xaError = !xa;
-        const chiTietError = !chiTiet;
-        console.log(phone)
+        // const chiTietError = !chiTiet;
+   
         if (!resdt.test(phone)){
-            console.log(true)
+  
             setPhoneError(true);
         } else {
             setPhoneError(false);
-            console.log(false)
         }
-
-        setNameError(nameError);
+        if (!resnameRegex.test(name)){
+         
+            setNameError(true);
+        } else {
+            setNameError(false);
+            
+        }
 
         setTinhError(tinhError);
         setHuyenError(huyenError);
         setXaError(xaError);
-        setChiTietError(chiTietError);
+
+        const data = {
+            name,
+            phone,
+            address,
+          };
+        const jsonData = JSON.stringify(data);
+
+       if(!nameError&&!phoneError&&!xaError&&!huyenError&&!tinhError){
+        axios.post('https://md26bipbip-496b6598561d.herokuapp.com/address/add', jsonData, {
+          headers: {
+            'Content-Type': 'application/json',
+          }
+        })
+          .then(response => {
+            console.log('Dữ liệu đã được gửi thành công lên máy chủ:', response.data);
+          })
+          .catch(error => {
+            console.error('Lỗi trong quá trình gửi dữ liệu lên máy chủ:', error);
+          });   
+        }
+
 
     }
 
@@ -92,14 +125,14 @@ export default function ScreenAddresst() {
                     value={xa}
                     error={xaError}
                 />
-                <TextInput
+                {/* <TextInput
                     style={{marginTop:8}}
                     label="Chi tiết"
                     mode='outlined'
                     onChangeText={setChiTiet}
                     value={chiTiet}
                     error={chiTietError}
-                />
+                /> */}
             </View>
 
             <TouchableOpacity
