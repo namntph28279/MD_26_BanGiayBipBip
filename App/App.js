@@ -17,12 +17,13 @@ import ChangePassword from "./compoment/ChangePassword";
 import Oder from './compoment/Oder';
 import AllShoes from './compoment/AllShoes';
 import EditProfile from "./compoment/EditProfile";
+import ScreenAddresst from "./screen/screenAddresst";
 
 export default function App() {
   const Stack = createNativeStackNavigator();
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName='SplashScreen'> 
+      <Stack.Navigator initialRouteName='SplashScreen'>
         <Stack.Screen name='SplashScreen' component={SplashScreen} options={{ headerShown: false }} />
         <Stack.Screen name='SplashScreen2' component={SplapshScreen2} options={{ headerShown: false }} />
         <Stack.Screen name='AllShoes' component={AllShoes} options={{ title: 'Sản phẩm' }} />
@@ -37,6 +38,7 @@ export default function App() {
         <Stack.Screen name='ChangePassword' component={ChangePassword} options={{ title: 'Đổi Mật Khẩu' }} />
         <Stack.Screen name='Oder' component={Oder} options={{ title: 'Đơn mua' }} />
         <Stack.Screen name='EditProfile' component={EditProfile} options={{ title: 'Chỉnh sửa hồ sơ' }} />
+        <Stack.Screen name='ScreenAddresst' component={ScreenAddresst} options={{ title: 'Thêm địa chỉ' }} />
       </Stack.Navigator>
 
     </NavigationContainer>
