@@ -1,12 +1,4 @@
-import React, { useState, useEffect } from 'react';
-import { Button, StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import { TextInput } from 'react-native-paper';
-import { Picker } from '@react-native-picker/picker';
-import axios from 'axios';  // You may need to import axios from your package
 
-export default function ScreenAddresst() {
-    const resdt = /^(0|84)(3[2-9]|5[2689]|7[06-9]|8[1-9]|9[0-9])[0-9]{7}$/;
-    const resnameRegex = /^[AÀẢÃÁẠĂẰẲẴẮẶÂẦẨẪẤẬBCDĐEÈẺẼÉẸÊỀỂỄẾỆFGHIÌỈĨÍỊJKLMNOÒỎÕÓỌÔỒỔỖỐỘƠỜỞỠỚỢPQRSTUÙỦŨÚỤƯỪỬỮỨỰVWXYỲỶỸÝỴZ][aàảãáạăằẳẵắặâầẩẫấậbcdđeèẻẽéẹêềểễếệfghiìỉĩíịjklmnoòỏõóọôồổỗốộơờởỡớợpqrstuùủũúụưừửữứựvwxyỳỷỹýỵz]+ [AÀẢÃÁẠĂẰẲẴẮẶÂẦẨẪẤẬBCDĐEÈẺẼÉẸÊỀỂỄẾỆFGHIÌỈĨÍỊJKLMNOÒỎÕÓỌÔỒỔỖỐỘƠỜỞỠỚỢPQRSTUÙỦŨÚỤƯỪỬỮỨỰVWXYỲỶỸÝỴZ][aàảãáạăằẳẵắặâầẩẫấậbcdđeèẻẽéẹêềểễếệfghiìỉĩíịjklmnoòỏõóọôồổỗốộơờởỡớợpqrstuùủũúụưừửữứựvwxyỳỷỹýỵz]+(?: [AÀẢÃÁẠĂẰẲẴẮẶÂẦẨẪẤẬBCDĐEÈẺẼÉẸÊỀỂỄẾỆFGHIÌỈĨÍỊJKLMNOÒỎÕÓỌÔỒỔỖỐỘƠỜỞỠỚỢPQRSTUÙỦŨÚỤƯỪỬỮỨỰVWXYỲỶỸÝỴZ][aàảãáạăằẳẵắặâầẩẫấậbcdđeèẻẽéẹêềểễếệfghiìỉĩíịjklmnoòỏõóọôồổỗốộơờởỡớợpqrstuùủũúụưừửữứựvwxyỳỷỹýỵz]*)*/;
     const [name, setName] = useState('');
     const [phone, setPhone] = useState('');
     const [tinh, setTinh] = useState(''); 
@@ -19,26 +11,14 @@ export default function ScreenAddresst() {
     const [tinhError, setTinhError] = useState(false);
     const [huyenError, setHuyenError] = useState(false);
     const [xaError, setXaError] = useState(false);
-    const [chiTietError, setChiTietError] = useState(false);
+    const [address,setAdddress] = useState('');
+    // const [chiTietError, setChiTietError] = useState(false);
 
     useEffect(() => {
-        // Fetch data for the Picker components
-        axios.get("https://raw.githubusercontent.com/kenzouno1/DiaGioiHanhChinhVN/master/data.json")
-            .then(response => {
-                const data = response.data;
-                renderCity(data);
-            })
-            .catch(error => {
-                console.error("Error fetching data:", error);
-            });
-    }, []); // The empty array means this effect runs only once, like componentDidMount
+        const newAddress = `${xa} ${huyen} ${tinh}`;
+        setAdddress(newAddress);
+      }, [xa, huyen, tinh]);
 
-    function renderCity(data) {
-        if (tinh !== null) {
-            for (const city of data) {
-                tinh.options[tinh.options.length] = <Picker.Item label={city.Name} value={city.Id} />;
-            }
-        }
     }
 
     const handleComplete = () => {
@@ -87,13 +67,12 @@ export default function ScreenAddresst() {
                     <Picker.Item label="Chọn phường xã" value="" />
                 </Picker>
                 <TextInput
-                    style={{ marginTop: 8 }}
                     label="Chi tiết"
                     mode='outlined'
                     onChangeText={setChiTiet}
                     value={chiTiet}
                     error={chiTietError}
-                />
+                /> */}
             </View>
 
             <TouchableOpacity
