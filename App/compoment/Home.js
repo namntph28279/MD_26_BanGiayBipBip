@@ -117,7 +117,7 @@ function Home({ navigation }) {
     }
   };
 
-  //checked
+  ///checked
   const checkAll = () => {
     setCheck(true);
     setCheck1(false);
