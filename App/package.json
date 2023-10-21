@@ -15,11 +15,6 @@
     "@react-native-firebase/app": "^17.5.0",
     "@react-native-firebase/auth": "^17.5.0",
     "@react-native-firebase/database": "^17.5.0",
-<<<<<<< HEAD
-    "@react-native-picker/picker": "2.4.8",
-=======
-    "@react-native-picker/picker": "^2.5.1",
->>>>>>> 2b8cd390e2d14177be75355e8952bf8aa6109dfd
     "@react-navigation/bottom-tabs": "^6.5.7",
     "@react-navigation/native": "^6.1.6",
     "@react-navigation/native-stack": "^6.9.12",
