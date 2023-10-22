@@ -18,10 +18,10 @@ import {
 import Swiper from "react-native-swiper";
 import { Dropdown } from "react-native-element-dropdown";
 import { getMonney } from "../util/money";
+import {useDispatch, useSelector} from "react-redux";
+import {fetchDataAndSetToRedux} from "../redux/AllData";
 
 function Home({ navigation }) {
-  const [products, setProducts] = useState([]);
-  const [listBackground, setListBackground] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
   const [valueSortBy, setValueSortBy] = useState(0);
@@ -33,28 +33,36 @@ function Home({ navigation }) {
   const [check2, setCheck2] = useState(false);
   const [check3, setCheck3] = useState(false);
   const [check4, setCheck4] = useState(false);
+  const [dataSP, setDataSP] = useState([]);
+  const dispatch = useDispatch();//trả về một đối tượng điều phối
+  const dataSP1 = useSelector((state) => state.dataAll.dataSP);//lấy toàn bộ mảng dữ liệu
+
+
+  React.useEffect(() => {
+    const unsubscribe = navigation.addListener("focus", () => {
+      dispatch(fetchDataAndSetToRedux())
+      if (dataSP){
+        setIsLoading(false)
+      }
+    });
+    return unsubscribe;
+  }, [navigation]);
+
+  React.useEffect(() => {
+    setDataSP(dataSP1);
+  }, [dataSP1]);
+
 
   useEffect(() => {
-    fetch("https://md26bipbip-496b6598561d.herokuapp.com/")
-      .then((response) => response.json())
-      .then((data) => {
-        setProducts(data);
-        setIsLoading(false);
-        setListBackground(data);
-      })
-      .catch((error) => {
-        console.error(error);
-        setIsLoading(false);
-      });
-
     const interval = setInterval(() => {
       if (swiperRef.current && swiperRef.current.scrollBy) {
         swiperRef.current.scrollBy(1); //di chuyen anh tiep
       }
-    }, 5000); // Thời gian tự động chuyển ảnh (ms)
+    }, 2000); // Thời gian tự động chuyển ảnh (ms)
 
     return () => clearInterval(interval);
   }, []);
+
 
 
   //array for dropdown
@@ -72,48 +80,33 @@ function Home({ navigation }) {
   //Chưa có nổi bật nên chỉ sắp sếp theo giá
   const sortByPrice = (item) => {
     setValueSortBy(item.value);
+    const dataSort =[...dataSP1]
+
     if (item.value == 2) {
-      products.sort((a, b) => (a.product_price < b.product_price ? 1 : -1));
+      dataSort.sort((a, b) => (a.product_price < b.product_price ? 1 : -1));
+      setDataSP(dataSort)
     }
     if (item.value == 3) {
-      products.sort((a, b) => (a.product_price > b.product_price ? 1 : -1));
+      dataSort.sort((a, b) => (a.product_price > b.product_price ? 1 : -1));
+      setDataSP(dataSort)
     }
   };
 
   const filterByCategory = (value) => {
     setValueFilter(value);
+    const dataCategory =[...dataSP1]
 
-    const apiUrl = "https://md26bipbip-496b6598561d.herokuapp.com/";
 
     if (value == 1) {
-      fetch(apiUrl)
-        .then((response) => response.json())
-        .then((data) => {
-          setProducts(data);
-        })
-        .catch((error) => {
-          console.error(error);
-        });
+      setDataSP(dataCategory);
     }
     if (value == 2) {
-      fetch(apiUrl + "products/men")
-        .then((response) => response.json())
-        .then((data) => {
-          setProducts(data);
-        })
-        .catch((error) => {
-          console.error(error);
-        });
+      const filteredData = dataCategory.filter(product => product.product_category === 'men')
+      setDataSP(filteredData);
     }
     if (value == 3) {
-      fetch(apiUrl + "products/women")
-        .then((response) => response.json())
-        .then((data) => {
-          setProducts(data);
-        })
-        .catch((error) => {
-          console.error(error);
-        });
+      const filteredData = dataCategory.filter(product => product.product_category === 'women')
+      setDataSP(filteredData);
     }
   };
 
@@ -247,30 +240,30 @@ function Home({ navigation }) {
 
   //swiper layout
   const setSwiper = () => {
-    const arrLength = listBackground.length;
-    const arrSwiper = listBackground.slice(arrLength-3,arrLength);
+    const arrLength = dataSP1.length;
+    const arrSwiper = dataSP1.slice(arrLength-3,arrLength);
     if (isLoading) {
       return (
-        <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color="blue" />
-        </View>
+          <View style={styles.loadingContainer}>
+            <ActivityIndicator size="large" color="blue" />
+          </View>
       );
     }
     return (
-      <Swiper
-        ref={swiperRef}
-        autoplay={false} // Tắt chế độ autoplay của Swiper
-        showsPagination={true}
-      >
-        {arrSwiper.map((item) => (
-          <View key={item._id}>
-            <Image
-              source={{ uri: item.product_image }}
-              style={styles.imageBackground}
-            />
-          </View>
-        ))}
-      </Swiper>
+        <Swiper
+            ref={swiperRef}
+            autoplay={false} // Tắt chế độ autoplay của Swiper
+            showsPagination={true}
+        >
+          {arrSwiper.map((item) => (
+              <View key={item._id}>
+                <Image
+                    source={{ uri: item.product_image }}
+                    style={styles.imageBackground}
+                />
+              </View>
+          ))}
+        </Swiper>
     );
   };
 
@@ -355,7 +348,7 @@ function Home({ navigation }) {
         </View>
 
         <View style={styles.columnsContainer}>
-          {products.map((item) => (
+          {dataSP.map((item) => (
             <View key={item._id} style={styles.columnItem}>
               {renderProductItem(item)}
             </View>
