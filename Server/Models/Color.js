@@ -13,6 +13,8 @@ const ColorSchema = new mongoose.Schema({
   color_image: {
     type: String,
     required: true
+  }
+}); 
 
 const Color = mongoose.model('Colors', ColorSchema);
 

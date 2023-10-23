@@ -37,6 +37,7 @@ const ObjectId = mongoose.Types.ObjectId;
 // const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
+//git add
 //git commit -am "make it better"
 //git push heroku master
 
@@ -196,29 +197,31 @@ app.get('/products/:category', async (req, res) => {
 
 // Thêm sản phẩm vào giỏ hàng
 app.post('/cart/add', async (req, res) => {
-    const { product_id, quantity } = req.body;
+    const { product_id, quantity, user_id } = req.body;
 
     try {
-        // Kiểm tra xem sản phẩm đã tồn tại trong giỏ hàng chưa
-        let cartItem = await CartItem.findOne({ product: product_id });
+        // Kiểm tra xem sản phẩm đã tồn tại trong giỏ hàng của người dùng chưa
+        let cartItem = await CartItem.findOne({ product: product_id, user: user_id });
 
         if (cartItem) {
             // Nếu sản phẩm đã tồn tại, cập nhật số lượng
             cartItem.quantity += quantity;
         } else {
-            // Nếu sản phẩm chưa tồn tại, thêm vào bảng giỏ hàng
+            // Nếu sản phẩm chưa tồn tại, thêm vào giỏ hàng
             const product = await Product.findById(product_id);
 
             if (!product) {
                 res.status(404).json({ message: 'Sản phẩm không tồn tại' });
-            } else {
-                cartItem = new CartItem({
-                    product: product_id,
-                    quantity,
-                    product_title: product.product_title,
-                    product_image: product.product_image
-                });
+                return;
             }
+
+            cartItem = new CartItem({
+                product: product_id,
+                quantity,
+                product_title: product.product_title,
+                product_image: product.product_image,
+                user: user_id
+            });
         }
 
         await cartItem.save();
@@ -227,7 +230,6 @@ app.post('/cart/add', async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 });
-
 // Xoá sản phẩm khỏi giỏ hàng
 app.delete('/cart/delete/:id', async (req, res) => {
     const id = req.params.id;
@@ -240,10 +242,12 @@ app.delete('/cart/delete/:id', async (req, res) => {
     }
 });
 
-// Lấy toàn bộ sản phẩm trong giỏ hàng
-app.get('/cart', async (req, res) => {
+// Lấy về toàn bộ cartItem dựa trên userId
+app.get('/cart/:userId', async (req, res) => {
+    const userId = req.params.userId;
+
     try {
-        const cartItems = await CartItem.find();
+        const cartItems = await CartItem.find({ user: userId });
         res.json(cartItems);
     } catch (error) {
         res.status(500).json({ message: error.message });
@@ -252,11 +256,11 @@ app.get('/cart', async (req, res) => {
 
 // Thêm sản phẩm vào bảng yêu thích
 app.post('/favourite/add', async (req, res) => {
-    const { product_id } = req.body;
+    const { product_id, user_id } = req.body;
 
     try {
-        // Kiểm tra xem sản phẩm đã tồn tại trong bảng yêu thích chưa
-        let favouriteItem = await FavouriteItem.findOne({ product: product_id });
+        // Kiểm tra xem sản phẩm đã tồn tại trong bảng yêu thích của người dùng chưa
+        let favouriteItem = await FavouriteItem.findOne({ product: product_id, user: user_id });
 
         if (favouriteItem) {
             // Nếu sản phẩm đã tồn tại trong bảng yêu thích, không thêm lại
@@ -272,7 +276,8 @@ app.post('/favourite/add', async (req, res) => {
                     product: product_id,
                     product_title: product.product_title,
                     product_price: product.product_price,
-                    product_image: product.product_image
+                    product_image: product.product_image,
+                    user: user_id
                 });
 
                 await favouriteItem.save();
@@ -283,7 +288,6 @@ app.post('/favourite/add', async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 });
-
 // Xoá sản phẩm khỏi yêu thích
 app.delete('/favourite/delete/:id', async (req, res) => {
     const id = req.params.id;
@@ -297,16 +301,17 @@ app.delete('/favourite/delete/:id', async (req, res) => {
 });
 
 
-// Lấy toàn bộ sản phẩm yêu thích
-app.get('/favourite', async (req, res) => {
+// Lấy về toàn bộ favouriteItem dựa trên userId
+app.get('/favourite/:userId', async (req, res) => {
+    const userId = req.params.userId;
+
     try {
-        const favouriteItems = await FavouriteItem.find();
+        const favouriteItems = await FavouriteItem.find({ user: userId });
         res.json(favouriteItems);
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
 });
-
 
 // Đặt hàng
 app.post('/order/add', async (req, res) => {
@@ -544,13 +549,15 @@ app.get('/user', async (req, res) => {
 
 // Thêm địa chỉ
 app.post('/address/add', async (req, res) => {
-    const { name, phone, address } = req.body;
+    const { name, phone, address, userId } = req.body;
 
     const add = new Address({
         name,
         phone,
-        address
+        address,
+        user: userId
     });
+
 
     try {
         await add.save();
@@ -561,11 +568,13 @@ app.post('/address/add', async (req, res) => {
 });
 
 
-// lấy toàn bộ địa chỉ
-app.get('/address', async (req, res) => {
+// Lấy về toàn bộ địa chỉ dựa trên userId
+app.get('/address/:userId', async (req, res) => {
+    const userId = req.params.userId;
+
     try {
-        const add = await Address.find();
-        res.json(add);
+        const addresses = await Address.find({ user: userId });
+        res.json(addresses);
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
@@ -689,7 +698,7 @@ app.put('/colors/edit/:colorId', async (req, res) => {
         const { color_name, color_image } = req.body;
 
         // Tìm và cập nhật thông tin màu sắc
-        const color = await Color.findByIdAndUpdate(colorId, { color_name , color_image}, { new: true });
+        const color = await Color.findByIdAndUpdate(colorId, { color_name, color_image }, { new: true });
 
         res.json(color);
     } catch (error) {
