@@ -41,6 +41,10 @@ const jwt = require('jsonwebtoken');
 //git commit -am "make it better"
 //git push heroku master
 
+//more -> ls
+//heroku logs --app md26bipbip
+//quay lại cd ..
+
 
 // Middleware để xử lý dữ liệu JSON
 app.use(express.json());
@@ -108,25 +112,6 @@ app.delete('/delete/:id', async (req, res) => {
         res.sendStatus(500);
     }
 });
-
-// // Hiển thị chi tiết một sản phẩm
-// app.get('/product/:id', async (req, res) => {
-//     const productId = req.params.id;
-
-//     try {
-//         // Tìm sản phẩm theo ID
-//         const product = await Product.findById(productId);
-
-//         if (!product) {
-//             // Sản phẩm không tồn tại
-//             res.status(404).json({ message: 'Sản phẩm không tồn tại' });
-//         } else {
-//             res.json(product);
-//         }
-//     } catch (error) {
-//         res.status(500).json({ message: error.message });
-//     }
-// });
 
 //getOneProduct
 app.get('/product/:id', async (req, res) => {
@@ -829,7 +814,7 @@ app.get('/sizes/:colorId', async (req, res) => {
 app.get('/home', async (req, res) => {
     try {
         const products = await Product.find().lean();
-        res.render('home', { products });
+        res.render('../Views/home.hbs', { products });
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
@@ -841,7 +826,7 @@ app.post('/home/search', async (req, res) => {
         const searchString = String(title);
 
         const products = await Product.find({ product_title: { $regex: searchString, $options: 'i' } }).lean();
-        res.render('home', { products });
+        res.render('../Views/home.hbs', { products });
     } catch (error) {
 
         res.status(500).json({ message: error.message });
@@ -864,7 +849,7 @@ app.post('/home/add', async (req, res) => {
 
         const productList = await Product.find().lean();
 
-        res.render('home', { products: productList });
+        res.render('../Views/home.hbs', { products: productList });
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
@@ -885,7 +870,7 @@ app.post('/home/edit/:id', async (req, res) => {
 
         const productList = await Product.find().lean();
 
-        res.render('home', { products: productList });
+        res.render('../Views/home.hbs', { products: productList });
     } catch (err) {
         console.error('Lỗi khi sửa dữ liệu:', err);
         res.sendStatus(500);
@@ -899,7 +884,7 @@ app.post('/home/delete/:id', async (req, res) => {
         await Product.deleteOne({ _id: id });
         const productList = await Product.find().lean();
 
-        res.render('home', { products: productList });
+        res.render('../Views/home.hbs', { products: productList });
     } catch (err) {
         console.error('Lỗi khi xoá dữ liệu:', err);
         res.sendStatus(500);
@@ -952,7 +937,7 @@ app.get('/home/detail/:id', async (req, res) => {
         };
 
 
-        res.render('product_detail', { productWithDetails });
+        res.render('../Views/product_detail.hbs', { productWithDetails });
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: 'Lỗi server' });
@@ -989,7 +974,7 @@ app.post('/home/detail/color/add/:productId', async (req, res) => {
             colors
         };
 
-        res.render('product_detail', { productWithDetails });
+        res.render('../Views/product_detail.hbs', { productWithDetails });
     } catch (error) {
         res.status(500).json({ error: 'Lỗi server' });
     }
@@ -1051,7 +1036,7 @@ app.post('/home/detail/colors/edit/:colorId', async (req, res) => {
         };
 
         // Cập nhật thông tin sản phẩm trong trang product_detail
-        res.render('product_detail', { productWithDetails });
+        res.render('../Views/product_detail.hbs', { productWithDetails });
     } catch (error) {
         res.status(500).json({ error: 'Lỗi server' });
     }
@@ -1108,7 +1093,7 @@ app.post('/home/detail/colors/delete/:colorId', async (req, res) => {
             colors
         };
 
-        res.render('product_detail', { productWithDetails });
+        res.render('../Views/product_detail.hbs', { productWithDetails });
     } catch (error) {
         console.log(error);
         res.status(500).json({ error: 'Lỗi server' });
