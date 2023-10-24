@@ -18,14 +18,15 @@ import {
 import Swiper from "react-native-swiper";
 import { Dropdown } from "react-native-element-dropdown";
 import { getMonney } from "../util/money";
-import {useDispatch, useSelector} from "react-redux";
-import {fetchDataAndSetToRedux} from "../redux/AllData";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchDataAndSetToRedux } from "../redux/AllData";
 
 function Home({ navigation }) {
   const [isLoading, setIsLoading] = useState(true);
 
   const [valueSortBy, setValueSortBy] = useState(0);
   const [valueFilter, setValueFilter] = useState(null);
+
   const swiperRef = useRef(null);
 
   const [check, setCheck] = useState(true);
@@ -33,25 +34,23 @@ function Home({ navigation }) {
   const [check2, setCheck2] = useState(false);
   const [check3, setCheck3] = useState(false);
   const [check4, setCheck4] = useState(false);
-  const [dataSP, setDataSP] = useState([]);
-  const dispatch = useDispatch();//trả về một đối tượng điều phối
-  const dataSP1 = useSelector((state) => state.dataAll.dataSP);//lấy toàn bộ mảng dữ liệu
 
+  const [dataSP, setDataSP] = useState([]);
+  const [dataSwiper, setDataSwiper] = useState([]);
+  const dispatch = useDispatch(); //trả về một đối tượng điều phối
+  const dataSP1 = useSelector((state) => state.dataAll.dataSP); //lấy toàn bộ mảng dữ liệu
 
   React.useEffect(() => {
     const unsubscribe = navigation.addListener("focus", () => {
-      dispatch(fetchDataAndSetToRedux())
-      if (dataSP){
-        setIsLoading(false)
-      }
+      dispatch(fetchDataAndSetToRedux());
     });
     return unsubscribe;
   }, [navigation]);
 
   React.useEffect(() => {
     setDataSP(dataSP1);
+    setDataSwiper(dataSP1);
   }, [dataSP1]);
-
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -62,8 +61,6 @@ function Home({ navigation }) {
 
     return () => clearInterval(interval);
   }, []);
-
-
 
   //array for dropdown
   const sortBy = [
@@ -80,32 +77,35 @@ function Home({ navigation }) {
   //Chưa có nổi bật nên chỉ sắp sếp theo giá
   const sortByPrice = (item) => {
     setValueSortBy(item.value);
-    const dataSort =[...dataSP1]
+    const dataSort = [...dataSP1];
 
     if (item.value == 2) {
       dataSort.sort((a, b) => (a.product_price < b.product_price ? 1 : -1));
-      setDataSP(dataSort)
+      setDataSP(dataSort);
     }
     if (item.value == 3) {
       dataSort.sort((a, b) => (a.product_price > b.product_price ? 1 : -1));
-      setDataSP(dataSort)
+      setDataSP(dataSort);
     }
   };
 
   const filterByCategory = (value) => {
     setValueFilter(value);
-    const dataCategory =[...dataSP1]
-
+    const dataCategory = [...dataSP1];
 
     if (value == 1) {
       setDataSP(dataCategory);
     }
     if (value == 2) {
-      const filteredData = dataCategory.filter(product => product.product_category === 'men')
+      const filteredData = dataCategory.filter(
+        (product) => product.product_category === "men"
+      );
       setDataSP(filteredData);
     }
     if (value == 3) {
-      const filteredData = dataCategory.filter(product => product.product_category === 'women')
+      const filteredData = dataCategory.filter(
+        (product) => product.product_category === "women"
+      );
       setDataSP(filteredData);
     }
   };
@@ -240,31 +240,32 @@ function Home({ navigation }) {
 
   //swiper layout
   const setSwiper = () => {
-    const arrLength = dataSP1.length;
-    const arrSwiper = dataSP1.slice(arrLength-3,arrLength);
-    if (isLoading) {
+    if (dataSwiper.length != 0) {
+      const arrLength = dataSwiper.length;
+      const arrSwiper = dataSwiper.slice(arrLength - 3, arrLength);
       return (
-          <View style={styles.loadingContainer}>
-            <ActivityIndicator size="large" color="blue" />
-          </View>
-      );
-    }
-    return (
         <Swiper
-            ref={swiperRef}
-            autoplay={false} // Tắt chế độ autoplay của Swiper
-            showsPagination={true}
+          ref={swiperRef}
+          autoplay={false} // Tắt chế độ autoplay của Swiper
+          showsPagination={true}
         >
           {arrSwiper.map((item) => (
-              <View key={item._id}>
-                <Image
-                    source={{ uri: item.product_image }}
-                    style={styles.imageBackground}
-                />
-              </View>
+            <View key={item._id}>
+              <Image
+                source={{ uri: item.product_image }}
+                style={styles.imageBackground}
+              />
+            </View>
           ))}
         </Swiper>
-    );
+      );
+    } else {
+      return (
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color="blue" />
+        </View>
+      );
+    }
   };
 
   return (
