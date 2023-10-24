@@ -540,11 +540,9 @@ function ProductDetail({ route, navigation }) {
         axios.get(`https://md26bipbip-496b6598561d.herokuapp.com/favourite/${userId}`)
             .then(response => {
                 const favoriteItems = response.data;
-
-                // Danh sách các productId đã được yêu thích
+                setUserFavorites(favoriteItems);
                 const likedProductIds = favoriteItems.map(item => item.product);
 
-                // Kiểm tra xem productId của sản phẩm hiện tại có trong danh sách likedProductIds không
                 const isProductLiked = likedProductIds.includes(productId);
 
                 setIsLiked(isProductLiked);
@@ -580,20 +578,25 @@ function ProductDetail({ route, navigation }) {
     };
 
     const removeFavoriteProduct = () => {
-        axios.delete(`https://md26bipbip-496b6598561d.herokuapp.com/favourite/delete`, {
-            data: {
-                product_id: productId,
-                user_id: userId,
-            }
-        })
-            .then(response => {
-                setIsLiked(false);
-                fetchUserFavorites();
-            })
-            .catch(error => {
-                console.error('Lỗi khi xóa khỏi danh sách yêu thích:', error);
-            });
+        const favoriteItemToDelete = userFavorites.find(item => item.product === productId);
+
+        if (favoriteItemToDelete) {
+
+            const favoriteItemId = favoriteItemToDelete._id;
+
+            axios.delete(`https://md26bipbip-496b6598561d.herokuapp.com/favourite/delete/${favoriteItemId}`)
+                .then(response => {
+                    setIsLiked(false);
+                    fetchUserFavorites(); // Cập nhật danh sách yêu thích sau khi xóa
+                })
+                .catch(error => {
+                    console.error('Lỗi khi xóa khỏi danh sách yêu thích:', error);
+                });
+        } else {
+            console.error('Không tìm thấy mục yêu thích với productId:', productId,userFavorites);
+        }
     };
+
 
 
 
@@ -610,43 +613,7 @@ function ProductDetail({ route, navigation }) {
     );
 
     const [isLiked, setIsLiked] = useState(false);
-    const checkIfProductIsLiked = () => {
-        const auth = getAuth(firebase);
-        const userId = auth.currentUser ? auth.currentUser.uid : null;
-        if (userId) {
-            const database = getDatabase(firebase);
-            const favoRef = ref(database, `Favourite/${userId}`);
 
-            get(favoRef).then((snapshot) => {
-                if (snapshot.exists()) {
-                    const favoItems = snapshot.val();
-                    const productIds = Object.keys(favoItems);
-                    if (productIds.includes(product.id)) {
-                        // Sản phẩm đã tồn tại trong danh sách yêu thích, cập nhật trạng thái isLiked
-                        setIsLiked(true);
-                    }
-                }
-            });
-        }
-    };
-
-    useEffect(() => {
-        checkIfProductIsLiked();
-    }, []);
-
-    const toggleFavoStatus = () => {
-        if (isLiked) {
-            // Sản phẩm đã tồn tại trong danh sách yêu thích, xóa nó ra khỏi danh sách
-            removeProductFromFavo();
-        } else {
-            // Sản phẩm chưa tồn tại trong danh sách yêu thích, thêm nó vào danh sách
-            addToFavo();
-        }
-    };
-
-    const handlePress = () => {
-        toggleFavoStatus();
-    };
     //
 
 
@@ -698,90 +665,6 @@ function ProductDetail({ route, navigation }) {
     const decreaseQuantity = () => {
         if (quantity > 1) {
             setQuantity(quantity - 1);
-        }
-    };
-
-    const addToFavo = () => {
-        const auth = getAuth(firebase);
-        const userId = auth.currentUser ? auth.currentUser.uid : null;
-
-        if (userId) {
-            const database = getDatabase(firebase);
-            const favoRef = ref(database, `Favourite/${userId}`);
-
-            // Kiểm tra xem sản phẩm đã tồn tại trong danh sách yêu thích
-            get(favoRef).then((snapshot) => {
-                if (snapshot.exists()) {
-                    const favoItems = snapshot.val();
-                    const productIds = Object.keys(favoItems);
-
-                    if (productIds.includes(product.id)) {
-                        // Sản phẩm đã tồn tại trong danh sách yêu thích, hiển thị thông báo
-                        alert('Sản phẩm đã tồn tại trong danh sách yêu thích.');
-                    } else {
-                        // Sản phẩm chưa tồn tại trong danh sách yêu thích, thêm sản phẩm vào danh sách
-                        const productWithQuantity = { ...product, quantity };
-
-                        push(ref(database, `Favourite/${userId}`), productWithQuantity)
-                            .then((newRef) => {
-                                const cartItemId = newRef.key;
-                                setCartItemId(cartItemId);
-                                console.log('Người dùng với id:', userId);
-                                console.log('Đã thêm sản phẩm vào yêu thích:', productWithQuantity);
-                                console.log('ID của sản phẩm trong yêu thích:', cartItemId);
-
-                                // Sau khi thêm vào danh sách yêu thích, cập nhật trạng thái isLiked
-                                setIsLiked(true);
-                            })
-                            .catch((error) => {
-                                console.error('Lỗi thêm sản phẩm vào yêu thích:', error);
-                            });
-                    }
-                } else {
-                    // Danh sách yêu thích chưa tồn tại, tạo nó và thêm sản phẩm đầu tiên
-                    const productWithQuantity = { ...product, quantity };
-                    push(ref(database, `Favourite/${userId}`), productWithQuantity)
-                        .then((newRef) => {
-                            const cartItemId = newRef.key;
-                            console.log('Người dùng với id:', userId);
-                            console.log('Đã thêm sản phẩm vào yêu thích:', productWithQuantity);
-                            console.log('ID của sản phẩm trong yêu thích:', cartItemId);
-
-                            // Sau khi thêm vào danh sách yêu thích, cập nhật trạng thái isLiked
-                            setIsLiked(true);
-                        })
-                        .catch((error) => {
-                            console.error('Lỗi thêm sản phẩm vào yêu thích:', error);
-                        });
-                }
-            });
-        } else {
-            console.log('Người dùng chưa đăng nhập');
-            alert('Chưa đăng nhập, vui lòng đăng nhập');
-            navigation.navigate('Login');
-        }
-    };
-    const removeProductFromFavo = () => {
-        // Xóa sản phẩm khỏi danh sách yêu thích
-        const auth = getAuth(firebase);
-        const userId = auth.currentUser ? auth.currentUser.uid : null;
-        if (userId) {
-            const database = getDatabase(firebase);
-            const favoRef = ref(database, `Favourite/${userId}/${cartItemId1}`);
-
-            // Xóa sản phẩm
-            remove(favoRef)
-                .then(() => {
-                    console.log('Sản phẩm đã bị xóa khỏi danh sách yêu thích',product._id);
-                    setIsLiked(false); // Cập nhật trạng thái isLiked
-                })
-                .catch((error) => {
-                    console.error('Lỗi xóa sản phẩm khỏi danh sách yêu thích:', error);
-                });
-        } else {
-            console.log('Người dùng chưa đăng nhập');
-            alert('Chưa đăng nhập, vui lòng đăng nhập');
-            navigation.navigate('Login');
         }
     };
 
