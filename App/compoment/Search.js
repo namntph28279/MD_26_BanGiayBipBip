@@ -180,7 +180,7 @@ function Search({ navigation }) {
           <Text style={{ textAlign: 'center', fontSize: 18, color: 'gray' }}>Không có sản phẩm nào</Text>
         )}
         <FlatList
-          style={[styles.prodList ]}
+          style={[styles.prodList ,{ height: filteredProducts.length === 0 ? '55%' : '100%', marginTop: filteredProducts.length === 0 ? -10 : 0 }]}
           data={isSearching ? filteredProducts : products}
           keyExtractor={(item) => item._id}
           renderItem={renderProductItem}
