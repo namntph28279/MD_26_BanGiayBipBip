@@ -502,6 +502,8 @@ function ProductDetail({ route, navigation }) {
     const [isLoading, setIsLoading] = useState(true);
     const [colorOptions, setColorOptions] = useState([]);
     const [cartItemId1, setCartItemId] = useState(null);
+    const [colorImages, setColorImages] = useState({});
+
     useEffect(() => {
         const apiUrl = `https://md26bipbip-496b6598561d.herokuapp.com/product/${productId}`;
 
@@ -513,6 +515,13 @@ function ProductDetail({ route, navigation }) {
                 if (data && data.colors) {
                     setColorOptions(data.colors.map((color) => color.color_name));
                     setSelectedColor(data.colors[0].color_name);
+
+                    // Fetch and store color images
+                    const colorImagesData = {};
+                    data.colors.forEach((color) => {
+                        colorImagesData[color.color_name] = color.color_image;
+                    });
+                    setColorImages(colorImagesData);
                 }
             })
             .catch((error) => {
@@ -520,6 +529,7 @@ function ProductDetail({ route, navigation }) {
                 setIsLoading(false);
             });
     }, [productId]);
+
 
 
     const toggleModal = () => {
@@ -763,10 +773,16 @@ function ProductDetail({ route, navigation }) {
                                 ]}
                                 onPress={() => selectColor(color)}
                             >
-                                <Text>{color}</Text>
+                                {colorImages[color] && (
+                                    <Image source={{ uri: colorImages[color] }} style={styles.colorOptionImage} />
+                                )}
+                                <Text style={styles.optionButtonText}>{color}</Text>
+
                             </TouchableOpacity>
                         ))}
                     </ScrollView>
+
+
 
                     <ScrollView
                         style={styles.sizeOptionsContainer}
@@ -825,7 +841,7 @@ const styles = StyleSheet.create({
     // },
     productImage: {
         width: '100%',
-        height: 300,
+        height: 250,
     },
     favoriteButton: {
         position: 'absolute',
@@ -837,9 +853,35 @@ const styles = StyleSheet.create({
         width: 40,
         height: 40,
     },
+    optionButton: {
+        paddingVertical: 8,
+        paddingHorizontal: 16,
+        borderRadius: 8,
+        marginVertical: 4,
+        marginRight: 10,
+    },
+    selectedOption: {
+        backgroundColor: 'grey',
+        color: 'black',
+    },
+    optionButtonText: {
+        fontSize: 16,
+        fontWeight: 'bold',
+        marginTop: 2,
+        alignSelf:'center'
+    },
+    colorOptionImage: {
+        width: 100,
+        height: 100,
+        marginTop: 8,
+    },
     productInfo: {
         flexDirection: 'row',
         marginTop: 16,
+    },
+    productColorImage: {
+        width: 100,
+        height: 100,
     },
     productName: {
         fontSize: 24,
@@ -924,7 +966,6 @@ const styles = StyleSheet.create({
         marginLeft: 20,
         marginTop: 15,
         borderRadius: 8,
-        width: 200
     },
     sizeOptionsContainer: {
         flexDirection: 'row',
@@ -932,16 +973,6 @@ const styles = StyleSheet.create({
         marginLeft: 20,
         marginTop: 10,
 
-    },
-    optionButton: {
-        paddingVertical: 8,
-        paddingHorizontal: 16,
-        borderRadius: 8,
-        marginVertical: 4,
-    },
-    selectedOption: {
-        backgroundColor: 'grey',
-        color: 'black',
     },
     selectedOptionSize: {
         backgroundColor: '#666',
