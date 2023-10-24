@@ -537,16 +537,24 @@ function ProductDetail({ route, navigation }) {
         fetchUserFavorites();
     }, []);
     const fetchUserFavorites = () => {
-        axios.get(`https://md26bipbip-496b6598561d.herokuapp.com/favourite/${userId}?product_id=${productId}`)
+        axios.get(`https://md26bipbip-496b6598561d.herokuapp.com/favourite/${userId}`)
             .then(response => {
-                setUserFavorites(response.data);
-                const isProductLiked = response.data.length > 0;
+                const favoriteItems = response.data;
+
+                // Danh sách các productId đã được yêu thích
+                const likedProductIds = favoriteItems.map(item => item.product);
+
+                // Kiểm tra xem productId của sản phẩm hiện tại có trong danh sách likedProductIds không
+                const isProductLiked = likedProductIds.includes(productId);
+
                 setIsLiked(isProductLiked);
             })
             .catch(error => {
                 console.error('Lỗi khi lấy sản phẩm trong favorites:', error);
             });
     };
+
+
 
 
     const toggleModal = () => {
@@ -572,7 +580,12 @@ function ProductDetail({ route, navigation }) {
     };
 
     const removeFavoriteProduct = () => {
-        axios.delete(`https://md26bipbip-496b6598561d.herokuapp.com/favourite/delete/${productId}`)
+        axios.delete(`https://md26bipbip-496b6598561d.herokuapp.com/favourite/delete`, {
+            data: {
+                product_id: productId,
+                user_id: userId,
+            }
+        })
             .then(response => {
                 setIsLiked(false);
                 fetchUserFavorites();
@@ -581,6 +594,7 @@ function ProductDetail({ route, navigation }) {
                 console.error('Lỗi khi xóa khỏi danh sách yêu thích:', error);
             });
     };
+
 
 
 
