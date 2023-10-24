@@ -256,7 +256,7 @@ function Cart({ route, navigation }) {
             marginRight: 10,
           }}
         >
-            {getMonney(sumSelectedProductsPrice())}
+          {getMonney(sumSelectedProductsPrice())}
         </Text>
       </View>
       <TouchableOpacity
@@ -337,16 +337,16 @@ const styles = StyleSheet.create({
   },
   productName: {
     fontSize: 19,
-    fontWeight:"bold"
+    fontWeight: "bold",
   },
   productType: {
     fontSize: 14,
-    color:'gray'
-},
+    color: "gray",
+  },
   productPrice: {
     fontSize: 16,
     fontWeight: "700",
-    marginBottom:5,
+    marginBottom: 5,
   },
   editText: {
     position: "absolute",
@@ -371,7 +371,7 @@ const styles = StyleSheet.create({
   buttonCheckbox: {
     flexDirection: "row",
     alignItems: "center",
-    color:'gray'
+    color: "gray",
   },
   buttonText: {
     color: "#fff",
@@ -386,15 +386,13 @@ const styles = StyleSheet.create({
     marginLeft: 4,
   },
 
-  
-
   quantityContainer: {
     flexDirection: "row",
     alignItems: "center",
   },
   quantityButton: {
     backgroundColor: "#C0C0C0",
-    height:"100%",
+    height: "100%",
     paddingHorizontal: 10,
     borderRadius: 8,
     marginHorizontal: 8,
