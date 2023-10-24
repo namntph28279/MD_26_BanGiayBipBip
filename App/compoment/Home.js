@@ -22,8 +22,6 @@ import { useDispatch, useSelector } from "react-redux";
 import { fetchDataAndSetToRedux } from "../redux/AllData";
 
 function Home({ navigation }) {
-  const [isLoading, setIsLoading] = useState(true);
-
   const [valueSortBy, setValueSortBy] = useState(0);
   const [valueFilter, setValueFilter] = useState(null);
 
@@ -57,7 +55,7 @@ function Home({ navigation }) {
       if (swiperRef.current && swiperRef.current.scrollBy) {
         swiperRef.current.scrollBy(1); //di chuyen anh tiep
       }
-    }, 2000); // Thời gian tự động chuyển ảnh (ms)
+    }, 5000); // Thời gian tự động chuyển ảnh (ms)
 
     return () => clearInterval(interval);
   }, []);
@@ -251,10 +249,14 @@ function Home({ navigation }) {
         >
           {arrSwiper.map((item) => (
             <View key={item._id}>
-              <Image
-                source={{ uri: item.product_image }}
-                style={styles.imageBackground}
-              />
+             <TouchableOpacity onPress={() => {
+               navigation.navigate("ProductDetail", { productId: item._id });
+             }}>
+               <Image
+                   source={{ uri: item.product_image }}
+                   style={styles.imageBackground}
+               />
+             </TouchableOpacity>
             </View>
           ))}
         </Swiper>
@@ -317,35 +319,44 @@ function Home({ navigation }) {
           </TouchableOpacity>
         </View>
 
-        <View style={{ flexDirection: "row", marginLeft: 10 }}>
-          <Dropdown
-            style={styles.dropdown}
-            data={sortBy}
-            maxHeight={300}
-            labelField="label"
-            valueField="value"
-            placeholder="Sắp xếp"
-            value={valueSortBy}
-            onChange={(item) => {
-              sortByPrice(item);
-            }}
-            renderItem={renderItemSortBy}
-          />
+        <View style={{display:"flex", flexDirection: "row", margin: 10,alignItems:"center"  }}>
 
-          <Dropdown
-            style={[styles.dropdown, { width: 100 }, { marginLeft: 10 }]}
-            data={Filter}
-            maxHeight={300}
-            labelField="label"
-            valueField="value"
-            placeholder="Lọc"
-            value={valueFilter}
-            labelStyle={{ fontWeight: "bold" }}
-            onChange={(item) => {
-              filterByCategory(item.value);
-            }}
-            renderItem={renderItemFilter}
-          />
+           <Dropdown
+               style={styles.dropdown}
+               data={sortBy}
+               maxHeight={300}
+               labelField="label"
+               valueField="value"
+               placeholder="Sắp xếp"
+               value={valueSortBy}
+               onChange={(item) => {
+                 sortByPrice(item);
+               }}
+               renderItem={renderItemSortBy}
+           />
+
+           <Dropdown
+               style={[styles.dropdown, { width: 100 }, { marginLeft: 10 }]}
+               data={Filter}
+               maxHeight={300}
+               labelField="label"
+               valueField="value"
+               placeholder="Lọc"
+               value={valueFilter}
+               labelStyle={{ fontWeight: "bold" }}
+               onChange={(item) => {
+                 filterByCategory(item.value);
+               }}
+               renderItem={renderItemFilter}
+           />
+
+          <View style={{marginLeft: 'auto'}}>
+           <TouchableOpacity  onPress={() => {
+             navigation.navigate("AllShoes");
+           }}>
+             <Text> Xem tất cả</Text>
+           </TouchableOpacity>
+          </View>
         </View>
 
         <View style={styles.columnsContainer}>
@@ -449,8 +460,7 @@ const styles = StyleSheet.create({
   },
 
   dropdown: {
-    marginTop: 14,
-    height: 50,
+    height: 40,
     width: 160,
     backgroundColor: "white",
     borderRadius: 12,

@@ -3,40 +3,20 @@ import { StyleSheet, View, ScrollView, Text, Image, TextInput, FlatList, Touchab
 import { getMonney } from "../util/money";
 import axios from 'axios';
 import _ from 'lodash';
+import {useSelector} from "react-redux";
 
 
 function Search({ navigation }) {
-  const [products, setProducts] = useState([]);
   const [searchText, setSearchText] = useState("");
   const [isSearching, setIsSearching] = useState(false);
   const [filteredProducts, setFilteredProducts] = useState([]);
-  const [topSellingProducts, setTopSellingProducts] = useState([]);
   const [topSellingInProducts, setTopSellingInProducts] = useState([]);
   LogBox.ignoreLogs(['VirtualizedLists should never be nested inside plain ScrollViews']);
 
 
-  useEffect(() => {
-    fetch("https://md26bipbip-496b6598561d.herokuapp.com/")
-      .then((response) => response.json())
-      .then((data) => {
-        setProducts(data);
-      })
-      .catch((error) => {
-        console.error(error);
-      });
-  }, []);
-  useEffect(() => {
-    fetch("https://md26bipbip-496b6598561d.herokuapp.com/top-selling")
-      .then((response) => response.json())
-      .then((data) => {
-        setTopSellingProducts(data);
-      })
-      .catch((error) => {
-        console.error(error);
-      });
+  const products  =useSelector((state) => state.dataAll.dataSP); //lấy toàn bộ mảng dữ liệu
+  const  topSellingProducts = useSelector((state)=>state.dataAll.dataSPBestSale)
 
-    //console.log("Số phần tử trong topSelling", topSellingProducts.length);
-  }, []);
   useEffect(() => {
     const filteredTopSellingProducts = topSellingProducts.map(item => {
       const matchingProduct = products.find(product => product._id === item.productId);
@@ -139,7 +119,6 @@ function Search({ navigation }) {
     }
   };
   return (
-    <View style={styles.mainContainer}>
       <View style={styles.container}>
         <View style={styles.searchContainer}>
           <TextInput
@@ -164,16 +143,17 @@ function Search({ navigation }) {
 
 
         {filteredProducts.length === 0 && (
-          <View>
-            <Text style={{ fontSize: 20, fontWeight: '500', marginLeft: 20, marginTop: -5 }}>Sản phẩm bán chạy</Text>
-            <ScrollView horizontal={true}>
-              <View style={{ flexDirection: 'column',marginTop: 3 }}>
+          <View style={{display:"flex"}}>
+            <Text style={{ fontSize: 18, fontWeight: '500', marginLeft: 20  }}>Sản phẩm bán chạy</Text>
+
+              <View style={{ marginTop: 7,alignItems:"center"}}>
            
                 <FlatList
                   data={chunkedArrays[0]}
                   renderItem={renderTopSellingProductItem}
                   keyExtractor={(item) => item._id}
                   horizontal={true}
+                  scrollEnabled={false}
                 />
                 
                 <FlatList
@@ -181,31 +161,31 @@ function Search({ navigation }) {
                   renderItem={renderTopSellingProductItem}
                   keyExtractor={(item) => item._id}
                   horizontal={true}
-                 
+                  stickyHeaderIndices={[0]}
+                  scrollEnabled={false}
                 />
               </View>
-            </ScrollView>
             <TouchableOpacity
               style={styles.showAll}
               onPress={() => {
                 navigation.navigate("AllShoes");
               }}
             >
-              <Text style={{ fontSize: 18, fontWeight: '500', marginTop: -15 }}>Xem tất cả</Text>
+              <Text style={{ fontSize: 15, fontWeight: '500' }}>Xem tất cả</Text>
             </TouchableOpacity>
           </View>
+
         )}
         {isSearching && filteredProducts.length === 0 && (
           <Text style={{ textAlign: 'center', fontSize: 18, color: 'gray' }}>Không có sản phẩm nào</Text>
         )}
         <FlatList
-          style={[styles.prodList, { height: filteredProducts.length === 0 ? '55%' : '100%', marginTop: filteredProducts.length === 0 ? -10 : 0 }]}
+          style={[styles.prodList ]}
           data={isSearching ? filteredProducts : products}
           keyExtractor={(item) => item._id}
           renderItem={renderProductItem}
         />
       </View>
-    </View>
   );
 }
 
@@ -218,35 +198,26 @@ const styles = StyleSheet.create({
     marginBottom: "15%"
   },
   searchContainer: {
+    margin:10,
     flexDirection: "row",
-    paddingHorizontal: 16
+    paddingHorizontal: 16,
+    alignItems:"center"
   },
-
-  mainContainer: {
-    height: "100%",
-    backgroundColor: "#dddddd",
-
-  },
-
   searchInput: {
-    margin: 10,
     padding: 10,
     borderWidth: 1,
     borderColor: "#999",
     borderRadius: 10,
-    width: "80%"
+    width: "85%"
   },
   searchButton: {
-    marginTop: 14,
-    alignItems: "center",
-    justifyContent: "center",
+    justifyContent:"center",
+    marginLeft:"auto",
     width: 40,
     height: 40,
   },
   prodList: {
-    marginBottom: 400,
-    height: "100%",
-    marginTop: -15,
+    height:"42%"
   },
   searchButtonText: {
     color: "white",
@@ -298,8 +269,7 @@ const styles = StyleSheet.create({
     margin: 5,
     borderRadius: 10,
     backgroundColor: "white",
-    shadowColor: "gray",
-    marginLeft: 15
+    shadowColor: "gray"
   },
   saleImageContainer: {
     width: "100%",

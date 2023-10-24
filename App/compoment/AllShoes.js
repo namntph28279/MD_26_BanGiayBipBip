@@ -1,20 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { StyleSheet, View, FlatList, Image, TouchableOpacity, Text } from "react-native";
 import { getMonney } from "../util/money";
+import {useSelector} from "react-redux";
 
 function AllShoes({ navigation }) {
-  const [products, setProducts] = useState([]);
 
-  useEffect(() => {
-    fetch("https://md26bipbip-496b6598561d.herokuapp.com/")
-      .then((response) => response.json())
-      .then((data) => {
-        setProducts(data);
-      })
-      .catch((error) => {
-        console.error(error);
-      });
-  }, []);
+  const products = useSelector((state) => state.dataAll.dataSP); //lấy toàn bộ mảng dữ liệu
 
   const renderProductItem = ({ item }) => {
     return (
