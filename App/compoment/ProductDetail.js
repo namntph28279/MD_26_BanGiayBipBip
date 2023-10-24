@@ -622,18 +622,18 @@ function ProductDetail({ route, navigation }) {
             const auth = getAuth(firebase);
             const userId = auth.currentUser ? auth.currentUser.uid : null;
             if (userId) {
-                const database = getDatabase(firebase);
-                const productWithAttributes = {
-                    ...product,
-                    color: selectedColor,
-                    size: selectedSize,
+                const cartItem = {
+                    product_id: productId,
                     quantity,
+                    // user_id: userId,
+                    user_id: '64ab9784b65d14d1076c3477',
                 };
-                push(ref(database, `Cart/${userId}`), productWithAttributes)
-                    .then((newRef) => {
+
+                axios.post('https://md26bipbip-496b6598561d.herokuapp.com/cart/add', cartItem)
+                    .then(response => {
                         navigation.navigate('Cart');
                     })
-                    .catch((error) => {
+                    .catch(error => {
                         console.error('Lỗi thêm vào giỏ hàng:', error);
                     });
             } else {
