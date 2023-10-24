@@ -503,6 +503,9 @@ function ProductDetail({ route, navigation }) {
     const [colorOptions, setColorOptions] = useState([]);
     const [cartItemId1, setCartItemId] = useState(null);
     const [colorImages, setColorImages] = useState({});
+    const [isFavorite, setIsFavorite] = useState(false);
+    const [userFavorites, setUserFavorites] = useState([]);
+    const userId = '64ab9784b65d14d1076c3477';
 
     useEffect(() => {
         const apiUrl = `https://md26bipbip-496b6598561d.herokuapp.com/product/${productId}`;
@@ -530,11 +533,56 @@ function ProductDetail({ route, navigation }) {
             });
     }, [productId]);
 
+    useEffect(() => {
+        fetchUserFavorites();
+    }, []);
+    const fetchUserFavorites = () => {
+        axios.get(`https://md26bipbip-496b6598561d.herokuapp.com/favourite/${userId}?product_id=${productId}`)
+            .then(response => {
+                setUserFavorites(response.data);
+                const isProductLiked = response.data.length > 0;
+                setIsLiked(isProductLiked);
+            })
+            .catch(error => {
+                console.error('Lỗi khi lấy sản phẩm trong favorites:', error);
+            });
+    };
 
 
     const toggleModal = () => {
         setModalVisible(!isModalVisible);
     };
+    const handleToggleFavorite = () => {
+        if (isLiked) {
+            removeFavoriteProduct();
+        } else {
+            addFavoriteProduct();
+        }
+    };
+
+    const addFavoriteProduct = () => {
+        axios.post('https://md26bipbip-496b6598561d.herokuapp.com/favourite/add', { product_id: productId, user_id: userId })
+            .then(response => {
+                setIsLiked(true);
+                fetchUserFavorites();
+            })
+            .catch(error => {
+                console.error('Lỗi:', error);
+            });
+    };
+
+    const removeFavoriteProduct = () => {
+        axios.delete(`https://md26bipbip-496b6598561d.herokuapp.com/favourite/delete/${productId}`)
+            .then(response => {
+                setIsLiked(false);
+                fetchUserFavorites();
+            })
+            .catch(error => {
+                console.error('Lỗi khi xóa khỏi danh sách yêu thích:', error);
+            });
+    };
+
+
 
     // Hình trái tim
     const HeartIcon = ({ isLiked, onPress }) => (
@@ -746,9 +794,9 @@ function ProductDetail({ route, navigation }) {
                     )}
                     <TouchableOpacity
                         style={styles.favoriteButton}
-                        onPress={handlePress}
+                        onPress={handleToggleFavorite}
                     >
-                        <HeartIcon isLiked={isLiked} onPress={handlePress} />
+                        <HeartIcon isLiked={isLiked} onPress={handleToggleFavorite} />
                     </TouchableOpacity>
                     <View style={styles.priceContainer}>
                         {product && (
@@ -964,7 +1012,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         marginBottom: 10,
         marginLeft: 20,
-        marginTop: 15,
+        marginTop: 7,
         borderRadius: 8,
     },
     sizeOptionsContainer: {
