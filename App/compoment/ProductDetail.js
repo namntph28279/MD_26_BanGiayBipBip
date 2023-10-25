@@ -698,15 +698,17 @@ function ProductDetail({ route, navigation }) {
                     {product && (
                         <Image source={{ uri: product.product_image }} style={styles.productImage} />
                     )}
-                    {product && (
-                        <Text style={styles.productAdditionalInfo}>{product.product_title}</Text>
-                    )}
+
                     <TouchableOpacity
                         style={styles.favoriteButton}
                         onPress={handleToggleFavorite}
                     >
                         <HeartIcon isLiked={isLiked} onPress={handleToggleFavorite} />
                     </TouchableOpacity>
+                    <ScrollView>
+                        {product && (
+                            <Text style={styles.productAdditionalInfo}>{product.product_title}</Text>
+                        )}
                     <View style={styles.priceContainer}>
                         {product && (
                             <Text style={styles.productPrice}>{getMonney(product.product_price)}</Text>
@@ -780,6 +782,7 @@ function ProductDetail({ route, navigation }) {
                         </TouchableOpacity>
 
                     </View>
+                    </ScrollView>
 
                 </>
             )}
