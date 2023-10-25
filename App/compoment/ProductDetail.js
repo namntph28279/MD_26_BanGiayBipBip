@@ -505,6 +505,7 @@ function ProductDetail({ route, navigation }) {
     const [colorImages, setColorImages] = useState({});
     const [isFavorite, setIsFavorite] = useState(false);
     const [userFavorites, setUserFavorites] = useState([]);
+    const [sizeOptions, setSizeOptions] = useState([]);
     const userId = '64ab9784b65d14d1076c3477';
 
     useEffect(() => {
@@ -519,12 +520,13 @@ function ProductDetail({ route, navigation }) {
                     setColorOptions(data.colors.map((color) => color.color_name));
                     setSelectedColor(data.colors[0].color_name);
 
-                    // Fetch and store color images
+
                     const colorImagesData = {};
                     data.colors.forEach((color) => {
                         colorImagesData[color.color_name] = color.color_image;
                     });
                     setColorImages(colorImagesData);
+                    fetchSizesForColor(data.colors[0]._id);
                 }
             })
             .catch((error) => {
@@ -532,6 +534,16 @@ function ProductDetail({ route, navigation }) {
                 setIsLoading(false);
             });
     }, [productId]);
+    const fetchSizesForColor = (colorId) => {
+        axios.get(`https://md26bipbip-496b6598561d.herokuapp.com/sizes/${colorId}`)
+            .then(response => {
+                setSizeOptions(response.data);
+                setSelectedSize(response.data[0]);
+            })
+            .catch(error => {
+                console.error('Lôi:', error);
+            });
+    };
 
     useEffect(() => {
         fetchUserFavorites();
@@ -647,7 +659,7 @@ function ProductDetail({ route, navigation }) {
         }
     };
 
-    const sizeOptions = ['28', '29', '30', '31'];
+    // const sizeOptions = ['28', '29', '30', '31'];
     // const colorOptions = ['Đỏ', 'xanh', 'vàng'];
 
     const selectColor = (color) => {
@@ -741,9 +753,9 @@ function ProductDetail({ route, navigation }) {
                                     styles.optionButton,
                                     selectedSize === size && styles.selectedOptionSize,
                                 ]}
-                                onPress={() => selectSize(size)}
+                                onPress={() => setSelectedSize(size)}
                             >
-                                <Text>{size}</Text>
+                                <Text>{size.size_name}</Text>
                             </TouchableOpacity>
                         ))}
                     </ScrollView>
