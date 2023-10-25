@@ -482,7 +482,12 @@ import {
     ActivityIndicator,
     Modal,
     ScrollView,
+    TouchableWithoutFeedback,
 } from 'react-native';
+import { Animated } from 'react-native';
+
+import { PinchGestureHandler, State } from 'react-native-gesture-handler';
+
 import axios from 'axios';
 import firebase from '../config/FirebaseConfig';
 import { getDatabase, ref, push, get, child, onValue, remove } from 'firebase/database';
@@ -506,6 +511,7 @@ function ProductDetail({ route, navigation }) {
     const [isFavorite, setIsFavorite] = useState(false);
     const [userFavorites, setUserFavorites] = useState([]);
     const [sizeOptions, setSizeOptions] = useState([]);
+    const [isImageModalVisible, setImageModalVisible] = useState(false);
     const userId = '64ab9784b65d14d1076c3477';
 
     useEffect(() => {
@@ -565,7 +571,12 @@ function ProductDetail({ route, navigation }) {
     };
 
 
-
+    const openImageModal = () => {
+        setImageModalVisible(true);
+    };
+    const closeModal = () => {
+        setImageModalVisible(false);
+    };
 
     const toggleModal = () => {
         setModalVisible(!isModalVisible);
@@ -679,6 +690,19 @@ function ProductDetail({ route, navigation }) {
             setQuantity(quantity - 1);
         }
     };
+//zoomimage
+    const zoom = new Animated.Value(1);
+    const handleZoom = Animated.event(
+        [{ nativeEvent: { scale: zoom } }],
+        { useNativeDriver: false }
+    );
+    const handleZoomState = ({ nativeEvent }) => {
+        if (nativeEvent.state === State.END) {
+            const newZoom = Math.min(Math.max(nativeEvent.scale, 1), 3);
+            zoom.setValue(newZoom);
+        }
+    };
+    //endzômimage
 
 
 
@@ -696,7 +720,9 @@ function ProductDetail({ route, navigation }) {
             ) : (
                 <>
                     {product && (
-                        <Image source={{ uri: product.product_image }} style={styles.productImage} />
+                        <TouchableOpacity onPress={openImageModal}>
+                            <Image source={{ uri: product.product_image }} style={styles.productImage} />
+                        </TouchableOpacity>
                     )}
 
                     <TouchableOpacity
@@ -786,6 +812,31 @@ function ProductDetail({ route, navigation }) {
 
                 </>
             )}
+
+            <Modal
+                visible={isImageModalVisible}
+                transparent={true}
+                animationType="slide"
+            >
+                <TouchableWithoutFeedback onPress={closeModal}>
+                <View style={styles.modalContainer}>
+                    <View style={styles.modalContent}>
+                        <TouchableOpacity style={styles.closeModalButton} onPress={() => setImageModalVisible(false)}>
+                            <Text style={styles.closeModalButtonText}>X</Text>
+                        </TouchableOpacity>
+
+                        {product && (
+                            <PinchGestureHandler onGestureEvent={handleZoom} onHandlerStateChange={handleZoomState}>
+                                <Animated.Image
+                                    source={{ uri: product.product_image }}
+                                    style={[styles.productImage, { transform: [{ scale: zoom }] }]}
+                                        />
+                                        </PinchGestureHandler>
+                        )}
+                    </View>
+                </View>
+                </TouchableWithoutFeedback>
+            </Modal>
         </View>
     );
     //hiển
@@ -802,6 +853,7 @@ const styles = StyleSheet.create({
     productImage: {
         width: '100%',
         height: 250,
+        resizeMode: 'contain',
     },
     favoriteButton: {
         position: 'absolute',
@@ -902,12 +954,6 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         alignContent: 'center'
     },
-    modalContainer: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    },
     modalContent: {
         width: '80%',
         backgroundColor: 'white',
@@ -970,12 +1016,24 @@ const styles = StyleSheet.create({
         top: 0,
         right: 10,
     },
+    modalContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: 'rgba(0, 0, 0, 0.7)',
+    },
     closeModalButtonText: {
-        color: 'red',
-        fontSize: 30,
+        color: 'black',
+        fontSize: 20,
         fontWeight: 'bold',
     },
-
+    imageModalContent: {
+        width: '80%',
+        height: '80%',
+        backgroundColor: 'white',
+        borderRadius: 10,
+        padding: 20,
+    },
 
 
 });
