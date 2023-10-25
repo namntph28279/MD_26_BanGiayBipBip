@@ -32,6 +32,8 @@ function Home({ navigation }) {
   const [check2, setCheck2] = useState(false);
   const [check3, setCheck3] = useState(false);
   const [check4, setCheck4] = useState(false);
+  const [heartColors, setHeartColors] = useState({});
+
 
   const [dataSP, setDataSP] = useState([]);
   const [dataSwiper, setDataSwiper] = useState([]);
@@ -167,6 +169,15 @@ function Home({ navigation }) {
   };
 
   const renderProductItem = (item) => {
+    const productId = item._id;
+    const heartColor = heartColors[productId] || "black";
+
+    const toggleHeartColor = () => {
+      setHeartColors((prevColors) => ({
+        ...prevColors,
+        [productId]: heartColor === "black" ? "red" : "black",
+      }));
+    };
     return (
       <View style={styles.productContainer}>
         <TouchableOpacity
@@ -219,12 +230,14 @@ function Home({ navigation }) {
           </View>
         </TouchableOpacity>
         <TouchableOpacity
-          style={
-            { position: "absolute", left: 10, top: 7 }
-            // onPress={} add to favorites
-          }
+            style={{ position: "absolute", left: 10, top: 7 }}
+            onPress={toggleHeartColor}
         >
-          <MaterialIcons name={"favorite-outline"} size={30} color="black" />
+          <MaterialIcons
+              name={heartColor === "black" ? "favorite-outline" : "favorite"}
+              size={30}
+              color={heartColor}
+          />
         </TouchableOpacity>
         {/* <TouchableOpacity
                     style={{position: "absolute", right: 10, bottom: 7}}
