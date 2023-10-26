@@ -1,8 +1,6 @@
 import {createSlice} from "@reduxjs/toolkit";
 import url from "../api/url"
 
-
-
 const getDataProduct = async () => {
     try {
         const response = await url.get("/");
@@ -21,13 +19,23 @@ const getDataSPBestSale = async () => {
     }
 };
 
+const getDataFavourite = async () => {
+    try {
+        const email = "64ab9784b65d14d1076c3477";
+        const response = await url.get(`/favourite/${email}`);
+        return response.data ;
+    } catch (error) {
+        return [];
+    }
+};
 
 const dataAll = createSlice({
     name: 'data',
 
     initialState: {
         dataSP: [],
-        dataSPBestSale:[]
+        dataSPBestSale:[],
+        dataSPFav:[]
     },
     reducers: {
         setDataSP: (state, action) => {
@@ -35,11 +43,14 @@ const dataAll = createSlice({
         },
         setDataSPBestSale: (state, action) => {
             state.dataSPBestSale = action.payload;
+        },
+        setDataSPFav: (state, action) => {
+            state.dataSPFav = action.payload;
         }
     }
 })
 
-export const { setDataSP,setDataSPBestSale } = dataAll.actions;
+export const { setDataSP,setDataSPBestSale,setDataSPFav } = dataAll.actions;
 
 
 export const fetchDataAndSetToRedux = () => async (dispatch) => {
@@ -49,6 +60,9 @@ export const fetchDataAndSetToRedux = () => async (dispatch) => {
 
     const dataBestSale = await getDataSPBestSale();
     dispatch(setDataSPBestSale(dataBestSale));
+
+    const dataSPFav = await getDataFavourite();
+    dispatch(setDataSPFav(dataSPFav));
 
 
 };
