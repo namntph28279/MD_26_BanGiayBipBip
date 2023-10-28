@@ -1,6 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const useController = require('./Controllers/Controller')
+const websever = require('./Controllers/Websever')
 const app = express();
 
 var server_port = process.env.YOUR_PORT || process.env.PORT || 80;
@@ -22,7 +23,9 @@ mongoose.connect('mongodb+srv://namnguyen:Nam280103@cluster0.zyd4ou2.mongodb.net
   });
 
 
+
 app.use(useController);
+app.use(websever)
 
 
 
