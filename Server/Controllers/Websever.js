@@ -4,21 +4,29 @@ const Size = require('../Models/Size');
 
 const express = require('express');
 const app = express();
-const Handlebars = require('express-handlebars');
+const expressHbs = require('express-handlebars');
 const bodyParser = require('body-parser');
-const handlebarshelper = require("../handlebars-helpers");
 const mongoose = require('mongoose');
+const currencyFormatter = require('currency-formatter');
 
 app.set('Views', __dirname + '/views');
 
 // Cấu hình để chạy file .hbs
-app.engine('.hbs', Handlebars.engine({
+const handlebars = expressHbs.create({
     defaultLayout: null,
     extname: '.hbs',
-    allowProtoPropertiesByDefault: true,
-    allowProtoMethodsByDefault: true,
-    helpers: handlebarshelper
-}))
+    runtimeOptions: {
+        allowProtoPropertiesByDefault: true,
+        allowProtoMethodsByDefault: true,
+    },
+    helpers: {
+
+        formatCurrency: function (amount) {
+            return currencyFormatter.format(amount, { code: 'VND' });
+        }
+    },
+});
+app.engine('.hbs', handlebars.engine);
 app.set('view engine', '.hbs');
 
 app.use(bodyParser.urlencoded({ extended: false }));

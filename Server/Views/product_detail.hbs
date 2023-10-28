@@ -23,7 +23,68 @@
 </head>
 
 <body>
-    <div class="container">
+<nav class="navbar navbar-expand-lg bg-body-tertiary " style="  border-bottom: 2px solid black;">
+    <div class="container-fluid" >
+
+        <div>
+            <a class="navbar-brand" href="/home" style="color: black">
+                <img src="https://censor.vn/wp-content/uploads/2022/03/logo-cac-hang-giay-noi-tieng-1.png" alt=" "
+                     style="width:40px;" class="rounded-pill"> Quản lý kho hàng
+            </a>
+        </div>
+
+        <div  id="navbarSupportedContent"  >
+            <ul class="navbar-nav ">
+                <li class="nav-item dropdown ">
+                    <div class="nav-link active">
+                        <img src="https://censor.vn/wp-content/uploads/2022/03/logo-cac-hang-giay-noi-tieng-1.png"
+                             alt=" " style="width:40px;" class="rounded-pill"/>
+                        Admin
+                    </div>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link active position-relative" aria-current="page"
+                       href="" style="color: black">
+                        Đơn Hàng
+
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link  active position-relative" aria-current="page"
+                       href="" style="color: black">
+                        Thoát
+
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Modal Đăng xuất -->
+        <div class="modal fade" id="dangXuat" tabindex="-1" aria-labelledby="dangXuatLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="dangXuatLabel">Xác nhận đăng xuát</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        Bạn có chắc chắn muốn thoát?
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                        <a href="http://localhost:9999/">
+                            <button type="button"
+                                    class="btn btn-danger">Thoát
+                            </button>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+    <div class="container" style="margin-top: 8px">
         <div class="row">
             <div class="col-md-6">
                 <!-- Hiển thị hình ảnh sản phẩm -->
@@ -33,7 +94,7 @@
             <div class="col-md-6">
                 <!-- Hiển thị thông tin chi tiết sản phẩm -->
                 <h2>Tên: {{productWithDetails.product_title}}</h2>
-                <p>Giá: {{productWithDetails.product_price}} đ</p>
+                <p>Giá: {{formatCurrency productWithDetails.product_price}}</p>
                 <p>Số lượng: {{productWithDetails.product_quantity}}</p>
                 <!-- Nút thêm sản phẩm -->
                 <button class="btn btn-success mb-3" data-toggle="modal" data-target="#addProductModal">Thêm
@@ -46,7 +107,8 @@
                         <tr>
                             <td>Hình ảnh</td>
                             <td>Tên màu</td>
-                            {{!-- <td>Thao tác</td> --}}
+                            <td>Số lượng</td>
+                            <td>Thao tác</td>
                         </tr>
                     </thead>
 
@@ -58,14 +120,16 @@
                             <td>
                                 <h6>{{this.color_name}}</h6>
                             </td>
-                            {{!-- <td>
+                            <td>
+
+                            </td>
+                           <td>
                                 <a href="#" class="btn btn-primary btn-sm" data-toggle="modal"
                                     data-target="#edit{{this._id}}" data-product-title="Tiêu đề sản phẩm"
                                     data-product-price="Giá sản phẩm">Sửa</a>
                                 <a href="#" class="btn btn-danger btn-sm" data-toggle="modal"
                                     data-target="#delete{{this._id}}" data-product-name="Tên sản phẩm">Xóa</a>
-                                <a href="/home/detail/{{this._id}}" class="btn btn-info btn-sm">Xem chi tiết</a>
-                            </td> --}}
+                            </td>
                         </tr>
 
                         <!-- Modal cho việc xóa sản phẩm -->
@@ -153,6 +217,11 @@
                                         <label for="color_name">Tên</label>
                                         <input type="text" class="form-control" id="color_name" name="color_name"
                                             required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="color_name">Số lượng</label>
+                                        <input type="text" class="form-control" id="color_name" name="color_name"
+                                               required>
                                     </div>
 
                                     <button type="submit" class="btn btn-primary">Thêm</button>
