@@ -6,7 +6,7 @@
     <!-- Đường dẫn đến các file CSS của Bootstrap -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <style>
-         .modal-title {
+        .modal-title {
             font-weight: bold;
         }
 
@@ -30,7 +30,8 @@
             font-size: 14px;
             font-weight: bold;
         }
-     /* Style cho bảng sản phẩm */
+
+        /* Style cho bảng sản phẩm */
         .table td {
             vertical-align: middle;
         }
@@ -49,7 +50,7 @@
 
 <body>
 <nav class="navbar navbar-expand-lg bg-body-tertiary " style="  border-bottom: 2px solid black;">
-    <div class="container-fluid" >
+    <div class="container-fluid">
 
         <div>
             <a class="navbar-brand" href="/home" style="color: black">
@@ -58,7 +59,7 @@
             </a>
         </div>
 
-        <div  id="navbarSupportedContent"  >
+        <div id="navbarSupportedContent">
             <ul class="navbar-nav ">
                 <li class="nav-item dropdown ">
                     <div class="nav-link active">
@@ -85,35 +86,14 @@
             </ul>
         </div>
 
-        <!-- Modal Đăng xuất -->
-        <div class="modal fade" id="dangXuat" tabindex="-1" aria-labelledby="dangXuatLabel" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="dangXuatLabel">Xác nhận đăng xuát</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        Bạn có chắc chắn muốn thoát?
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
-                        <a href="http://localhost:9999/">
-                            <button type="button"
-                                    class="btn btn-danger">Thoát
-                            </button>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
+
     </div>
 </nav>
 
-<div style="width: 1500px;padding: 15px;margin: auto;">
+<div style=" padding: 15px;margin: auto;">
     <div class="card">
         <div class="card-header" style="display: flex;justify-content: space-between;">
-           <div> Quản lý sản phẩm </div>
+            <div> Quản lý sản phẩm</div>
             <!-- Nút thêm sản phẩm -->
             <button class="btn btn-primary" data-toggle="modal" data-target="#addProductModal">Thêm sản phẩm
             </button>
@@ -235,10 +215,7 @@
                                                        value="{{product_price}}" name="product_price" required>
                                             </div>
                                             <div class="form-group">
-                                                <label for="product_quantity">Số lượng</label>
-                                                <input type="number" class="form-control" id="product_quantity"
-                                                       value="{{product_quantity}}" name="product_quantity" required
-                                                       min="0">
+
                                                 <div class="form-group">
                                                     <label for="product_category">Thể loại</label>
                                                     <select class="form-control" id="product_category"
@@ -301,20 +278,16 @@
                                 <input type="number" class="form-control" id="product_price" name="product_price"
                                        required>
                             </div>
-                            <div class="form-group">
-                                <label for="product_quantity">Số lượng</label>
-                                <input type="number" class="form-control" id="product_quantity" name="product_quantity"
-                                       required min="0">
-                                <div class=" form-group">
-                                    <label for="product_category">Thể loại</label>
-                                    <select class="form-control" id="product_category" name="product_category" required>
-                                        <option value="men">Nam</option>
-                                        <option value="women">Nữ</option>
-                                        <option value="children">Trẻ em</option>
-                                    </select>
-                                </div>
-                                <button type="submit" class="btn btn-primary">Thêm</button>
+                            <div class=" form-group">
+                                <label for="product_category">Thể loại</label>
+                                <select class="form-control" id="product_category" name="product_category" required>
+                                    <option value="men">Nam</option>
+                                    <option value="women">Nữ</option>
+                                    <option value="children">Trẻ em</option>
+                                </select>
                             </div>
+                            <button type="submit" class="btn btn-primary">Thêm</button>
+
                         </form>
                     </div>
                 </div>
