@@ -38,10 +38,10 @@ function Cart({ route, navigation }) {
   }, []);
 
   const fetchData = async () => {
-    // const userId = auth.currentUser.uid;
+    const userId = '64ab9784b65d14d1076c3477';
 
     const cartRef = await fetch(
-      "https://md26bipbip-496b6598561d.herokuapp.com/cart"
+      "https://md26bipbip-496b6598561d.herokuapp.com/cart/"+userId
     );
     const cartData = await cartRef.json();
     if (cartData) {
@@ -52,6 +52,7 @@ function Cart({ route, navigation }) {
       }));
 
       setCartProducts(products);
+      console.log(cartProducts)
     } else {
       setCartProducts([]);
     }
@@ -66,22 +67,19 @@ function Cart({ route, navigation }) {
     //   }
     // });
 
-    return () => {
-      off(cartRef);
-    };
   };
   const fetchShippingAddress = () => {
-    const userId = auth.currentUser.uid;
-    const userRef = ref(database, `registrations/${userId}`);
-    onValue(userRef, (snapshot) => {
-      const userData = snapshot.val();
-      if (userData) {
-        const address = userData.address;
-        setShippingAddress(address);
-      } else {
-        setShippingAddress("");
-      }
-    });
+    // const userId = auth.currentUser.uid;
+    // const userRef = ref(database, `registrations/${userId}`);
+    // onValue(userRef, (snapshot) => {
+    //   const userData = snapshot.val();
+    //   if (userData) {
+    //     const address = userData.address;
+    //     setShippingAddress(address);
+    //   } else {
+    //     setShippingAddress("");
+    //   }
+    // });
   };
   const handleToggleSwitch = (productId) => {
     setCartProducts((prevCartProducts) => {
@@ -186,13 +184,11 @@ function Cart({ route, navigation }) {
 
               <Image
                 //uri product image
-                source={{
-                  uri: "https://capvirgo.com/wp-content/uploads/2021/09/i1631528721_8589_1-600x600.jpg?v=1632301476",
-                }}
+                source={{uri:product.product_image}}
                 style={styles.productImage}
               />
               <View style={styles.productInfo}>
-                <Text style={styles.productName}>Nike Air Max 90 SE</Text>
+                <Text style={styles.productName}>{product.product_title}</Text>
                 <Text style={styles.productType}>Phân loại : Vàng/37</Text>
                 <Text style={styles.productPrice}>
                   Giá: {getMonney(sumProductsPrice(product))}
@@ -336,7 +332,7 @@ const styles = StyleSheet.create({
     marginLeft: 10,
   },
   productName: {
-    fontSize: 19,
+    fontSize: 18,
     fontWeight: "bold",
   },
   productType: {
