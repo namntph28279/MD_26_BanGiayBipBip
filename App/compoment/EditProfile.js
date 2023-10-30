@@ -281,7 +281,7 @@
 //
 // export default EditProfile;
 //endc2
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {View, Text, TextInput, TouchableOpacity, StyleSheet, Image} from 'react-native';
 import RNPickerSelect from 'react-native-picker-select';
 import DatePicker from 'react-native-datepicker';
@@ -291,6 +291,21 @@ const EditProfile = ({ router,navigation }) => {
     const [avatar, setAvatar] = useState('');
     const [birthday, setBirthday] = useState('');
 
+    useEffect(() => {
+        const userId = '64b9770a589e84422206b99b';
+
+        fetch(`https://md26bipbip-496b6598561d.herokuapp.com/profile/${userId}`)
+            .then(response => response.json())
+            .then(data => {
+                setFullname(data.fullname);
+                setGender(data.gender || '');
+                setAvatar(data.avatar || '');
+                setBirthday(data.birthday);
+            })
+            .catch(error => {
+                console.error('Lỗi lấy dữ liệu người dùng:', error);
+            });
+    }, []);
     const updateUserProfile = () => {
         const userId = '64b9770a589e84422206b99b';
 
@@ -332,6 +347,7 @@ const EditProfile = ({ router,navigation }) => {
             <RNPickerSelect
                 style={pickerSelectStyles}
                 onValueChange={(value) => setGender(value)}
+                value={gender}
                 items={[
                     { label: 'Nam', value: 'Nam' },
                     { label: 'Nữ', value: 'Nữ' },
