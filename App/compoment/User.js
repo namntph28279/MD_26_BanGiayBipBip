@@ -43,8 +43,13 @@ function User({ navigation }) {
     };
 
     useEffect(() => {
-        // Gọi hàm fetchUserData sau khi component được render
         fetchUserData();
+
+        const interval = setInterval(() => {
+            fetchUserData();
+        }, 1000);
+
+        return () => clearInterval(interval);
     }, []);
 
     const handleLogout = () => {
