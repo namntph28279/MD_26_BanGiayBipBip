@@ -31,12 +31,6 @@ app.set('view engine', '.hbs');
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
-const ObjectId = mongoose.Types.ObjectId;
-
-
-// const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
-
 //git add
 //git commit -am "make it better"
 //git push heroku master
@@ -693,6 +687,23 @@ app.put('/profile/edit', async(req, res) => {
     }
 });
 
+
+//lấy về thông tin profile theo userId
+app.get('/profile/:userId', async (req, res) => {
+    const userId = req.params.userId;
+  
+    try {
+      const profile = await Profile.findOne({ user: userId });
+  
+      if (profile) {
+        res.json(profile);
+      } else {
+        res.status(404).json({ message: 'Không tìm thấy hồ sơ' });
+      }
+    } catch (error) {
+      res.status(500).json({ message: error.message });
+    }
+  });
 
 //Tìm kiếm sản phẩm theo tiêu đề
 app.post('/products/search', async(req, res) => {
