@@ -8,44 +8,44 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 function User({ navigation }) {
     const [userData, setUserData] = useState(null);
     const auth = getAuth(firebase);
-    // useEffect(() => {
-    //     const auth = getAuth(firebase);
-    //     const userId = auth.currentUser.uid;
-    //
-    //     const database = getDatabase(firebase);
-    //     const userRef = ref(database, `registrations/${userId}`);
-    //     onValue(userRef, (snapshot) => {
-    //         const userData = snapshot.val();
-    //         if (userData) {
-    //             setUserData(userData);
-    //         } else {
-    //             setUserData(null);
-    //         }
-    //     });
-    //
-    //     return () => {
-    //         off(userRef);
-    //     };
-    // }, []);
-    const userId = '64ab9784b65d14d1076c3477';
     useEffect(() => {
-        const fetchUserData = async () => {
-            try {
-                const response = await fetch(`https://md26bipbip-496b6598561d.herokuapp.com/user/${userId}`);
-                if (!response.ok) {
-                    throw new Error('Lỗi khi lấy thông tin người dùng');
-                }
+        const auth = getAuth(firebase);
+        const userId = auth.currentUser.uid;
 
-                const data = await response.json();
-                setUserData(data);
-            } catch (error) {
-
-                console.error('Đã có lỗi:', error);
+        const database = getDatabase(firebase);
+        const userRef = ref(database, `registrations/${userId}`);
+        onValue(userRef, (snapshot) => {
+            const userData = snapshot.val();
+            if (userData) {
+                setUserData(userData);
+            } else {
+                setUserData(null);
             }
-        };
+        });
 
-        fetchUserData();
+        return () => {
+            off(userRef);
+        };
     }, []);
+    // const userId = '64b9770a589e84422206b99b';
+    // useEffect(() => {
+    //     const fetchUserData = async () => {
+    //         try {
+    //             const response = await fetch(`https://md26bipbip-496b6598561d.herokuapp.com/user/${userId}`);
+    //             if (!response.ok) {
+    //                 throw new Error('Lỗi khi lấy thông tin người dùng');
+    //             }
+    //
+    //             const data = await response.json();
+    //             setUserData(data);
+    //         } catch (error) {
+    //
+    //             console.error('Đã có lỗi:', error);
+    //         }
+    //     };
+    //
+    //     fetchUserData();
+    // }, []);
 
     const handleLogout = () => {
         const auth = getAuth();

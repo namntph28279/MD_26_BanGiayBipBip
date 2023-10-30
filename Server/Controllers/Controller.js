@@ -638,31 +638,61 @@ app.get('/address/:id', async(req, res) => {
 
 
 // sửa trang cá nhân
+// app.put('/profile/edit', async(req, res) => {
+//     const { user, fullname, gender, avatar, birthday } = req.body;
+
+//     try {
+//         const u = await User.findById(user);
+
+//         if (!u) {
+//             res.status(404).json({ message: 'Tài khoản không tồn tại' });
+//         } else {
+//             pro = new Profile({
+//                 user: user,
+//                 fullname: fullname,
+//                 gender: gender,
+//                 avatar: avatar,
+//                 birthday: birthday
+//             });
+
+//             await pro.save();
+//             res.json(pro);
+//         }
+
+//     } catch (error) {
+//         res.status(500).json({ message: error.message });
+//     }
+// });
+
+// sửa trang cá nhân hiển
 app.put('/profile/edit', async(req, res) => {
     const { user, fullname, gender, avatar, birthday } = req.body;
 
     try {
-        const u = await User.findById(user);
+        let profile = await Profile.findOne({ user });
 
-        if (!u) {
-            res.status(404).json({ message: 'Tài khoản không tồn tại' });
+        if (profile) {
+            profile.fullname = fullname;
+            profile.gender = gender;
+            profile.avatar = avatar;
+            profile.birthday = birthday;
         } else {
-            pro = new Profile({
-                user: user,
-                fullname: fullname,
-                gender: gender,
-                avatar: avatar,
-                birthday: birthday
+            profile = new Profile({
+                user,
+                fullname,
+                gender,
+                avatar,
+                birthday
             });
-
-            await pro.save();
-            res.json(pro);
         }
 
+        await profile.save();
+        res.json(profile);
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
 });
+
 
 //Tìm kiếm sản phẩm theo tiêu đề
 app.post('/products/search', async(req, res) => {
