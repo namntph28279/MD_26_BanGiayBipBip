@@ -468,13 +468,19 @@ app.post('/login', async(req, res) => {
             if (password !== user.password) {
                 res.status(401).json({ message: 'Sai mật khẩu' });
             } else {
-                res.json({ message: 'Đăng nhập thành công' });
+                res.json({
+                    message: 'Đăng nhập thành công',
+                    userId: user._id,
+                    username: user.username,
+                    password: user.password,
+                });
             }
         }
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
 });
+
 
 app.post('/register', async(req, res) => {
     const { username, password } = req.body;
@@ -689,21 +695,21 @@ app.put('/profile/edit', async(req, res) => {
 
 
 //lấy về thông tin profile theo userId
-app.get('/profile/:userId', async (req, res) => {
+app.get('/profile/:userId', async(req, res) => {
     const userId = req.params.userId;
-  
+
     try {
-      const profile = await Profile.findOne({ user: userId });
-  
-      if (profile) {
-        res.json(profile);
-      } else {
-        res.status(404).json({ message: 'Không tìm thấy hồ sơ' });
-      }
+        const profile = await Profile.findOne({ user: userId });
+
+        if (profile) {
+            res.json(profile);
+        } else {
+            res.status(404).json({ message: 'Không tìm thấy hồ sơ' });
+        }
     } catch (error) {
-      res.status(500).json({ message: error.message });
+        res.status(500).json({ message: error.message });
     }
-  });
+});
 
 //Tìm kiếm sản phẩm theo tiêu đề
 app.post('/products/search', async(req, res) => {
