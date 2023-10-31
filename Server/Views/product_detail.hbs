@@ -45,13 +45,13 @@
 
                     </a>
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link  active position-relative" aria-current="page"
-                       href="" style="color: black">
-                        Thoát
+                <!--                <li class="nav-item">-->
+                <!--                    <a class="nav-link  active position-relative" aria-current="page"-->
+                <!--                       href="" style="color: black">-->
+                <!--                        Thoát-->
 
-                    </a>
-                </li>
+                <!--                    </a>-->
+                <!--                </li>-->
             </ul>
         </div>
 
@@ -61,280 +61,320 @@
 
 <div style="margin-top: 8px">
 
-    <div style="width: 1500px;padding-left: 15px;margin: auto;">
+    <div style="justify-content: space-around; margin: auto; display: flex; align-items: center;">
         <!-- Hiển thị thông tin chi tiết sản phẩm -->
-        <h2>Tên: {{productWithDetails.product_title}}</h2>
-        <p>Giá: {{formatCurrency productWithDetails.product_price}}</p>
-        <p>Số lượng: {{productWithDetails.product_quantity}}</p>
+        <div style="display: flex">
+            <img src="{{productWithDetails.product_image}}" alt=""
+                 style="width: 100px; height: 100px; border-radius:100% ">
+            <div style=" margin: 8px; ">
+                <div style=" font-weight: 700; font-size: 22px; font-family: sans-serif; ">
+                    Tên: {{productWithDetails.product_title}}</div>
+                <div>Giá: {{formatCurrency productWithDetails.product_price}}</div>
+                <div>Số lượng: {{productWithDetails.product_quantity}}</div>
+            </div>
+        </div>
         <!-- Nút thêm sản phẩm -->
-        <button class="btn btn-success mb-3" data-toggle="modal" data-target="#addProductModal">Thêm
-            màu
-        </button>
+        <div>
+            <button class="btn btn-success mb-3" data-toggle="modal" data-target="#addProductModal">Thêm
+                màu
+            </button>
+        </div>
 
     </div>
 
 
     <div style=" padding: 15px;margin: auto;">
         <h4>Bảng màu:</h4>
-        <table class="table table-bordered">
-            <thead>
-            <tr>
-                <td>Hình ảnh</td>
-                <td>Tên màu</td>
-                <td>Size 26</td>
-                <td>Size 27</td>
-                <td>Size 28</td>
-                <td>Size 29</td>
-                <td>Size 34</td>
-                <td>Size 35</td>
-                <td>Size 36</td>
-                <td>Size 37</td>
-                <td>Size 38</td>
-                <td>Thao tác</td>
-            </tr>
-            </thead>
-
-            <tbody>
-            {{#each productWithDetails.colorAll}}
+        {{#if productWithDetails.colorAll.length}}
+            <table class="table table-bordered">
+                <thead>
                 <tr>
-                    <td><img src="{{this.dataColer.color_image}}" alt="{{this.dataColer.color_name}}" style="width: 80px; height: 80px; "></td>
-                    <td><h6>{{this.dataColer.color_name}}</h6></td>
-                    <td>{{this.dataSize.[0].size_quantity}}</td>
-                    <td>{{this.dataSize.[1].size_quantity}}</td>
-                    <td>{{this.dataSize.[2].size_quantity}}</td>
-                    <td>{{this.dataSize.[3].size_quantity}}</td>
-                    <td>{{this.dataSize.[4].size_quantity}}</td>
-                    <td>{{this.dataSize.[5].size_quantity}}</td>
-                    <td>{{this.dataSize.[6].size_quantity}}</td>
-                    <td>{{this.dataSize.[7].size_quantity}}</td>
-                    <td>{{this.dataSize.[8].size_quantity}}</td>
-                    <td>
-                        <a href="#" class="btn btn-primary btn-sm" data-toggle="modal"
-                           data-target="#edit{{this.dataColer._id}}" data-product-title="Tiêu đề sản phẩm"
-                           data-product-price="Giá sản phẩm">Sửa</a>
-                        <a href="#" class="btn btn-danger btn-sm" data-toggle="modal"
-                           data-target="#delete{{this.dataColer._id}}" data-product-name="Tên sản phẩm">Xóa</a>
-                    </td>
+                    <td>Hình ảnh</td>
+                    <td>Tên màu</td>
+                    <td>Size 26</td>
+                    <td>Size 27</td>
+                    <td>Size 28</td>
+                    <td>Size 29</td>
+                    <td>Size 34</td>
+                    <td>Size 35</td>
+                    <td>Size 36</td>
+                    <td>Size 37</td>
+                    <td>Size 38</td>
+                    <td>Thao tác</td>
                 </tr>
-                <!-- Modal cho việc xóa sản phẩm -->
-                <div class="modal fade" id="delete{{this.dataColer._id}}" tabindex="-1" role="dialog"
-                     aria-labelledby="deleteProductModalLabel">
-                    <div class="modal-dialog" role="document">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h5 class="modal-title" id="deleteProductModalLabel">Xóa sản phẩm</h5>
-                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                    <span aria-hidden="true">&times;</span>
-                                </button>
-                            </div>
-                            <div class="modal-body">
-                                <p>Bạn có chắc chắn muốn xóa sản phẩm {{this.dataColer.color_name}} ?</p>
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary"
-                                        data-dismiss="modal">Huỷ
-                                </button>
-                                <form action="/home/detail/colors/delete/{{this.dataColer._id}}/{{this.idProduct}}" method="POST"
-                                      class="mb-3" id="addProductForm">
-                                    <button type="submit" class="btn btn-danger">Xóa</button>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                </thead>
 
-                <!-- Modal sửa sản phẩm -->
-                <div class="modal fade" id="edit{{this.dataColer._id}}" tabindex="-1" role="dialog"
-                     aria-labelledby="addProductModalLabel" aria-hidden="true">
-                    <div class="modal-dialog" role="document" style="  max-width: 80%;">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h5 class="modal-title" id="addProductModalLabel">Sửa màu sắc</h5>
-                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                    <span aria-hidden="true">&times;</span>
-                                </button>
-                            </div>
-                            <div class="modal-body">
-                                <form action="/home/detail/colors/edit/{{this.dataColer._id}}/{{this.idProduct}}" method="POST" class="mb-3"
-                                      id="addProductForm">
-                                    <div class="form-group" >
-                                        <label for="color_image">Ảnh </label>
-                                        <input type="text" class="form-control" id="color_image"
-                                               name="color_image" value="{{this.dataColer.color_image}}" required>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="color_name">Tên</label>
-                                        <input type="text" class="form-control" id="color_name"
-                                               name="color_name" value="{{this.dataColer.color_name}}" required>
-                                    </div>
-                                    <div style="display: flex">
-                                        <div class="form-group">
-                                            <label for="color_name">Size 26</label>
-                                            <input type="text" class="form-control" id="color_name" name="size_26"
-                                                   maxlength="3" value="{{this.dataSize.[0].size_quantity}}" style="max-width: 80%"
-                                                   required>
-                                        </div>
-                                        <div class="form-group">
-                                            <label for="color_name">Size 27</label>
-                                            <input type="text" class="form-control" id="color_name" name="size_27"
-                                                   maxlength="3" value="{{this.dataSize.[1].size_quantity}}" style="max-width: 80%"
-                                                   required>
-                                        </div>
-                                        <div class="form-group">
-                                            <label for="color_name">Size 28</label>
-                                            <input type="text" class="form-control" id="color_name" name="size_28"
-                                                   maxlength="3" value="{{this.dataSize.[2].size_quantity}}" style="max-width: 80%"
-                                                   required>
-                                        </div>
-                                        <div class="form-group">
-                                            <label for="color_name">Size 29</label>
-                                            <input type="text" class="form-control" id="color_name" name="size_29"
-                                                   maxlength="3" value="{{this.dataSize.[3].size_quantity}}" style="max-width: 80%"
-                                                   required>
-                                        </div>
-                                        <div class="form-group">
-                                            <label for="color_name">Size 34</label>
-                                            <input type="text" class="form-control" id="color_name" name="size_34"
-                                                   maxlength="3" value="{{this.dataSize.[4].size_quantity}}" style="max-width: 80%"
-                                                   required>
-                                        </div>
-                                        <div class="form-group">
-                                            <label for="color_name">Size 35</label>
-                                            <input type="text" class="form-control" id="color_name" name="size_35"
-                                                   maxlength="3" value="{{this.dataSize.[5].size_quantity}}" style="max-width: 80%"
-                                                   required>
-                                        </div>
-                                        <div class="form-group">
-                                            <label for="color_name">Size 36</label>
-                                            <input type="text" class="form-control" id="color_name" name="size_36"
-                                                   maxlength="3" value="{{this.dataSize.[6].size_quantity}}" style="max-width: 80%"
-                                                   required>
-                                        </div>
-                                        <div class="form-group">
-                                            <label for="color_name">Size 37</label>
-                                            <input type="text" class="form-control" id="color_name" name="size_37"
-                                                   maxlength="3" value="{{this.dataSize.[7].size_quantity}}" style="max-width: 80%"
-                                                   required>
-                                        </div>
-                                        <div class="form-group">
-                                            <label for="color_name">Size 38</label>
-                                            <input type="text" class="form-control" id="color_name" name="size_38"
-                                                   maxlength="3" value="{{this.dataSize.[8].size_quantity}}" style="max-width: 80%"
-                                                   required>
-                                        </div>
-
-                                    </div>
+                <tbody>
+                {{#each productWithDetails.colorAll}}
+                    <tr>
+                        <td><img src="{{this.dataColer.color_image}}" alt="{{this.dataColer.color_name}}"
+                                 style="width: 80px; height: 80px;border-radius: 8px; "></td>
+                        <td><h6>{{this.dataColer.color_name}}</h6></td>
+                        <td>{{this.dataSize.[0].size_quantity}}</td>
+                        <td>{{this.dataSize.[1].size_quantity}}</td>
+                        <td>{{this.dataSize.[2].size_quantity}}</td>
+                        <td>{{this.dataSize.[3].size_quantity}}</td>
+                        <td>{{this.dataSize.[4].size_quantity}}</td>
+                        <td>{{this.dataSize.[5].size_quantity}}</td>
+                        <td>{{this.dataSize.[6].size_quantity}}</td>
+                        <td>{{this.dataSize.[7].size_quantity}}</td>
+                        <td>{{this.dataSize.[8].size_quantity}}</td>
+                        <td>
+                            <a href="#" class="btn btn-primary btn-sm" data-toggle="modal"
+                               data-target="#edit{{this.dataColer._id}}" data-product-title="Tiêu đề sản phẩm"
+                               data-product-price="Giá sản phẩm">Sửa</a>
+                            <a href="#" class="btn btn-danger btn-sm" data-toggle="modal"
+                               data-target="#delete{{this.dataColer._id}}" data-product-name="Tên sản phẩm">Xóa</a>
+                        </td>
+                    </tr>
+                    <!-- Modal cho việc xóa sản phẩm -->
+                    <div class="modal fade" id="delete{{this.dataColer._id}}" tabindex="-1" role="dialog"
+                         aria-labelledby="deleteProductModalLabel">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="deleteProductModalLabel">Xóa sản phẩm</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+                                    <p>Bạn có chắc chắn muốn xóa sản phẩm màu {{this.dataColer.color_name}} ?</p>
+                                </div>
+                                <div class="modal-footer">
                                     <button type="button" class="btn btn-secondary"
                                             data-dismiss="modal">Huỷ
                                     </button>
-                                    <button type="submit" class="btn btn-primary">Sửa</button>
-                                </form>
+                                    <form action="/home/detail/colors/delete/{{this.dataColer._id}}/{{this.idProduct}}"
+                                          method="POST"
+                                          class="mb-3" id="addProductForm">
+                                        <button type="submit" class="btn btn-danger">Xóa</button>
+                                    </form>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-            {{/each}}
-            </tbody>
-        </table>
 
+                    <!-- Modal sửa sản phẩm -->
+                    <div class="modal fade" id="edit{{this.dataColer._id}}" tabindex="-1" role="dialog"
+                         aria-labelledby="addProductModalLabel" aria-hidden="true">
+                        <div class="modal-dialog" role="document" style="  max-width: 80%;">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="addProductModalLabel">Sửa màu sắc</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+                                    <form action="/home/detail/colors/edit/{{this.dataColer._id}}/{{this.idProduct}}"
+                                          method="POST" class="mb-3"
+                                          id="addProductForm">
 
-        <!-- Modal Thêm sản phẩm -->
-        <div class="modal fade" id="addProductModal" tabindex="-1" role="dialog"
-             aria-labelledby="addProductModalLabel" aria-hidden="true">
-            <div class="modal-dialog " role="document" style="  max-width: 80%;">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="addProductModalLabel">Thêm màu</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
+                                        <div style="display: flex;">
+                                            <div>
+                                                <img src="{{this.dataColer.color_image}}"
+                                                     style="height: 95px; width: 95px; border-radius: 5px;">
+                                            </div>
+                                            <div class="form-group" style=" margin-left: 8px; width: 90%; ">
+                                                <label for="color_image">Ảnh </label>
+                                                <input type="text" class="form-control" id="color_image"
+                                                       name="color_image" value="{{this.dataColer.color_image}}"
+                                                       required>
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group" style="width: 98.5%;">
+                                            <label for="color_name">Tên</label>
+                                            <input type="text" class="form-control" id="color_name"
+                                                   name="color_name" value="{{this.dataColer.color_name}}" required>
+                                        </div>
+                                        <div style="display: flex">
+                                            <div class="form-group">
+                                                <label for="color_name">Size 26</label>
+                                                <input type="text" class="form-control" id="color_name" name="size_26"
+                                                       maxlength="3" value="{{this.dataSize.[0].size_quantity}}"
+                                                       style="max-width: 80%"
+                                                       required>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="color_name">Size 27</label>
+                                                <input type="text" class="form-control" id="color_name" name="size_27"
+                                                       maxlength="3" value="{{this.dataSize.[1].size_quantity}}"
+                                                       style="max-width: 80%"
+                                                       required>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="color_name">Size 28</label>
+                                                <input type="text" class="form-control" id="color_name" name="size_28"
+                                                       maxlength="3" value="{{this.dataSize.[2].size_quantity}}"
+                                                       style="max-width: 80%"
+                                                       required>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="color_name">Size 29</label>
+                                                <input type="text" class="form-control" id="color_name" name="size_29"
+                                                       maxlength="3" value="{{this.dataSize.[3].size_quantity}}"
+                                                       style="max-width: 80%"
+                                                       required>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="color_name">Size 34</label>
+                                                <input type="text" class="form-control" id="color_name" name="size_34"
+                                                       maxlength="3" value="{{this.dataSize.[4].size_quantity}}"
+                                                       style="max-width: 80%"
+                                                       required>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="color_name">Size 35</label>
+                                                <input type="text" class="form-control" id="color_name" name="size_35"
+                                                       maxlength="3" value="{{this.dataSize.[5].size_quantity}}"
+                                                       style="max-width: 80%"
+                                                       required>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="color_name">Size 36</label>
+                                                <input type="text" class="form-control" id="color_name" name="size_36"
+                                                       maxlength="3" value="{{this.dataSize.[6].size_quantity}}"
+                                                       style="max-width: 80%"
+                                                       required>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="color_name">Size 37</label>
+                                                <input type="text" class="form-control" id="color_name" name="size_37"
+                                                       maxlength="3" value="{{this.dataSize.[7].size_quantity}}"
+                                                       style="max-width: 80%"
+                                                       required>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="color_name">Size 38</label>
+                                                <input type="text" class="form-control" id="color_name" name="size_38"
+                                                       maxlength="3" value="{{this.dataSize.[8].size_quantity}}"
+                                                       style="max-width: 80%"
+                                                       required>
+                                            </div>
+
+                                        </div>
+                                        <button type="button" class="btn btn-secondary"
+                                                data-dismiss="modal">Huỷ
+                                        </button>
+                                        <button type="submit" class="btn btn-primary">Sửa</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <div class="modal-body">
-                        <form action="/home/detail/color/add/{{productWithDetails._id}}" method="POST"
-                              class="mb-3" id="addProductForm">
-                            <div class="form-group">
-                                <label for="color_image">Ảnh</label>
-                                <input type="text" class="form-control" id="color_image" name="color_image"
-                                       required>
-                            </div>
-                            <div class="form-group">
-                                <label for="color_name">Tên màu</label>
-                                <input type="text" class="form-control" id="color_name" name="color_name"
-                                       required>
-                            </div>
+                {{/each}}
+                </tbody>
+            </table>
+            <!-- Modal Thêm sản phẩm -->
+            <div class="modal fade" id="addProductModal" tabindex="-1" role="dialog"
+                 aria-labelledby="addProductModalLabel" aria-hidden="true">
+                <div class="modal-dialog " role="document" style="  max-width: 80%;">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="addProductModalLabel">Thêm màu</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <form action="/home/detail/color/add/{{productWithDetails._id}}" method="POST"
+                                  class="mb-3" id="addProductForm">
+                                <div class="form-group">
+                                    <label for="color_image">Ảnh</label>
+                                    <input type="text" class="form-control" id="color_image" name="color_image"
+                                           required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="color_name">Tên màu</label>
+                                    <input type="text" class="form-control" id="color_name" name="color_name"
+                                           required>
+                                </div>
 
-                            <!--Thêm số lượng size-->
+                                <!--Thêm số lượng size-->
 
-                            <div style="display: flex">
-                                <div class="form-group">
-                                    <label for="color_name">Size 26</label>
-                                    <input type="text" class="form-control" id="color_name" name="size_26"
-                                           maxlength="3" value="0" style="max-width: 80%"
-                                           required>
+                                <div style="display: flex">
+                                    <div class="form-group">
+                                        <label for="color_name">Size 26</label>
+                                        <input type="text" class="form-control" id="color_name" name="size_26"
+                                               maxlength="3" value="0" style="max-width: 80%"
+                                               required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="color_name">Size 27</label>
+                                        <input type="text" class="form-control" id="color_name" name="size_27"
+                                               maxlength="3" value="0" style="max-width: 80%"
+                                               required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="color_name">Size 28</label>
+                                        <input type="text" class="form-control" id="color_name" name="size_28"
+                                               maxlength="3" value="0" style="max-width: 80%"
+                                               required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="color_name">Size 29</label>
+                                        <input type="text" class="form-control" id="color_name" name="size_29"
+                                               maxlength="3" value="0" style="max-width: 80%"
+                                               required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="color_name">Size 34</label>
+                                        <input type="text" class="form-control" id="color_name" name="size_34"
+                                               maxlength="3" value="0" style="max-width: 80%"
+                                               required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="color_name">Size 35</label>
+                                        <input type="text" class="form-control" id="color_name" name="size_35"
+                                               maxlength="3" value="0" style="max-width: 80%"
+                                               required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="color_name">Size 36</label>
+                                        <input type="text" class="form-control" id="color_name" name="size_36"
+                                               maxlength="3" value="0" style="max-width: 80%"
+                                               required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="color_name">Size 37</label>
+                                        <input type="text" class="form-control" id="color_name" name="size_37"
+                                               maxlength="3" value="0" style="max-width: 80%"
+                                               required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="color_name">Size 38</label>
+                                        <input type="text" class="form-control" id="color_name" name="size_38"
+                                               maxlength="3" value="0" style="max-width: 80%"
+                                               required>
+                                    </div>
                                 </div>
-                                <div class="form-group">
-                                    <label for="color_name">Size 27</label>
-                                    <input type="text" class="form-control" id="color_name" name="size_27"
-                                           maxlength="3" value="0" style="max-width: 80%"
-                                           required>
-                                </div>
-                                <div class="form-group">
-                                    <label for="color_name">Size 28</label>
-                                    <input type="text" class="form-control" id="color_name" name="size_28"
-                                           maxlength="3" value="0" style="max-width: 80%"
-                                           required>
-                                </div>
-                                <div class="form-group">
-                                    <label for="color_name">Size 29</label>
-                                    <input type="text" class="form-control" id="color_name" name="size_29"
-                                           maxlength="3" value="0" style="max-width: 80%"
-                                           required>
-                                </div>
-                                <div class="form-group">
-                                    <label for="color_name">Size 34</label>
-                                    <input type="text" class="form-control" id="color_name" name="size_34"
-                                           maxlength="3" value="0" style="max-width: 80%"
-                                           required>
-                                </div>
-                                <div class="form-group">
-                                    <label for="color_name">Size 35</label>
-                                    <input type="text" class="form-control" id="color_name" name="size_35"
-                                           maxlength="3" value="0" style="max-width: 80%"
-                                           required>
-                                </div>
-                                <div class="form-group">
-                                    <label for="color_name">Size 36</label>
-                                    <input type="text" class="form-control" id="color_name" name="size_36"
-                                           maxlength="3" value="0" style="max-width: 80%"
-                                           required>
-                                </div>
-                                <div class="form-group">
-                                    <label for="color_name">Size 37</label>
-                                    <input type="text" class="form-control" id="color_name" name="size_37"
-                                           maxlength="3" value="0" style="max-width: 80%"
-                                           required>
-                                </div>
-                                <div class="form-group">
-                                    <label for="color_name">Size 38</label>
-                                    <input type="text" class="form-control" id="color_name" name="size_38"
-                                           maxlength="3" value="0" style="max-width: 80%"
-                                           required>
-                                </div>
-                            </div>
-                            <button type="submit" class="btn btn-primary">Thêm</button>
-                        </form>
+                                <button type="submit" class="btn btn-primary">Thêm</button>
+                            </form>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-
+        {{else}}
+            <p>Bạn chưa thêm màu</p>
+        {{/if}}
     </div>
+
 </div>
-
-
 <!-- Tệp JavaScript Bootstrap -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $("table td").each(function () {
+            var cellValue = $(this).text();
+            if (cellValue === '0') {
+                $(this).text('x');
+            }
+        });
+    });
+</script>
 </body>
 
 </html>

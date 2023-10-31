@@ -1,36 +1,50 @@
 import React, { useEffect, useState } from "react";
-import { StyleSheet, View, ScrollView, Text, Image, TextInput, FlatList, TouchableOpacity,LogBox } from "react-native";
+import {
+  StyleSheet,
+  View,
+  ScrollView,
+  Text,
+  Image,
+  TextInput,
+  FlatList,
+  TouchableOpacity,
+  LogBox,
+  SafeAreaView,
+} from "react-native";
 import { getMonney } from "../util/money";
-import axios from 'axios';
-import _ from 'lodash';
-import {useSelector} from "react-redux";
-
+import axios from "axios";
+import _ from "lodash";
+import { useSelector } from "react-redux";
 
 function Search({ navigation }) {
   const [searchText, setSearchText] = useState("");
   const [isSearching, setIsSearching] = useState(false);
   const [filteredProducts, setFilteredProducts] = useState([]);
   const [topSellingInProducts, setTopSellingInProducts] = useState([]);
-  LogBox.ignoreLogs(['VirtualizedLists should never be nested inside plain ScrollViews']);
+  LogBox.ignoreLogs([
+    "VirtualizedLists should never be nested inside plain ScrollViews",
+  ]);
 
-
-  const products  =useSelector((state) => state.dataAll.dataSP); //lấy toàn bộ mảng dữ liệu
-  const  topSellingProducts = useSelector((state)=>state.dataAll.dataSPBestSale)
+  const products = useSelector((state) => state.dataAll.dataSP); //lấy toàn bộ mảng dữ liệu
+  const topSellingProducts = useSelector(
+    (state) => state.dataAll.dataSPBestSale
+  );
 
   useEffect(() => {
-    const filteredTopSellingProducts = topSellingProducts.map(item => {
-      const matchingProduct = products.find(product => product._id === item.productId);
+    const filteredTopSellingProducts = topSellingProducts.map((item) => {
+      const matchingProduct = products.find(
+        (product) => product._id === item.productId
+      );
       return matchingProduct || null;
     });
-    const filteredTopSellingInProducts = filteredTopSellingProducts.filter(product => product !== null);
-
+    const filteredTopSellingInProducts = filteredTopSellingProducts.filter(
+      (product) => product !== null
+    );
 
     setTopSellingInProducts(filteredTopSellingInProducts);
 
     //console.log("Số phần tử trong topSellingInProducts:", limitedTopSellingInProducts.length);
   }, [topSellingProducts, products]);
-
-
 
   const renderProductItem = ({ item }) => {
     return (
@@ -39,18 +53,23 @@ function Search({ navigation }) {
         key={item._id}
         onPress={() => {
           navigation.navigate("ProductDetail", { productId: item._id });
-        }}>
-        <Image source={{ uri: item.product_image }} style={styles.productImage} />
+        }}
+      >
+        <Image
+          source={{ uri: item.product_image }}
+          style={styles.productImage}
+        />
         <View style={styles.productDetails}>
           <Text style={styles.productTitle}>{item.product_title}</Text>
-          <Text style={styles.productPrice}>Giá: {getMonney(item.product_price)}</Text>
+          <Text style={styles.productPrice}>
+            Giá: {getMonney(item.product_price)}
+          </Text>
         </View>
       </TouchableOpacity>
     );
   };
-  const chunkSize = topSellingInProducts.length / 2
+  const chunkSize = topSellingInProducts.length / 2;
   const chunkedArrays = _.chunk(topSellingInProducts, Math.round(chunkSize));
-
 
   const renderTopSellingProductItem = ({ item }) => {
     return (
@@ -101,16 +120,20 @@ function Search({ navigation }) {
         const requestData = {
           title: searchText,
         };
-  
-        const response = await axios.post('https://md26bipbip-496b6598561d.herokuapp.com/products/search', requestData, {
-          headers: {
-            'Content-Type': 'application/json', // Đảm bảo rằng dữ liệu được gửi dưới dạng JSON
+
+        const response = await axios.post(
+          "https://md26bipbip-496b6598561d.herokuapp.com/products/search",
+          requestData,
+          {
+            headers: {
+              "Content-Type": "application/json", // Đảm bảo rằng dữ liệu được gửi dưới dạng JSON
+            },
           }
-        });
-  
+        );
+
         // Assuming the response data is an array of products
         const products = response.data;
-  
+
         setFilteredProducts(products);
         setIsSearching(true);
       }
@@ -119,73 +142,81 @@ function Search({ navigation }) {
     }
   };
   return (
-      <View style={styles.container}>
-        <View style={styles.searchContainer}>
-          <TextInput
-            style={styles.searchInput}
-            placeholder="Tìm kiếm sản phẩm..."
-            value={searchText}
-            onChangeText={(text) => setSearchText(text)}
-          />
-          <TouchableOpacity
-            style={styles.searchButton}
-            onPress={handleSearch}
-          >
-            <View >
-              {/* <Text style={styles.searchButtonText}>Tìm</Text> */}
-              <Image
-                source={require("../image/search.png")}
+    <SafeAreaView style={styles.container}>
+      <View style={styles.searchContainer}>
+        <TextInput
+          style={styles.searchInput}
+          placeholder="Tìm kiếm sản phẩm..."
+          value={searchText}
+          onChangeText={(text) => setSearchText(text)}
+        />
+        <TouchableOpacity style={styles.searchButton} onPress={handleSearch}>
+          <View>
+            {/* <Text style={styles.searchButtonText}>Tìm</Text> */}
+            <Image
+              source={require("../image/search.png")}
               // style={styles.imageBackground}
+            />
+          </View>
+        </TouchableOpacity>
+      </View>
+
+      <ScrollView>
+        {filteredProducts.length === 0 && (
+          <View style={{ display: "flex" }}>
+            <Text style={{ fontSize: 18, fontWeight: "500", marginLeft: 20 }}>
+              Sản phẩm bán chạy
+            </Text>
+
+            <View style={{ marginTop: 7, alignItems: "center" }}>
+              <FlatList
+                data={chunkedArrays[0]}
+                renderItem={renderTopSellingProductItem}
+                keyExtractor={(item) => item._id}
+                horizontal={true}
+                scrollEnabled={false}
+              />
+
+              <FlatList
+                data={chunkedArrays[1]}
+                renderItem={renderTopSellingProductItem}
+                keyExtractor={(item) => item._id}
+                horizontal={true}
+                stickyHeaderIndices={[0]}
+                scrollEnabled={false}
               />
             </View>
-          </TouchableOpacity>
-        </View>
-
-
-        {filteredProducts.length === 0 && (
-          <View style={{display:"flex"}}>
-            <Text style={{ fontSize: 18, fontWeight: '500', marginLeft: 20  }}>Sản phẩm bán chạy</Text>
-
-              <View style={{ marginTop: 7,alignItems:"center"}}>
-           
-                <FlatList
-                  data={chunkedArrays[0]}
-                  renderItem={renderTopSellingProductItem}
-                  keyExtractor={(item) => item._id}
-                  horizontal={true}
-                  scrollEnabled={false}
-                />
-                
-                <FlatList
-                  data={chunkedArrays[1]}
-                  renderItem={renderTopSellingProductItem}
-                  keyExtractor={(item) => item._id}
-                  horizontal={true}
-                  stickyHeaderIndices={[0]}
-                  scrollEnabled={false}
-                />
-              </View>
             <TouchableOpacity
               style={styles.showAll}
               onPress={() => {
                 navigation.navigate("AllShoes");
               }}
             >
-              <Text style={{ fontSize: 15, fontWeight: '500' }}>Xem tất cả</Text>
+              <Text style={{ fontSize: 15, fontWeight: "500" }}>
+                Xem tất cả
+              </Text>
             </TouchableOpacity>
           </View>
-
         )}
         {isSearching && filteredProducts.length === 0 && (
-          <Text style={{ textAlign: 'center', fontSize: 18, color: 'gray' }}>Không có sản phẩm nào</Text>
+          <Text style={{ textAlign: "center", fontSize: 18, color: "gray" }}>
+            Không có sản phẩm nào
+          </Text>
         )}
         <FlatList
-          style={[styles.prodList ,{ height: filteredProducts.length === 0 ? '42%' : '100%', marginTop: filteredProducts.length === 7 ? -10 : 0 }]}
+          style={[
+            styles.prodList,
+            {
+              height: filteredProducts.length === 0 ? "42%" : "100%",
+              marginTop: filteredProducts.length === 7 ? -10 : 0,
+            },
+          ]}
           data={isSearching ? filteredProducts : products}
           keyExtractor={(item) => item._id}
           renderItem={renderProductItem}
         />
-      </View>
+      </ScrollView>
+    </SafeAreaView>
   );
 }
 
@@ -195,30 +226,30 @@ const styles = StyleSheet.create({
   container: {
     paddingTop: 15,
     backgroundColor: "#dddddd",
-    marginBottom: "15%"
+    marginBottom: "15%",
   },
   searchContainer: {
-    margin:10,
+    margin: 10,
     flexDirection: "row",
     paddingHorizontal: 16,
-    alignItems:"center"
+    alignItems: "center",
   },
   searchInput: {
     padding: 10,
     borderWidth: 1,
     borderColor: "#999",
     borderRadius: 10,
-    width: "85%"
+    width: "85%",
   },
   searchButton: {
-    justifyContent:"center",
-    marginLeft:"auto",
+    justifyContent: "center",
+    marginLeft: "auto",
     width: 40,
     height: 40,
   },
   prodList: {
-    marginTop:7,
-    height:"42%"
+    marginTop: 7,
+    height: "42%",
   },
   searchButtonText: {
     color: "white",
@@ -237,10 +268,10 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     borderRadius: 10,
-    marginHorizontal: 200
+    marginHorizontal: 200,
   },
   showAll: {
-    alignSelf: 'flex-end',
+    alignSelf: "flex-end",
     marginVertical: 10,
     marginRight: 18,
   },
@@ -270,7 +301,7 @@ const styles = StyleSheet.create({
     margin: 5,
     borderRadius: 10,
     backgroundColor: "white",
-    shadowColor: "gray"
+    shadowColor: "gray",
   },
   saleImageContainer: {
     width: "100%",
@@ -298,6 +329,5 @@ const styles = StyleSheet.create({
   },
   list: {
     marginHorizontal: 16,
-
-  }
+  },
 });
