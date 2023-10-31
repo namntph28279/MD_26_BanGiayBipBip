@@ -76,7 +76,9 @@ const Login = ({ navigation }) => {
             if (response.status === 200) {
               // Đăng nhập thành công, bạn có thể thực hiện các hành động cần thiết tại đây.
               // Ví dụ: chuyển hướng đến màn hình sau khi đăng nhập thành công.
-              navigation.navigate('TabNavi',{ isAuthenticated: true });
+                const userData = await response.json();
+                const userID = userData.id;
+              navigation.navigate('TabNavi',{ isAuthenticated: true , userID});
             } else if (response.status === 401) {
               // Xử lý khi mật khẩu không đúng
               Alert.alert('Thông báo', 'Sai mật khẩu');

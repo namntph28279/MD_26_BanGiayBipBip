@@ -11,7 +11,7 @@ import NoCart from "./compoment/NoCart";
 const Tab = createBottomTabNavigator();
 
 const TabNavi = ({ route }) => {
-    const { isAuthenticated } = route.params || { isAuthenticated: false };
+    const { isAuthenticated,userID  } = route.params || { isAuthenticated: false };
     return (
         <Tab.Navigator
             initialRouteName={"Trang Chủ"}
@@ -77,6 +77,7 @@ const TabNavi = ({ route }) => {
                 <Tab.Screen
                     name="Tài Khoản"
                     component={User}
+                    initialParams={{ userID }}
                     options={{
                         tabBarLabel: 'Tài Khoản',
                         tabBarIcon: ({ color, size }) => <Ionicons name='person' color={color} size={size} />
