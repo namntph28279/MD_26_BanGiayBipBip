@@ -76,7 +76,7 @@ const Login = ({ navigation }) => {
             if (response.status === 200) {
               // Đăng nhập thành công, bạn có thể thực hiện các hành động cần thiết tại đây.
               // Ví dụ: chuyển hướng đến màn hình sau khi đăng nhập thành công.
-              navigation.navigate('LoggedInScreen');
+              navigation.navigate('TabNavi',{ isAuthenticated: true });
             } else if (response.status === 401) {
               // Xử lý khi mật khẩu không đúng
               Alert.alert('Thông báo', 'Sai mật khẩu');
@@ -102,27 +102,25 @@ const Login = ({ navigation }) => {
     return (
 
         <View style={styles.container}>
-            <TouchableOpacity style={styles.skipButton} onPress={()=> navigation.navigate('TabNavi')}>
+            <TouchableOpacity style={styles.skipButton} onPress={() => navigation.navigate('TabNavi')}>
                 <Text style={styles.skipButtonText}>Bỏ qua</Text>
             </TouchableOpacity>
             <Image source={require('../image/logoapp.png')} />
 
             <Text style={styles.textWelcome}>
-                Chào mừng đến với
-                BipBip
+                Chào mừng đến với BipBip
             </Text>
 
             <Text style={styles.textLogin}>
                 Đăng nhập để tiếp tục
             </Text>
 
-
-
-            <TextInput style={styles.input}
+            <TextInput
+                style={styles.input}
                 placeholder='Username'
                 value={userName}
                 onChangeText={setuserName}
-            />x``
+            />
 
             <View style={{ flexDirection: 'row', alignSelf: 'flex-start', marginLeft: 23 }}>
                 <Text style={{ fontSize: 13, color: 'red' }}>{checkuserName ? '' : 'Vui lòng nhập userName'}</Text>
@@ -130,11 +128,13 @@ const Login = ({ navigation }) => {
                 <Text style={{ fontSize: 13, color: 'red' }}>{checkuser ? '' : 'userName không đúng'}</Text>
             </View>
 
-            <TextInput style={styles.input}
+            <TextInput
+                style={styles.input}
                 placeholder='password'
                 secureTextEntry={true}
                 value={password}
-                onChangeText={setPassword} />
+                onChangeText={setPassword}
+            />
 
             <View style={{ alignSelf: 'flex-start', marginLeft: 23, flexDirection: 'row' }}>
                 <Text style={{ fontSize: 13, color: 'red' }}>{checkpass ? '' : 'Vui lòng nhập mật khẩu'}</Text>
