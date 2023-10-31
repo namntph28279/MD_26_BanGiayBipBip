@@ -3,22 +3,20 @@ import {
     ImageBackground, TextInput, Button,
     TouchableHighlight, TouchableOpacity, Linking
 } from 'react-native'
+import axios from 'axios';
 import React from 'react'
 import { useState } from 'react'
 import { Alert } from 'react-native';
 
-import firebase from '../config/FirebaseConfig';
-import { getDatabase, set, ref, push, remove, onValue } from "firebase/database";
-import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, sendPasswordResetEmail } from '@firebase/auth';
 
 const Login = ({ navigation }) => {
-    const [listUser, setListUser] = useState([]);
 
-    const [email, setEmail] = useState('');
+
+    const [userName, setuserName] = useState('');
     const [password, setPassword] = useState('');
 
-    const [checkemail, setcheckemail] = useState(true)
-    const [validateEmail, setvalidateEmail] = useState(true)
+    const [checkuserName, setcheckuserName] = useState(true)
+    const [validateuserName, setvalidateuserName] = useState(true)
     const [checkuser, setcheckuser] = useState(true)
 
     const [checkpass, setcheckpass] = useState(true)
@@ -26,21 +24,21 @@ const Login = ({ navigation }) => {
 
     const validate = () => {
 
-        const reEmail = /^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/;
+        const reuserName = /^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/;
 
-        if (email.length == 0 || !reEmail.test(email) || password.length == 0) {
+        if (userName.length == 0 || !reuserName.test(userName) || password.length == 0) {
 
 
-            if (email.length == 0) {
-                setcheckemail(false)
-                setvalidateEmail(true)
-            } else if (!reEmail.test(email)) {
-                setvalidateEmail(false)
-                setcheckemail(true)
+            if (userName.length == 0) {
+                setcheckuserName(false)
+                setvalidateuserName(true)
+            } else if (!reuserName.test(userName)) {
+                setvalidateuserName(false)
+                setcheckuserName(true)
             }
             else {
-                setvalidateEmail(true)
-                setcheckemail(true)
+                setvalidateuserName(true)
+                setcheckuserName(true)
             }
 
 
@@ -55,83 +53,49 @@ const Login = ({ navigation }) => {
             return false
         } else {
             setcheckpass(true)
-            setcheckemail(true)
+            setcheckuserName(true)
 
-            setvalidateEmail(true)
+            setvalidateuserName(true)
             setktpass(true)
 
             return true
         }
     }
 
-    const handleLogin = () => {
-        if (validate() == false) return
-        if (validate() == true) {
-            const database = getDatabase(firebase);
-            const auth = getAuth(firebase);
-            // Xử lý logic đăng nhập
-            signInWithEmailAndPassword(auth, email, password)
-                .then((userCredential) => {
-                    const userId = userCredential.user.uid;
-                    console.log('ID người dùng đã đăng nhập:', userId);
-
-                    // Lấy dữ liệu từ Realtime Database
-                    const usersRef = ref(database, '/registrations/' + userId);
-
-                    onValue(usersRef, (snapshot) => {
-                        const usersData = snapshot.val();
-
-                        setListUser(usersData);
-                        console.log('Dữ liệu người dùng:', usersData);
-
-                        navigation.navigate('TabNavi',{ isAuthenticated: true });
-
-                    });
-                })
-                .catch((error) => {
-                    console.error('Lỗi đăng nhập:', error);
-                    Alert.alert('Thông báo', 'Sai email hoặc mật khẩu!');
-                });
-            // const correctEmail = "admin@gmail.com";
-            // const correctPassword = "admin";
-
-            // if (email === listUser.email && password === listUser.pass) {
-            //     navigation.navigate('Home');
-
-            //     setcheckemail(true)
-            //     setcheckpass(true)
-            //     setvalidateEmail(true)
-            //     setktpass(true)
-            //     setcheckuser(true)
-            // } else {
-            //     if (email != listUser.email) {
-            //         setcheckuser(false)
-            //     } else if (email === listUser.email) {
-            //         setcheckuser(true)
-            //         setktpass(false)
-            //     }
-
-            // }
+    const handleLogin = async () => {
+        if (validate()) {
+          try {
+            const response = await fetch('https://md26bipbip-496b6598561d.herokuapp.com/login', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({ username: userName, password }),
+            });
+      
+            if (response.status === 200) {
+              // Đăng nhập thành công, bạn có thể thực hiện các hành động cần thiết tại đây.
+              // Ví dụ: chuyển hướng đến màn hình sau khi đăng nhập thành công.
+              navigation.navigate('LoggedInScreen');
+            } else if (response.status === 401) {
+              // Xử lý khi mật khẩu không đúng
+              Alert.alert('Thông báo', 'Sai mật khẩu');
+            } else if (response.status === 404) {
+              // Xử lý khi tài khoản không tồn tại
+              Alert.alert('Thông báo', 'Tài khoản không tồn tại');
+            } else {
+              // Xử lý các trường hợp lỗi khác
+              Alert.alert('Thông báo', 'Đã xảy ra lỗi');
+            }
+          } catch (error) {
+            console.error('Lỗi:', error);
+            // Xử lý lỗi trong quá trình gửi yêu cầu
+            Alert.alert('Lỗi', 'Đã xảy ra lỗi trong quá trình gửi yêu cầu');
+          }
         }
-
-    }; // end hàm đăng nhập
+      };
     const handleForgotPassword = () => {
-        // Linking.openURL('tel:19001331');
-        const auth = getAuth(firebase);
-        if (email!= null){
-            sendPasswordResetEmail(auth, email)
-                .then(() => {
-                    alert("đã gửi email reset mật khẩu mới, vui lòng check email");
-                })
-                .catch((error) => {
-                    const errorCode = error.code;
-                    const errorMessage = error.message;
-                    alert("Không tồn tại User");
-                    // ..
-                });
-        }else {
-            alert("Bạn cần điền email rồi ấn quên mật khẩu để lấy mật khẩu mới")
-        }
+      
     }; // end quên mật khẩu
 
 
@@ -145,7 +109,7 @@ const Login = ({ navigation }) => {
 
             <Text style={styles.textWelcome}>
                 Chào mừng đến với
-                Shops Sneakers
+                BipBip
             </Text>
 
             <Text style={styles.textLogin}>
@@ -155,15 +119,15 @@ const Login = ({ navigation }) => {
 
 
             <TextInput style={styles.input}
-                placeholder='E-mail address'
-                value={email}
-                onChangeText={setEmail}
-            />
+                placeholder='Username'
+                value={userName}
+                onChangeText={setuserName}
+            />x``
 
             <View style={{ flexDirection: 'row', alignSelf: 'flex-start', marginLeft: 23 }}>
-                <Text style={{ fontSize: 13, color: 'red' }}>{checkemail ? '' : 'Vui lòng nhập Email'}</Text>
-                <Text style={{ fontSize: 13, color: 'red' }}>{validateEmail ? '' : 'Email sai định dạng'}</Text>
-                <Text style={{ fontSize: 13, color: 'red' }}>{checkuser ? '' : 'Email không đúng'}</Text>
+                <Text style={{ fontSize: 13, color: 'red' }}>{checkuserName ? '' : 'Vui lòng nhập userName'}</Text>
+                <Text style={{ fontSize: 13, color: 'red' }}>{validateuserName ? '' : 'userName sai định dạng'}</Text>
+                <Text style={{ fontSize: 13, color: 'red' }}>{checkuser ? '' : 'userName không đúng'}</Text>
             </View>
 
             <TextInput style={styles.input}
