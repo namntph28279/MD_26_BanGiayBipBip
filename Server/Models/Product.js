@@ -16,10 +16,6 @@ const useScheme = new mongoose.Schema({
         type: Number,
         required: true
     },
-    product_quantityColor: {
-        type: Number,
-        required: true
-    },
     product_category:{
         type: String
     }

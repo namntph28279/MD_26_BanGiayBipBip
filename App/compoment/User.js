@@ -8,48 +8,24 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 function User({ navigation }) {
     const [userData, setUserData] = useState(null);
     const auth = getAuth(firebase);
-    // useEffect(() => {
-    //     const auth = getAuth(firebase);
-    //     const userId = auth.currentUser.uid;
-    //
-    //     const database = getDatabase(firebase);
-    //     const userRef = ref(database, `registrations/${userId}`);
-    //     onValue(userRef, (snapshot) => {
-    //         const userData = snapshot.val();
-    //         if (userData) {
-    //             setUserData(userData);
-    //         } else {
-    //             setUserData(null);
-    //         }
-    //     });
-    //
-    //     return () => {
-    //         off(userRef);
-    //     };
-    // }, []);
-    const fetchUserData = async () => {
-        try {
-            const userId = '64b9770a589e84422206b99b';
-            const response = await fetch(`https://md26bipbip-496b6598561d.herokuapp.com/profile/${userId}`);
-            if (!response.ok) {
-                throw new Error('Lỗi khi lấy thông tin người dùng');
-            }
-
-            const data = await response.json();
-            setUserData(data);
-        } catch (error) {
-            console.error('Đã có lỗi:', error);
-        }
-    };
-
     useEffect(() => {
-        fetchUserData();
+        const auth = getAuth(firebase);
+        const userId = auth.currentUser.uid;
 
-        const interval = setInterval(() => {
-            fetchUserData();
-        }, 1000);
+        const database = getDatabase(firebase);
+        const userRef = ref(database, `registrations/${userId}`);
+        onValue(userRef, (snapshot) => {
+            const userData = snapshot.val();
+            if (userData) {
+                setUserData(userData);
+            } else {
+                setUserData(null);
+            }
+        });
 
-        return () => clearInterval(interval);
+        return () => {
+            off(userRef);
+        };
     }, []);
 
     const handleLogout = () => {
@@ -99,26 +75,24 @@ function User({ navigation }) {
                 console.log('Lỗi khi xóa tài khoản:', error);
             });
     };
-    if (!userData) {
-        return null;
-    }
-
-    // Kiểm tra nếu userData.avatar không có giá trị thì sử dụng hình ảnh mặc định
-    const defaultAvatar = 'https://assets.materialup.com/uploads/5b045613-' +
-        '638c-41d9-9b7c-5f6c82926c6e/preview.png';
     return (
         <View style={styles.container}>
 
             <View style={styles.header}>
 
                 <View style={styles.hinh} />
+
                 <Image
-                    source={{ uri: userData.avatar ? userData.avatar : defaultAvatar }}
+                    source={{
+                        uri:
+                            'https://assets.materialup.com/uploads/5b045613-' +
+                            '638c-41d9-9b7c-5f6c82926c6e/preview.png',
+                    }}
                     style={styles.avatar}
                 />
-                <Text style={styles.userId}>{userData.user}</Text>
+                <Text style={styles.userId}>{auth.currentUser.uid}</Text>
                 <Text style={styles.userName}>{userData.fullname}</Text>
-                <Text style={styles.userEmail}>{userData.birthday}</Text>
+                <Text style={styles.userEmail}>{userData.email}</Text>
             </View>
 
             <View style={styles.content}>
@@ -204,11 +178,9 @@ const styles = StyleSheet.create({
         height: 100,
         borderRadius: 50,
         marginBottom: 16,
-        borderWidth: 2,
-        borderColor: 'black',
     },
     userId: {
-        marginTop: 60,
+        marginTop: 50,
         fontSize: 5,
         fontWeight: 'bold',
         marginBottom: 8,

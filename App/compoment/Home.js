@@ -8,7 +8,6 @@ import {
   TouchableOpacity,
   FlatList,
   ActivityIndicator,
-  SafeAreaView,
 } from "react-native";
 import {
   FontAwesome,
@@ -28,7 +27,9 @@ function Home({ navigation }) {
   const dataSP1 = useSelector((state) => state.dataAll.dataSP); //lấy toàn bộ mảng dữ liệu
   const dataSPFav = useSelector((state) => state.dataAll.dataSPFav); //lấy toàn bộ mảng dữ liệu Fav
 
-  const idSPFavs = dataSPFav.map(item => item.product); //lấy id sp Fav
+  const idSPFav = dataSPFav.map(item => item.product); //lấy id sp Fav
+
+  console.log(idSPFav)
 
   const [valueSortBy, setValueSortBy] = useState(0);
   const [valueFilter, setValueFilter] = useState(null);
@@ -41,6 +42,7 @@ function Home({ navigation }) {
   const [check3, setCheck3] = useState(false);
   const [check4, setCheck4] = useState(false);
   const [heartColors, setHeartColors] = useState({});
+
 
   const [dataSP, setDataSP] = useState([]);
   const [dataSwiper, setDataSwiper] = useState([]);
@@ -176,14 +178,13 @@ function Home({ navigation }) {
   const renderProductItem = (item) => {
     const productId = item._id;
     const heartColor = heartColors[productId] || "black";
-    
-    
+
     const toggleHeartColor = () => {
-        setHeartColors((prevColors) => ({
-          ...prevColors,
-          [productId]: heartColor === "black" ? "red" : "black",
-        }));
-      };
+      setHeartColors((prevColors) => ({
+        ...prevColors,
+        [productId]: heartColor === "black" ? "red" : "black",
+      }));
+    };
     return (
       <View style={styles.productContainer}>
         <TouchableOpacity
@@ -284,7 +285,7 @@ function Home({ navigation }) {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <View style={styles.container}>
       <ScrollView>
         <View style={{ alignItems: "center" }}>
           <View style={styles.slide}>{setSwiper()}</View>
@@ -380,7 +381,7 @@ function Home({ navigation }) {
           ))}
         </View>
       </ScrollView>
-    </SafeAreaView>
+    </View>
   );
 }
 
