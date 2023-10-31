@@ -31,12 +31,6 @@ app.set('view engine', '.hbs');
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
-const ObjectId = mongoose.Types.ObjectId;
-
-
-// const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
-
 //git add
 //git commit -am "make it better"
 //git push heroku master
@@ -403,11 +397,11 @@ app.get('/top-selling', async(req, res) => {
 //đăng nhập
 // app.post('/login', async (req, res) => {
 //     const { username, password } = req.body;
-  
+
 //     try {
 //       // Tìm người dùng với username được cung cấp
 //       const user = await User.findOne({ username });
-  
+
 //       if (!user) {
 //         // Người dùng không tồn tại
 //         res.status(404).json({ message: 'Tài khoản không tồn tại' });
@@ -420,11 +414,11 @@ app.get('/top-selling', async(req, res) => {
 //           // Đăng nhập thành công
 //           // Tạo một token ngẫu nhiên
 //           const token = generateRandomToken();
-  
+
 //           // Lưu token vào cơ sở dữ liệu người dùng
 //           user.token = token;
 //           await user.save();
-  
+
 //           // Trả về token cho người dùng
 //           res.json({ token });
 //         }
@@ -433,7 +427,7 @@ app.get('/top-selling', async(req, res) => {
 //       res.status(500).json({ message: error.message });
 //     }
 //   });
-  
+
 //   function generateRandomToken() {
 //     // Logic để tạo một token ngẫu nhiên
 //     // Đây chỉ là một ví dụ đơn giản, bạn có thể sử dụng thư viện như crypto để tạo token an toàn hơn
@@ -447,7 +441,7 @@ app.get('/top-selling', async(req, res) => {
 //     return token;
 //   }
 
-  //đăng xuất
+//đăng xuất
 //   app.post('/logout', async (req, res) => {
 //     try {
 //       const userId = req.body.userId;
@@ -456,82 +450,97 @@ app.get('/top-selling', async(req, res) => {
 //         user.tokens = [];
 //         await user.save();
 //       }
-  
+
 //       res.sendStatus(200);
 //     } catch (error) {
 //       res.status(500).json({ message: error.message });
 //     }
 //   });
-app.post('/login', async (req, res) => {
+app.post('/login', async(req, res) => {
     const { username, password } = req.body;
-  
+
     try {
-      const user = await User.findOne({ username });
-  
-      if (!user) {
-        res.status(404).json({ message: 'Tài khoản không tồn tại' });
-      } else {
-        if (password !== user.password) {
-          res.status(401).json({ message: 'Sai mật khẩu' });
+        const user = await User.findOne({ username });
+
+        if (!user) {
+            res.status(404).json({ message: 'Tài khoản không tồn tại' });
         } else {
-          res.json({ message: 'Đăng nhập thành công' });
+            if (password !== user.password) {
+                res.status(401).json({ message: 'Sai mật khẩu' });
+            } else {
+                res.json({ message: 'Đăng nhập thành công' });
+            }
         }
-      }
     } catch (error) {
-      res.status(500).json({ message: error.message });
+        res.status(500).json({ message: error.message });
     }
-  });
-  
-  app.post('/register', async (req, res) => {
+});
+
+app.post('/register', async(req, res) => {
     const { username, password } = req.body;
-  
+
     try {
-      const existingUser = await User.findOne({ username });
-  
-      if (existingUser) {
-        res.status(409).json({ message: 'Username đã tồn tại' });
-      } else {
-        const user = new User({
-          username,
-          password
-        });
-  
-        await user.save();
-  
-        res.sendStatus(201);
-      }
+        const existingUser = await User.findOne({ username });
+
+        if (existingUser) {
+            res.status(409).json({ message: 'Username đã tồn tại' });
+        } else {
+            const user = new User({
+                username,
+                password
+            });
+
+            await user.save();
+
+            res.sendStatus(201);
+        }
     } catch (error) {
-      res.status(500).json({ message: error.message });
+        res.status(500).json({ message: error.message });
     }
-  });
-  
-  app.post('/changepassword', async (req, res) => {
+});
+
+app.post('/changepassword', async(req, res) => {
     const { username, oldPassword, newPassword } = req.body;
-  
+
     try {
-      const user = await User.findOne({ username });
-  
-      if (!user) {
-        res.status(404).json({ message: 'Tài khoản không tồn tại' });
-      } else {
-        if (oldPassword !== user.password) {
-          res.status(401).json({ message: 'Sai mật khẩu cũ' });
+        const user = await User.findOne({ username });
+
+        if (!user) {
+            res.status(404).json({ message: 'Tài khoản không tồn tại' });
         } else {
-          user.password = newPassword;
-          await user.save();
-  
-          res.sendStatus(200);
+            if (oldPassword !== user.password) {
+                res.status(401).json({ message: 'Sai mật khẩu cũ' });
+            } else {
+                user.password = newPassword;
+                await user.save();
+
+                res.sendStatus(200);
+            }
         }
-      }
     } catch (error) {
-      res.status(500).json({ message: error.message });
+        res.status(500).json({ message: error.message });
     }
-  });
+});
 // lấy toàn bộ user
 app.get('/user', async(req, res) => {
     try {
         const u = await User.find();
         res.json(u);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+// Hiển thị thông tin user dựa trên ID
+app.get('/user/:userId', async(req, res) => {
+    const userId = req.params.userId;
+
+    try {
+        const user = await User.findById(userId);
+
+        if (!user) {
+            return res.status(404).json({ message: 'Người dùng không tồn tại' });
+        }
+        res.json(user);
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
@@ -623,31 +632,78 @@ app.get('/address/:id', async(req, res) => {
 
 
 // sửa trang cá nhân
+// app.put('/profile/edit', async(req, res) => {
+//     const { user, fullname, gender, avatar, birthday } = req.body;
+
+//     try {
+//         const u = await User.findById(user);
+
+//         if (!u) {
+//             res.status(404).json({ message: 'Tài khoản không tồn tại' });
+//         } else {
+//             pro = new Profile({
+//                 user: user,
+//                 fullname: fullname,
+//                 gender: gender,
+//                 avatar: avatar,
+//                 birthday: birthday
+//             });
+
+//             await pro.save();
+//             res.json(pro);
+//         }
+
+//     } catch (error) {
+//         res.status(500).json({ message: error.message });
+//     }
+// });
+
+// sửa trang cá nhân hiển
 app.put('/profile/edit', async(req, res) => {
     const { user, fullname, gender, avatar, birthday } = req.body;
 
     try {
-        const u = await User.findById(user);
+        let profile = await Profile.findOne({ user });
 
-        if (!u) {
-            res.status(404).json({ message: 'Tài khoản không tồn tại' });
+        if (profile) {
+            profile.fullname = fullname;
+            profile.gender = gender;
+            profile.avatar = avatar;
+            profile.birthday = birthday;
         } else {
-            pro = new Profile({
-                user: user,
-                fullname: fullname,
-                gender: gender,
-                avatar: avatar,
-                birthday: birthday
+            profile = new Profile({
+                user,
+                fullname,
+                gender,
+                avatar,
+                birthday
             });
-
-            await pro.save();
-            res.json(pro);
         }
 
+        await profile.save();
+        res.json(profile);
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
 });
+
+
+//lấy về thông tin profile theo userId
+app.get('/profile/:userId', async (req, res) => {
+    const userId = req.params.userId;
+  
+    try {
+      const profile = await Profile.findOne({ user: userId });
+  
+      if (profile) {
+        res.json(profile);
+      } else {
+        res.status(404).json({ message: 'Không tìm thấy hồ sơ' });
+      }
+    } catch (error) {
+      res.status(500).json({ message: error.message });
+    }
+  });
 
 //Tìm kiếm sản phẩm theo tiêu đề
 app.post('/products/search', async(req, res) => {

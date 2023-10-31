@@ -71,18 +71,18 @@
 
                 <li class="nav-item">
                     <a class="nav-link active position-relative" aria-current="page"
-                       href="" style="color: black">
+                       href="http://localhost/screen_order" style="color: black">
                         Đơn Hàng
 
                     </a>
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link  active position-relative" aria-current="page"
-                       href="" style="color: black">
-                        Thoát
+                <!--                <li class="nav-item">-->
+                <!--                    <a class="nav-link  active position-relative" aria-current="page"-->
+                <!--                       href="" style="color: black">-->
+                <!--                        Thoát-->
 
-                    </a>
-                </li>
+                <!--                    </a>-->
+                <!--                </li>-->
             </ul>
         </div>
 
@@ -122,6 +122,7 @@
                         <th>Ảnh</th>
                         <th>Tên sản phẩm</th>
                         <th>Giá</th>
+                        <th>Số màu</th>
                         <th>Số lượng</th>
                         <th>Loại</th>
                         <th>Thao tác</th>
@@ -131,10 +132,11 @@
                     {{#each products}}
                         <tr>
                             <td><img src={{this.product_image}} alt={{this.product_title}}
-                                     style="height: 50px; width: 50px;">
+                                     style="height: 80px;width: 80px;border-radius: 8px;">
                             </td>
                             <td>{{this.product_title}}</td>
                             <td>{{formatCurrency this.product_price}}</td>
+                            <td>{{this.product_quantityColor}}</td>
                             <td>{{this.product_quantity}}</td>
                             <td>
                                 {{#ifCond this.product_category '===' 'men'}}
@@ -197,11 +199,17 @@
                                     <div class="modal-body">
                                         <form action="/home/edit/{{this._id}}" method="POST" class="mb-3"
                                               id="addProductForm">
-                                            <div class="form-group">
-                                                <label for="product_image">Ảnh</label>
-                                                <input type="text" class="form-control" id="product_image"
-                                                       name="product_image"
-                                                       value="{{product_image}}" required>
+                                            <div style="display: flex;">
+                                                <div>
+                                                    <img src="{{product_image}}"
+                                                         style="height: 95px; width: 95px; border-radius: 5px;">
+                                                </div>
+                                                <div class="form-group" style=" margin-left: 8px; width: 80%; ">
+                                                    <label for="product_image">Ảnh</label>
+                                                    <input type="text" class="form-control" id="product_image"
+                                                           name="product_image"
+                                                           value="{{product_image}}" required>
+                                                </div>
                                             </div>
                                             <div class="form-group">
                                                 <label for="product_title">Tiêu đề</label>
@@ -301,6 +309,16 @@
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $("table td").each(function () {
+            var cellValue = $(this).text();
+            if (cellValue === '0') {
+                $(this).text('x');
+            }
+        });
+    });
+</script>
 </body>
 
 </html>

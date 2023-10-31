@@ -34,16 +34,21 @@ app.use(bodyParser.json());
 
 const ObjectId = mongoose.Types.ObjectId;
 
-
-// const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
-
 app.use(express.json());
 //màn hình home
 app.get('/home', async (req, res) => {
     try {
         const products = await Product.find().lean();
         res.render('../Views/home.hbs', {products});
+    } catch (error) {
+        res.status(500).json({message: error.message});
+    }
+});
+
+app.get('/screen_order', async (req, res) => {
+    try {
+
+        res.render('../Views/order.hbs');
     } catch (error) {
         res.status(500).json({message: error.message});
     }
@@ -69,7 +74,8 @@ app.post('/home/add', async (req, res) => {
         product_title,
         product_price,
         product_image,
-        product_quantity,
+        product_quantityColor: 0,
+        product_quantity: 0,
         product_category
     });
 
@@ -150,12 +156,12 @@ app.get('/home/detail/:id', async (req, res) => {
         const sizeQuantity = sizes.reduce((total, size) => total + size.size_quantity, 0);
 
         // Tính toán tổng số lượng sản phẩm
-        const productQuantity =  sizeQuantity;
+        const productQuantity = sizeQuantity;
 
         await Product.findOneAndUpdate({_id: idProductSP}, {
             product_quantity: productQuantity,
+            product_quantityColor: colorQuantity,
         });
-
         // Kết hợp thông tin sản phẩm, kích thước và màu sắc
         const productWithDetails = {
             _id: product._id,
