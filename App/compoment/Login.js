@@ -1,190 +1,140 @@
-import {
-    StyleSheet, Text, View, Image,
-    ImageBackground, TextInput, Button,
-    TouchableHighlight, TouchableOpacity, Linking
-} from 'react-native'
+import React, { useState } from 'react';
+import { View, Text, TextInput, TouchableOpacity, Image, Alert, StyleSheet } from 'react-native';
 import axios from 'axios';
-import React from 'react'
-import { useState } from 'react'
-import { Alert } from 'react-native';
-
 
 const Login = ({ navigation }) => {
-
-
-    const [userName, setuserName] = useState('');
-    const [password, setPassword] = useState('');
-
-    const [checkuserName, setcheckuserName] = useState(true)
-    const [validateuserName, setvalidateuserName] = useState(true)
-    const [checkuser, setcheckuser] = useState(true)
-
-    const [checkpass, setcheckpass] = useState(true)
-    const [ktpass, setktpass] = useState(true)
-
-    const validate = () => {
-
-        const reuserName = /^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/;
-
-        if (userName.length == 0 || !reuserName.test(userName) || password.length == 0) {
-
-
-            if (userName.length == 0) {
-                setcheckuserName(false)
-                setvalidateuserName(true)
-            } else if (!reuserName.test(userName)) {
-                setvalidateuserName(false)
-                setcheckuserName(true)
-            }
-            else {
-                setvalidateuserName(true)
-                setcheckuserName(true)
-            }
-
-
-            if (password.length == 0) {
-                setcheckpass(false)
-                setktpass(true)
-
-            } else {
-                setcheckpass(true)
-                setktpass(true)
-            }
-            return false
-        } else {
-            setcheckpass(true)
-            setcheckuserName(true)
-
-            setvalidateuserName(true)
-            setktpass(true)
-
-            return true
-        }
+  const [userName, setUserName] = useState('');
+  const [password, setPassword] = useState('');
+  const [checkUserName, setCheckUserName] = useState(true);
+  const [checkPass, setCheckPass] = useState(true);
+  const [ktPass, setKtPass] = useState(true);
+  const reuserName = /^[a-zA-Z0-9]+([._]?[a-zA-Z0-9]+)*$/;
+  const validate = () => {
+    // Thay thế 'reuserName' bằng biểu thức chính quy hợp lệ để kiểm tra tên người dùng
+    if (userName.length === 0 || !reuserName.test(userName) || password.length === 0) {
+      if (password.length === 0) {
+        setCheckPass(false);
+        setKtPass(true);
+      } else {
+        setCheckPass(true);
+        setKtPass(true);
+      }
+      return false;
+    } else {
+      setCheckPass(true);
+      setKtPass(true);
+      return true;
     }
+  };
 
-    const handleLogin = async () => {
-        if (validate()) {
-          try {
-            const response = await fetch('https://md26bipbip-496b6598561d.herokuapp.com/login', {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-              },
-              body: JSON.stringify({ username: userName, password }),
-            });
-      
-            if (response.status === 200) {
-              // Đăng nhập thành công, bạn có thể thực hiện các hành động cần thiết tại đây.
-              // Ví dụ: chuyển hướng đến màn hình sau khi đăng nhập thành công.
-                const userData = await response.json();
-                const userID = userData.id;
-              navigation.navigate('TabNavi',{ isAuthenticated: true , userID});
-            } else if (response.status === 401) {
-              // Xử lý khi mật khẩu không đúng
-              Alert.alert('Thông báo', 'Sai mật khẩu');
-            } else if (response.status === 404) {
-              // Xử lý khi tài khoản không tồn tại
-              Alert.alert('Thông báo', 'Tài khoản không tồn tại');
-            } else {
-              // Xử lý các trường hợp lỗi khác
-              Alert.alert('Thông báo', 'Đã xảy ra lỗi');
-            }
-          } catch (error) {
+  const handleLogin = async () => {
+    if (validate()) {
+      try {
+        const response = await axios.post('https://md26bipbip-496b6598561d.herokuapp.com/login', {
+          username: userName,
+          password,
+        });
+        
+        if (response.status === 200) {
+          const userData = response.data;
+          const userID = userData.id;
+          navigation.navigate('TabNavi', { isAuthenticated: true, userID });
+        } else if (response.status === 401) {
+          Alert.alert('Thông báo', 'Sai mật khẩu');
+        } else if (response.status === 404) {
+          Alert.alert('Thông báo', 'Tài khoản không tồn tại');
+        } else {
+          Alert.alert('Thông báo', 'Đã xảy ra lỗi');
+        }
+      } catch (error) {
+        
+        if (error.response && error.response.status === 401) {
+            // Xử lý lỗi 401 (Unauthorized)
+            Alert.alert('Thông báo', 'Sai mật khẩu');
+          } else if (error.response && error.response.status === 404) {
+            // Xử lý lỗi 404 (Not Found)
+            Alert.alert('Thông báo', 'Tài khoản không tồn tại');
+          } else {
+            // Xử lý các lỗi khác
             console.error('Lỗi:', error);
-            // Xử lý lỗi trong quá trình gửi yêu cầu
             Alert.alert('Lỗi', 'Đã xảy ra lỗi trong quá trình gửi yêu cầu');
           }
-        }
-      };
-    const handleForgotPassword = () => {
-      
-    }; // end quên mật khẩu
+      }
+    }
+  };
 
+  const handleForgotPassword = () => {
+    Alert.alert('Reset mật khẩu', 'Vui lòng liên hệ quản trị viên để reset mật khẩu');
+  };
 
-    return (
+  return (
+    <View style={styles.container}>
+      <TouchableOpacity style={styles.skipButton} onPress={() => navigation.navigate('TabNavi')}>
+        <Text style={styles.skipButtonText}>Bỏ qua</Text>
+      </TouchableOpacity>
+      <Image source={require('../image/logoapp1.png')} />
 
-        <View style={styles.container}>
-            <TouchableOpacity style={styles.skipButton} onPress={() => navigation.navigate('TabNavi')}>
-                <Text style={styles.skipButtonText}>Bỏ qua</Text>
-            </TouchableOpacity>
-            <Image source={require('../image/logoapp.png')} />
+      <Text style={styles.textWelcome}>Chào mừng đến với BipBip</Text>
 
-            <Text style={styles.textWelcome}>
-                Chào mừng đến với BipBip
-            </Text>
+      <Text style={styles.textLogin}>Đăng nhập để tiếp tục</Text>
 
-            <Text style={styles.textLogin}>
-                Đăng nhập để tiếp tục
-            </Text>
+      <TextInput
+        style={styles.input}
+        placeholder="Tên người dùng"
+        value={userName}
+        onChangeText={setUserName}
+      />
 
-            <TextInput
-                style={styles.input}
-                placeholder='Username'
-                value={userName}
-                onChangeText={setuserName}
-            />
+      <View style={{ flexDirection: 'row', alignSelf: 'flex-start', marginLeft: 23 }}>
+        <Text style={{ fontSize: 13, color: 'red' }}>{checkUserName ? '' : 'Vui lòng nhập tên người dùng'}</Text>
+      </View>
 
-            <View style={{ flexDirection: 'row', alignSelf: 'flex-start', marginLeft: 23 }}>
-                <Text style={{ fontSize: 13, color: 'red' }}>{checkuserName ? '' : 'Vui lòng nhập userName'}</Text>
-                <Text style={{ fontSize: 13, color: 'red' }}>{validateuserName ? '' : 'userName sai định dạng'}</Text>
-                <Text style={{ fontSize: 13, color: 'red' }}>{checkuser ? '' : 'userName không đúng'}</Text>
-            </View>
+      <TextInput
+        style={styles.input}
+        placeholder="Mật khẩu"
+        secureTextEntry={true}
+        value={password}
+        onChangeText={setPassword}
+      />
 
-            <TextInput
-                style={styles.input}
-                placeholder='password'
-                secureTextEntry={true}
-                value={password}
-                onChangeText={setPassword}
-            />
+      <View style={{ alignSelf: 'flex-start', marginLeft: 23, flexDirection: 'row' }}>
+        <Text style={{ fontSize: 13, color: 'red' }}>{checkPass ? '' : 'Vui lòng nhập mật khẩu'}</Text>
+        <Text style={{ fontSize: 13, color: 'red' }}>{ktPass ? '' : 'Sai mật khẩu'}</Text>
+      </View>
 
-            <View style={{ alignSelf: 'flex-start', marginLeft: 23, flexDirection: 'row' }}>
-                <Text style={{ fontSize: 13, color: 'red' }}>{checkpass ? '' : 'Vui lòng nhập mật khẩu'}</Text>
-                <Text style={{ fontSize: 13, color: 'red' }}>{ktpass ? '' : 'Sai mật khẩu'}</Text>
-            </View>
+      <TouchableOpacity style={styles.button} activeOpacity={0.6} onPress={handleLogin}>
+        <Text style={styles.textButon}>Đăng nhập</Text>
+      </TouchableOpacity>
 
+      <View style={styles.or}>
+        <View style={styles.line} />
+        <Text>HOẶC</Text>
+        <View style={styles.line} />
+      </View>
 
+      <View style={styles.inputLogin}>
+        <Image source={require('../image/google.png')} />
+        <Text style={styles.textGG}>Đăng nhập bằng Google</Text>
+      </View>
+      <View style={styles.inputLogin}>
+        <Image source={require('../image/facebook.png')} />
+        <Text style={styles.textFB}>Đăng nhập bằng Facebook</Text>
+      </View>
 
-            <TouchableOpacity
-                style={styles.button}
-                activeOpacity={0.6}
-                onPress={handleLogin}
-            >
-                <Text style={styles.textButon}>Đăng nhập</Text>
-            </TouchableOpacity>
+      <Text style={styles.forget} onPress={handleForgotPassword}>
+        Quên mật khẩu?
+      </Text>
 
-            <View style={styles.or} >
-                <View style={styles.line} />
-                <Text>OR</Text>
-                <View style={styles.line} />
-            </View>
+      <View style={styles.singin}>
+        <Text>Bạn là người mới?</Text>
+        <Text style={styles.inputSingin} onPress={() => navigation.navigate('Register')}>
+          Đăng ký
+        </Text>
+      </View>
+    </View>
+  );
+};
 
-            <View style={styles.inputLogin}>
-
-                <Image source={require('../image/google.png')} />
-                <Text style={styles.textGG}>Đăng nhập bằng Google</Text>
-            </View>
-            <View style={styles.inputLogin}>
-
-                <Image source={require('../image/facebook.png')} />
-                <Text style={styles.textFB}>Đăng nhập bằng Facebook</Text>
-            </View>
-
-
-            <Text style={styles.forget} onPress={handleForgotPassword}>Quên mật khẩu?</Text>
-            <View style={styles.singin}>
-                <Text >Bạn là người mới?</Text>
-                <Text style={styles.inputSingin}
-                    onPress={() => { navigation.navigate('Register') }}
-                > Đăng ký</Text>
-            </View>
-
-
-
-
-        </View>
-    )
-}
 
 export default Login
 
