@@ -9,25 +9,12 @@ function User({ route, navigation }) {
     const [userData, setUserData] = useState(null);
     const auth = getAuth(firebase);
     const userId = '64b9770a589e84422206b99b';
-    // useEffect(() => {
-    //     const auth = getAuth(firebase);
-    //     const userId = auth.currentUser.uid;
-    //
-    //     const database = getDatabase(firebase);
-    //     const userRef = ref(database, `registrations/${userId}`);
-    //     onValue(userRef, (snapshot) => {
-    //         const userData = snapshot.val();
-    //         if (userData) {
-    //             setUserData(userData);
-    //         } else {
-    //             setUserData(null);
-    //         }
-    //     });
-    //
-    //     return () => {
-    //         off(userRef);
-    //     };
-    // }, []);
+    const userID = route.params?.userID || '';
+
+    useEffect(() => {
+        console.log('Giá trị userID từ propsvvv:', userID);
+        // Thực hiện các xử lý khác với userID
+    }, [userID]);
     const fetchUserData = async () => {
         try {
             // const userId = '64b9770a589e84422206b99b';

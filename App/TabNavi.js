@@ -8,11 +8,14 @@ import User from "./compoment/User";
 import NotLoginUser from "./compoment/NotLoginUser";
 import NoFavourite from "./compoment/NoFavourite";
 import NoCart from "./compoment/NoCart";
+import {useEffect} from "react";
 const Tab = createBottomTabNavigator();
 
 const TabNavi = ({ route }) => {
     const { isAuthenticated,userID  } = route.params || { isAuthenticated: false };
-    console.log('hiển đàm test lấy user Id', userID);
+    useEffect(() => {
+        console.log('Giá trị userID từ TabNavi:', userID);
+    }, [userID]);
     return (
         <Tab.Navigator
             initialRouteName={"Trang Chủ"}
