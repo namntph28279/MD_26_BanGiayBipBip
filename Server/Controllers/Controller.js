@@ -7,14 +7,12 @@ const Address = require('../Models/Address');
 const Profile = require('../Models/Profile');
 const Color = require('../Models/Color');
 const Size = require('../Models/Size');
-const auth = require('../authenticateToken');
 
 const express = require('express');
 const app = express();
 const Handlebars = require('express-handlebars');
 const bodyParser = require('body-parser');
 const handlebarshelper = require("../handlebars-helpers");
-const mongoose = require('mongoose');
 
 app.set('Views', __dirname + '/views');
 
@@ -468,7 +466,7 @@ app.post('/login', async(req, res) => {
             if (password !== user.password) {
                 res.status(401).json({ message: 'Sai mật khẩu' });
             } else {
-                res.json({ message: 'Đăng nhập thành công' });
+                res.json(user);
             }
         }
     } catch (error) {
