@@ -5,7 +5,7 @@ import { getDatabase, off, onValue, ref,remove  } from 'firebase/database';
 import firebase from '../config/FirebaseConfig';
 import Icon from 'react-native-vector-icons/FontAwesome';
 
-function User({ navigation }) {
+function User({ route, navigation }) {
     const [userData, setUserData] = useState(null);
     const auth = getAuth(firebase);
     const userId = '64b9770a589e84422206b99b';
@@ -30,7 +30,7 @@ function User({ navigation }) {
     // }, []);
     const fetchUserData = async () => {
         try {
-            const userId = '64b9770a589e84422206b99b';
+            // const userId = '64b9770a589e84422206b99b';
             const response = await fetch(`https://md26bipbip-496b6598561d.herokuapp.com/profile/${userId}`);
             if (!response.ok) {
                 throw new Error('Lỗi khi lấy thông tin người dùng');

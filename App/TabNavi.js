@@ -12,6 +12,7 @@ const Tab = createBottomTabNavigator();
 
 const TabNavi = ({ route }) => {
     const { isAuthenticated,userID  } = route.params || { isAuthenticated: false };
+    console.log('hiển đàm test lấy user Id', userID);
     return (
         <Tab.Navigator
             initialRouteName={"Trang Chủ"}
