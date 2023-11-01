@@ -8,6 +8,7 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 function User({ navigation }) {
     const [userData, setUserData] = useState(null);
     const auth = getAuth(firebase);
+    const userId = '64b9770a589e84422206b99b';
     // useEffect(() => {
     //     const auth = getAuth(firebase);
     //     const userId = auth.currentUser.uid;
@@ -124,7 +125,7 @@ function User({ navigation }) {
             <View style={styles.content}>
                 <TouchableOpacity
                     style={styles.section}
-                    onPress={() => navigation.navigate('EditProfile',{ userId: auth.currentUser.uid ,userData})}
+                    onPress={() => navigation.navigate('EditProfile',{ userId ,userData})}
                 >
                     <Icon name="edit" size={20} color="orange" />
                     <Text style={styles.sectionText}>Chỉnh sửa thông tin</Text>
