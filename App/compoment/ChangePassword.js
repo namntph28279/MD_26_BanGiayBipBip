@@ -11,7 +11,7 @@ import {
 import axios from "axios";
 
 const ChangePassword = ({ route, navigation }) => {
-  const { userId } = route.params;
+//   const { userId } = route.params;
 
   const [oldPassword, setOldPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
@@ -36,8 +36,8 @@ const ChangePassword = ({ route, navigation }) => {
       setErrorConfirmPassword(false);
     }
 
-    const user = "hoang";
-    //mk 1234567
+    const user = "ptg@gmail.com";
+    //mk 123456
 
     axios
       .post("https://md26bipbip-496b6598561d.herokuapp.com/changepassword", {

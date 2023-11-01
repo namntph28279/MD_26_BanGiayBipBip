@@ -8,6 +8,7 @@ import {
   Animated,
   ScrollView,
 } from "react-native";
+
 import {
   getDatabase,
   ref,
@@ -17,11 +18,13 @@ import {
   push,
 } from "firebase/database";
 import { getAuth } from "firebase/auth";
-import { Ionicons } from "@expo/vector-icons";
 import firebase from "../config/FirebaseConfig";
+import { Ionicons } from "@expo/vector-icons";
 import { CheckBox } from "react-native-elements";
-
 import { getMonney } from "../util/money";
+
+import { useDispatch, useSelector } from "react-redux";
+import { fetchDataAndSetToRedux } from "../redux/AllData";
 
 function Cart({ route, navigation }) {
   const [userData, setUserData] = useState(null);
@@ -32,16 +35,28 @@ function Cart({ route, navigation }) {
   const auth = getAuth(firebase);
   const database = getDatabase(firebase);
 
+  const dispatch = useDispatch(); //trả về một đối tượng điều phối
+  const dataProduct = useSelector((state) => state.dataAll.dataSP);
+  const [dataSP, setDataSP] = useState([]);
+
+  React.useEffect(() => {
+    const unsubscribe = navigation.addListener("focus", () => {
+      dispatch(fetchDataAndSetToRedux());
+    });
+    return unsubscribe;
+  }, [navigation]);
+
   useEffect(() => {
     fetchShippingAddress();
     fetchData();
-  }, []);
+    setDataSP(dataProduct);
+  }, [dataProduct]);
 
   const fetchData = async () => {
-    const userId = '64ab9784b65d14d1076c3477';
+    const userId = "64ab9784b65d14d1076c3477";
 
     const cartRef = await fetch(
-      "https://md26bipbip-496b6598561d.herokuapp.com/cart/"+userId
+      "https://md26bipbip-496b6598561d.herokuapp.com/cart/" + userId
     );
     const cartData = await cartRef.json();
     if (cartData) {
@@ -52,7 +67,6 @@ function Cart({ route, navigation }) {
       }));
 
       setCartProducts(products);
-      console.log(cartProducts)
     } else {
       setCartProducts([]);
     }
@@ -66,8 +80,8 @@ function Cart({ route, navigation }) {
     //     setUserData(null);
     //   }
     // });
-
   };
+
   const fetchShippingAddress = () => {
     // const userId = auth.currentUser.uid;
     // const userRef = ref(database, `registrations/${userId}`);
@@ -144,13 +158,13 @@ function Cart({ route, navigation }) {
   const sumSelectedProductsPrice = () => {
     let sum = 0;
     selectedProducts.forEach((product) => {
-      sum += product.price * product.quantity;
+      const item = dataSP.find((item) => item._id === product.product);
+      sum += item.product_price * product.quantity;
     });
     return sum;
   };
-  const sumProductsPrice = (product) => {
-    // return product.price * product.quantity;
-    return 1000000;
+  const sumProductsPrice = (product, quantity) => {
+    return product.product_price * quantity;
   };
 
   const countSelectedProducts = () => {
@@ -165,73 +179,78 @@ function Cart({ route, navigation }) {
     setSelectedProducts(updatedSelectedProducts);
   }, [cartProducts]);
 
+  const renderItems = (product) => {
+    const item = dataSP.find((item) => item._id === product.product);
+    return (
+      <View key={product._id} style={styles.productContainer}>
+        <View style={styles.productBox}>
+          <View style={{ width: 45 }}>
+            <CheckBox
+              checked={product.selected}
+              checkedColor="gray"
+              style={styles.buttonCheckbox}
+              onPress={() => handleToggleSwitch(product.id)}
+            />
+          </View>
+
+          <Image
+            //uri product image
+            source={{ uri: item.product_image }}
+            style={styles.productImage}
+          />
+          <View style={styles.productInfo}>
+            <Text style={styles.productName}>{item.product_title}</Text>
+            <Text style={styles.productType}>Phân loại : Vàng/37</Text>
+            <Text style={styles.productPrice}>
+              Giá: {getMonney(sumProductsPrice(item, product.quantity))}
+            </Text>
+            <View style={styles.quantityContainer}>
+              <TouchableOpacity
+                style={styles.quantityButton}
+                // onPress={decreaseQuantity}
+              >
+                <Text style={styles.quantityButtonText}>-</Text>
+              </TouchableOpacity>
+              <Text style={styles.quantityText}>{product.quantity}</Text>
+              <TouchableOpacity
+                style={styles.quantityButton}
+                // onPress={increaseQuantity}
+              >
+                <Text style={styles.quantityButtonText}>+</Text>
+              </TouchableOpacity>
+            </View>
+            {/* <Animated.Text
+              style={[styles.editText, { opacity: fadeAnim }]}
+              onLayout={startAnimation}
+            >
+              Nhấn vào để chỉnh sửa
+            </Animated.Text> */}
+            <View style={styles.buttonContainer}>
+              {/*<TouchableOpacity style={styles.button1} onPress={() => handleBuyNow(product)}>*/}
+              {/*    <Ionicons name="cart-outline" size={24} color="#ff6" />*/}
+              {/*    <Text style={styles.buttonText1}>Mua</Text>*/}
+              {/*</TouchableOpacity>*/}
+
+              {/* <TouchableOpacity
+                style={styles.button}
+                onPress={() => handleRemoveProduct(product.id)}
+              >
+                <Ionicons name="trash-outline" size={20} color="#fff" />
+                <Text style={styles.buttonText}>Xóa</Text>
+              </TouchableOpacity> */}
+            </View>
+          </View>
+        </View>
+      </View>
+    );
+  };
+
   return (
     <View style={styles.container}>
       <Text style={styles.title}>GIỎ HÀNG ({countSelectedProducts()})</Text>
       <View style={{ width: "100%", backgroundColor: "black", height: 1 }} />
       <ScrollView style={{ padding: 10 }}>
-        {cartProducts.map((product) => (
-          <View key={product.id} style={styles.productContainer}>
-            <View style={styles.productBox}>
-              <View style={{ width: 45 }}>
-                <CheckBox
-                  checked={product.selected}
-                  checkedColor="gray"
-                  style={styles.buttonCheckbox}
-                  onPress={() => handleToggleSwitch(product.id)}
-                />
-              </View>
-
-              <Image
-                //uri product image
-                source={{uri:product.product_image}}
-                style={styles.productImage}
-              />
-              <View style={styles.productInfo}>
-                <Text style={styles.productName}>{product.product_title}</Text>
-                <Text style={styles.productType}>Phân loại : Vàng/37</Text>
-                <Text style={styles.productPrice}>
-                  Giá: {getMonney(sumProductsPrice(product))}
-                </Text>
-                <View style={styles.quantityContainer}>
-                  <TouchableOpacity
-                    style={styles.quantityButton}
-                    // onPress={decreaseQuantity}
-                  >
-                    <Text style={styles.quantityButtonText}>-</Text>
-                  </TouchableOpacity>
-                  <Text style={styles.quantityText}>{product.quantity}</Text>
-                  <TouchableOpacity
-                    style={styles.quantityButton}
-                    // onPress={increaseQuantity}
-                  >
-                    <Text style={styles.quantityButtonText}>+</Text>
-                  </TouchableOpacity>
-                </View>
-                {/* <Animated.Text
-                  style={[styles.editText, { opacity: fadeAnim }]}
-                  onLayout={startAnimation}
-                >
-                  Nhấn vào để chỉnh sửa
-                </Animated.Text> */}
-                <View style={styles.buttonContainer}>
-                  {/*<TouchableOpacity style={styles.button1} onPress={() => handleBuyNow(product)}>*/}
-                  {/*    <Ionicons name="cart-outline" size={24} color="#ff6" />*/}
-                  {/*    <Text style={styles.buttonText1}>Mua</Text>*/}
-                  {/*</TouchableOpacity>*/}
-
-                  {/* <TouchableOpacity
-                    style={styles.button}
-                    onPress={() => handleRemoveProduct(product.id)}
-                  >
-                    <Ionicons name="trash-outline" size={20} color="#fff" />
-                    <Text style={styles.buttonText}>Xóa</Text>
-                  </TouchableOpacity> */}
-                </View>
-              </View>
-            </View>
-          </View>
-        ))}
+        {cartProducts.map((product) => renderItems(product))}
       </ScrollView>
       <View style={{ width: "100%", backgroundColor: "black", height: 1 }} />
       <View
