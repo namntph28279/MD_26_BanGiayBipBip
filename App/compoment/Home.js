@@ -21,14 +21,14 @@ import { Dropdown } from "react-native-element-dropdown";
 import { getMonney } from "../util/money";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchDataAndSetToRedux } from "../redux/AllData";
+import axios from 'axios';
 
 function Home({ navigation }) {
-
   const dispatch = useDispatch(); //trả về một đối tượng điều phối
   const dataSP1 = useSelector((state) => state.dataAll.dataSP); //lấy toàn bộ mảng dữ liệu
   const dataSPFav = useSelector((state) => state.dataAll.dataSPFav); //lấy toàn bộ mảng dữ liệu Fav
 
-  const idSPFavs = dataSPFav.map(item => item.product); //lấy id sp Fav
+  const idSPFavs = dataSPFav.map((item) => item.product); //lấy id sp Fav
 
   const [valueSortBy, setValueSortBy] = useState(0);
   const [valueFilter, setValueFilter] = useState(null);
@@ -40,7 +40,6 @@ function Home({ navigation }) {
   const [check2, setCheck2] = useState(false);
   const [check3, setCheck3] = useState(false);
   const [check4, setCheck4] = useState(false);
-  const [heartColors, setHeartColors] = useState({});
 
   const [dataSP, setDataSP] = useState([]);
   const [dataSwiper, setDataSwiper] = useState([]);
@@ -52,10 +51,21 @@ function Home({ navigation }) {
     return unsubscribe;
   }, [navigation]);
 
-   useEffect(() => {
-    setDataSP(dataSP1);
+  useEffect(() => {
+    if (dataSP1) {
+      const products = Object.keys(dataSP1).map((key) => ({
+        id: key,
+        ...dataSP1[key],
+        isFav: false,
+      }));
+
+      setDataSP(products);
+    } else {
+      setDataSP([]);
+    }
+
     setDataSwiper(dataSP1);
-  }, [dataSP1,dataSPFav]);
+  }, [dataSP1, dataSPFav]);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -174,16 +184,33 @@ function Home({ navigation }) {
   };
 
   const renderProductItem = (item) => {
-    const productId = item._id;
-    const heartColor = heartColors[productId] || "black";
-    
-    
+
+    item.isFav = idSPFavs.includes(item._id);
     const toggleHeartColor = () => {
-        setHeartColors((prevColors) => ({
-          ...prevColors,
-          [productId]: heartColor === "black" ? "red" : "black",
-        }));
-      };
+      if(item.isFav==false) {
+        axios.post('https://md26bipbip-496b6598561d.herokuapp.com/favourite/add', { product_id: item._id, user_id: "64ab9784b65d14d1076c3477" })
+            .then(response => {
+                
+            })
+            .catch(error => {
+                console.error('Lỗi:', error);
+            });
+      }else{
+        const favoriteItemToDelete = dataSPFav.find(itemFav => itemFav.product === item._id);
+        if (favoriteItemToDelete) {
+            const favoriteItemId = favoriteItemToDelete._id;
+            axios.delete(`https://md26bipbip-496b6598561d.herokuapp.com/favourite/delete/${favoriteItemId}`)
+                .then(response => {
+                    //reload data when user delete favorite
+                })
+                .catch(error => {
+                    console.error('Lỗi khi xóa khỏi danh sách yêu thích:', error);
+                });
+        } else {
+            console.error('Không tìm thấy mục yêu thích với productId:', item._id,dataSPFav);
+        }
+      }
+    };
     return (
       <View style={styles.productContainer}>
         <TouchableOpacity
@@ -236,13 +263,13 @@ function Home({ navigation }) {
           </View>
         </TouchableOpacity>
         <TouchableOpacity
-            style={{ position: "absolute", left: 10, top: 7 }}
-            onPress={toggleHeartColor}
+          style={{ position: "absolute", left: 10, top: 7 }}
+          onPress={toggleHeartColor}
         >
           <MaterialIcons
-              name={heartColor === "black" ? "favorite-outline" : "favorite"}
-              size={30}
-              color={heartColor}
+            name={item.isFav ? "favorite" : "favorite-outline"}
+            size={30}
+            color={item.isFav ? "red" : "black"}
           />
         </TouchableOpacity>
       </View>
@@ -262,14 +289,16 @@ function Home({ navigation }) {
         >
           {arrSwiper.map((item) => (
             <View key={item._id}>
-             <TouchableOpacity onPress={() => {
-               navigation.navigate("ProductDetail", { productId: item._id });
-             }}>
-               <Image
-                   source={{ uri: item.product_image }}
-                   style={styles.imageBackground}
-               />
-             </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => {
+                  navigation.navigate("ProductDetail", { productId: item._id });
+                }}
+              >
+                <Image
+                  source={{ uri: item.product_image }}
+                  style={styles.imageBackground}
+                />
+              </TouchableOpacity>
             </View>
           ))}
         </Swiper>
@@ -332,43 +361,51 @@ function Home({ navigation }) {
           </TouchableOpacity>
         </View>
 
-        <View style={{display:"flex", flexDirection: "row", margin: 10,alignItems:"center"  }}>
+        <View
+          style={{
+            display: "flex",
+            flexDirection: "row",
+            margin: 10,
+            alignItems: "center",
+          }}
+        >
+          <Dropdown
+            style={styles.dropdown}
+            data={sortBy}
+            maxHeight={300}
+            labelField="label"
+            valueField="value"
+            placeholder="Sắp xếp"
+            value={valueSortBy}
+            onChange={(item) => {
+              sortByPrice(item);
+            }}
+            renderItem={renderItemSortBy}
+          />
 
-           <Dropdown
-               style={styles.dropdown}
-               data={sortBy}
-               maxHeight={300}
-               labelField="label"
-               valueField="value"
-               placeholder="Sắp xếp"
-               value={valueSortBy}
-               onChange={(item) => {
-                 sortByPrice(item);
-               }}
-               renderItem={renderItemSortBy}
-           />
+          <Dropdown
+            style={[styles.dropdown, { width: 100 }, { marginLeft: 10 }]}
+            data={Filter}
+            maxHeight={300}
+            labelField="label"
+            valueField="value"
+            placeholder="Lọc"
+            value={valueFilter}
+            labelStyle={{ fontWeight: "bold" }}
+            onChange={(item) => {
+              filterByCategory(item.value);
+            }}
+            renderItem={renderItemFilter}
+          />
 
-           <Dropdown
-               style={[styles.dropdown, { width: 100 }, { marginLeft: 10 }]}
-               data={Filter}
-               maxHeight={300}
-               labelField="label"
-               valueField="value"
-               placeholder="Lọc"
-               value={valueFilter}
-               labelStyle={{ fontWeight: "bold" }}
-               onChange={(item) => {
-                 filterByCategory(item.value);
-               }}
-               renderItem={renderItemFilter}
-           />
-
-          <View style={{marginLeft: 'auto'}}>
-           <TouchableOpacity  onPress={() => {
-             navigation.navigate("AllShoes");
-           }}>
-             <Text> Xem tất cả</Text>
-           </TouchableOpacity>
+          <View style={{ marginLeft: "auto" }}>
+            <TouchableOpacity
+              onPress={() => {
+                navigation.navigate("AllShoes");
+              }}
+            >
+              <Text> Xem tất cả</Text>
+            </TouchableOpacity>
           </View>
         </View>
 
