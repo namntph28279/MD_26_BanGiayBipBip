@@ -5,31 +5,19 @@ import { getDatabase, off, onValue, ref,remove  } from 'firebase/database';
 import firebase from '../config/FirebaseConfig';
 import Icon from 'react-native-vector-icons/FontAwesome';
 
-function User({ navigation }) {
+function User({ route, navigation }) {
     const [userData, setUserData] = useState(null);
     const auth = getAuth(firebase);
-    // useEffect(() => {
-    //     const auth = getAuth(firebase);
-    //     const userId = auth.currentUser.uid;
-    //
-    //     const database = getDatabase(firebase);
-    //     const userRef = ref(database, `registrations/${userId}`);
-    //     onValue(userRef, (snapshot) => {
-    //         const userData = snapshot.val();
-    //         if (userData) {
-    //             setUserData(userData);
-    //         } else {
-    //             setUserData(null);
-    //         }
-    //     });
-    //
-    //     return () => {
-    //         off(userRef);
-    //     };
-    // }, []);
+    const userId = '64b9770a589e84422206b99b';
+    const userID = route.params?.userID || '';
+
+    useEffect(() => {
+        console.log('Giá trị userID từ propsvvv:', userID);
+        // Thực hiện các xử lý khác với userID
+    }, [userID]);
     const fetchUserData = async () => {
         try {
-            const userId = '64b9770a589e84422206b99b';
+            // const userId = '64b9770a589e84422206b99b';
             const response = await fetch(`https://md26bipbip-496b6598561d.herokuapp.com/profile/${userId}`);
             if (!response.ok) {
                 throw new Error('Lỗi khi lấy thông tin người dùng');
@@ -124,7 +112,7 @@ function User({ navigation }) {
             <View style={styles.content}>
                 <TouchableOpacity
                     style={styles.section}
-                    onPress={() => navigation.navigate('EditProfile',{ userId: auth.currentUser.uid ,userData})}
+                    onPress={() => navigation.navigate('EditProfile',{ userId ,userData})}
                 >
                     <Icon name="edit" size={20} color="orange" />
                     <Text style={styles.sectionText}>Chỉnh sửa thông tin</Text>
