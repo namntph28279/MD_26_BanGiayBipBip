@@ -43,6 +43,7 @@ const TabNavi = ({ route }) => {
 
             {isAuthenticated ? (
                 <Tab.Screen name={"Yêu Thích"} component={Favourite}
+                    initialParams={{ userID }}
                     options={{
                         tabBarIcon: ({ color, size }) => <Ionicons name='heart' color={color} size={size} />
                     }} />

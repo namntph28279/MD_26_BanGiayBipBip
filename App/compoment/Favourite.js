@@ -529,9 +529,9 @@ import React, { useEffect, useState } from 'react';
 import { View, StyleSheet, Text, ScrollView, Image, TouchableHighlight, TouchableOpacity, Modal } from "react-native";
 import { getMonney } from "../util/money";
 import axios from 'axios';
+import { useRoute } from '@react-navigation/native';
 
 export default function Favourite({route, navigation }) {
-  // const { productId } = route.params;
   const [favProducts, setFavProducts] = useState([]);
   const [showDialog, setshowDialog] = useState(false);
   const [showDialogtc, setshowDialogtc] = useState(false);
@@ -539,19 +539,23 @@ export default function Favourite({route, navigation }) {
   const [name, setName] = useState();
   const [pice, setpice] = useState();
   const [img, setImg] = useState();
+  // const { userID } = useRoute();
 
-  // const {  } = route.params;
-  // const productId = item._id;
-  // console.log(productId);
+  const userID = route.params?.userID || '';
 
   useEffect(() => {
-    fetchUserFavorites();
+      console.log('Giá trị userID ở màn favo:', userID);
+      // Thực hiện các xử lý khác với userID
+  }, [userID]);
+
+  
+
+  useEffect(() => {
+    fetchUserFavorites(); 
   }, []);
 
   const fetchUserFavorites = () => {
-    // Thay đổi URL của API của bạn để lấy danh sách sản phẩm yêu thích
-    const userId = '6541c124fb28692dfa87847d';
-    axios.get(`https://md26bipbip-496b6598561d.herokuapp.com/favourite/${userId}`)
+    axios.get(`https://md26bipbip-496b6598561d.herokuapp.com/favourite/${userID}`)
       .then(response => {
         const favoriteItems = response.data;
         setFavProducts(favoriteItems);
@@ -602,12 +606,13 @@ export default function Favourite({route, navigation }) {
 //         console.error('Không tìm thấy mục yêu thích với productId:', productId,favProducts);
 //     }
 // };
-const Delete = (favoriteItemId) => {
+
+const Delete = (productId) => {
   // Gọi API DELETE để xóa sản phẩm khỏi danh sách yêu thích
-  axios.delete(`https://md26bipbip-496b6598561d.herokuapp.com/favourite/delete/${favoriteItemId}`)
+  axios.delete(`https://md26bipbip-496b6598561d.herokuapp.com/favourite/delete/${productId}`)
     .then(() => {
       // Xóa thành công, cập nhật danh sách sản phẩm yêu thích bằng cách loại bỏ sản phẩm có favoriteItemId
-      setFavProducts(prevProducts => prevProducts.filter(product => product._id !== favoriteItemId));
+      fetchUserFavorites(prevProducts => prevProducts.filter(product => product._id !== productId));
     })
     .catch(error => {
       console.error('Lỗi khi xóa sản phẩm khỏi danh sách yêu thích:', error);

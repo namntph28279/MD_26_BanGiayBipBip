@@ -413,6 +413,7 @@ function Register({ navigation }) {
 
                 if (response.status === 201) {
                     Alert.alert("Xin chào", "Bạn đã đăng ký thành công ")
+                    console.log('Đăng ký thành công');
                     navigation.dispatch(
                         CommonActions.reset({
                             index: 0,
