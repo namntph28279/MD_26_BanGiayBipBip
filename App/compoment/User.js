@@ -13,11 +13,11 @@ function User({ route, navigation }) {
 
     useEffect(() => {
         console.log('Giá trị userID từ propsvvv:', userID);
-        if (!userID) {
-            console.log('không có user');
-            return;
-        }
-        fetchUserData();
+        // if (!userID) {
+        //     console.log('không có user');
+        //     return;
+        // }
+        // fetchUserData();
     }, [userID]);
     const fetchUserData = async () => {
         try {
