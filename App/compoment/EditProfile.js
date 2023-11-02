@@ -285,16 +285,16 @@ import React, { useState, useEffect } from 'react';
 import {View, Text, TextInput, TouchableOpacity, StyleSheet, Image} from 'react-native';
 import RNPickerSelect from 'react-native-picker-select';
 import DatePicker from 'react-native-datepicker';
-const EditProfile = ({ router,navigation }) => {
+const EditProfile = ({ route,navigation }) => {
     const [fullname, setFullname] = useState('');
     const [gender, setGender] = useState('');
     const [avatar, setAvatar] = useState('');
     const [birthday, setBirthday] = useState('');
-
+    const userID = route.params?.userID || '';
     useEffect(() => {
-        const userId = '64b9770a589e84422206b99b';
+        // s
 
-        fetch(`https://md26bipbip-496b6598561d.herokuapp.com/profile/${userId}`)
+        fetch(`https://md26bipbip-496b6598561d.herokuapp.com/profile/${userID}`)
             .then(response => response.json())
             .then(data => {
                 setFullname(data.fullname);
@@ -310,7 +310,7 @@ const EditProfile = ({ router,navigation }) => {
         const userId = '64b9770a589e84422206b99b';
 
         const profileData = {
-            user: userId,
+            user: userID,
             fullname,
             gender,
             avatar,

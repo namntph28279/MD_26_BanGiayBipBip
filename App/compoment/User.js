@@ -8,17 +8,20 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 function User({ route, navigation }) {
     const [userData, setUserData] = useState(null);
     const auth = getAuth(firebase);
-    const userId = '64b9770a589e84422206b99b';
+    // const userId = '64b9770a589e84422206b99b';
     const userID = route.params?.userID || '';
 
     useEffect(() => {
         console.log('Giá trị userID từ propsvvv:', userID);
-        // Thực hiện các xử lý khác với userID
+        if (!userID) {
+            console.log('không có user');
+            return;
+        }
+        fetchUserData();
     }, [userID]);
     const fetchUserData = async () => {
         try {
-            // const userId = '64b9770a589e84422206b99b';
-            const response = await fetch(`https://md26bipbip-496b6598561d.herokuapp.com/profile/${userId}`);
+            const response = await fetch(`https://md26bipbip-496b6598561d.herokuapp.com/profile/${userID}`);
             if (!response.ok) {
                 throw new Error('Lỗi khi lấy thông tin người dùng');
             }
@@ -26,7 +29,7 @@ function User({ route, navigation }) {
             const data = await response.json();
             setUserData(data);
         } catch (error) {
-            console.error('Đã có lỗi:', error);
+            console.error('Lỗi:', error);
         }
     };
 
@@ -112,7 +115,7 @@ function User({ route, navigation }) {
             <View style={styles.content}>
                 <TouchableOpacity
                     style={styles.section}
-                    onPress={() => navigation.navigate('EditProfile',{ userId ,userData})}
+                    onPress={() => navigation.navigate('EditProfile',{ userID ,userData})}
                 >
                     <Icon name="edit" size={20} color="orange" />
                     <Text style={styles.sectionText}>Chỉnh sửa thông tin</Text>
@@ -126,7 +129,7 @@ function User({ route, navigation }) {
                 </TouchableOpacity>
                 <TouchableOpacity
                     style={styles.section}
-                    onPress={() => navigation.navigate('ChatScreen', { userId: auth.currentUser.uid, userName: userData.fullname, })}
+                    onPress={() => navigation.navigate('ChatScreen', { userId: userID, userName: userData.fullname, })}
                 >
                     <Icon name="comment" size={20} color="green" />
                     <Text style={styles.sectionText}>Chat Box</Text>
@@ -134,7 +137,7 @@ function User({ route, navigation }) {
                 <TouchableOpacity
                     style={styles.section}
 
-                    onPress={() => navigation.navigate('Oder', { userId: auth.currentUser.uid })}
+                    onPress={() => navigation.navigate('Oder', { userId: userID })}
                 >
                     <Icon name="shopping-cart" size={20} color="cyan" />
                     <Text style={styles.sectionText}>Đơn mua</Text>
