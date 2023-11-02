@@ -466,6 +466,18 @@ app.post('/login', async (req, res) => {
             if (password !== user.password) {
                 res.status(401).json({ message: 'Sai mật khẩu' });
             } else {
+                const profile = await Profile.findOne({ user: user._id });
+                if (!profile) {
+                    const newProfile = new Profile({
+                      user: user._id,
+                      fullname: 'Họ và tên mặc định',
+                      gender: 'Giới tính mặc định',
+                      avatar: 'Ảnh đại diện mặc định',
+                      birthday: 'Ngày sinh mặc định'
+                    });
+                  
+                    await newProfile.save();
+                  }
                 res.json(user);
             }
         }
