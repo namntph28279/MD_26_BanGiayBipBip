@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   TextInput,
@@ -11,7 +11,7 @@ import {
 import axios from "axios";
 
 const ChangePassword = ({ route, navigation }) => {
-//   const { userId } = route.params;
+    const userId = route.params?.userId || '';
 
   const [oldPassword, setOldPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
@@ -21,7 +21,23 @@ const ChangePassword = ({ route, navigation }) => {
   const [errorNewPassword, setErrorNewPassword] = useState(false);
   const [errorConfirmPassword, setErrorConfirmPassword] = useState(false);
 
+  const [userData, setUserData] = useState([]);
+  useEffect(()=>{
+    console.log(userId+" test")
+    if(userId){
+        axios.get(`https://md26bipbip-496b6598561d.herokuapp.com/user/${userId}`)
+      .then(response => {
+        const User = response.data;
+        setUserData(User);
+      })
+      .catch(error => {
+        console.error('Have an error:', error);
+      });
+    }
+  },[userId]);
+
   const handleSavePassword = () => {
+    console.log(userData);
     if (newPassword.length < 6) {
       setErrorNewPassword(true);
       return;
@@ -36,12 +52,9 @@ const ChangePassword = ({ route, navigation }) => {
       setErrorConfirmPassword(false);
     }
 
-    const user = "ptg@gmail.com";
-    //mk 123456
-
     axios
       .post("https://md26bipbip-496b6598561d.herokuapp.com/changepassword", {
-        username: user,
+        username: userData.username,
         oldPassword: oldPassword,
         newPassword: newPassword,
       })

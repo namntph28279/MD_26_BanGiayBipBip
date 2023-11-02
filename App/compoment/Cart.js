@@ -27,6 +27,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { fetchDataAndSetToRedux } from "../redux/AllData";
 
 function Cart({ route, navigation }) {
+  const userID = route.params?.userID || "";
   const [userData, setUserData] = useState(null);
   const [cartProducts, setCartProducts] = useState([]);
   const [fadeAnim] = useState(new Animated.Value(0));
@@ -53,10 +54,8 @@ function Cart({ route, navigation }) {
   }, [dataProduct]);
 
   const fetchData = async () => {
-    const userId = "64ab9784b65d14d1076c3477";
-
     const cartRef = await fetch(
-      "https://md26bipbip-496b6598561d.herokuapp.com/cart/" + userId
+      "https://md26bipbip-496b6598561d.herokuapp.com/cart/" + userID
     );
     const cartData = await cartRef.json();
     if (cartData) {
