@@ -63,6 +63,7 @@ const TabNavi = ({ route }) => {
                 <Tab.Screen
                     name="Giỏ Hàng"
                     component={Cart}
+                    initialParams={{ userID }}
                     options={{
                         tabBarIcon: ({ color, size }) => <Ionicons name='cart' color={color} size={size} />
                     }}

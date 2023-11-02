@@ -141,7 +141,7 @@ function User({ route, navigation }) {
                 </TouchableOpacity>
                 <TouchableOpacity
                     style={styles.section}
-                    onPress={() => navigation.navigate('ChangePassword', { userId:"6541fdfefb28692dfa878ffb" })}
+                    onPress={() => navigation.navigate('ChangePassword', { userId: userID })}
                 >
                     <Icon name="lock" size={20} color="blue" />
                     <Text style={styles.sectionText}>Đổi mật khẩu</Text>
