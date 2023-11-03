@@ -512,8 +512,16 @@ function ProductDetail({ route, navigation }) {
     const [userFavorites, setUserFavorites] = useState([]);
     const [sizeOptions, setSizeOptions] = useState([]);
     const [isImageModalVisible, setImageModalVisible] = useState(false);
-    const userId = '64ab9784b65d14d1076c3477';
+    // const userId = '64ab9784b65d14d1076c3477';
+    const userId = route.params?.userId || '';
 
+    useEffect(() => {
+        console.log('Giá trị userID từ detail:', userId);
+        if (!userId) {
+            console.log('không có user');
+            return;
+        }
+    }, [userId]);
     useEffect(() => {
         const apiUrl = `https://md26bipbip-496b6598561d.herokuapp.com/product/${productId}`;
 
@@ -590,33 +598,49 @@ function ProductDetail({ route, navigation }) {
     };
 
     const addFavoriteProduct = () => {
-        axios.post('https://md26bipbip-496b6598561d.herokuapp.com/favourite/add', { product_id: productId, user_id: userId })
-            .then(response => {
-                setIsLiked(true);
-                fetchUserFavorites();
+        if (userId) {
+            axios.post('https://md26bipbip-496b6598561d.herokuapp.com/favourite/add', {
+                product_id: productId,
+                user_id: userId
             })
-            .catch(error => {
-                console.error('Lỗi:', error);
-            });
+                .then(response => {
+                    setIsLiked(true);
+                    fetchUserFavorites();
+                })
+                .catch(error => {
+                    console.error('Lỗi:', error);
+                });
+        }else {
+            console.log('Vui lòng đăng nhập để tiếp tục');
+            alert('Vui lòng đăng nhập để tiếp tục');
+            navigation.navigate('Login');
+        }
+
     };
 
     const removeFavoriteProduct = () => {
-        const favoriteItemToDelete = userFavorites.find(item => item.product === productId);
+        if (userId) {
+            const favoriteItemToDelete = userFavorites.find(item => item.product === productId);
 
-        if (favoriteItemToDelete) {
+            if (favoriteItemToDelete) {
 
-            const favoriteItemId = favoriteItemToDelete._id;
+                const favoriteItemId = favoriteItemToDelete._id;
 
-            axios.delete(`https://md26bipbip-496b6598561d.herokuapp.com/favourite/delete/${favoriteItemId}`)
-                .then(response => {
-                    setIsLiked(false);
-                    fetchUserFavorites(); // Cập nhật danh sách yêu thích sau khi xóa
-                })
-                .catch(error => {
-                    console.error('Lỗi khi xóa khỏi danh sách yêu thích:', error);
-                });
-        } else {
-            console.error('Không tìm thấy mục yêu thích với productId:', productId,userFavorites);
+                axios.delete(`https://md26bipbip-496b6598561d.herokuapp.com/favourite/delete/${favoriteItemId}`)
+                    .then(response => {
+                        setIsLiked(false);
+                        fetchUserFavorites(); // Cập nhật danh sách yêu thích sau khi xóa
+                    })
+                    .catch(error => {
+                        console.error('Lỗi khi xóa khỏi danh sách yêu thích:', error);
+                    });
+            } else {
+                console.error('Không tìm thấy mục yêu thích với productId:', productId, userFavorites);
+            }
+        }else {
+            console.log('Vui lòng đăng nhập để tiếp tục');
+            alert('Vui lòng đăng nhập để tiếp tục');
+            navigation.navigate('Login');
         }
     };
 
@@ -642,14 +666,12 @@ function ProductDetail({ route, navigation }) {
 
     const addToCart = () => {
         if (selectedColor && selectedSize) {
-            const auth = getAuth(firebase);
-            const userId = auth.currentUser ? auth.currentUser.uid : null;
             if (userId) {
                 const cartItem = {
                     product_id: productId,
                     quantity,
                     // user_id: userId,
-                    user_id: '64ab9784b65d14d1076c3477',
+                    user_id: userId,
                 };
 
                 axios.post('https://md26bipbip-496b6598561d.herokuapp.com/cart/add', cartItem)

@@ -23,7 +23,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { fetchDataAndSetToRedux } from "../redux/AllData";
 import axios from 'axios';
 
-function Home({ navigation }) {
+function Home({ route,navigation }) {
   const dispatch = useDispatch(); //trả về một đối tượng điều phối
   const dataSP1 = useSelector((state) => state.dataAll.dataSP); //lấy toàn bộ mảng dữ liệu
   const dataSPFav = useSelector((state) => state.dataAll.dataSPFav); //lấy toàn bộ mảng dữ liệu Fav
@@ -43,6 +43,15 @@ function Home({ navigation }) {
 
   const [dataSP, setDataSP] = useState([]);
   const [dataSwiper, setDataSwiper] = useState([]);
+  const userID = route.params?.userID || '';
+
+  useEffect(() => {
+    console.log('Giá trị userID từ home:', userID);
+    if (!userID) {
+      console.log('không có user');
+      return;
+    }
+  }, [userID]);
 
   React.useEffect(() => {
     const unsubscribe = navigation.addListener("focus", () => {
@@ -216,7 +225,7 @@ function Home({ navigation }) {
         <TouchableOpacity
           key={item._id}
           onPress={() => {
-            navigation.navigate("ProductDetail", { productId: item._id });
+            navigation.navigate("ProductDetail", { productId: item._id ,userId: userID});
           }}
         >
           <View
