@@ -42,7 +42,7 @@
 
 
 
-  
+
 //   const Count = () => {
 //     return favProducts.length
 //   }
@@ -531,7 +531,7 @@ import { getMonney } from "../util/money";
 import axios from 'axios';
 import { useRoute } from '@react-navigation/native';
 
-export default function Favourite({route, navigation }) {
+export default function Favourite({ route, navigation }) {
   const [favProducts, setFavProducts] = useState([]);
   const [showDialog, setshowDialog] = useState(false);
   const [showDialogtc, setshowDialogtc] = useState(false);
@@ -540,18 +540,18 @@ export default function Favourite({route, navigation }) {
   const [pice, setpice] = useState();
   const [img, setImg] = useState();
   // const { userID } = useRoute();
-
+  const { product } = route.params;
+  console.log('Giá trị prod ở màn favo:', product);
   const userID = route.params?.userID || '';
-
   useEffect(() => {
-      console.log('Giá trị userID ở màn favo:', userID);
-      // Thực hiện các xử lý khác với userID
+    console.log('Giá trị userID ở màn favo:', userID);
+    // Thực hiện các xử lý khác với userID
   }, [userID]);
 
-  
+
 
   useEffect(() => {
-    fetchUserFavorites(); 
+    fetchUserFavorites();
   }, []);
 
   const fetchUserFavorites = () => {
@@ -587,37 +587,37 @@ export default function Favourite({route, navigation }) {
     setshowDialog(false);
   };
 
-//   const Delete = () => {
-//     const favoriteItemToDelete = favProducts.find(item => item.product === productId);
+  //   const Delete = () => {
+  //     const favoriteItemToDelete = favProducts.find(item => item.product === product);
 
-//     if (favoriteItemToDelete) {
+  //     if (favoriteItemToDelete) {
 
-//         const favoriteItemId = favoriteItemToDelete._id;
+  //         const favoriteItemId = favoriteItemToDelete._id;
 
-//         axios.delete(`https://md26bipbip-496b6598561d.herokuapp.com/favourite/delete/${favoriteItemId}`)
-//             .then(response => {
-//                 setIsLiked(false);
-//                 fetchUserFavorites(); // Cập nhật danh sách yêu thích sau khi xóa
-//             })
-//             .catch(error => {
-//                 console.error('Lỗi khi xóa khỏi danh sách yêu thích:', error);
-//             });
-//     } else {
-//         console.error('Không tìm thấy mục yêu thích với productId:', productId,favProducts);
-//     }
-// };
+  //         axios.delete(`https://md26bipbip-496b6598561d.herokuapp.com/favourite/delete/${favoriteItemId}`)
+  //             .then(response => {
+                  
+  //                 fetchUserFavorites(); // Cập nhật danh sách yêu thích sau khi xóa
+  //             })
+  //             .catch(error => {
+  //                 console.error('Lỗi khi xóa khỏi danh sách yêu thích:', error);
+  //             });
+  //     } else {
+  //         console.error('Không tìm thấy mục yêu thích với productId:', product,favProducts);
+  //     }
+  // };
 
-const Delete = (productId) => {
-  // Gọi API DELETE để xóa sản phẩm khỏi danh sách yêu thích
-  axios.delete(`https://md26bipbip-496b6598561d.herokuapp.com/favourite/delete/${productId}`)
-    .then(() => {
-      // Xóa thành công, cập nhật danh sách sản phẩm yêu thích bằng cách loại bỏ sản phẩm có favoriteItemId
-      fetchUserFavorites(prevProducts => prevProducts.filter(product => product._id !== productId));
-    })
-    .catch(error => {
-      console.error('Lỗi khi xóa sản phẩm khỏi danh sách yêu thích:', error);
-    });
-};
+  const Delete = (product) => {
+    // Gọi API DELETE để xóa sản phẩm khỏi danh sách yêu thích
+    axios.delete(`https://md26bipbip-496b6598561d.herokuapp.com/favourite/delete/${product}`)
+      .then(() => {
+        // Xóa thành công, cập nhật danh sách sản phẩm yêu thích bằng cách loại bỏ sản phẩm có favoriteItemId
+        fetchUserFavorites();
+      })
+      .catch(error => {
+        console.error('Lỗi khi xóa sản phẩm khỏi danh sách yêu thích:', product,favProducts);
+      });
+  };
 
   return (
     <View style={styles.container}>
@@ -737,22 +737,25 @@ const Delete = (productId) => {
                   </TouchableHighlight>
                 </View>
                 <View style={styles.modalDivider} />
-                <TouchableHighlight
+                {/* <TouchableHighlight
                   activeOpacity={0.6}
                   underlayColor="white"
                   style={styles.modalOption}
-                  onPress={() => addCart(id, img, name, pice)}
+                  key={product._id}
+                  onPress={() => {
+                    navigation.navigate("ProductDetail", { productId: product._id });
+                  }}
                 >
                   <View style={{ flexDirection: 'row' }}>
                     <Image source={require('../image/addcar.png')} style={{ marginRight: 10 }} />
-                    <Text style={styles.modalOptionText}>Thêm vào giỏ hàng</Text>
+                    <Text style={styles.modalOptionText}>Chi tiết sản phẩm</Text>
                   </View>
-                </TouchableHighlight>
+                </TouchableHighlight> */}
                 <TouchableHighlight
                   activeOpacity={0.6}
                   underlayColor="white"
                   style={styles.modalOption}
-                  onPress={() => Delete(id)}
+                  onPress={() => Delete(product)}
                 >
                   <View style={{ flexDirection: 'row' }}>
                     <Image source={require('../image/delete.png')} style={{ marginRight: 15, marginLeft: 5 }} />
@@ -777,16 +780,17 @@ const Delete = (productId) => {
           </View>
 
           <ScrollView style={styles.frame}>
-            {favProducts.map((product) => (
-              <TouchableOpacity key={product._id}
+            {favProducts.map((item) => (
+              <TouchableOpacity key={item.product}
                 onPress={() => {
-                  navigation.navigate("ProductDetail", { productId: product._id });
+                  navigation.navigate("ProductDetail", { productId: item.product });
                 }} style={styles.productContainer}>
+                
                 <View style={styles.productBox}>
-                  <Image source={{ uri: product.product_image }} style={styles.productImage} />
+                  <Image source={{ uri: item.product_image }} style={styles.productImage} />
                   <View style={styles.productInfo}>
-                    <Text style={styles.productName}>{product.product_title}</Text>
-                    <Text style={styles.productPrice}>{getMonney(product.product_price)}</Text>
+                    <Text style={styles.productName}>{item.product_title}</Text>
+                    <Text style={styles.productPrice}>{getMonney(item.product_price)}</Text>
                   </View>
 
                   <TouchableHighlight
@@ -794,12 +798,13 @@ const Delete = (productId) => {
                     underlayColor="white"
                     onPress={() => {
                       setshowDialogtc(true);
-                      setid(product && product.id ? product.id : null);
-                      setImg(product.product_image);
-                      setName(product.product_title);
-                      setpice(product.product_price);
+                      // setid(item && product.id ? product.id : null);
+                      setImg(item.product_image);
+                      setName(item.product_title);
+                      setpice(item.product_price);
                     }}
                   >
+                    
                     <Image source={require('../image/More.png')} />
                   </TouchableHighlight>
                 </View>
