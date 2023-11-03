@@ -36,7 +36,7 @@ export default function App() {
               {(props) => <TabNavi {...props} userID={userID} />}
             </Stack.Screen>
             <Stack.Screen name='Register' component={Register} options={{ title: 'Đăng Ký' }} />
-            <Stack.Screen name='Home' component={Home} options={{ title: 'Trang Chủ' }} />
+            <Stack.Screen name='Home' initialParams={{ userID: userID }} component={Home} options={{ title: 'Trang Chủ' }} />
             <Stack.Screen name='Cart' component={Cart} options={{ title: 'Giỏ hàng' }} />
             <Stack.Screen name='ProductDetail' component={ProductDetail} options={{ title: 'Chi Tiết Sản Phẩm' }} />
             <Stack.Screen

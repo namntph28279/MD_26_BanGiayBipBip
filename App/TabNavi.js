@@ -28,7 +28,7 @@ const TabNavi = ({ route }) => {
             }}>
 
             <Tab.Screen name="Home" component={Home}
-
+                        initialParams={{ userID }}
                 options={{
                     tabBarIcon: ({ color, size }) => <Ionicons name='home' color={color} size={size} />
                 }}

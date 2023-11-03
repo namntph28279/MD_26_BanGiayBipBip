@@ -47,7 +47,7 @@ const Login = ({ navigation }) => {
                     const userID = userData._id;
                     console.log(userID);
                     if (userID) {
-                        navigation.navigate('TabNavi', { isAuthenticated: true, userID });
+                        navigation.navigate('TabNavi', { isAuthenticated: true, userID,screen: 'Home' });
                     } else {
                         console.error('Không nhận được ID người dùng từ phản hồi JSON');
                         Alert.alert('Lỗi', 'Không nhận được ID người dùng từ phản hồi JSON');
