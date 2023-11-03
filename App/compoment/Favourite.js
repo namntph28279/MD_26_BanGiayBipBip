@@ -551,7 +551,11 @@ export default function Favourite({ route, navigation }) {
 
 
   useEffect(() => {
-    fetchUserFavorites();
+    const interval = setInterval(() => {
+      fetchUserFavorites();
+    }, 1000);
+
+    return () => clearInterval(interval);
   }, []);
 
   const fetchUserFavorites = () => {
@@ -607,17 +611,18 @@ export default function Favourite({ route, navigation }) {
   //     }
   // };
 
-  const Delete = (product) => {
-    // Gọi API DELETE để xóa sản phẩm khỏi danh sách yêu thích
-    axios.delete(`https://md26bipbip-496b6598561d.herokuapp.com/favourite/delete/${product}`)
-      .then(() => {
-        // Xóa thành công, cập nhật danh sách sản phẩm yêu thích bằng cách loại bỏ sản phẩm có favoriteItemId
-        fetchUserFavorites();
-      })
-      .catch(error => {
-        console.error('Lỗi khi xóa sản phẩm khỏi danh sách yêu thích:', product,favProducts);
-      });
+  const Delete = (productId) => {
+    axios.delete(`https://md26bipbip-496b6598561d.herokuapp.com/favourite/delete/${productId}`)
+        .then(() => {
+
+          fetchUserFavorites();
+          setshowDialogtc(false);
+        })
+        .catch(error => {
+          console.error('Lỗi khi xóa sản phẩm khỏi danh sách yêu thích:', productId, favProducts);
+        });
   };
+
 
   return (
     <View style={styles.container}>
@@ -755,7 +760,7 @@ export default function Favourite({ route, navigation }) {
                   activeOpacity={0.6}
                   underlayColor="white"
                   style={styles.modalOption}
-                  onPress={() => Delete(product)}
+                  onPress={() => Delete(id)}
                 >
                   <View style={{ flexDirection: 'row' }}>
                     <Image source={require('../image/delete.png')} style={{ marginRight: 15, marginLeft: 5 }} />
@@ -783,7 +788,7 @@ export default function Favourite({ route, navigation }) {
             {favProducts.map((item) => (
               <TouchableOpacity key={item.product}
                 onPress={() => {
-                  navigation.navigate("ProductDetail", { productId: item.product });
+                  navigation.navigate("ProductDetail", { productId: item.product ,userId: userID});
                 }} style={styles.productContainer}>
                 
                 <View style={styles.productBox}>
@@ -798,7 +803,7 @@ export default function Favourite({ route, navigation }) {
                     underlayColor="white"
                     onPress={() => {
                       setshowDialogtc(true);
-                      // setid(item && product.id ? product.id : null);
+                      setid(item._id);
                       setImg(item.product_image);
                       setName(item.product_title);
                       setpice(item.product_price);
