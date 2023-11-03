@@ -18,7 +18,7 @@ const TabNavi = ({ route }) => {
     }, [userID]);
     return (
         <Tab.Navigator
-            initialRouteName={"Trang Chủ"}
+            initialRouteName={"Home"}
             screenOptions={{
                 headerShown: false,
                 tabBarActiveTintColor: 'black',
@@ -27,7 +27,7 @@ const TabNavi = ({ route }) => {
                 tabBarLabelPosition: 'below-icon', // Đặt vị trí của title
             }}>
 
-            <Tab.Screen name={"Trang Chủ"} component={Home}
+            <Tab.Screen name="Home" component={Home}
 
                 options={{
                     tabBarIcon: ({ color, size }) => <Ionicons name='home' color={color} size={size} />
