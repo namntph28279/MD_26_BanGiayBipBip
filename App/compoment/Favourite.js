@@ -647,7 +647,7 @@ export default function Favourite({ route, navigation }) {
                 paddingRight: 30,
                 alignItems: 'center'
               }}
-              onPress={() => { navigation.navigate('AllShoes') }}
+              onPress={() => { navigation.navigate('AllShoes',{ userId : userID}) }}
             >
               <View>
                 <Text style={{

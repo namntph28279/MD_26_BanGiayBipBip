@@ -3,15 +3,19 @@ import { StyleSheet, View, FlatList, Image, TouchableOpacity, Text } from "react
 import { getMonney } from "../util/money";
 import {useSelector} from "react-redux";
 
-function AllShoes({ navigation }) {
+function AllShoes({ route,navigation }) {
 
   const products = useSelector((state) => state.dataAll.dataSP); //lấy toàn bộ mảng dữ liệu
-
+  const userId = route.params?.userId || '';
+  useEffect(() => {
+    console.log('Giá trị userID ở màn allshowe:', userId);
+    // Thực hiện các xử lý khác với userID
+  }, [userId]);
   const renderProductItem = ({ item }) => {
     return (
       <TouchableOpacity
         onPress={() => {
-          navigation.navigate("ProductDetail", { productId: item._id });
+          navigation.navigate("ProductDetail", { productId: item._id , userId : userId});
         }}
         style={styles.productContainer}
       >
