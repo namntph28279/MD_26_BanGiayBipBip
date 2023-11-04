@@ -466,18 +466,6 @@ app.post('/login', async (req, res) => {
             if (password !== user.password) {
                 res.status(401).json({ message: 'Sai mật khẩu' });
             } else {
-                const profile = await Profile.findOne({ user: user._id });
-                if (!profile) {
-                    const newProfile = new Profile({
-                      user: user._id,
-                      fullname: 'Họ và tên mặc định',
-                      gender: 'Giới tính mặc định',
-                      avatar: 'Ảnh đại diện mặc định',
-                      birthday: 'Ngày sinh mặc định'
-                    });
-                  
-                    await newProfile.save();
-                  }
                 res.json(user);
             }
         }
@@ -494,19 +482,30 @@ app.post('/register', async (req, res) => {
         const existingUser = await User.findOne({ username });
 
         if (existingUser) {
-            res.status(409).json({ message: 'Username đã tồn tại' });
-        } else {
-            const user = new User({
-                username,
-                password
-            });
-
-            await user.save();
-
-            res.sendStatus(201);
+            return res.status(409).json({ message: 'Username đã tồn tại' });
         }
+
+        const user = new User({
+            username,
+            password
+        });
+
+        await user.save();
+
+        const newProfile = new Profile({
+            user: user._id,
+            fullname: username.split('@')[0], 
+            gender: 'Nam',
+            avatar: 'https://st.quantrimang.com/photos/image/072015/22/avatar.jpg',
+            birthday: '01-01-2000'
+        });
+
+        await newProfile.save();
+
+       // return res.sendStatus(201);
+        return res.json(newProfile);
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        return res.status(500).json({ message: error.message });
     }
 });
 
