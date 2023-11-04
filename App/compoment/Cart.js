@@ -9,22 +9,13 @@ import {
   ScrollView,
 } from "react-native";
 
-import {
-  getDatabase,
-  ref,
-  onValue,
-  off,
-  remove,
-  push,
-} from "firebase/database";
-import { getAuth } from "firebase/auth";
-import firebase from "../config/FirebaseConfig";
 import { Ionicons } from "@expo/vector-icons";
 import { CheckBox } from "react-native-elements";
 import { getMonney } from "../util/money";
 
 import { useDispatch, useSelector } from "react-redux";
 import { fetchDataAndSetToRedux } from "../redux/AllData";
+import axios from "axios";
 
 function Cart({ route, navigation }) {
   const userID = route.params?.userID || "";
@@ -33,8 +24,6 @@ function Cart({ route, navigation }) {
   const [fadeAnim] = useState(new Animated.Value(0));
   const [selectedProducts, setSelectedProducts] = useState([]);
   const [shippingAddress, setShippingAddress] = useState("");
-  const auth = getAuth(firebase);
-  const database = getDatabase(firebase);
 
   const dispatch = useDispatch(); //trả về một đối tượng điều phối
   const dataProduct = useSelector((state) => state.dataAll.dataSP);
@@ -106,35 +95,38 @@ function Cart({ route, navigation }) {
     });
   };
   const handleBuyNowAll = () => {
-    const userId = auth.currentUser.uid;
-    const orderRef = ref(database, `Order/${userId}`);
-    const selectedProductIds = selectedProducts.map((product) => product.id);
-
-    selectedProductIds.forEach((productId) => {
-      // Xóa sản phẩm đã chọn thanh toán
-      handleRemoveProduct(productId);
-    });
-
-    // Thêm các sản phẩm đã chọn vào bảng order
-    push(orderRef, selectedProducts)
-      .then((newRef) => {
-        const orderItemId = newRef.key;
-        console.log("Người dùng với id:", userId);
-        console.log("Đã thêm sản phẩm vào giỏ hàng:", selectedProducts);
-        console.log("ID của sản phẩm trong giỏ hàng:", orderItemId);
-        navigation.navigate("Oder", { userId: userId });
-      })
-      .catch((error) => {
-        console.error("Lỗi thêm sản phẩm vào đơn hàng:", error);
-      });
+    // const userId = auth.currentUser.uid;
+    // const orderRef = ref(database, `Order/${userId}`);
+    // const selectedProductIds = selectedProducts.map((product) => product.id);
+    // selectedProductIds.forEach((productId) => {
+    //   // Xóa sản phẩm đã chọn thanh toán
+    //   handleRemoveProduct(productId);
+    // });
+    // // Thêm các sản phẩm đã chọn vào bảng order
+    // push(orderRef, selectedProducts)
+    //   .then((newRef) => {
+    //     const orderItemId = newRef.key;
+    //     console.log("Người dùng với id:", userId);
+    //     console.log("Đã thêm sản phẩm vào giỏ hàng:", selectedProducts);
+    //     console.log("ID của sản phẩm trong giỏ hàng:", orderItemId);
+    //     navigation.navigate("Oder", { userId: userId });
+    //   })
+    //   .catch((error) => {
+    //     console.error("Lỗi thêm sản phẩm vào đơn hàng:", error);
+    //   });
   };
 
   const handleRemoveProduct = (productId) => {
-    fetch(
-      "https://md26bipbip-496b6598561d.herokuapp.com/cart/delete/" + productId
-    )
-      .then((res) => console.log(res.status))
-      .catch((err) => console.log(err));
+    axios
+      .delete(
+        "https://md26bipbip-496b6598561d.herokuapp.com/cart/delete/" + productId
+      )
+      .then((response) => {
+        fetchData();
+      })
+      .catch((error) => {
+        console.error("Lỗi khi xóa khỏi giỏ hàng", error);
+      });
   };
 
   const startAnimation = () => {
@@ -168,6 +160,16 @@ function Cart({ route, navigation }) {
 
   const countSelectedProducts = () => {
     return cartProducts.length;
+  };
+
+  const increaseQuantity = () => {
+    // setQuantity(quantity + 1);
+  };
+
+  const decreaseQuantity = () => {
+    // if (quantity > 1) {
+    // setQuantity(quantity - 1);
+    // }
   };
 
   useEffect(() => {
@@ -206,16 +208,22 @@ function Cart({ route, navigation }) {
             <View style={styles.quantityContainer}>
               <TouchableOpacity
                 style={styles.quantityButton}
-                // onPress={decreaseQuantity}
+                onPress={decreaseQuantity}
               >
                 <Text style={styles.quantityButtonText}>-</Text>
               </TouchableOpacity>
               <Text style={styles.quantityText}>{product.quantity}</Text>
               <TouchableOpacity
                 style={styles.quantityButton}
-                // onPress={increaseQuantity}
+                onPress={increaseQuantity}
               >
                 <Text style={styles.quantityButtonText}>+</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.buttonDel}
+                onPress={() => handleRemoveProduct(product._id)}
+              >
+                <Ionicons name="trash-outline" size={20} color="red" />
               </TouchableOpacity>
             </View>
             {/* <Animated.Text
@@ -229,14 +237,6 @@ function Cart({ route, navigation }) {
               {/*    <Ionicons name="cart-outline" size={24} color="#ff6" />*/}
               {/*    <Text style={styles.buttonText1}>Mua</Text>*/}
               {/*</TouchableOpacity>*/}
-
-              {/* <TouchableOpacity
-                style={styles.button}
-                onPress={() => handleRemoveProduct(product.id)}
-              >
-                <Ionicons name="trash-outline" size={20} color="#fff" />
-                <Text style={styles.buttonText}>Xóa</Text>
-              </TouchableOpacity> */}
             </View>
           </View>
         </View>
@@ -375,12 +375,13 @@ const styles = StyleSheet.create({
     justifyContent: "flex-end",
     marginTop: 8,
   },
-  button: {
-    backgroundColor: "#e81d1d",
-    padding: 8,
+  buttonDel: {
+    backgroundColor: "#C0C0C0",
     borderRadius: 10,
-    flexDirection: "row",
-    alignItems: "center",
+    padding: 5,
+    position: "absolute",
+    top: 2,
+    right: 5,
   },
   buttonCheckbox: {
     flexDirection: "row",

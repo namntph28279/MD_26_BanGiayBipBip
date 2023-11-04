@@ -483,6 +483,7 @@ import {
     Modal,
     ScrollView,
     TouchableWithoutFeedback,
+    SafeAreaView,
 } from 'react-native';
 import { Animated } from 'react-native';
 
@@ -676,7 +677,7 @@ function ProductDetail({ route, navigation }) {
 
                 axios.post('https://md26bipbip-496b6598561d.herokuapp.com/cart/add', cartItem)
                     .then(response => {
-                        navigation.navigate('Cart');
+                        navigation.navigate('Cart',{userID: userId});
                     })
                     .catch(error => {
                         console.error('Lỗi thêm vào giỏ hàng:', error);
@@ -736,7 +737,8 @@ function ProductDetail({ route, navigation }) {
     };
 
     return (
-        <View style={styles.container}>
+        <SafeAreaView style={styles.container}>
+            <ScrollView>
             {isLoading ? (
                 <ActivityIndicator size="large" color="#0000ff" />
             ) : (
@@ -859,7 +861,8 @@ function ProductDetail({ route, navigation }) {
                 </View>
                 </TouchableWithoutFeedback>
             </Modal>
-        </View>
+            </ScrollView>
+        </SafeAreaView>
     );
     //hiển
 }
