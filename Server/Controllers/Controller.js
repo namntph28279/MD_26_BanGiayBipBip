@@ -7,14 +7,12 @@ const Address = require('../Models/Address');
 const Profile = require('../Models/Profile');
 const Color = require('../Models/Color');
 const Size = require('../Models/Size');
-const auth = require('../authenticateToken');
 
 const express = require('express');
 const app = express();
 const Handlebars = require('express-handlebars');
 const bodyParser = require('body-parser');
 const handlebarshelper = require("../handlebars-helpers");
-const mongoose = require('mongoose');
 
 app.set('Views', __dirname + '/views');
 
@@ -44,7 +42,7 @@ app.use(bodyParser.json());
 app.use(express.json());
 
 // Thêm sản phẩm
-app.post('/add', async(req, res) => {
+app.post('/add', async (req, res) => {
     const { product_title, product_price, product_image, product_quantity, product_category } = req.body;
 
     const product = new Product({
@@ -64,7 +62,7 @@ app.post('/add', async(req, res) => {
 });
 
 // getAll
-app.get('/', async(req, res) => {
+app.get('/', async (req, res) => {
     try {
         const produt = await Product.find();
         res.json(produt);
@@ -75,7 +73,7 @@ app.get('/', async(req, res) => {
 
 
 // Định nghĩa endpoint để sửa dữ liệu
-app.put('/edit/:id', async(req, res) => {
+app.put('/edit/:id', async (req, res) => {
     const id = req.params.id;
     const { product_title, product_price, product_image, product_quantity, product_category } = req.body;
 
@@ -95,7 +93,7 @@ app.put('/edit/:id', async(req, res) => {
 });
 
 // Định nghĩa endpoint để xoá dữ liệu
-app.delete('/delete/:id', async(req, res) => {
+app.delete('/delete/:id', async (req, res) => {
     const id = req.params.id;
 
     try {
@@ -108,7 +106,7 @@ app.delete('/delete/:id', async(req, res) => {
 });
 
 //getOneProduct
-app.get('/product/:id', async(req, res) => {
+app.get('/product/:id', async (req, res) => {
     try {
         const productId = req.params.id;
 
@@ -160,7 +158,7 @@ app.get('/product/:id', async(req, res) => {
 });
 
 //lọc product theo loại
-app.get('/products/:category', async(req, res) => {
+app.get('/products/:category', async (req, res) => {
     try {
         const category = req.params.category;
 
@@ -175,7 +173,7 @@ app.get('/products/:category', async(req, res) => {
 });
 
 // Thêm sản phẩm vào giỏ hàng
-app.post('/cart/add', async(req, res) => {
+app.post('/cart/add', async (req, res) => {
     const { product_id, quantity, user_id } = req.body;
 
     try {
@@ -210,7 +208,7 @@ app.post('/cart/add', async(req, res) => {
     }
 });
 // Xoá sản phẩm khỏi giỏ hàng
-app.delete('/cart/delete/:id', async(req, res) => {
+app.delete('/cart/delete/:id', async (req, res) => {
     const id = req.params.id;
 
     try {
@@ -222,7 +220,7 @@ app.delete('/cart/delete/:id', async(req, res) => {
 });
 
 // Lấy về toàn bộ cartItem dựa trên userId
-app.get('/cart/:userId', async(req, res) => {
+app.get('/cart/:userId', async (req, res) => {
     const userId = req.params.userId;
 
     try {
@@ -234,7 +232,7 @@ app.get('/cart/:userId', async(req, res) => {
 });
 
 // Thêm sản phẩm vào bảng yêu thích
-app.post('/favourite/add', async(req, res) => {
+app.post('/favourite/add', async (req, res) => {
     const { product_id, user_id } = req.body;
 
     try {
@@ -268,7 +266,7 @@ app.post('/favourite/add', async(req, res) => {
     }
 });
 // Xoá sản phẩm khỏi yêu thích
-app.delete('/favourite/delete/:id', async(req, res) => {
+app.delete('/favourite/delete/:id', async (req, res) => {
     const id = req.params.id;
 
     try {
@@ -281,7 +279,7 @@ app.delete('/favourite/delete/:id', async(req, res) => {
 
 
 // Lấy về toàn bộ favouriteItem dựa trên userId
-app.get('/favourite/:userId', async(req, res) => {
+app.get('/favourite/:userId', async (req, res) => {
     const userId = req.params.userId;
 
     try {
@@ -293,7 +291,7 @@ app.get('/favourite/:userId', async(req, res) => {
 });
 
 // Đặt hàng
-app.post('/order/add', async(req, res) => {
+app.post('/order/add', async (req, res) => {
     const { customer_email, products, address_id } = req.body;
 
     try {
@@ -350,7 +348,7 @@ app.post('/order/add', async(req, res) => {
 });
 
 // Lấy toàn bộ đơn hàng
-app.get('/order', async(req, res) => {
+app.get('/order', async (req, res) => {
     try {
         // Tìm tất cả các đơn hàng trong cơ sở dữ liệu
         const orders = await Order.find();
@@ -362,7 +360,7 @@ app.get('/order', async(req, res) => {
 });
 
 // Top sản phẩm bán chạy
-app.get('/top-selling', async(req, res) => {
+app.get('/top-selling', async (req, res) => {
     try {
         // Sử dụng aggregation để tính toán top sản phẩm bán chạy
         const topSellingProducts = await Order.aggregate([
@@ -456,7 +454,7 @@ app.get('/top-selling', async(req, res) => {
 //       res.status(500).json({ message: error.message });
 //     }
 //   });
-app.post('/login', async(req, res) => {
+app.post('/login', async (req, res) => {
     const { username, password } = req.body;
 
     try {
@@ -468,12 +466,7 @@ app.post('/login', async(req, res) => {
             if (password !== user.password) {
                 res.status(401).json({ message: 'Sai mật khẩu' });
             } else {
-                res.json({
-                    message: 'Đăng nhập thành công',
-                    userId: user._id,
-                    username: user.username,
-                    password: user.password,
-                });
+                res.json(user);
             }
         }
     } catch (error) {
@@ -482,30 +475,41 @@ app.post('/login', async(req, res) => {
 });
 
 
-app.post('/register', async(req, res) => {
+app.post('/register', async (req, res) => {
     const { username, password } = req.body;
 
     try {
         const existingUser = await User.findOne({ username });
 
         if (existingUser) {
-            res.status(409).json({ message: 'Username đã tồn tại' });
-        } else {
-            const user = new User({
-                username,
-                password
-            });
-
-            await user.save();
-
-            res.sendStatus(201);
+            return res.status(409).json({ message: 'Username đã tồn tại' });
         }
+
+        const user = new User({
+            username,
+            password
+        });
+
+        await user.save();
+
+        const newProfile = new Profile({
+            user: user._id,
+            fullname: username.split('@')[0], 
+            gender: 'Nam',
+            avatar: 'https://st.quantrimang.com/photos/image/072015/22/avatar.jpg',
+            birthday: '01-01-2000'
+        });
+
+        await newProfile.save();
+
+       // return res.sendStatus(201);
+        return res.json(newProfile);
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        return res.status(500).json({ message: error.message });
     }
 });
 
-app.post('/changepassword', async(req, res) => {
+app.post('/changepassword', async (req, res) => {
     const { username, oldPassword, newPassword } = req.body;
 
     try {
@@ -528,7 +532,7 @@ app.post('/changepassword', async(req, res) => {
     }
 });
 // lấy toàn bộ user
-app.get('/user', async(req, res) => {
+app.get('/user', async (req, res) => {
     try {
         const u = await User.find();
         res.json(u);
@@ -537,7 +541,7 @@ app.get('/user', async(req, res) => {
     }
 });
 // Hiển thị thông tin user dựa trên ID
-app.get('/user/:userId', async(req, res) => {
+app.get('/user/:userId', async (req, res) => {
     const userId = req.params.userId;
 
     try {
@@ -554,7 +558,7 @@ app.get('/user/:userId', async(req, res) => {
 
 
 // Thêm địa chỉ
-app.post('/address/add', async(req, res) => {
+app.post('/address/add', async (req, res) => {
     const { name, phone, address, userId } = req.body;
 
     const add = new Address({
@@ -575,7 +579,7 @@ app.post('/address/add', async(req, res) => {
 
 
 // Lấy về toàn bộ địa chỉ dựa trên userId
-app.get('/address/:userId', async(req, res) => {
+app.get('/address/:userId', async (req, res) => {
     const userId = req.params.userId;
 
     try {
@@ -588,7 +592,7 @@ app.get('/address/:userId', async(req, res) => {
 
 
 // Định nghĩa endpoint để sửa địa chỉ
-app.put('/address/edit/:id', async(req, res) => {
+app.put('/address/edit/:id', async (req, res) => {
     const id = req.params.id;
     const { name, phone, address } = req.body;
 
@@ -606,7 +610,7 @@ app.put('/address/edit/:id', async(req, res) => {
 });
 
 // Định nghĩa endpoint để xoá địa chỉ
-app.delete('/address/delete/:id', async(req, res) => {
+app.delete('/address/delete/:id', async (req, res) => {
     const id = req.params.id;
     try {
         await Address.deleteOne({ _id: id });
@@ -618,7 +622,7 @@ app.delete('/address/delete/:id', async(req, res) => {
 });
 
 // Hiển thị chi tiết một địa chỉ
-app.get('/address/:id', async(req, res) => {
+app.get('/address/:id', async (req, res) => {
     const address_id = req.params.id;
 
     try {
@@ -665,7 +669,7 @@ app.get('/address/:id', async(req, res) => {
 // });
 
 // sửa trang cá nhân hiển
-app.put('/profile/edit', async(req, res) => {
+app.put('/profile/edit', async (req, res) => {
     const { user, fullname, gender, avatar, birthday } = req.body;
 
     try {
@@ -695,7 +699,7 @@ app.put('/profile/edit', async(req, res) => {
 
 
 //lấy về thông tin profile theo userId
-app.get('/profile/:userId', async(req, res) => {
+app.get('/profile/:userId', async (req, res) => {
     const userId = req.params.userId;
 
     try {
@@ -712,7 +716,7 @@ app.get('/profile/:userId', async(req, res) => {
 });
 
 //Tìm kiếm sản phẩm theo tiêu đề
-app.post('/products/search', async(req, res) => {
+app.post('/products/search', async (req, res) => {
     const { title } = req.body;
 
     try {
@@ -727,7 +731,7 @@ app.post('/products/search', async(req, res) => {
 });
 
 // Tạo màu sắc mới cho sản phẩm
-app.post('/colors/add/:productId', async(req, res) => {
+app.post('/colors/add/:productId', async (req, res) => {
     try {
         const { productId } = req.params;
         const { color_name, color_image } = req.body;
@@ -745,7 +749,7 @@ app.post('/colors/add/:productId', async(req, res) => {
 });
 
 // Sửa đổi thông tin màu sắc
-app.put('/colors/edit/:colorId', async(req, res) => {
+app.put('/colors/edit/:colorId', async (req, res) => {
     try {
         const { colorId } = req.params;
         const { color_name, color_image } = req.body;
@@ -760,7 +764,7 @@ app.put('/colors/edit/:colorId', async(req, res) => {
 });
 
 // Xóa màu sắc
-app.delete('/colors/delete/:colorId', async(req, res) => {
+app.delete('/colors/delete/:colorId', async (req, res) => {
     try {
         const { colorId } = req.params;
 
@@ -774,7 +778,7 @@ app.delete('/colors/delete/:colorId', async(req, res) => {
 });
 
 // Lấy về toàn bộ dữ liệu từ bảng Color
-app.get('/colors/getAll', async(req, res) => {
+app.get('/colors/getAll', async (req, res) => {
     try {
         const colors = await Color.find();
         res.json(colors);
@@ -784,7 +788,7 @@ app.get('/colors/getAll', async(req, res) => {
 });
 
 //lấy color theo productId
-app.get('/api/colors/:productId', async(req, res) => {
+app.get('/api/colors/:productId', async (req, res) => {
     try {
         const productId = req.params.productId;
 
@@ -801,7 +805,7 @@ app.get('/api/colors/:productId', async(req, res) => {
 });
 
 // Tạo kích thước mới cho sản phẩm
-app.post('/sizes/add/:colorId', async(req, res) => {
+app.post('/sizes/add/:colorId', async (req, res) => {
     try {
         const { colorId } = req.params;
         const { size_name, size_quantity } = req.body;
@@ -822,7 +826,7 @@ app.post('/sizes/add/:colorId', async(req, res) => {
 });
 
 // Sửa đổi thông tin kích thước
-app.put('/sizes/edit/:sizeId', async(req, res) => {
+app.put('/sizes/edit/:sizeId', async (req, res) => {
     try {
         const { sizeId } = req.params;
         const { size_name, size_quantity } = req.body;
@@ -839,7 +843,7 @@ app.put('/sizes/edit/:sizeId', async(req, res) => {
 });
 
 // Xóa kích thước
-app.delete('/sizes/delete/:sizeId', async(req, res) => {
+app.delete('/sizes/delete/:sizeId', async (req, res) => {
     try {
         const { sizeId } = req.params;
 
@@ -853,7 +857,7 @@ app.delete('/sizes/delete/:sizeId', async(req, res) => {
 });
 
 // Lấy về toàn bộ size
-app.get('/sizes/getAll', async(req, res) => {
+app.get('/sizes/getAll', async (req, res) => {
     try {
         const sizes = await Size.find();
         res.json(sizes);
@@ -863,7 +867,7 @@ app.get('/sizes/getAll', async(req, res) => {
 });
 
 // Lấy về size theo color
-app.get('/sizes/:colorId', async(req, res) => {
+app.get('/sizes/:colorId', async (req, res) => {
     try {
         const { colorId } = req.params;
 
