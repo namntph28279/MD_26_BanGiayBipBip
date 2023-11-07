@@ -108,7 +108,7 @@ function User({ route, navigation }) {
                     source={{ uri: userData.avatar ? userData.avatar : defaultAvatar }}
                     style={styles.avatar}
                 />
-                <Text style={styles.userId}>{userData.user}</Text>
+                {/*<Text style={styles.userId}>{userData.user}</Text>*/}
                 <Text style={styles.userName}>{userData.fullname}</Text>
                 <Text style={styles.userEmail}>{userData.birthday}</Text>
             </View>
@@ -119,21 +119,21 @@ function User({ route, navigation }) {
                     onPress={() => navigation.navigate('EditProfile',{ userID ,userData})}
                 >
                     <Icon name="edit" size={20} color="orange" />
-                    <Text style={styles.sectionText}>Chỉnh sửa thông tin</Text>
+                    <Text style={styles.sectionText}>Chỉnh Sửa Thông Tin</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
                     style={styles.section}
                     onPress={openFacebookPage}
                 >
                     <Icon name="question-circle" size={20} color="red" />
-                    <Text style={styles.sectionText}>Hỗ trợ</Text>
+                    <Text style={styles.sectionText}>Hỗ Trợ</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
                     style={styles.section}
                     onPress={() => navigation.navigate('ChatScreen', { userId: userID, userName: userData.fullname, })}
                 >
                     <Icon name="comment" size={20} color="green" />
-                    <Text style={styles.sectionText}>Chat Box</Text>
+                    <Text style={styles.sectionText}>Chat Với Người Dùng</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
                     style={styles.section}
@@ -141,14 +141,14 @@ function User({ route, navigation }) {
                     onPress={() => navigation.navigate('Oder', { userId: userID })}
                 >
                     <Icon name="shopping-cart" size={20} color="cyan" />
-                    <Text style={styles.sectionText}>Đơn mua</Text>
+                    <Text style={styles.sectionText}>Đơn Mua</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
                     style={styles.section}
                     onPress={() => navigation.navigate('ChangePassword', { userId: userID })}
                 >
                     <Icon name="lock" size={20} color="blue" />
-                    <Text style={styles.sectionText}>Đổi mật khẩu</Text>
+                    <Text style={styles.sectionText}>Đổi Mật Khẩu</Text>
                 </TouchableOpacity>
                 <TouchableOpacity style={styles.section} onPress={handleDeleteProfile}>
                     <Icon name="trash" size={20} color="red" />
@@ -157,7 +157,7 @@ function User({ route, navigation }) {
 
                 <TouchableOpacity style={styles.section} onPress={handleLogout}>
                     <Icon name="sign-out" size={20} color="violet" />
-                    <Text style={styles.sectionText}>Đăng xuất</Text>
+                    <Text style={styles.sectionText}>Đăng Xuất</Text>
                 </TouchableOpacity>
             </View>
         </View>
@@ -199,15 +199,18 @@ const styles = StyleSheet.create({
         borderWidth: 2,
         borderColor: 'black',
     },
-    userId: {
-        marginTop: 60,
-        fontSize: 5,
-        fontWeight: 'bold',
-        marginBottom: 8,
-    },
+    // userId: {
+    //     marginTop: 60,
+    //     fontSize: 5,
+    //     fontWeight: 'bold',
+    //     marginBottom: 8,
+    // },
     userName: {
-        fontSize: 16,
+        fontSize: 12,
         marginBottom: 4,
+        marginTop: 60,
+        // marginTop: '15%',
+        fontWeight: 'bold',
     },
     userEmail: {
         fontSize: 14,
