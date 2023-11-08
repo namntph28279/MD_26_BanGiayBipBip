@@ -58,30 +58,18 @@ function Cart({ route, navigation }) {
     } else {
       setCartProducts([]);
     }
-    ///
-    // const userRef = ref(database, `registrations/${userId}`);
-    // onValue(userRef, (snapshot) => {
-    //   const userData = snapshot.val();
-    //   if (userData) {
-    //     setUserData(userData);
-    //   } else {
-    //     setUserData(null);
-    //   }
-    // });
   };
 
-  const fetchShippingAddress = () => {
-    // const userId = auth.currentUser.uid;
-    // const userRef = ref(database, `registrations/${userId}`);
-    // onValue(userRef, (snapshot) => {
-    //   const userData = snapshot.val();
-    //   if (userData) {
-    //     const address = userData.address;
-    //     setShippingAddress(address);
-    //   } else {
-    //     setShippingAddress("");
-    //   }
-    // });
+  const fetchShippingAddress = async () => {
+    const addressRef = await fetch(
+      "https://md26bipbip-496b6598561d.herokuapp.com/address/" + userID
+    );
+    const addressData = await addressRef.json();
+    if (addressData) {
+      setShippingAddress(addressData);
+    } else {
+      setShippingAddress("");
+    }
   };
   const handleToggleSwitch = (productId) => {
     setCartProducts((prevCartProducts) => {
@@ -162,14 +150,14 @@ function Cart({ route, navigation }) {
     return cartProducts.length;
   };
 
-  const increaseQuantity = () => {
-    // setQuantity(quantity + 1);
+  const increaseQuantity = (quantity) => {
+    quantity++;
   };
 
-  const decreaseQuantity = () => {
-    // if (quantity > 1) {
-    // setQuantity(quantity - 1);
-    // }
+  const decreaseQuantity = (quantity) => {
+    if (quantity > 1) {
+      quantity--;
+    }
   };
 
   useEffect(() => {
@@ -208,14 +196,14 @@ function Cart({ route, navigation }) {
             <View style={styles.quantityContainer}>
               <TouchableOpacity
                 style={styles.quantityButton}
-                onPress={decreaseQuantity}
+                onPress={decreaseQuantity(product.quantity)}
               >
                 <Text style={styles.quantityButtonText}>-</Text>
               </TouchableOpacity>
               <Text style={styles.quantityText}>{product.quantity}</Text>
               <TouchableOpacity
                 style={styles.quantityButton}
-                onPress={increaseQuantity}
+                onPress={increaseQuantity(product.quantity)}
               >
                 <Text style={styles.quantityButtonText}>+</Text>
               </TouchableOpacity>
@@ -225,18 +213,6 @@ function Cart({ route, navigation }) {
               >
                 <Ionicons name="trash-outline" size={20} color="red" />
               </TouchableOpacity>
-            </View>
-            {/* <Animated.Text
-              style={[styles.editText, { opacity: fadeAnim }]}
-              onLayout={startAnimation}
-            >
-              Nhấn vào để chỉnh sửa
-            </Animated.Text> */}
-            <View style={styles.buttonContainer}>
-              {/*<TouchableOpacity style={styles.button1} onPress={() => handleBuyNow(product)}>*/}
-              {/*    <Ionicons name="cart-outline" size={24} color="#ff6" />*/}
-              {/*    <Text style={styles.buttonText1}>Mua</Text>*/}
-              {/*</TouchableOpacity>*/}
             </View>
           </View>
         </View>

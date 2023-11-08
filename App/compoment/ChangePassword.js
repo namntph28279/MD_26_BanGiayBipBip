@@ -11,7 +11,7 @@ import {
 import axios from "axios";
 
 const ChangePassword = ({ route, navigation }) => {
-    const userId = route.params?.userId || '';
+  const userId = route.params?.userId || "";
 
   const [oldPassword, setOldPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
@@ -22,19 +22,20 @@ const ChangePassword = ({ route, navigation }) => {
   const [errorConfirmPassword, setErrorConfirmPassword] = useState(false);
 
   const [userData, setUserData] = useState([]);
-  useEffect(()=>{
-    console.log(userId+" test")
-    if(userId){
-        axios.get(`https://md26bipbip-496b6598561d.herokuapp.com/user/${userId}`)
-      .then(response => {
-        const User = response.data;
-        setUserData(User);
-      })
-      .catch(error => {
-        console.error('Have an error:', error);
-      });
+  useEffect(() => {
+    console.log(userId + " test");
+    if (userId) {
+      axios
+        .get(`https://md26bipbip-496b6598561d.herokuapp.com/user/${userId}`)
+        .then((response) => {
+          const User = response.data;
+          setUserData(User);
+        })
+        .catch((error) => {
+          console.error("Have an error:", error);
+        });
     }
-  },[userId]);
+  }, [userId]);
 
   const handleSavePassword = () => {
     console.log(userData);
@@ -77,6 +78,10 @@ const ChangePassword = ({ route, navigation }) => {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.inputContainer}>
+        <Image
+          source={require("../image/ChangePassImage.png")}
+          style={{ width: 150, height: 150,alignSelf: "center"}}
+        />
         <Text style={styles.label}>Mật khẩu cũ:</Text>
         <TextInput
           secureTextEntry
@@ -125,7 +130,7 @@ const ChangePassword = ({ route, navigation }) => {
           backgroundColor: "black",
           margin: 7,
           padding: 15,
-          marginTop: 30,
+          marginTop: 60,
         }}
         onPress={handleSavePassword}
       >
@@ -148,20 +153,17 @@ const styles = StyleSheet.create({
     padding: 16,
     backgroundColor: "#fff",
   },
-  inputContainer: {
-    marginTop: 20,
-    marginBottom: 16,
-  },
   label: {
     fontSize: 16,
     fontWeight: "bold",
-    marginBottom: 8,
+    marginTop:35
   },
   input: {
     height: 40,
     borderWidth: 1,
     borderColor: "#ccc",
     borderRadius: 4,
+    marginTop:2,
     paddingHorizontal: 10,
   },
   inputError: {
