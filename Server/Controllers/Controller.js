@@ -392,68 +392,6 @@ app.get('/top-selling', async (req, res) => {
     }
 });
 
-//đăng nhập
-// app.post('/login', async (req, res) => {
-//     const { username, password } = req.body;
-
-//     try {
-//       // Tìm người dùng với username được cung cấp
-//       const user = await User.findOne({ username });
-
-//       if (!user) {
-//         // Người dùng không tồn tại
-//         res.status(404).json({ message: 'Tài khoản không tồn tại' });
-//       } else {
-//         // Kiểm tra mật khẩu
-//         if (password !== user.password) {
-//           // Sai mật khẩu
-//           res.status(401).json({ message: 'Sai mật khẩu' });
-//         } else {
-//           // Đăng nhập thành công
-//           // Tạo một token ngẫu nhiên
-//           const token = generateRandomToken();
-
-//           // Lưu token vào cơ sở dữ liệu người dùng
-//           user.token = token;
-//           await user.save();
-
-//           // Trả về token cho người dùng
-//           res.json({ token });
-//         }
-//       }
-//     } catch (error) {
-//       res.status(500).json({ message: error.message });
-//     }
-//   });
-
-//   function generateRandomToken() {
-//     // Logic để tạo một token ngẫu nhiên
-//     // Đây chỉ là một ví dụ đơn giản, bạn có thể sử dụng thư viện như crypto để tạo token an toàn hơn
-//     const tokenLength = 32;
-//     const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-//     let token = '';
-//     for (let i = 0; i < tokenLength; i++) {
-//       const randomIndex = Math.floor(Math.random() * characters.length);
-//       token += characters[randomIndex];
-//     }
-//     return token;
-//   }
-
-//đăng xuất
-//   app.post('/logout', async (req, res) => {
-//     try {
-//       const userId = req.body.userId;
-//       const user = await User.findById(userId);
-//       if (user) {
-//         user.tokens = [];
-//         await user.save();
-//       }
-
-//       res.sendStatus(200);
-//     } catch (error) {
-//       res.status(500).json({ message: error.message });
-//     }
-//   });
 app.post('/login', async (req, res) => {
     const { username, password } = req.body;
 
@@ -466,6 +404,8 @@ app.post('/login', async (req, res) => {
             if (password !== user.password) {
                 res.status(401).json({ message: 'Sai mật khẩu' });
             } else {
+                user.status = true;
+                await user.save();
                 res.json(user);
             }
         }
@@ -474,6 +414,24 @@ app.post('/login', async (req, res) => {
     }
 });
 
+app.post('/logout/:iduser', async (req, res) => {
+    const idUser = req.params.iduser;
+
+    try {
+        
+        const user = await User.findById(idUser);
+
+        if (!user) {
+            res.status(404).json({ message: 'Người dùng không tồn tại' });
+        } else {
+            user.status = false;
+            await user.save();
+            res.json({ message: 'Đăng xuất thành công' });
+        }
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
 
 app.post('/register', async (req, res) => {
     const { username, password } = req.body;
