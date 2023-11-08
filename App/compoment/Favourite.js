@@ -539,52 +539,66 @@ export default function Favourite({ route, navigation }) {
   const [name, setName] = useState();
   const [pice, setpice] = useState();
   const [img, setImg] = useState();
-  // const { userID } = useRoute();
-  const { product } = route.params;
-  console.log('Giá trị prod ở màn favo:', product);
+  const [autoUpdate, setAutoUpdate] = useState(true);
+  const [isSorting, setIsSorting] = useState(false);
   const userID = route.params?.userID || '';
-  useEffect(() => {
-    console.log('Giá trị userID ở màn favo:', userID);
-    // Thực hiện các xử lý khác với userID
-  }, [userID]);
+  // useEffect(() => {
+  //   console.log('Giá trị userID ở màn favo:', userID);
+  //   // Thực hiện các xử lý khác với userID
+  // }, [userID]);
 
 
 
   useEffect(() => {
-    const interval = setInterval(() => {
+    if (autoUpdate) {
       fetchUserFavorites();
-    }, 1000);
+      const interval = setInterval(() => {
+        fetchUserFavorites();
+      }, 1000);
 
-    return () => clearInterval(interval);
-  }, []);
+      return () => clearInterval(interval);
+    }
+  }, [autoUpdate,isSorting]);
 
   const fetchUserFavorites = () => {
     axios.get(`https://md26bipbip-496b6598561d.herokuapp.com/favourite/${userID}`)
       .then(response => {
         const favoriteItems = response.data;
-        setFavProducts(favoriteItems);
+        // Kiểm tra xem danh sách sản phẩm yêu thích có thay đổi trước khi cập nhật
+        if (JSON.stringify(favoriteItems) !== JSON.stringify(favProducts)) {
+          setFavProducts(favoriteItems);
+        }
       })
       .catch(error => {
         console.error('Lỗi khi lấy sản phẩm trong favorites:', error);
       });
   };
 
-  const Count = () => {
-    return favProducts.length;
-  };
 
   const TC = () => {
     const sortedProducts = [...favProducts];
     sortedProducts.sort((a, b) => a.product_price - b.product_price);
-    setshowDialog(false);
     setFavProducts(sortedProducts);
+    setshowDialog(false);
+    // Ngăn tự động cập nhật danh sách sau khi sắp xếp
+    // setAutoUpdate(false);
+    setIsSorting(false);
+    setAutoUpdate(false);
   };
 
   const CT = () => {
     const sortedProducts = [...favProducts];
     sortedProducts.sort((a, b) => b.product_price - a.product_price);
-    setshowDialog(false);
     setFavProducts(sortedProducts);
+    setshowDialog(false);
+    // Ngăn tự động cập nhật danh sách sau khi sắp xếp
+   
+    setIsSorting(false);
+    setAutoUpdate(false);
+  };
+
+  const Count = () => {
+    return favProducts.length;
   };
 
   const closeModal = () => {
@@ -600,7 +614,7 @@ export default function Favourite({ route, navigation }) {
 
   //         axios.delete(`https://md26bipbip-496b6598561d.herokuapp.com/favourite/delete/${favoriteItemId}`)
   //             .then(response => {
-                  
+
   //                 fetchUserFavorites(); // Cập nhật danh sách yêu thích sau khi xóa
   //             })
   //             .catch(error => {
@@ -613,14 +627,14 @@ export default function Favourite({ route, navigation }) {
 
   const Delete = (productId) => {
     axios.delete(`https://md26bipbip-496b6598561d.herokuapp.com/favourite/delete/${productId}`)
-        .then(() => {
-
-          fetchUserFavorites();
-          setshowDialogtc(false);
-        })
-        .catch(error => {
-          console.error('Lỗi khi xóa sản phẩm khỏi danh sách yêu thích:', productId, favProducts);
-        });
+      .then(() => {
+        fetchUserFavorites();
+        setshowDialogtc(false);
+        
+      })
+      .catch(error => {
+        console.error('Lỗi khi xóa sản phẩm khỏi danh sách yêu thích:', productId, favProducts);
+      });
   };
 
 
@@ -647,7 +661,7 @@ export default function Favourite({ route, navigation }) {
                 paddingRight: 30,
                 alignItems: 'center'
               }}
-              onPress={() => { navigation.navigate('AllShoes',{ userId : userID}) }}
+              onPress={() => { navigation.navigate('AllShoes', { userId: userID }) }}
             >
               <View>
                 <Text style={{
@@ -788,9 +802,9 @@ export default function Favourite({ route, navigation }) {
             {favProducts.map((item) => (
               <TouchableOpacity key={item.product}
                 onPress={() => {
-                  navigation.navigate("ProductDetail", { productId: item.product ,userId: userID});
+                  navigation.navigate("ProductDetail", { productId: item.product, userId: userID });
                 }} style={styles.productContainer}>
-                
+
                 <View style={styles.productBox}>
                   <Image source={{ uri: item.product_image }} style={styles.productImage} />
                   <View style={styles.productInfo}>
@@ -809,7 +823,7 @@ export default function Favourite({ route, navigation }) {
                       setpice(item.product_price);
                     }}
                   >
-                    
+
                     <Image source={require('../image/More.png')} />
                   </TouchableHighlight>
                 </View>
@@ -910,8 +924,8 @@ const styles = StyleSheet.create({
     marginRight: 15,
   },
   frame: {
-    marginRight: 14,
-    marginLeft: 14,
+    marginRight: '3%',
+    marginLeft: '3%',
   },
   productContainer: {
     marginTop: 14,
@@ -959,5 +973,6 @@ const styles = StyleSheet.create({
     height: 20,
     margin: 4
   },
+  
 });
 

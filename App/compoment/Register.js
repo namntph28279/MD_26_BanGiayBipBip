@@ -432,12 +432,12 @@ function Register({ navigation }) {
 
     return (
         <View style={styles.container}>
-            <Image source={require('../image/logoapp.png')} style={{ margin: 16 }} />
+            <Image source={require('../image/logobipbip.png')} style={{ margin: 16, width:200,height:200 }} />
             <Text style={styles.title}>Bắt đầu nào</Text>
             <Text style={styles.title2}>Tạo một tài khoản mới</Text>
 
             <TextInput
-                label='Email'
+                placeholder='Email'
                 value={username}
                 onChangeText={(text) => setUsername(text)}
                 error={!!usernameError}
@@ -446,7 +446,7 @@ function Register({ navigation }) {
             />
 
             <TextInput
-                label='Password'
+                placeholder='Mật khẩu'
                 value={password}
                 onChangeText={(text) => setPassword(text)}
                 error={!!passwordError}
@@ -456,7 +456,7 @@ function Register({ navigation }) {
             />
 
             <TextInput
-                label='Confirm Password'
+                placeholder='Nhập lại mật khẩu'
                 value={confirmPassword}
                 onChangeText={(text) => setConfirmPassword(text)}
                 error={!!confirmPasswordError}
@@ -497,12 +497,13 @@ const styles = StyleSheet.create({
     nhap: {
         borderRadius: 5,
         width: '90%',
-        height: 50,
+        height: 40,
         margin: 10,
         borderWidth: 2,
         padding: 8,
         borderColor: '#EBF0FF',
         backgroundColor: "#fff"
+        
     },
     buton: {
         justifyContent: 'center',
