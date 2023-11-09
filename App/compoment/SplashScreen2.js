@@ -45,7 +45,7 @@ const SplapshScreen2 = (props) => {
             <Text style={{ color: 'white', width: 300, textAlign: 'center', marginTop: 16 }}>Hãy mang những ước mơ của bạn lên đôi chân
                 để dẫn lối giấc mơ đó thành hiện thực </Text>
 
-            <TouchableHighlight activeOpacity={0.6} style={styles.buton} onPress={()=>  props.navigation.navigate('TabNavi')}>
+            <TouchableHighlight activeOpacity={0.6} style={styles.buton} onPress={()=>  props.navigation.replace('TabNavi')}>
                 <Text style={styles.textButon}>
                     KHÁM PHÁ NGAY
                 </Text>

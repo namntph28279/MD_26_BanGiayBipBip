@@ -1,11 +1,11 @@
 import { StyleSheet, Text, View } from 'react-native'
-import React, { useEffect } from 'react'
+import React from 'react'
 
 
 
 const SplapshScreen = (props) => {
     setTimeout(() => {
-        props.navigation.navigate('SplashScreen2');
+        props.navigation.replace('SplashScreen2');
     }, 3000);
     return (
         < View style={styles.container} >
