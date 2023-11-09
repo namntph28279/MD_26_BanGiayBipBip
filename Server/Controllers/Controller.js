@@ -460,8 +460,7 @@ app.post('/register', async (req, res) => {
 
         await newProfile.save();
 
-       // return res.sendStatus(201);
-        return res.json(newProfile);
+       return res.sendStatus(201);
     } catch (error) {
         return res.status(500).json({ message: error.message });
     }
