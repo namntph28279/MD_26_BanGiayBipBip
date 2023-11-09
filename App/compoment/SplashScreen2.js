@@ -1,6 +1,7 @@
-import { StyleSheet, Text, View, Image, TouchableHighlight } from 'react-native'
-import React, { useRef, useEffect } from 'react'
+import {StyleSheet, Text, View, Image, TouchableHighlight} from 'react-native'
+import React, {useRef, useEffect} from 'react'
 import Swiper from 'react-native-swiper'
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 
 const SplapshScreen2 = (props) => {
@@ -15,10 +16,13 @@ const SplapshScreen2 = (props) => {
 
         return () => clearInterval(interval);
     }, []);
-
+    const start = async () => {
+        await AsyncStorage.setItem('Email', "");
+        props.navigation.replace('TabNavi')
+    }
     return (
         <View style={styles.container}>
-            <View style={{ height: 300 }}>
+            <View style={{height: 300}}>
                 <Swiper
                     ref={swiperRef}
                     autoplay={false} // Tắt chế độ autoplay của Swiper
@@ -27,30 +31,30 @@ const SplapshScreen2 = (props) => {
                     activeDotStyle={styles.paginationActiveDot}//hien thi dau cham khi anh den
                 >
                     <View style={styles.slide}>
-                        <Image source={require('../image/logo.png')} style={styles.imageBackground} />
+                        <Image source={require('../image/logo.png')} style={styles.imageBackground}/>
                     </View>
                     <View style={styles.slide}>
-                        <Image source={require('../image/logo1.png')} style={styles.imageBackground} />
+                        <Image source={require('../image/logo1.png')} style={styles.imageBackground}/>
                     </View>
                     <View style={styles.slide}>
-                        <Image source={require('../image/logo2.png')} style={styles.imageBackground} />
+                        <Image source={require('../image/logo2.png')} style={styles.imageBackground}/>
                     </View>
                 </Swiper>
             </View>
 
 
-
-            <Text style={{ color: '#038C7F', fontSize: 20, fontWeight: 'bold', marginTop: 26 }}>Vượt Mọi Thử Thách</Text>
-            <Text style={{ color: 'white', fontSize: 22, fontWeight: 'bold' }}>Sneaker Của Bạn !</Text>
-            <Text style={{ color: 'white', width: 300, textAlign: 'center', marginTop: 16 }}>Hãy mang những ước mơ của bạn lên đôi chân
+            <Text style={{color: '#038C7F', fontSize: 20, fontWeight: 'bold', marginTop: 26}}>Vượt Mọi Thử Thách</Text>
+            <Text style={{color: 'white', fontSize: 22, fontWeight: 'bold'}}>Sneaker Của Bạn !</Text>
+            <Text style={{color: 'white', width: 300, textAlign: 'center', marginTop: 16}}>Hãy mang những ước mơ của bạn
+                lên đôi chân
                 để dẫn lối giấc mơ đó thành hiện thực </Text>
 
-            <TouchableHighlight activeOpacity={0.6} style={styles.buton} onPress={()=>  props.navigation.replace('TabNavi')}>
+            <TouchableHighlight activeOpacity={0.6} style={styles.buton} onPress={start}>
                 <Text style={styles.textButon}>
                     KHÁM PHÁ NGAY
                 </Text>
             </TouchableHighlight>
-        </View >
+        </View>
     )
 }
 

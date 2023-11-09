@@ -1,5 +1,6 @@
 import {createSlice} from "@reduxjs/toolkit";
 import url from "../api/url"
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const getDataProduct = async () => {
     try {
@@ -21,7 +22,8 @@ const getDataSPBestSale = async () => {
 
 const getDataFavourite = async () => {
     try {
-        const email = "64ab9784b65d14d1076c3477";
+        const email = await AsyncStorage.getItem('Email');
+        console.log("getFav: "+email)
         const response = await url.get(`/favourite/${email}`);
         return response.data ;
     } catch (error) {

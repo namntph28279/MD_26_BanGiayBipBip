@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, Image, Alert, StyleSheet } from 'react-native';
 import axios from 'axios';
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const Login = ({ navigation }) => {
     const [userName, setUserName] = useState('');
@@ -47,6 +48,7 @@ const Login = ({ navigation }) => {
                     const userID = userData._id;
                     console.log(userID);
                     if (userID) {
+                        await AsyncStorage.setItem("Email", userID);
                         navigation.navigate('TabNavi', { isAuthenticated: true, userID,screen: 'Home' });
                     } else {
                         console.error('Không nhận được ID người dùng từ phản hồi JSON');

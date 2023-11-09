@@ -277,7 +277,39 @@ app.delete('/favourite/delete/:id', async (req, res) => {
     }
 });
 
+app.post('/favourite/addFav', async (req, res) => {
+    const { product_id, user_id } = req.body;
+    try {
+        // Kiểm tra xem sản phẩm đã tồn tại trong bảng yêu thích của người dùng chưa
+        let favouriteItem = await FavouriteItem.findOne({ product: product_id, user: user_id });
 
+        if (favouriteItem) {
+            await FavouriteItem.findByIdAndDelete(favouriteItem._id);
+            res.status(200).json({ message: 'Xóa thành công' });
+            console.log("Xóa thành công")
+        } else {
+            // Nếu sản phẩm chưa tồn tại, thêm vào bảng yêu thích
+            const product = await Product.findById(product_id);
+
+            if (!product) {
+                res.status(404).json({ message: 'Sản phẩm không tồn tại' });
+            } else {
+                favouriteItem = new FavouriteItem({
+                    product: product_id,
+                    product_title: product.product_title,
+                    product_price: product.product_price,
+                    product_image: product.product_image,
+                    user: user_id
+                });
+                console.log("Thêm thành công")
+                await favouriteItem.save();
+                res.json(favouriteItem);
+            }
+        }
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
 // Lấy về toàn bộ favouriteItem dựa trên userId
 app.get('/favourite/:userId', async (req, res) => {
     const userId = req.params.userId;

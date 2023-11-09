@@ -16,31 +16,21 @@ import {getMonney} from "../util/money";
 import {useDispatch, useSelector} from "react-redux";
 import {fetchDataAndSetToRedux} from "../redux/AllData";
 import axios from 'axios';
-
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import url from '../api/url'
 function Home({route, navigation}) {
     const dispatch = useDispatch(); //trả về một đối tượng file phối
     const dataSP1 = useSelector((state) => state.dataAll.dataSP); //lấy toàn bộ mảng dữ liệu
     const dataSPFav = useSelector((state) => state.dataAll.dataSPFav); //lấy toàn bộ mảng dữ liệu Fav
 
-    const idSPFavs = dataSPFav.map((item) => item.product); //lấy id sp Fav
+    const [checkColorFav,setCheckColorFav] = useState([]);
 
     const [valueSortBy, setValueSortBy] = useState(0);
     const [valueFilter, setValueFilter] = useState(null);
-
     const swiperRef = useRef(null);
-
 
     const [dataSP, setDataSP] = useState([]);
     const [dataSwiper, setDataSwiper] = useState([]);
-    const userID = route.params?.userID || '';
-
-    useEffect(() => {
-        console.log('Giá trị userID từ home:', userID);
-        if (!userID) {
-            console.log('không có user');
-
-        }
-    }, [userID]);
 
     React.useEffect(() => {
         return navigation.addListener("focus", () => {
@@ -60,8 +50,9 @@ function Home({route, navigation}) {
         } else {
             setDataSP([]);
         }
-
+        setCheckColorFav(dataSPFav.map((item) => item.product))
         setDataSwiper(dataSP1);
+
     }, [dataSP1, dataSPFav]);
 
     useEffect(() => {
@@ -100,7 +91,6 @@ function Home({route, navigation}) {
             setDataSP(dataSort);
         }
     };
-
     const filterByCategory = (value) => {
         setValueFilter(value);
         const dataCategory = [...dataSP1];
@@ -140,61 +130,46 @@ function Home({route, navigation}) {
     };
 
     const renderProductItem = (item) => {
-
-        item.isFav = idSPFavs.includes(item._id);
-        const toggleHeartColor = () => {
+        item.isFav = checkColorFav.includes(item._id);
+        const idFavourite =item._id;
+        const toggleHeartColor = async () => {
             if (item.isFav === false) {
-                axios.post('https://md26bipbip-496b6598561d.herokuapp.com/favourite/add', {
-                    product_id: item._id,
-                    user_id: "64ab9784b65d14d1076c3477"
-                })
-                    .then(() => {
-
-                    })
-                    .catch(error => {
-                        console.error('Lỗi:', error);
-                    });
+                const email = await AsyncStorage.getItem('Email');
+                await url.post("/favourite/addFav", {product_id: idFavourite, user_id:email })
+                checkColorFav.push(item._id)
+                dispatch(fetchDataAndSetToRedux());
+                console.log("Add: " + email)
             } else {
-                const favoriteItemToDelete = dataSPFav.find(itemFav => itemFav.product === item._id);
-                if (favoriteItemToDelete) {
-                    const favoriteItemId = favoriteItemToDelete._id;
-                    axios.delete(`https://md26bipbip-496b6598561d.herokuapp.com/favourite/delete/${favoriteItemId}`)
-                        .then(() => {
-                            //reload data when user delete favorite
-                        })
-                        .catch(error => {
-                            console.error('Lỗi khi xóa khỏi danh sách yêu thích:', error);
-                        });
-                } else {
-                    console.error('Không tìm thấy mục yêu thích với productId:', item._id, dataSPFav);
-                }
+                const email = await AsyncStorage.getItem('Email');
+                await url.post("/favourite/addFav", {product_id: idFavourite, userId:email})
+                let index = checkColorFav.indexOf(item._id);
+                checkColorFav.splice(index,item._id)
+                dispatch(fetchDataAndSetToRedux());
             }
         };
+
+        const startProductdetal =async () => {
+            const email = await AsyncStorage.getItem('Email');
+            navigation.navigate("ProductDetail", {productId: item._id});
+
+        }
         return (
             <View style={styles.productContainer}>
                 <TouchableOpacity
                     key={item._id}
-                    onPress={() => {
-                        navigation.navigate("ProductDetail", {productId: item._id, userId: userID});
-                    }}
+                    onPress={startProductdetal}
                 >
-                    <View
-                        style={{
+                    <View style={{
                             width: "100%",
                             height: 200,
                             paddingBottom: 3,
                             borderRadius: 10,
-                        }}
-                    >
-                        <Image
-                            source={{uri: item.product_image}}
-                            style={{
+                        }}>
+                        <Image source={{uri: item.product_image}} style={{
                                 width: "100%",
                                 height: "70%",
                                 borderRadius: 10,
-                            }}
-                        />
-
+                            }}/>
                         <View>
                             <Text
                                 numberOfLines={1}
@@ -203,8 +178,7 @@ function Home({route, navigation}) {
                                     marginTop: 7,
                                     fontSize: 17,
                                     fontWeight: "bold",
-                                }}
-                            >
+                                }}>
                                 {item.product_title}
                             </Text>
                             <View
@@ -212,8 +186,7 @@ function Home({route, navigation}) {
                                     flexDirection: "row",
                                     alignItems: "center",
                                     marginTop: 7,
-                                }}
-                            >
+                                }}>
                                 <Text style={{marginLeft: 15, width: 140}}>
                                     Giá : {getMonney(item.product_price)}
                                 </Text>
@@ -223,8 +196,7 @@ function Home({route, navigation}) {
                 </TouchableOpacity>
                 <TouchableOpacity
                     style={{position: "absolute", left: 10, top: 7}}
-                    onPress={toggleHeartColor}
-                >
+                    onPress={toggleHeartColor}>
                     <MaterialIcons
                         name={item.isFav ? "favorite" : "favorite-outline"}
                         size={30}
