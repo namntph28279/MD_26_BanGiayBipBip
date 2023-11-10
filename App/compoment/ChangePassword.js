@@ -23,7 +23,6 @@ const ChangePassword = ({ route, navigation }) => {
 
   const [userData, setUserData] = useState([]);
   useEffect(() => {
-    console.log(userId + " test");
     if (userId) {
       axios
         .get(`https://md26bipbip-496b6598561d.herokuapp.com/user/${userId}`)
@@ -38,7 +37,6 @@ const ChangePassword = ({ route, navigation }) => {
   }, [userId]);
 
   const handleSavePassword = () => {
-    console.log(userData);
     if (newPassword.length < 6) {
       setErrorNewPassword(true);
       return;
@@ -70,70 +68,58 @@ const ChangePassword = ({ route, navigation }) => {
           setErrorOldPassword(true);
           return;
         } else {
-          setErrorNewPassword(false);
+          setErrorOldPassword(false);
         }
       });
   };
 
   return (
     <SafeAreaView style={styles.container}>
-      <View style={styles.inputContainer}>
-        <Image
-          source={require("../image/ChangePassImage.png")}
-          style={{ width: 150, height: 150,alignSelf: "center"}}
-        />
-        <Text style={styles.label}>Mật khẩu cũ:</Text>
-        <TextInput
-          secureTextEntry
-          placeholder="Nhập mật khẩu cũ"
-          value={oldPassword}
-          onChangeText={setOldPassword}
-          style={[styles.input, errorOldPassword && styles.inputError]}
-        />
-        {errorOldPassword && (
-          <Text style={styles.errorText}>Mật khẩu cũ không chính xác</Text>
-        )}
+      <View style={styles.formContainer}>
+        <View style={styles.inputContainer}>
+          <Text style={styles.label}>Mật khẩu hiện tại</Text>
+          <TextInput
+            secureTextEntry
+            placeholder="Nhập mật khẩu hiện tại"
+            value={oldPassword}
+            onChangeText={setOldPassword}
+            style={[styles.input, errorOldPassword && styles.inputError]}
+          />
+          {errorOldPassword && (
+            <Text style={styles.errorText}>Mật khẩu cũ không chính xác</Text>
+          )}
+        </View>
+
+        <View style={styles.inputContainer}>
+          <Text style={styles.label}>Mật khẩu mới</Text>
+          <TextInput
+            secureTextEntry
+            placeholder="Nhập mật khẩu mới"
+            value={newPassword}
+            onChangeText={setNewPassword}
+            style={[styles.input, errorNewPassword && styles.inputError]}
+          />
+          {errorNewPassword && (
+            <Text style={styles.errorText}>
+              Mật khẩu mới phải có ít nhất 6 ký tự
+            </Text>
+          )}
+          <TextInput
+            secureTextEntry
+            placeholder="Xác nhận mật khẩu mới"
+            value={confirmPassword}
+            onChangeText={setConfirmPassword}
+            style={[styles.input, errorConfirmPassword && styles.inputError]}
+          />
+          {errorConfirmPassword && (
+            <Text style={styles.errorText}>
+              Xác nhận mật khẩu mới không khớp
+            </Text>
+          )}
+        </View>
       </View>
 
-      <View style={styles.inputContainer}>
-        <Text style={styles.label}>Mật khẩu mới:</Text>
-        <TextInput
-          secureTextEntry
-          placeholder="Nhập mật khẩu mới"
-          value={newPassword}
-          onChangeText={setNewPassword}
-          style={[styles.input, errorNewPassword && styles.inputError]}
-        />
-        {errorNewPassword && (
-          <Text style={styles.errorText}>
-            Mật khẩu mới phải có ít nhất 6 ký tự
-          </Text>
-        )}
-      </View>
-
-      <View style={styles.inputContainer}>
-        <Text style={styles.label}>Xác nhận mật khẩu mới:</Text>
-        <TextInput
-          secureTextEntry
-          placeholder="Xác nhận mật khẩu mới"
-          value={confirmPassword}
-          onChangeText={setConfirmPassword}
-          style={[styles.input, errorConfirmPassword && styles.inputError]}
-        />
-        {errorConfirmPassword && (
-          <Text style={styles.errorText}>Xác nhận mật khẩu mới không khớp</Text>
-        )}
-      </View>
-
-      <TouchableOpacity
-        style={{
-          backgroundColor: "black",
-          margin: 7,
-          padding: 15,
-          marginTop: 60,
-        }}
-        onPress={handleSavePassword}
-      >
+      <TouchableOpacity style={styles.button} onPress={handleSavePassword}>
         <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
           <Text style={{ color: "white", fontSize: 20, fontWeight: "bold" }}>
             Lưu mật khẩu
@@ -150,21 +136,28 @@ export default ChangePassword;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 16,
     backgroundColor: "#fff",
   },
+  formContainer:{
+    marginTop:20,
+    marginBottom:20,
+  },
+  inputContainer: {
+    alignSelf: "center",
+    marginBottom: 10,
+    width: "95%",
+  },
   label: {
-    fontSize: 16,
-    fontWeight: "bold",
-    marginTop:35
+    fontSize: 15,
+    marginBottom: 3,
   },
   input: {
     height: 40,
-    borderWidth: 1,
     borderColor: "#ccc",
-    borderRadius: 4,
-    marginTop:2,
-    paddingHorizontal: 10,
+    marginTop: 2,
+    borderWidth: 0,
+    borderBottomWidth: 1,
+    marginBottom: 5,
   },
   inputError: {
     borderColor: "red",
@@ -172,5 +165,15 @@ const styles = StyleSheet.create({
   errorText: {
     color: "red",
     marginTop: 4,
+  },
+  button: {
+    justifyContent: "center",
+    alignSelf: "center",
+    width: "95%",
+    paddingHorizontal: 15,
+    height: 52,
+    borderRadius: 5,
+    backgroundColor: "black",
+    margin: 15,
   },
 });
