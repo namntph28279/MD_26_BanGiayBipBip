@@ -56,13 +56,15 @@ export const { setDataSP,setDataSPBestSale,setDataSPFav } = dataAll.actions;
 
 
 export const fetchDataAndSetToRedux = () => async (dispatch) => {
-
     const data = await getDataProduct();
     dispatch(setDataSP(data));
-
     const dataBestSale = await getDataSPBestSale();
     dispatch(setDataSPBestSale(dataBestSale));
+    const dataSPFav = await getDataFavourite();
+    dispatch(setDataSPFav(dataSPFav));
+};
 
+export const fetchDataAndFav = () => async (dispatch) => {
     const dataSPFav = await getDataFavourite();
     dispatch(setDataSPFav(dataSPFav));
 

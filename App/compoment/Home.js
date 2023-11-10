@@ -5,7 +5,7 @@ import Swiper from "react-native-swiper";
 import {Dropdown} from "react-native-element-dropdown";
 import {getMonney} from "../util/money";
 import {useDispatch, useSelector} from "react-redux";
-import {fetchDataAndSetToRedux} from "../redux/AllData";
+import {fetchDataAndFav, fetchDataAndSetToRedux} from "../redux/AllData";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import url from "../api/url";
 
@@ -36,8 +36,10 @@ function Home({ navigation }) {
     useEffect(() => {
         setDataSP(dataSP1);
         setDataSwiper(dataSP1);
+    }, [dataSP1]);
+    useEffect(() => {
         setCheckColorFav(dataSPFav.map((item) => item.product))
-    }, [dataSP1,dataSPFav]);
+    }, [dataSPFav]);
 
 
     useEffect(() => {
@@ -131,14 +133,14 @@ function Home({ navigation }) {
             if ( isFav === false) {
                 await url.post("/favourite/addFav", {product_id: idFavourite, user_id: email})
                  checkColorFav.push(item._id)
-                dispatch(fetchDataAndSetToRedux());
+                dispatch(fetchDataAndFav());
                 setIsProcessing(false);
                 console.log("Them")
             } else {
                 await url.post("/favourite/addFav", {product_id: idFavourite, user_id: email})
                 let index = checkColorFav.indexOf(item._id);
                 checkColorFav.splice(index, item._id)
-                dispatch(fetchDataAndSetToRedux());
+                dispatch(fetchDataAndFav());
                 setIsProcessing(false);
                 console.log("Xoa")
             }

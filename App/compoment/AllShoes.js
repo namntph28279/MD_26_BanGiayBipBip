@@ -13,7 +13,7 @@ import { FontAwesome, MaterialIcons } from "@expo/vector-icons";
 import Swiper from "react-native-swiper";
 import { getMonney } from "../util/money";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchDataAndSetToRedux } from "../redux/AllData";
+import {fetchDataAndFav, fetchDataAndSetToRedux} from "../redux/AllData";
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import url from "../api/url";
@@ -32,8 +32,10 @@ function Home({ route, navigation }) {
   useEffect(() => {
     setDataSP(dataSP1);
     setDataSwiper(dataSP1);
+  }, [dataSP1]);
+  useEffect(() => {
     setCheckColorFav(dataSPFav.map((item) => item.product))
-  }, [dataSP1,dataSPFav]);
+  }, [dataSPFav]);
 
   const renderProductItem = (item) => {
     const isFav =  checkColorFav.includes(item._id);
@@ -55,14 +57,14 @@ function Home({ route, navigation }) {
       if ( isFav === false) {
         await url.post("/favourite/addFav", {product_id: idFavourite, user_id: email})
         checkColorFav.push(item._id)
-        dispatch(fetchDataAndSetToRedux());
+        dispatch(fetchDataAndFav());
         setIsProcessing(false);
         console.log("Them")
       } else {
         await url.post("/favourite/addFav", {product_id: idFavourite, user_id: email})
         let index = checkColorFav.indexOf(item._id);
         checkColorFav.splice(index, item._id)
-        dispatch(fetchDataAndSetToRedux());
+        dispatch(fetchDataAndFav());
         setIsProcessing(false);
         console.log("Xoa")
       }
