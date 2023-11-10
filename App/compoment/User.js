@@ -18,10 +18,10 @@ function User({ route, navigation }) {
             return;
         }
 
-        fetchUserData(); // Fetch user data on initial render
+        fetchUserData();
 
         const interval = setInterval(() => {
-            fetchUserData(); // Fetch user data every second
+            fetchUserData();
         }, 1000);
 
         return () => clearInterval(interval);
