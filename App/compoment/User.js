@@ -64,30 +64,8 @@ function User({ route, navigation }) {
     if (!userData) {
         return null;
     }
-    const handleDeleteProfile = () => {
-        const auth = getAuth();
-        const user = auth.currentUser;
-        const userId = user.uid;
-
-        const database = getDatabase();
-        const userRef = ref(database, `registrations/${userId}`);
-
-        deleteUser(user)
-            .then(() => {
-                console.log('Tài khoản đã được xóa');
-                remove(userRef)
-                    .then(() => {
-                        console.log('Dữ liệu người dùng đã được xóa');
-                        alert('Đã xóa hồ sơ');
-                        navigation.navigate('TabNavi');
-                    })
-                    .catch((error) => {
-                        console.log('Lỗi khi xóa dữ liệu người dùng:', error);
-                    });
-            })
-            .catch((error) => {
-                console.log('Lỗi khi xóa tài khoản:', error);
-            });
+    const handleaddress = () => {
+        navigation.navigate('ScreenAddresst');
     };
     if (!userData) {
         return null;
@@ -148,9 +126,9 @@ function User({ route, navigation }) {
                     <Icon name="lock" size={20} color="blue" />
                     <Text style={styles.sectionText}>Đổi Mật Khẩu</Text>
                 </TouchableOpacity>
-                <TouchableOpacity style={styles.section} onPress={handleDeleteProfile}>
-                    <Icon name="trash" size={20} color="red" />
-                    <Text style={styles.sectionText}>Xóa hồ sơ</Text>
+                <TouchableOpacity style={styles.section} onPress={handleaddress}>
+                    <Icon name="map-marker" size={20} color="red" />
+                    <Text style={styles.sectionText}>Địa Chỉ</Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity style={styles.section} onPress={handleLogout}>
