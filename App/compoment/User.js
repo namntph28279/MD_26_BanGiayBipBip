@@ -4,6 +4,7 @@ import { getAuth, signOut, deleteUser } from 'firebase/auth';
 import { getDatabase, off, onValue, ref,remove  } from 'firebase/database';
 import firebase from '../config/FirebaseConfig';
 import Icon from 'react-native-vector-icons/FontAwesome';
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 function User({ route, navigation }) {
     const [userData, setUserData] = useState(null);
@@ -45,9 +46,10 @@ function User({ route, navigation }) {
     const handleLogout = () => {
         const auth = getAuth();
         signOut(auth)
-            .then(() => {
+            .then(async () => {
                 console.log('Đăng xuất thành công');
                 // navigation.navigate('Login');
+                await AsyncStorage.setItem("Email", "");
                 navigation.navigate('TabNavi');
             })
             .catch((error) => {

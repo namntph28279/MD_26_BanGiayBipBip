@@ -113,6 +113,14 @@ function Home({ navigation }) {
     const renderProductItem = (item) => {
         const isFav =  checkColorFav.includes(item._id);
         const toggleHeartColor = async () => {
+
+            const checkLogin = await AsyncStorage.getItem('Email');
+
+            if (!checkLogin){
+                alert("Vui lòng đăng nhập");
+                navigation.navigate('Login');
+                return
+            }
             if (isProcessing) {
                 console.log("Chặn click nhiều lần ")
                 return; // Chặn tương tác nếu đang xử lý
