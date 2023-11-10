@@ -303,7 +303,7 @@ app.post('/favourite/addFav', async (req, res) => {
                 });
                 console.log("Thêm thành công")
                 await favouriteItem.save();
-                res.json(favouriteItem);
+                res.send(favouriteItem);
             }
         }
     } catch (error) {
@@ -316,7 +316,7 @@ app.get('/favourite/:userId', async (req, res) => {
 
     try {
         const favouriteItems = await FavouriteItem.find({ user: userId });
-        res.json(favouriteItems);
+        res.send(favouriteItems);
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
