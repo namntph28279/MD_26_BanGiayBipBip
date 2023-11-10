@@ -1,25 +1,11 @@
-import React, { useEffect, useState, useRef } from "react";
-import {
-    StyleSheet,
-    Text,
-    View,
-    ScrollView,
-    Image,
-    TouchableOpacity,
-    FlatList,
-    ActivityIndicator,
-} from "react-native";
-import {
-    FontAwesome,
-    FontAwesome5,
-    MaterialCommunityIcons,
-    MaterialIcons,
-} from "@expo/vector-icons";
+import React, {useEffect, useRef, useState} from "react";
+import {ActivityIndicator, Image, ScrollView, StyleSheet, Text, TouchableOpacity, View,} from "react-native";
+import {MaterialIcons,} from "@expo/vector-icons";
 import Swiper from "react-native-swiper";
-import { Dropdown } from "react-native-element-dropdown";
-import { getMonney } from "../util/money";
-import { useDispatch, useSelector } from "react-redux";
-import { fetchDataAndSetToRedux } from "../redux/AllData";
+import {Dropdown} from "react-native-element-dropdown";
+import {getMonney} from "../util/money";
+import {useDispatch, useSelector} from "react-redux";
+import {fetchDataAndSetToRedux} from "../redux/AllData";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import url from "../api/url";
 
@@ -28,29 +14,23 @@ function Home({ navigation }) {
     const dispatch = useDispatch(); //trả về một đối tượng điều phối
     const dataSP1 = useSelector((state) => state.dataAll.dataSP); //lấy toàn bộ mảng dữ liệu
     const dataSPFav = useSelector((state) => state.dataAll.dataSPFav); //lấy toàn bộ mảng dữ liệu Fav
-
-    const idSPFav = dataSPFav.map(item => item.product); //lấy id sp Fav
+//lấy id sp Fav
     const [isProcessing, setIsProcessing] = useState(false);
     const [checkColorFav,setCheckColorFav] = useState([]);
-
 
     const [valueSortBy, setValueSortBy] = useState(0);
     const [valueFilter, setValueFilter] = useState(null);
 
     const swiperRef = useRef(null);
 
-    const [heartColors, setHeartColors] = useState({});
-
-
     const [dataSP, setDataSP] = useState([]);
     const [dataSwiper, setDataSwiper] = useState([]);
 
     React.useEffect(() => {
-        const unsubscribe = navigation.addListener("focus", () => {
+        return navigation.addListener("focus", () => {
             dispatch(fetchDataAndSetToRedux());
 
         });
-        return unsubscribe;
     }, [navigation]);
 
     useEffect(() => {
@@ -82,35 +62,35 @@ function Home({ navigation }) {
     ];
     //Chưa có nổi bật nên chỉ sắp sếp theo giá
     const sortByPrice = (item) => {
+        console.log(item._index)
         setValueSortBy(item.value);
         const dataSort = [...dataSP1];
 
-        if (item.value == 2) {
+        if (item._index === 0) {
             dataSort.sort((a, b) => (a.product_price < b.product_price ? 1 : -1));
+            console.log("Giá Cao - Thấp")
             setDataSP(dataSort);
         }
-        if (item.value == 3) {
+        if (item._index === 1) {
             dataSort.sort((a, b) => (a.product_price > b.product_price ? 1 : -1));
             setDataSP(dataSort);
+            console.log("Giá Thấp - Cao")
         }
     };
-    const filterByCategory = (value) => {
-        setValueFilter(value);
+    const filterByCategory = (item) => {
+        setValueFilter(item.value);
+        console.log(item)
         const dataCategory = [...dataSP1];
 
-        if (value == 1) {
+        if (item._index === 0) {
             setDataSP(dataCategory);
         }
-        if (value == 2) {
-            const filteredData = dataCategory.filter(
-                (product) => product.product_category === "men"
-            );
+        if (item._index === 1) {
+            const filteredData = dataCategory.filter((product) => product.product_category === "men");
             setDataSP(filteredData);
         }
-        if (value == 3) {
-            const filteredData = dataCategory.filter(
-                (product) => product.product_category === "women"
-            );
+        if (item._index === 2) {
+            const filteredData = dataCategory.filter((product) => product.product_category === "women");
             setDataSP(filteredData);
         }
     };
@@ -131,11 +111,10 @@ function Home({ navigation }) {
     };
 
     const renderProductItem = (item) => {
-        const productId = item._id;
         const isFav =  checkColorFav.includes(item._id);
         const toggleHeartColor = async () => {
             if (isProcessing) {
-                console.log("lần 1")
+                console.log("Chặn click nhiều lần ")
                 return; // Chặn tương tác nếu đang xử lý
             }
             setIsProcessing(true);
@@ -146,14 +125,14 @@ function Home({ navigation }) {
                  checkColorFav.push(item._id)
                 dispatch(fetchDataAndSetToRedux());
                 setIsProcessing(false);
-                console.log("Them lan 1")
+                console.log("Them")
             } else {
                 await url.post("/favourite/addFav", {product_id: idFavourite, user_id: email})
                 let index = checkColorFav.indexOf(item._id);
                 checkColorFav.splice(index, item._id)
                 dispatch(fetchDataAndSetToRedux());
                 setIsProcessing(false);
-                console.log("Xoa lan 1")
+                console.log("Xoa")
             }
         };
         return (
@@ -223,7 +202,7 @@ function Home({ navigation }) {
 
     //swiper layout
     const setSwiper = () => {
-        if (dataSwiper.length != 0) {
+        if (dataSwiper.length !== 0) {
             const arrLength = dataSwiper.length;
             const arrSwiper = dataSwiper.slice(arrLength - 3, arrLength);
             return (
@@ -304,7 +283,7 @@ function Home({ navigation }) {
                         value={valueFilter}
                         labelStyle={{ fontWeight: "bold" }}
                         onChange={(item) => {
-                            filterByCategory(item.value);
+                            filterByCategory(item);
                         }}
                         renderItem={renderItemFilter}
                     />

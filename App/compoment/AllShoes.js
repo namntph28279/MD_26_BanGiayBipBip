@@ -15,138 +15,58 @@ import { getMonney } from "../util/money";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchDataAndSetToRedux } from "../redux/AllData";
 import axios from "axios";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import url from "../api/url";
 
 function Home({ route, navigation }) {
   const dispatch = useDispatch();
-  const dataSP1 = useSelector((state) => state.dataAll.dataSP);
-  const dataSPFav = useSelector((state) => state.dataAll.dataSPFav);
-  const idSPFavs = dataSPFav.map((item) => item.product);
-
-  const [valueSortBy, setValueSortBy] = useState(0);
-  const [valueFilter, setValueFilter] = useState(null);
+  const dataSP1 = useSelector((state) => state.dataAll.dataSP); //lấy toàn bộ mảng dữ liệu
+  const dataSPFav = useSelector((state) => state.dataAll.dataSPFav); //lấy toàn bộ mảng dữ liệu Fav
+//lấy id sp Fav
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [checkColorFav,setCheckColorFav] = useState([]);
+  const swiperRef = useRef(null);
 
   const [dataSP, setDataSP] = useState([]);
   const [dataSwiper, setDataSwiper] = useState([]);
-  const userID = route.params?.userID || "";
-
   useEffect(() => {
-    console.log("Giá trị userID từ home:", userID);
-    if (!userID) {
-      console.log("không có user");
-      return;
-    }
-  }, [userID]);
-
-  React.useEffect(() => {
-    const unsubscribe = navigation.addListener("focus", () => {
-      dispatch(fetchDataAndSetToRedux());
-    });
-    return unsubscribe;
-  }, [navigation]);
-
-  useEffect(() => {
-    if (dataSP1) {
-      const products = Object.keys(dataSP1).map((key) => ({
-        id: key,
-        ...dataSP1[key],
-        isFav: false,
-      }));
-
-      setDataSP(products);
-    } else {
-      setDataSP([]);
-    }
-
+    setDataSP(dataSP1);
     setDataSwiper(dataSP1);
-  }, [dataSP1, dataSPFav]);
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      if (swiperRef.current && swiperRef.current.scrollBy) {
-        swiperRef.current.scrollBy(1);
-      }
-    }, 5000);
-
-    return () => clearInterval(interval);
-  }, []);
-
-  const sortByPrice = (item) => {
-    setValueSortBy(item.value);
-    const dataSort = [...dataSP1];
-
-    if (item.value == 2) {
-      dataSort.sort((a, b) => (a.product_price < b.product_price ? 1 : -1));
-      setDataSP(dataSort);
-    }
-    if (item.value == 3) {
-      dataSort.sort((a, b) => (a.product_price > b.product_price ? 1 : -1));
-      setDataSP(dataSort);
-    }
-  };
-
-  const filterByCategory = (value) => {
-    setValueFilter(value);
-    const dataCategory = [...dataSP1];
-
-    if (value == 1) {
-      setDataSP(dataCategory);
-    }
-    if (value == 2) {
-      const filteredData = dataCategory.filter(
-        (product) => product.product_category === "men"
-      );
-      setDataSP(filteredData);
-    }
-    if (value == 3) {
-      const filteredData = dataCategory.filter(
-        (product) => product.product_category === "women"
-      );
-      setDataSP(filteredData);
-    }
-  };
+    setCheckColorFav(dataSPFav.map((item) => item.product))
+  }, [dataSP1,dataSPFav]);
 
   const renderProductItem = (item) => {
-    item.isFav = idSPFavs.includes(item._id);
-    const toggleHeartColor = () => {
-      if (item.isFav == false) {
-        axios
-          .post("https://md26bipbip-496b6598561d.herokuapp.com/favourite/add", {
-            product_id: item._id,
-            user_id: "64ab9784b65d14d1076c3477",
-          })
-          .then((response) => {})
-          .catch((error) => {
-            console.error("Lỗi:", error);
-          });
+    const isFav =  checkColorFav.includes(item._id);
+    const toggleHeartColor = async () => {
+      if (isProcessing) {
+        console.log("Chặn click nhiều lần ")
+        return; // Chặn tương tác nếu đang xử lý
+      }
+      setIsProcessing(true);
+      const idFavourite = item._id;
+      const email = await AsyncStorage.getItem('Email');
+      if ( isFav === false) {
+        await url.post("/favourite/addFav", {product_id: idFavourite, user_id: email})
+        checkColorFav.push(item._id)
+        dispatch(fetchDataAndSetToRedux());
+        setIsProcessing(false);
+        console.log("Them")
       } else {
-        const favoriteItemToDelete = dataSPFav.find(
-          (itemFav) => itemFav.product === item._id
-        );
-        if (favoriteItemToDelete) {
-          const favoriteItemId = favoriteItemToDelete._id;
-          axios
-            .delete(
-              `https://md26bipbip-496b6598561d.herokuapp.com/favourite/delete/${favoriteItemId}`
-            )
-            .then((response) => {})
-            .catch((error) => {
-              console.error("Lỗi khi xóa khỏi danh sách yêu thích:", error);
-            });
-        } else {
-          console.error(
-            "Không tìm thấy mục yêu thích với productId:",
-            item._id,
-            dataSPFav
-          );
-        }
+        await url.post("/favourite/addFav", {product_id: idFavourite, user_id: email})
+        let index = checkColorFav.indexOf(item._id);
+        checkColorFav.splice(index, item._id)
+        dispatch(fetchDataAndSetToRedux());
+        setIsProcessing(false);
+        console.log("Xoa")
       }
     };
+
     return (
       <View style={styles.productContainer}>
         <TouchableOpacity
           key={item._id}
           onPress={() => {
-            navigation.navigate("ProductDetail", { productId: item._id, userId: userID });
+            navigation.navigate("ProductDetail", { productId: item._id});
           }}
         >
           <View
@@ -197,9 +117,9 @@ function Home({ route, navigation }) {
           onPress={toggleHeartColor}
         >
           <MaterialIcons
-            name={item.isFav ? "favorite" : "favorite-outline"}
+            name={isFav ? "favorite" : "favorite-outline"}
             size={30}
-            color={item.isFav ? "red" : "black"}
+            color={isFav ? "red" : "black"}
           />
         </TouchableOpacity>
       </View>

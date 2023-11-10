@@ -6,7 +6,6 @@ import Cart from "./compoment/Cart";
 import Search from "./compoment/Search";
 import User from "./compoment/User";
 import NotLoginUser from "./compoment/NotLoginUser";
-import NoFavourite from "./compoment/NoFavourite";
 import NoCart from "./compoment/NoCart";
 import {useEffect} from "react";
 const Tab = createBottomTabNavigator();
@@ -39,26 +38,11 @@ const TabNavi = ({ route }) => {
 
                 }}
             />
-
-
-            {isAuthenticated ? (
-                <Tab.Screen name={"Yêu Thích"} component={Favourite}
+            <Tab.Screen name={"Yêu Thích"} component={Favourite}
                     initialParams={{ userID }}
                     options={{
                         tabBarIcon: ({ color, size }) => <Ionicons name='heart' color={color} size={size} />
                     }} />
-
-            ) : (
-                <Tab.Screen
-                    name="Yêu Thích"
-                    component={NoFavourite}
-                    options={{
-                        tabBarLabel: 'Favourite',
-                        tabBarIcon: ({ color, size }) => <Ionicons name='heart' color={color} size={size} />
-                    }}
-                />
-            )}
-
             {isAuthenticated ? (
                 <Tab.Screen
                     name="Giỏ Hàng"
