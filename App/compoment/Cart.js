@@ -83,13 +83,7 @@ function Cart({ route, navigation }) {
     });
   };
   const handleBuyNowAll = () => {
-    // const userId = auth.currentUser.uid;
-    // const orderRef = ref(database, `Order/${userId}`);
     // const selectedProductIds = selectedProducts.map((product) => product.id);
-    // selectedProductIds.forEach((productId) => {
-    //   // Xóa sản phẩm đã chọn thanh toán
-    //   handleRemoveProduct(productId);
-    // });
     // // Thêm các sản phẩm đã chọn vào bảng order
     // push(orderRef, selectedProducts)
     //   .then((newRef) => {
@@ -100,7 +94,7 @@ function Cart({ route, navigation }) {
     //     navigation.navigate("Oder", { userId: userId });
     //   })
     //   .catch((error) => {
-    //     console.error("Lỗi thêm sản phẩm vào đơn hàng:", error);
+    //     console.error("Lỗi:", error);
     //   });
   };
 
