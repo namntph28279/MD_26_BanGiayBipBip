@@ -327,7 +327,7 @@ const EditProfile = ({ route,navigation }) => {
             .then(response => response.json())
             .then(data => {
                 console.log('update Thành công profile:', data);
-                navigation.navigate('TabNavi', { isAuthenticated: true });
+                navigation.navigate('TabNavi', { isAuthenticated: true ,userID});
             })
             .catch(error => {
                 console.error('Lỗi cập nhật profile:', error);
@@ -381,11 +381,11 @@ const EditProfile = ({ route,navigation }) => {
                 style={styles.button}
                 onPress={updateUserProfile}
             >
-                <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
-                    <Text style={{ color: "white", fontSize: 20, fontWeight: "bold" }}>
+                <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "center" }}>
+                    <Text style={{ color: "white", fontSize: 20, fontWeight: "bold", textAlign: "center" }}>
                         Lưu
                     </Text>
-                    <Image source={require("../image/next.png")} />
+                    {/*<Image source={require("../image/next.png")} style={{ marginLeft: 10 }} />*/}
                 </View>
             </TouchableOpacity>
         </View>

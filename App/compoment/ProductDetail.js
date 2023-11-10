@@ -738,7 +738,6 @@ function ProductDetail({ route, navigation }) {
 
     return (
         <SafeAreaView style={styles.container}>
-            <ScrollView>
             {isLoading ? (
                 <ActivityIndicator size="large" color="#0000ff" />
             ) : (
@@ -861,7 +860,6 @@ function ProductDetail({ route, navigation }) {
                 </View>
                 </TouchableWithoutFeedback>
             </Modal>
-            </ScrollView>
         </SafeAreaView>
     );
     //hiển
@@ -870,11 +868,9 @@ function ProductDetail({ route, navigation }) {
 export default ProductDetail;
 
 const styles = StyleSheet.create({
-    // container: {
-    //     flex: 1,
-    //     alignItems: 'center',
-    //     justifyContent: 'center',
-    // },
+    container: {
+        flex: 1,
+    },
     productImage: {
         width: '100%',
         height: 250,
