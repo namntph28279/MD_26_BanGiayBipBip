@@ -17,7 +17,14 @@ function User({ route, navigation }) {
             console.log('không có user');
             return;
         }
-        fetchUserData();
+
+        fetchUserData(); // Fetch user data on initial render
+
+        const interval = setInterval(() => {
+            fetchUserData(); // Fetch user data every second
+        }, 1000);
+
+        return () => clearInterval(interval);
     }, [userID]);
     const fetchUserData = async () => {
         try {
@@ -34,15 +41,6 @@ function User({ route, navigation }) {
         }
     };
 
-    useEffect(() => {
-        fetchUserData();
-
-        const interval = setInterval(() => {
-            fetchUserData();
-        }, 1000);
-
-        return () => clearInterval(interval);
-    }, []);
 
     const handleLogout = () => {
         const auth = getAuth();

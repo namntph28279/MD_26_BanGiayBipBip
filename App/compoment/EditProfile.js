@@ -327,7 +327,7 @@ const EditProfile = ({ route,navigation }) => {
             .then(response => response.json())
             .then(data => {
                 console.log('update Thành công profile:', data);
-                navigation.navigate('TabNavi', { isAuthenticated: true });
+                navigation.navigate('TabNavi', { isAuthenticated: true ,userID});
             })
             .catch(error => {
                 console.error('Lỗi cập nhật profile:', error);
