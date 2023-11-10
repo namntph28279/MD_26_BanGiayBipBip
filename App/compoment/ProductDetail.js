@@ -734,6 +734,7 @@ function ProductDetail({ route, navigation }) {
     };
     const buyNow = () => {
         toggleBuyNowModal();
+        navigation.navigate('ThanhToanScreen',{userID: userId});
     };
 
     return (

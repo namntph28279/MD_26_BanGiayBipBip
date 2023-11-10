@@ -67,7 +67,7 @@ function User({ route, navigation }) {
         return null;
     }
     const handleaddress = () => {
-        navigation.navigate('ScreenAddresst');
+        navigation.navigate('AllDiaChi', {userID, fromThanhToan: false});
     };
     if (!userData) {
         return null;

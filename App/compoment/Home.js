@@ -151,7 +151,7 @@ function Home({ navigation }) {
                 <TouchableOpacity
                     key={item._id}
                     onPress={() => {
-                        navigation.navigate("ProductDetail", { productId: item._id });
+                        navigation.navigate("ProductDetail", { productId: item._id ,userId: '654e236c065edfb9cbd65957'});
                     }}
                 >
                     <View

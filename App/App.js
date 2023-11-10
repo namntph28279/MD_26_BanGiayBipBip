@@ -17,9 +17,11 @@ import Oder from './compoment/Oder';
 import AllShoes from './compoment/AllShoes';
 import EditProfile from "./compoment/EditProfile";
 import ScreenAddresst from "./screen/screenAddresst";
+import ThanhToanScreen from './compoment/ThanhToanScreen';
 import { Provider } from 'react-redux';
 import { store } from './redux/store';
 import {useState} from "react";
+import AllDiaChi from "./screen/AllDiaChi";
 
 export default function App() {
   const Stack = createNativeStackNavigator();
@@ -50,6 +52,8 @@ export default function App() {
             <Stack.Screen name='Oder' component={Oder} options={{ title: 'Đơn mua' }} />
             <Stack.Screen name='EditProfile' component={EditProfile} options={{ title: 'Chỉnh sửa hồ sơ' }} />
             <Stack.Screen name='ScreenAddresst' component={ScreenAddresst} options={{ title: 'Thêm địa chỉ' }} />
+            <Stack.Screen name="AllDiaChi" component={AllDiaChi} options={{ title: 'Địa chỉ' }}/>
+            <Stack.Screen name="ThanhToanScreen" component={ThanhToanScreen} options={{ title: 'Thanh Toán' }}/>
           </Stack.Navigator>
 
         </NavigationContainer>

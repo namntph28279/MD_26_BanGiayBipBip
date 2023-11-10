@@ -3,7 +3,15 @@ import { Button, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { TextInput } from 'react-native-paper';
 import axios from 'axios';
 
-export default function ScreenAddresst() {
+export default function ScreenAddresst({ route, navigation }) {
+    const userID = route.params?.userID || '';
+    useEffect(() => {
+        console.log('Giá trị userID từ thêm địa chỉ:', userID);
+        if (!userID) {
+            console.log('Không có user ID.', userID);
+            return;
+        }
+    }, [userID]);
     const resdt = /(84|0[3|5|7|8|9])+([0-9]{8})\b/g;
     const resnameRegex = /^[AÀẢÃÁẠĂẰẲẴẮẶÂẦẨẪẤẬBCDĐEÈẺẼÉẸÊỀỂỄẾỆFGHIÌỈĨÍỊJKLMNOÒỎÕÓỌÔỒỔỖỐỘƠỜỞỠỚỢPQRSTUÙỦŨÚỤƯỪỬỮỨỰVWXYỲỶỸÝỴZ][aàảãáạăằẳẵắặâầẩẫấậbcdđeèẻẽéẹêềểễếệfghiìỉĩíịjklmnoòỏõóọôồổỗốộơờởỡớợpqrstuùủũúụưừửữứựvwxyỳỷỹýỵz]+ [AÀẢÃÁẠĂẰẲẴẮẶÂẦẨẪẤẬBCDĐEÈẺẼÉẸÊỀỂỄẾỆFGHIÌỈĨÍỊJKLMNOÒỎÕÓỌÔỒỔỖỐỘƠỜỞỠỚỢPQRSTUÙỦŨÚỤƯỪỬỮỨỰVWXYỲỶỸÝỴZ][aàảãáạăằẳẵắặâầẩẫấậbcdđeèẻẽéẹêềểễếệfghiìỉĩíịjklmnoòỏõóọôồổỗốộơờởỡớợpqrstuùủũúụưừửữứựvwxyỳỷỹýỵz]+(?: [AÀẢÃÁẠĂẰẲẴẮẶÂẦẨẪẤẬBCDĐEÈẺẼÉẸÊỀỂỄẾỆFGHIÌỈĨÍỊJKLMNOÒỎÕÓỌÔỒỔỖỐỘƠỜỞỠỚỢPQRSTUÙỦŨÚỤƯỪỬỮỨỰVWXYỲỶỸÝỴZ][aàảãáạăằẳẵắặâầẩẫấậbcdđeèẻẽéẹêềểễếệfghiìỉĩíịjklmnoòỏõóọôồổỗốộơờởỡớợpqrstuùủũúụưừửữứựvwxyỳỷỹýỵz]*)*/;
 
@@ -57,6 +65,7 @@ export default function ScreenAddresst() {
             name,
             phone,
             address,
+            userId: userID,
         };
         const jsonData = JSON.stringify(data);
 
@@ -68,6 +77,7 @@ export default function ScreenAddresst() {
             })
                 .then(response => {
                     console.log('Dữ liệu đã được gửi thành công lên máy chủ:', response.data);
+                    navigation.navigate('AllDiaChi', {userID});
                 })
                 .catch(error => {
                     console.error('Lỗi trong quá trình gửi dữ liệu lên máy chủ:', error);
