@@ -125,6 +125,7 @@ function Home({ navigation }) {
             }
             if (isProcessing) {
                 console.log("Chặn click nhiều lần ")
+                alert("Yêu cầu của bạn đang được xử lý")
                 return; // Chặn tương tác nếu đang xử lý
             }
             setIsProcessing(true);
