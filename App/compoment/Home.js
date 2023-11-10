@@ -1,59 +1,64 @@
-import React, {useEffect, useRef, useState} from "react";
+import React, { useEffect, useState, useRef } from "react";
 import {
-    ActivityIndicator,
-    Image,
-    SafeAreaView,
-    ScrollView,
     StyleSheet,
     Text,
-    TouchableOpacity,
     View,
+    ScrollView,
+    Image,
+    TouchableOpacity,
+    FlatList,
+    ActivityIndicator,
 } from "react-native";
-import {MaterialIcons,} from "@expo/vector-icons";
+import {
+    FontAwesome,
+    FontAwesome5,
+    MaterialCommunityIcons,
+    MaterialIcons,
+} from "@expo/vector-icons";
 import Swiper from "react-native-swiper";
-import {Dropdown} from "react-native-element-dropdown";
-import {getMonney} from "../util/money";
-import {useDispatch, useSelector} from "react-redux";
-import {fetchDataAndSetToRedux} from "../redux/AllData";
-import axios from 'axios';
+import { Dropdown } from "react-native-element-dropdown";
+import { getMonney } from "../util/money";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchDataAndSetToRedux } from "../redux/AllData";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import url from '../api/url'
-function Home({route, navigation}) {
-    const dispatch = useDispatch(); //trả về một đối tượng file phối
+import url from "../api/url";
+
+function Home({ navigation }) {
+
+    const dispatch = useDispatch(); //trả về một đối tượng điều phối
     const dataSP1 = useSelector((state) => state.dataAll.dataSP); //lấy toàn bộ mảng dữ liệu
     const dataSPFav = useSelector((state) => state.dataAll.dataSPFav); //lấy toàn bộ mảng dữ liệu Fav
 
+    const idSPFav = dataSPFav.map(item => item.product); //lấy id sp Fav
+    const [isProcessing, setIsProcessing] = useState(false);
     const [checkColorFav,setCheckColorFav] = useState([]);
+
 
     const [valueSortBy, setValueSortBy] = useState(0);
     const [valueFilter, setValueFilter] = useState(null);
+
     const swiperRef = useRef(null);
+
+    const [heartColors, setHeartColors] = useState({});
+
 
     const [dataSP, setDataSP] = useState([]);
     const [dataSwiper, setDataSwiper] = useState([]);
 
     React.useEffect(() => {
-        return navigation.addListener("focus", () => {
+        const unsubscribe = navigation.addListener("focus", () => {
             dispatch(fetchDataAndSetToRedux());
+
         });
+        return unsubscribe;
     }, [navigation]);
 
     useEffect(() => {
-        if (dataSP1) {
-            const products = Object.keys(dataSP1).map((key) => ({
-                id: key,
-                ...dataSP1[key],
-                isFav: false,
-            }));
-
-            setDataSP(products);
-        } else {
-            setDataSP([]);
-        }
-        setCheckColorFav(dataSPFav.map((item) => item.product))
+        setDataSP(dataSP1);
         setDataSwiper(dataSP1);
+        setCheckColorFav(dataSPFav.map((item) => item.product))
+    }, [dataSP1,dataSPFav]);
 
-    }, [dataSP1, dataSPFav]);
 
     useEffect(() => {
         const interval = setInterval(() => {
@@ -67,26 +72,24 @@ function Home({route, navigation}) {
 
     //array for dropdown
     const sortBy = [
-        {label: "Nổi bật", value: "1"},
-        {label: "Giá Cao - Thấp", value: "2"},
-        {label: "Giá Thấp - Cao ", value: "3"},
+        { label: "Giá Cao - Thấp", value: "2" },
+        { label: "Giá Thấp - Cao ", value: "3" },
     ];
     const Filter = [
-        {label: "Tất cả", value: "1"},
-        {label: "Nam", value: "2"},
-        {label: "Nữ", value: "3"},
+        { label: "Tất cả", value: "1" },
+        { label: "Nam", value: "2" },
+        { label: "Nữ", value: "3" },
     ];
-
     //Chưa có nổi bật nên chỉ sắp sếp theo giá
     const sortByPrice = (item) => {
         setValueSortBy(item.value);
         const dataSort = [...dataSP1];
 
-        if (item.value === 2) {
+        if (item.value == 2) {
             dataSort.sort((a, b) => (a.product_price < b.product_price ? 1 : -1));
             setDataSP(dataSort);
         }
-        if (item.value === 3) {
+        if (item.value == 3) {
             dataSort.sort((a, b) => (a.product_price > b.product_price ? 1 : -1));
             setDataSP(dataSort);
         }
@@ -95,25 +98,23 @@ function Home({route, navigation}) {
         setValueFilter(value);
         const dataCategory = [...dataSP1];
 
-        if (value === 1) {
+        if (value == 1) {
             setDataSP(dataCategory);
         }
-        if (value === 2) {
+        if (value == 2) {
             const filteredData = dataCategory.filter(
                 (product) => product.product_category === "men"
             );
             setDataSP(filteredData);
         }
-        if (value === 3) {
+        if (value == 3) {
             const filteredData = dataCategory.filter(
                 (product) => product.product_category === "women"
             );
             setDataSP(filteredData);
         }
     };
-
-    //checked
-//item layout
+    //item layout
     const renderItemSortBy = (item) => {
         return (
             <View style={styles.item}>
@@ -130,46 +131,56 @@ function Home({route, navigation}) {
     };
 
     const renderProductItem = (item) => {
-        item.isFav = checkColorFav.includes(item._id);
-        const idFavourite =item._id;
+        const productId = item._id;
+        const isFav =  checkColorFav.includes(item._id);
         const toggleHeartColor = async () => {
-            if (item.isFav === false) {
-                const email = await AsyncStorage.getItem('Email');
-                await url.post("/favourite/addFav", {product_id: idFavourite, user_id:email })
-                checkColorFav.push(item._id)
+            if (isProcessing) {
+                console.log("lần 1")
+                return; // Chặn tương tác nếu đang xử lý
+            }
+            setIsProcessing(true);
+            const idFavourite = item._id;
+            const email = await AsyncStorage.getItem('Email');
+            if ( isFav === false) {
+                await url.post("/favourite/addFav", {product_id: idFavourite, user_id: email})
+                 checkColorFav.push(item._id)
                 dispatch(fetchDataAndSetToRedux());
-                console.log("Add: " + email)
+                setIsProcessing(false);
+                console.log("Them lan 1")
             } else {
-                const email = await AsyncStorage.getItem('Email');
-                await url.post("/favourite/addFav", {product_id: idFavourite, userId:email})
+                await url.post("/favourite/addFav", {product_id: idFavourite, user_id: email})
                 let index = checkColorFav.indexOf(item._id);
-                checkColorFav.splice(index,item._id)
+                checkColorFav.splice(index, item._id)
                 dispatch(fetchDataAndSetToRedux());
+                setIsProcessing(false);
+                console.log("Xoa lan 1")
             }
         };
-
-        const startProductdetal =async () => {
-            const email = await AsyncStorage.getItem('Email');
-            navigation.navigate("ProductDetail", {productId: item._id});
-
-        }
         return (
             <View style={styles.productContainer}>
                 <TouchableOpacity
                     key={item._id}
-                    onPress={startProductdetal}
+                    onPress={() => {
+                        navigation.navigate("ProductDetail", { productId: item._id });
+                    }}
                 >
-                    <View style={{
+                    <View
+                        style={{
                             width: "100%",
                             height: 200,
                             paddingBottom: 3,
                             borderRadius: 10,
-                        }}>
-                        <Image source={{uri: item.product_image}} style={{
+                        }}
+                    >
+                        <Image
+                            source={{ uri: item.product_image }}
+                            style={{
                                 width: "100%",
                                 height: "70%",
                                 borderRadius: 10,
-                            }}/>
+                            }}
+                        />
+
                         <View>
                             <Text
                                 numberOfLines={1}
@@ -178,7 +189,8 @@ function Home({route, navigation}) {
                                     marginTop: 7,
                                     fontSize: 17,
                                     fontWeight: "bold",
-                                }}>
+                                }}
+                            >
                                 {item.product_title}
                             </Text>
                             <View
@@ -186,8 +198,9 @@ function Home({route, navigation}) {
                                     flexDirection: "row",
                                     alignItems: "center",
                                     marginTop: 7,
-                                }}>
-                                <Text style={{marginLeft: 15, width: 140}}>
+                                }}
+                            >
+                                <Text style={{ marginLeft: 15, width: 140 }}>
                                     Giá : {getMonney(item.product_price)}
                                 </Text>
                             </View>
@@ -195,12 +208,13 @@ function Home({route, navigation}) {
                     </View>
                 </TouchableOpacity>
                 <TouchableOpacity
-                    style={{position: "absolute", left: 10, top: 7}}
-                    onPress={toggleHeartColor}>
+                    style={{ position: "absolute", left: 10, top: 7 }}
+                    onPress={toggleHeartColor}
+                >
                     <MaterialIcons
-                        name={item.isFav ? "favorite" : "favorite-outline"}
+                        name={ isFav ? "favorite" : "favorite-outline"}
                         size={30}
-                        color={item.isFav ? "red" : "black"}
+                        color={ isFav ? "red" : "black"}
                     />
                 </TouchableOpacity>
             </View>
@@ -209,7 +223,7 @@ function Home({route, navigation}) {
 
     //swiper layout
     const setSwiper = () => {
-        if (dataSwiper.length !== 0) {
+        if (dataSwiper.length != 0) {
             const arrLength = dataSwiper.length;
             const arrSwiper = dataSwiper.slice(arrLength - 3, arrLength);
             return (
@@ -220,13 +234,11 @@ function Home({route, navigation}) {
                 >
                     {arrSwiper.map((item) => (
                         <View key={item._id}>
-                            <TouchableOpacity
-                                onPress={() => {
-                                    navigation.navigate("ProductDetail", {productId: item._id});
-                                }}
-                            >
+                            <TouchableOpacity onPress={() => {
+                                navigation.navigate("ProductDetail", { productId: item._id });
+                            }}>
                                 <Image
-                                    source={{uri: item.product_image}}
+                                    source={{ uri: item.product_image }}
                                     style={styles.imageBackground}
                                 />
                             </TouchableOpacity>
@@ -237,16 +249,16 @@ function Home({route, navigation}) {
         } else {
             return (
                 <View style={styles.loadingContainer}>
-                    <ActivityIndicator size="large" color="blue"/>
+                    <ActivityIndicator size="large" color="blue" />
                 </View>
             );
         }
     };
 
     return (
-        <SafeAreaView style={styles.container}>
+        <View style={styles.container}>
             <ScrollView>
-                <View style={{alignItems: "center"}}>
+                <View style={{ alignItems: "center" }}>
                     <View style={styles.slide}>{setSwiper()}</View>
                 </View>
 
@@ -265,13 +277,9 @@ function Home({route, navigation}) {
                     </View>
                 </View>
 
-                <View
-                    style={{
-                        display: "flex",
-                        flexDirection: "row",
-                        margin: 10,
-                    }}
-                >
+
+                <View style={{display:"flex", flexDirection: "row", margin: 10,alignItems:"center"  }}>
+
                     <Dropdown
                         style={styles.dropdown}
                         data={sortBy}
@@ -287,20 +295,19 @@ function Home({route, navigation}) {
                     />
 
                     <Dropdown
-                        style={[styles.dropdown, {width: 100}, {marginLeft: 10}]}
+                        style={[styles.dropdown, { width: 100 }, { marginLeft: 10 }]}
                         data={Filter}
                         maxHeight={300}
                         labelField="label"
                         valueField="value"
                         placeholder="Lọc"
                         value={valueFilter}
-                        labelStyle={{fontWeight: "bold"}}
+                        labelStyle={{ fontWeight: "bold" }}
                         onChange={(item) => {
                             filterByCategory(item.value);
                         }}
                         renderItem={renderItemFilter}
                     />
-
 
                 </View>
 
@@ -312,7 +319,7 @@ function Home({route, navigation}) {
                     ))}
                 </View>
             </ScrollView>
-        </SafeAreaView>
+        </View>
     );
 }
 

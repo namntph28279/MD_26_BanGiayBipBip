@@ -23,8 +23,8 @@ const getDataSPBestSale = async () => {
 const getDataFavourite = async () => {
     try {
         const email = await AsyncStorage.getItem('Email');
-        console.log("getFav: "+email)
         const response = await url.get(`/favourite/${email}`);
+        console.log(email)
         return response.data ;
     } catch (error) {
         return [];

@@ -17,7 +17,6 @@ const SplapshScreen2 = (props) => {
         return () => clearInterval(interval);
     }, []);
     const start = async () => {
-        await AsyncStorage.setItem('Email', "");
         props.navigation.replace('TabNavi')
     }
     return (
