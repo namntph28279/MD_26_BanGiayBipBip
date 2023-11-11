@@ -225,9 +225,10 @@ app.get('/cart/:userId', async (req, res) => {
 
     try {
         const cartItems = await CartItem.find({ user: userId });
-        res.json(cartItems);
+        res.send(cartItems);
+        console.log(1)
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        res.send([]);
     }
 });
 
