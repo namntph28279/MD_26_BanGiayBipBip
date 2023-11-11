@@ -124,7 +124,7 @@ const ChangePassword = ({ route, navigation }) => {
           <Text style={{ color: "white", fontSize: 20, fontWeight: "bold" }}>
             Lưu mật khẩu
           </Text>
-          <Image source={require("../image/next.png")} />
+          <Image source={require("../../image/next.png")} />
         </View>
       </TouchableOpacity>
     </SafeAreaView>

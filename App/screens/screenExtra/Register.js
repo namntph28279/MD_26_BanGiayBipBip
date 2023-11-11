@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { View, StyleSheet, Text, Image, Alert } from 'react-native';
 import { TextInput, Button } from 'react-native-paper';
-import { nameValidator } from '../helpers/nameValidator';
-import { passwordValidator } from '../helpers/passwordValidator';
+import { nameValidator } from '../../helpers/nameValidator';
+import { passwordValidator } from '../../helpers/passwordValidator';
 import axios from 'axios';
 import { CommonActions } from '@react-navigation/native';
 
@@ -70,7 +70,7 @@ function Register({ navigation }) {
 
     return (
         <View style={styles.container}>
-            <Image source={require('../image/logoapp.png')} style={{ margin: 16 }} />
+            <Image source={require('../../image/logoapp.png')} style={{ margin: 16 }} />
             <Text style={styles.title}>Bắt đầu nào</Text>
             <Text style={styles.title2}>Tạo một tài khoản mới</Text>
 

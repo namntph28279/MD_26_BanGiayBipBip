@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import { View, StyleSheet, Text, ScrollView, Image, TouchableHighlight, TouchableOpacity, Modal } from "react-native";
-import { getMonney } from "../util/money";
+import { getMonney } from "../../util/money";
 import {useDispatch, useSelector} from "react-redux";
-import NoProduct from "../components/NoProduct";
-import {fetchDataAndSetToRedux} from "../redux/AllData";
-import url from "../api/url";
+import NoProduct from "../../components/NoProduct";
+import {fetchDataAndSetToRedux} from "../../redux/AllData";
+import url from "../../api/url";
 
 export default function Favourite({navigation }) {
   const dispatch = useDispatch(); //trả về một đối tượng điều phối
@@ -16,7 +16,6 @@ export default function Favourite({navigation }) {
 
   React.useEffect(() => {
       setDataSP(dataSPFav);
-      console.log(dataSPFav)
   }, [dataSPFav]);
 
   const CT = () => {
@@ -80,7 +79,7 @@ export default function Favourite({navigation }) {
                     style={styles.modalCloseButton}
                     onPress={closeModal}
                   >
-                    <Image style={styles.modalCloseIcon} source={require('../image/close.png')} />
+                    <Image style={styles.modalCloseIcon} source={require('../../image/close.png')} />
                   </TouchableHighlight>
                 </View>
                 <View style={styles.modalDivider} />
@@ -91,7 +90,7 @@ export default function Favourite({navigation }) {
                   onPress={TC}
                 >
                   <View style={{ flexDirection: 'row' }}>
-                    <Image source={require('../image/tc.png')} />
+                    <Image source={require('../../image/tc.png')} />
                     <Text style={styles.modalOptionText}>Giá [Thấp - Cao]</Text>
                   </View>
                 </TouchableHighlight>
@@ -102,7 +101,7 @@ export default function Favourite({navigation }) {
                   onPress={CT}
                 >
                   <View style={{ flexDirection: 'row' }}>
-                    <Image source={require('../image/ct.png')} />
+                    <Image source={require('../../image/ct.png')} />
                     <Text style={styles.modalOptionText}>Giá [Cao - Thấp]</Text>
                   </View>
                 </TouchableHighlight>
@@ -133,7 +132,7 @@ export default function Favourite({navigation }) {
                     style={styles.modalCloseButton}
                     onPress={() => { setshowDialogtc(false) }}
                   >
-                    <Image style={styles.modalCloseIcon} source={require('../image/close.png')} />
+                    <Image style={styles.modalCloseIcon} source={require('../../image/close.png')} />
                   </TouchableHighlight>
                 </View>
                 <View style={styles.modalDivider} />
@@ -158,7 +157,7 @@ export default function Favourite({navigation }) {
                   onPress={() => Delete(id)}
                 >
                   <View style={{ flexDirection: 'row' }}>
-                    <Image source={require('../image/delete.png')} style={{ marginRight: 15, marginLeft: 5 }} />
+                    <Image source={require('../../image/delete.png')} style={{ marginRight: 15, marginLeft: 5 }} />
                     <Text style={styles.modalOptionText}>Xóa khỏi danh sách yêu thích</Text>
                   </View>
                 </TouchableHighlight>
@@ -175,7 +174,7 @@ export default function Favourite({navigation }) {
               underlayColor="white"
               onPress={() => { setshowDialog(true) }}
             >
-              <Image source={require('../image/sx.png')} />
+              <Image source={require('../../image/sx.png')} />
             </TouchableHighlight>
           </View>
 
@@ -202,7 +201,7 @@ export default function Favourite({navigation }) {
                     }}
                   >
 
-                    <Image source={require('../image/More.png')} />
+                    <Image source={require('../../image/More.png')} />
                   </TouchableHighlight>
                 </View>
               </TouchableOpacity>

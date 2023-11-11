@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { View, FlatList, TextInput, TouchableOpacity, StyleSheet, Text } from 'react-native';
 import { getDatabase, ref, onValue, off, set, push } from 'firebase/database';
-import firebase from '../config/FirebaseConfig';
+import firebase from '../../config/FirebaseConfig';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
 const ChatScreen = ({ route }) => {

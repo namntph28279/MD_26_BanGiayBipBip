@@ -3,7 +3,7 @@ import { Text, View, StyleSheet, Image, TouchableOpacity, ScrollView } from 'rea
 import { Ionicons } from '@expo/vector-icons';
 import { getDatabase, ref, onValue, off, remove, push, set, child, orderByKey } from 'firebase/database';
 import { getAuth } from 'firebase/auth';
-import firebase from '../config/FirebaseConfig';
+import firebase from '../../config/FirebaseConfig';
 
 const Oder = ({ route }) => {
     const [oderProductsList, setOderProductsList] = useState([]);

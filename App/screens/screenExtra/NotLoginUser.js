@@ -6,7 +6,7 @@ export default function NotLoginUser({ navigation }) {
         <View style={styles.container}>
             <Text style={styles.title}>TÀI KHOẢN</Text>
             <View style={{ width: '100%', backgroundColor: 'black', height: 1 }} />
-            <Image source={require('../image/imglogin.png')} style={styles.img} />
+            <Image source={require('../../image/imglogin.png')} style={styles.img} />
             <Text style={styles.TitleConten}>
                 ĐĂNG NHẬP ĐỂ BẮT ĐẦU MUA SẮM
             </Text>

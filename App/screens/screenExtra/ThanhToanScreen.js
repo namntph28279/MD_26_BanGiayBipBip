@@ -8,8 +8,8 @@ const ThanhToanScreen = ({ route, navigation }) => {
     const [shippingAddress, setShippingAddress] = useState('');
 
     const productList = [
-        { id: 1, name: 'Sản phẩm A', quantity: 2, price: 20, image: require('../image/logo.png') },
-        { id: 2, name: 'Sản phẩm B', quantity: 1, price: 30, image: require('../image/logo.png') },
+        { id: 1, name: 'Sản phẩm A', quantity: 2, price: 20, image: require('../../image/logo.png') },
+        { id: 2, name: 'Sản phẩm B', quantity: 1, price: 30, image: require('../../image/logo.png') },
     ];
     useEffect(() => {
         if (!userID) {

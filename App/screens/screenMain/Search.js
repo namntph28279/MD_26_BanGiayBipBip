@@ -11,7 +11,7 @@ import {
   LogBox,
   SafeAreaView,
 } from "react-native";
-import { getMonney } from "../util/money";
+import { getMonney } from "../../util/money";
 import axios from "axios";
 import _ from "lodash";
 import { useSelector } from "react-redux";
@@ -154,7 +154,7 @@ function Search({ navigation }) {
           <View>
             {/* <Text style={styles.searchButtonText}>Tìm</Text> */}
             <Image
-              source={require("../image/search.png")}
+              source={require("../../image/search.png")}
               // style={styles.imageBackground}
             />
           </View>

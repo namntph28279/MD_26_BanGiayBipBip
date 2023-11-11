@@ -3,16 +3,13 @@ import {ActivityIndicator, Image, ScrollView, StyleSheet, Text, TouchableOpacity
 import {MaterialIcons,} from "@expo/vector-icons";
 import Swiper from "react-native-swiper";
 import {Dropdown} from "react-native-element-dropdown";
-import {getMonney} from "../util/money";
+import {getMonney} from "../../util/money";
 import {useDispatch, useSelector} from "react-redux";
-import {fetchDataAndFav, fetchDataAndSetToRedux} from "../redux/AllData";
+import {fetchDataAndFav, fetchDataAndSetToRedux} from "../../redux/AllData";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import url from "../api/url";
+import url from "../../api/url";
 
 function Home({ route,navigation }) {
-
-    const userID = route.params?.userID || '';
-
     const dispatch = useDispatch(); //trả về một đối tượng điều phối
     const dataSP1 = useSelector((state) => state.dataAll.dataSP); //lấy toàn bộ mảng dữ liệu
     const dataSPFav = useSelector((state) => state.dataAll.dataSPFav); //lấy toàn bộ mảng dữ liệu Fav
@@ -152,8 +149,9 @@ function Home({ route,navigation }) {
             <View style={styles.productContainer}>
                 <TouchableOpacity
                     key={item._id}
-                    onPress={() => {
-                        navigation.navigate("ProductDetail", { productId: item._id ,userId:userID});
+                    onPress={async () => {
+                        const email = await AsyncStorage.getItem('Email');
+                        navigation.navigate("ProductDetail", {productId: item._id, userId: email});
                     }}
                 >
                     <View
@@ -226,8 +224,9 @@ function Home({ route,navigation }) {
                 >
                     {arrSwiper.map((item) => (
                         <View key={item._id}>
-                            <TouchableOpacity onPress={() => {
-                                navigation.navigate("ProductDetail", { productId: item._id ,userId:userID});
+                            <TouchableOpacity onPress={async () => {
+                                const email = await AsyncStorage.getItem('Email');
+                                navigation.navigate("ProductDetail", {productId: item._id, userId: email});
                             }}>
                                 <Image
                                     source={{ uri: item.product_image }}

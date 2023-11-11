@@ -2,34 +2,29 @@ import React, { useEffect, useState } from 'react';
 import { StyleSheet, Text, View, Image, TouchableOpacity, Linking } from 'react-native';
 import { getAuth, signOut, deleteUser } from 'firebase/auth';
 import { getDatabase, off, onValue, ref,remove  } from 'firebase/database';
-import firebase from '../config/FirebaseConfig';
+import firebase from '../../config/FirebaseConfig';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import {fetchDataAndSetToRedux} from "../../redux/AllData";
+import {useDispatch} from "react-redux";
 
 function User({ route, navigation }) {
     const [userData, setUserData] = useState(null);
     const auth = getAuth(firebase);
     // const userId = '64b9770a589e84422206b99b';
-    const userID = route.params?.userID || '';
-
+    const dispatch = useDispatch(); //trả về một đối tượng điều phối
     useEffect(() => {
-        console.log('Giá trị userID từ propsvvv:', userID);
-        if (!userID) {
-            console.log('không có user');
-            return;
-        }
-
         fetchUserData();
-
         const interval = setInterval(() => {
             fetchUserData();
         }, 1000);
 
         return () => clearInterval(interval);
-    }, [userID]);
+    }, []);
     const fetchUserData = async () => {
         try {
-            const response = await fetch(`https://md26bipbip-496b6598561d.herokuapp.com/profile/${userID}`);
+            const email = await AsyncStorage.getItem('Email');
+            const response = await fetch(`https://md26bipbip-496b6598561d.herokuapp.com/profile/${email}`);
             if (!response.ok) {
                 throw new Error('Lỗi khi lấy thông tin người dùng');
             }
@@ -45,6 +40,7 @@ function User({ route, navigation }) {
 
     const handleLogout = () => {
         const auth = getAuth();
+        dispatch(fetchDataAndSetToRedux());
         signOut(auth)
             .then(async () => {
                 console.log('Đăng xuất thành công');
@@ -66,8 +62,10 @@ function User({ route, navigation }) {
     if (!userData) {
         return null;
     }
-    const handleaddress = () => {
-        navigation.navigate('AllDiaChi', {userID, fromThanhToan: false});
+    const handleaddress = async () => {
+
+        const email = await AsyncStorage.getItem('Email');
+        navigation.navigate('AllDiaChi', {email, fromThanhToan: false});
     };
     if (!userData) {
         return null;
@@ -94,7 +92,10 @@ function User({ route, navigation }) {
             <View style={styles.content}>
                 <TouchableOpacity
                     style={styles.section}
-                    onPress={() => navigation.navigate('EditProfile',{ userID ,userData})}
+                    onPress={async () => {
+                        const email = await AsyncStorage.getItem('Email');
+                        navigation.navigate('EditProfile', {email, userData})
+                    }}
                 >
                     <Icon name="edit" size={20} color="orange" />
                     <Text style={styles.sectionText}>Chỉnh Sửa Thông Tin</Text>
@@ -108,7 +109,10 @@ function User({ route, navigation }) {
                 </TouchableOpacity>
                 <TouchableOpacity
                     style={styles.section}
-                    onPress={() => navigation.navigate('ChatScreen', { userId: userID, userName: userData.fullname, })}
+                    onPress={async () => {
+                        const email = await AsyncStorage.getItem('Email');
+                        navigation.navigate('ChatScreen', {userId: email, userName: userData.fullname,})
+                    }}
                 >
                     <Icon name="comment" size={20} color="green" />
                     <Text style={styles.sectionText}>Chat Với Người Dùng</Text>
@@ -116,14 +120,20 @@ function User({ route, navigation }) {
                 <TouchableOpacity
                     style={styles.section}
 
-                    onPress={() => navigation.navigate('Oder', { userId: userID })}
+                    onPress={async () => {
+                        const email = await AsyncStorage.getItem('Email');
+                        navigation.navigate('Oder', {userId: email})
+                    }}
                 >
                     <Icon name="shopping-cart" size={20} color="cyan" />
                     <Text style={styles.sectionText}>Đơn Mua</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
                     style={styles.section}
-                    onPress={() => navigation.navigate('ChangePassword', { userId: userID })}
+                    onPress={async () => {
+                        const email = await AsyncStorage.getItem('Email');
+                        navigation.navigate('ChangePassword', {userId: email})
+                    }}
                 >
                     <Icon name="lock" size={20} color="blue" />
                     <Text style={styles.sectionText}>Đổi Mật Khẩu</Text>

@@ -75,7 +75,7 @@ const AllDiaChi = ({ route, navigation }) => {
                     <Text style={{ color: "white", fontSize: 20, fontWeight: "bold", textAlign: "center" }}>
                         Thêm Địa chỉ
                     </Text>
-                    <Image source={require("../image/next.png")} style={{ marginLeft: 10 }} />
+                    <Image source={require("../../image/next.png")} style={{ marginLeft: 10 }} />
                 </View>
             </TouchableOpacity>
         </View>

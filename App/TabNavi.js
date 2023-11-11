@@ -1,20 +1,19 @@
-import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import {createBottomTabNavigator} from "@react-navigation/bottom-tabs";
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import Home from "./compoment/Home";
-import Favourite from "./compoment/Favourite";
-import Cart from "./compoment/Cart";
-import Search from "./compoment/Search";
-import User from "./compoment/User";
-import NotLoginUser from "./compoment/NotLoginUser";
-import NoCart from "./compoment/NoCart";
-import {useEffect} from "react";
+import Home from "./screens/screenMain/Home";
+import Favourite from "./screens/screenMain/Favourite";
+import Cart from "./screens/screenMain/Cart";
+import Search from "./screens/screenMain/Search";
+import User from "./screens/screenMain/User";
+import NotLoginUser from "./screens/screenExtra/NotLoginUser";
+import {useEffect, useState} from "react";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
 const Tab = createBottomTabNavigator();
 
-const TabNavi = ({ route }) => {
-    const { isAuthenticated,userID  } = route.params || { isAuthenticated: false };
-    useEffect(() => {
-        console.log('Giá trị userID từ TabNavi:', userID);
-    }, [userID]);
+const TabNavi = ({route}) => {
+    const {isAuthenticated, userID} = route.params || {isAuthenticated: false};
+
     return (
         <Tab.Navigator
             initialRouteName={"Home"}
@@ -22,55 +21,45 @@ const TabNavi = ({ route }) => {
                 headerShown: false,
                 tabBarActiveTintColor: 'black',
                 tabBarInactiveTintColor: 'gray',
-                tabBarLabelStyle: { marginBottom: 5 }, // Điều chỉnh khoảng cách giữa icon và title
+                tabBarLabelStyle: {marginBottom: 5}, // Điều chỉnh khoảng cách giữa icon và title
                 tabBarLabelPosition: 'below-icon', // Đặt vị trí của title
             }}>
 
             <Tab.Screen name="Home" component={Home}
-                        initialParams={{ userID }}
-                options={{
-                    tabBarIcon: ({ color, size }) => <Ionicons name='home' color={color} size={size} />
-                }}
+                        initialParams={{userID}}
+                        options={{
+                            tabBarIcon: ({color, size}) => <Ionicons name='home' color={color} size={size}/>
+                        }}
             />
             <Tab.Screen name={"Tìm Kiếm"} component={Search}
-                options={{
-                    tabBarIcon: ({ color, size }) => <Ionicons name='search' color={color} size={size} />
+                        options={{
+                            tabBarIcon: ({color, size}) => <Ionicons name='search' color={color} size={size}/>
 
-                }}
+                        }}
             />
             <Tab.Screen name={"Yêu Thích"} component={Favourite}
-                    initialParams={{ userID }}
-                    options={{
-                        tabBarIcon: ({ color, size }) => <Ionicons name='heart' color={color} size={size} />
-                    }} />
-            {isAuthenticated ? (
-                <Tab.Screen
-                    name="Giỏ Hàng"
-                    component={Cart}
-                    initialParams={{ userID }}
-                    options={{
-                        tabBarIcon: ({ color, size }) => <Ionicons name='cart' color={color} size={size} />
-                    }}
-                />
-            ) : (
-                <Tab.Screen
-                    name="Giỏ Hàng"
-                    component={NoCart}
-                    options={{
-                        tabBarLabel: 'Cart',
-                        tabBarIcon: ({ color, size }) => <Ionicons name='cart' color={color} size={size} />
-                    }}
-                />
-            )}
+                        initialParams={{userID}}
+                        options={{
+                            tabBarIcon: ({color, size}) => <Ionicons name='heart' color={color} size={size}/>
+                        }}/>
+
+            <Tab.Screen
+                name="Giỏ Hàng"
+                component={Cart}
+                initialParams={{userID}}
+                options={{
+                    tabBarIcon: ({color, size}) => <Ionicons name='cart' color={color} size={size}/>
+                }}
+            />
 
             {isAuthenticated ? (
                 <Tab.Screen
                     name="Tài Khoản"
                     component={User}
-                    initialParams={{ userID }}
+                    initialParams={{userID}}
                     options={{
                         tabBarLabel: 'Tài Khoản',
-                        tabBarIcon: ({ color, size }) => <Ionicons name='person' color={color} size={size} />
+                        tabBarIcon: ({color, size}) => <Ionicons name='person' color={color} size={size}/>
                     }}
                 />
             ) : (
@@ -79,7 +68,7 @@ const TabNavi = ({ route }) => {
                     component={NotLoginUser}
                     options={{
                         tabBarLabel: 'Tài Khoản',
-                        tabBarIcon: ({ color, size }) => <Ionicons name='person' color={color} size={size} />
+                        tabBarIcon: ({color, size}) => <Ionicons name='person' color={color} size={size}/>
                     }}
                 />
             )}

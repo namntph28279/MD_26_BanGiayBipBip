@@ -11,12 +11,12 @@ import {
 } from "react-native";
 import { FontAwesome, MaterialIcons } from "@expo/vector-icons";
 import Swiper from "react-native-swiper";
-import { getMonney } from "../util/money";
+import { getMonney } from "../../util/money";
 import { useDispatch, useSelector } from "react-redux";
-import {fetchDataAndFav, fetchDataAndSetToRedux} from "../redux/AllData";
+import {fetchDataAndFav, fetchDataAndSetToRedux} from "../../redux/AllData";
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import url from "../api/url";
+import url from "../../api/url";
 
 function Home({ route, navigation }) {
   const dispatch = useDispatch();

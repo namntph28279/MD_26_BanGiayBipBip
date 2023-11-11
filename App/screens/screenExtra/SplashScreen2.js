@@ -30,13 +30,13 @@ const SplapshScreen2 = (props) => {
                     activeDotStyle={styles.paginationActiveDot}//hien thi dau cham khi anh den
                 >
                     <View style={styles.slide}>
-                        <Image source={require('../image/logo.png')} style={styles.imageBackground}/>
+                        <Image source={require('../../image/logo.png')} style={styles.imageBackground}/>
                     </View>
                     <View style={styles.slide}>
-                        <Image source={require('../image/logo1.png')} style={styles.imageBackground}/>
+                        <Image source={require('../../image/logo1.png')} style={styles.imageBackground}/>
                     </View>
                     <View style={styles.slide}>
-                        <Image source={require('../image/logo2.png')} style={styles.imageBackground}/>
+                        <Image source={require('../../image/logo2.png')} style={styles.imageBackground}/>
                     </View>
                 </Swiper>
             </View>

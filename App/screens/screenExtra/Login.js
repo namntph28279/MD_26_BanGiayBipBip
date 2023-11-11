@@ -77,7 +77,7 @@ const Login = ({ navigation }) => {
             <TouchableOpacity style={styles.skipButton} onPress={() => navigation.navigate('TabNavi')}>
                 <Text style={styles.skipButtonText}>Bỏ qua</Text>
             </TouchableOpacity>
-            <Image source={require('../image/logoapp1.png')} />
+            <Image source={require('../../image/logoapp1.png')} />
 
             <Text style={styles.textWelcome}>Chào mừng đến với BipBip</Text>
 
@@ -118,11 +118,11 @@ const Login = ({ navigation }) => {
             </View>
 
             <View style={styles.inputLogin}>
-                <Image source={require('../image/google.png')} />
+                <Image source={require('../../image/google.png')} />
                 <Text style={styles.textGG}>Đăng nhập bằng Google</Text>
             </View>
             <View style={styles.inputLogin}>
-                <Image source={require('../image/facebook.png')} />
+                <Image source={require('../../image/facebook.png')} />
                 <Text style={styles.textFB}>Đăng nhập bằng Facebook</Text>
             </View>
 
