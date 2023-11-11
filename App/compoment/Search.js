@@ -123,6 +123,7 @@ function Search({ navigation }) {
 
         const response = await axios.post(
           "https://md26bipbip-496b6598561d.herokuapp.com/products/search",
+          // "http://192.168.1.125/products/search",
           requestData,
           {
             headers: {
@@ -168,24 +169,24 @@ function Search({ navigation }) {
               Sản phẩm bán chạy
             </Text>
 
-            <View style={{ marginTop: 7, alignItems: "center" }}>
-              <FlatList
-                data={chunkedArrays[0]}
-                renderItem={renderTopSellingProductItem}
-                keyExtractor={(item) => item._id}
-                horizontal={true}
-                scrollEnabled={false}
-              />
+            <ScrollView horizontal={true} contentContainerStyle={{ flex: 1, justifyContent: 'center' }}>
+  <View style={{ flexDirection: 'column', marginTop: 3 }}>
 
-              <FlatList
-                data={chunkedArrays[1]}
-                renderItem={renderTopSellingProductItem}
-                keyExtractor={(item) => item._id}
-                horizontal={true}
-                stickyHeaderIndices={[0]}
-                scrollEnabled={false}
-              />
-            </View>
+    <FlatList
+      data={chunkedArrays[0]}
+      renderItem={renderTopSellingProductItem}
+      keyExtractor={(item) => item._id}
+      horizontal={true}
+    />
+
+    <FlatList
+      data={chunkedArrays[1]}
+      renderItem={renderTopSellingProductItem}
+      keyExtractor={(item) => item._id}
+      horizontal={true}
+    />
+  </View>
+</ScrollView>
             <TouchableOpacity
               style={styles.showAll}
               onPress={() => {
