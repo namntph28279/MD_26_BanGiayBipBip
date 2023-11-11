@@ -9,7 +9,9 @@ import {fetchDataAndFav, fetchDataAndSetToRedux} from "../redux/AllData";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import url from "../api/url";
 
-function Home({ navigation }) {
+function Home({ route,navigation }) {
+
+    const userID = route.params?.userID || '';
 
     const dispatch = useDispatch(); //trả về một đối tượng điều phối
     const dataSP1 = useSelector((state) => state.dataAll.dataSP); //lấy toàn bộ mảng dữ liệu
@@ -151,7 +153,7 @@ function Home({ navigation }) {
                 <TouchableOpacity
                     key={item._id}
                     onPress={() => {
-                        navigation.navigate("ProductDetail", { productId: item._id ,userId: '654e236c065edfb9cbd65957'});
+                        navigation.navigate("ProductDetail", { productId: item._id ,userId:userID});
                     }}
                 >
                     <View
@@ -225,7 +227,7 @@ function Home({ navigation }) {
                     {arrSwiper.map((item) => (
                         <View key={item._id}>
                             <TouchableOpacity onPress={() => {
-                                navigation.navigate("ProductDetail", { productId: item._id });
+                                navigation.navigate("ProductDetail", { productId: item._id ,userId:userID});
                             }}>
                                 <Image
                                     source={{ uri: item.product_image }}
