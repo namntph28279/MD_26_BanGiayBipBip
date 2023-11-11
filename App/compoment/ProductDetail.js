@@ -682,10 +682,6 @@ function ProductDetail({ route, navigation }) {
                     .catch(error => {
                         console.error('Lỗi thêm vào giỏ hàng:', error);
                     });
-            } else {
-                console.log('Vui lòng đăng nhập để tiếp tục');
-                alert('Vui lòng đăng nhập để tiếp tục');
-                navigation.navigate('Login');
             }
         } else {
             console.log('chưa chọn màu sắc hoặc kích cỡ');

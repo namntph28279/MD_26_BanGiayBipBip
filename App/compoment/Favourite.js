@@ -183,7 +183,7 @@ export default function Favourite({navigation }) {
             {dataSP.map((item) => (
               <TouchableOpacity key={item.product}
                 onPress={() => {
-                  navigation.navigate("ProductDetail", { productId: item.product});
+                  navigation.navigate("ProductDetail", { productId: item.product, userId: item.user});
                 }} style={styles.productContainer}>
 
                 <View style={styles.productBox}>
