@@ -60,17 +60,33 @@ function Cart({ route, navigation }) {
     }
   };
 
+  // const fetchShippingAddress = async () => {
+  //   const addressRef = await fetch(
+  //     "https://md26bipbip-496b6598561d.herokuapp.com/address/" + userID
+  //   );
+  //   const addressData = await addressRef.json();
+  //   if (addressData) {
+  //     setShippingAddress(addressData);
+  //   } else {
+  //     setShippingAddress("");
+  //   }
+  // };
   const fetchShippingAddress = async () => {
-    const addressRef = await fetch(
-      "https://md26bipbip-496b6598561d.herokuapp.com/address/" + userID
-    );
-    const addressData = await addressRef.json();
-    if (addressData) {
-      setShippingAddress(addressData);
-    } else {
-      setShippingAddress("");
+    try {
+      const response = await fetch(`https://md26bipbip-496b6598561d.herokuapp.com/address/${userID}`);
+      const data = await response.json();
+
+      if (data.length > 0) {
+        setShippingAddress(data[0].address);
+      } else {
+        console.warn('Không tìm thấy địa chỉ giao hàng.');
+        setShippingAddress("");
+      }
+    } catch (error) {
+      console.error('Lỗi khi lấy địa chỉ giao hàng', error);
     }
   };
+
   const handleToggleSwitch = (productId) => {
     setCartProducts((prevCartProducts) => {
       const updatedProducts = prevCartProducts.map((product) => {
@@ -245,10 +261,7 @@ function Cart({ route, navigation }) {
       </View>
       <TouchableOpacity
         onPress={() =>
-          navigation.navigate("EditProfile", {
-            userId: auth.currentUser.uid,
-            userData,
-          })
+            navigation.navigate('AllDiaChi', { userID, fromCart: true })
         }
       >
         <View

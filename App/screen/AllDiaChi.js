@@ -6,6 +6,7 @@ const AllDiaChi = ({ route, navigation }) => {
     const [addresses, setAddresses] = useState([]);
     const [selectedAddress, setSelectedAddress] = useState(null);
     const isFromThanhToan = route.params?.fromThanhToan || false;
+    const isFromCart = route.params?.fromCart || false;
     useEffect(() => {
         if (!userID) {
             console.log('Không có user ID.', userID);
@@ -34,9 +35,14 @@ const AllDiaChi = ({ route, navigation }) => {
                 setSelectedAddress(item);
                 if (isFromThanhToan) {
                     navigation.navigate('ThanhToanScreen', { selectedAddress: item });
-                } else {
+                    return;
+                }else  if (isFromCart){
+                    navigation.navigate('Cart', { selectedAddress: item });
+                }
+                else {
                     navigation.navigate('ScreenAddresst', { userID });
                 }
+
             }}
         >
             <Text style={{ fontWeight: 'bold', marginBottom: 5 }}>{item.name}</Text>

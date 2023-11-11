@@ -29,7 +29,9 @@ export default function App() {
   return (
       <Provider store={store}>
         <NavigationContainer>
-          <Stack.Navigator initialRouteName='SplashScreen'>
+          <Stack.Navigator initialRouteName='SplashScreen'
+           screenOptions={{gestureEnabled: false,
+           }}>
             <Stack.Screen name='SplashScreen' component={SplashScreen} options={{ headerShown: false }} />
             <Stack.Screen name='SplashScreen2' component={SplapshScreen2} options={{ headerShown: false }} />
             <Stack.Screen name='AllShoes' component={AllShoes} options={{ title: 'Sản phẩm' }} />
