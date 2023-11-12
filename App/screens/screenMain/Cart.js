@@ -287,7 +287,7 @@ function Cart({ route, navigation }) {
             <TouchableOpacity
               onPress={async () => {
                 const email = await AsyncStorage.getItem("Email");
-                navigation.navigate("AllDiaChi", { email, fromCart: true });
+                navigation.navigate("AllDiaChi", { userID: email, fromCart: true });
               }}
             >
               <View
