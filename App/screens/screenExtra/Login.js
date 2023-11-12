@@ -49,7 +49,7 @@ const Login = ({ navigation }) => {
                     console.log(userID);
                     if (userID) {
                         await AsyncStorage.setItem("Email", userID);
-                        navigation.navigate('TabNavi', { isAuthenticated: true, userID,screen: 'Home' });
+                        navigation.navigate('TabNavi', {screen: 'Home' });
                     } else {
                         console.error('Không nhận được ID người dùng từ phản hồi JSON');
                         Alert.alert('Lỗi', 'Không nhận được ID người dùng từ phản hồi JSON');

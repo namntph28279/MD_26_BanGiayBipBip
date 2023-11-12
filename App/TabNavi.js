@@ -8,11 +8,19 @@ import User from "./screens/screenMain/User";
 import NotLoginUser from "./screens/screenExtra/NotLoginUser";
 import {useEffect, useState} from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useIsFocused } from "@react-navigation/native";
 
 const Tab = createBottomTabNavigator();
 
-const TabNavi = ({route}) => {
-    const {isAuthenticated, userID} = route.params || {isAuthenticated: false};
+const TabNavi = () => {
+    const [userID,setUserID] = useState("");
+    useEffect(() => {
+        getUserId();
+    }, [useIsFocused()]);
+    const getUserId = async () =>{
+        const user = await AsyncStorage.getItem("Email");
+        setUserID(user);
+    }
 
     return (
         <Tab.Navigator
@@ -52,11 +60,10 @@ const TabNavi = ({route}) => {
                 }}
             />
 
-            {isAuthenticated ? (
+            {userID ? (
                 <Tab.Screen
                     name="Tài Khoản"
                     component={User}
-                    initialParams={{userID}}
                     options={{
                         tabBarLabel: 'Tài Khoản',
                         tabBarIcon: ({color, size}) => <Ionicons name='person' color={color} size={size}/>
