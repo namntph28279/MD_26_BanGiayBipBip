@@ -88,7 +88,6 @@ function ProductDetail({ route, navigation }) {
         if (!email){
             return
         }
-        navigation.navigate('AllDiaChi', {email, fromCart: true})
         axios.get(`https://md26bipbip-496b6598561d.herokuapp.com/favourite/${email}`)
             .then(response => {
                 const favoriteItems = response.data;

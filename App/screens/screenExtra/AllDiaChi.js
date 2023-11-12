@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, FlatList, TouchableOpacity, StyleSheet, Image } from 'react-native';
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const AllDiaChi = ({ route, navigation }) => {
     const userID = route.params?.userID || '';

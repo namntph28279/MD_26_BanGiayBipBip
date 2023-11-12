@@ -65,7 +65,7 @@ function User({ navigation }) {
     const handleaddress = async () => {
 
         const email = await AsyncStorage.getItem('Email');
-        navigation.navigate('AllDiaChi', {email, fromThanhToan: false});
+        navigation.navigate('AllDiaChi', { userID: email, fromThanhToan: false});
     };
     if (!userData) {
         return null;
