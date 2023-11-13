@@ -380,6 +380,43 @@ app.post('/order/add', async (req, res) => {
     }
 });
 
+//lấy về đơn hàng theo trạng thái
+app.get('/orders/:status', async (req, res) => {
+    const status = req.params.status;
+  
+    try {
+      const orders = await Order.find({ status });
+  
+      res.json(orders);
+    } catch (error) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+
+// Route để chuyển đổi trạng thái đơn hàng
+app.put('/order/edit-status/:orderId', async (req, res) => {
+    const orderId = req.params.orderId;
+    const newStatus = req.body.newStatus;
+  
+    try {
+      // Tìm đơn hàng theo ID
+      const order = await Order.findById(orderId);
+  
+      if (!order) {
+        return res.status(404).json({ message: 'Đơn hàng không tồn tại' });
+      }
+  
+      order.status = newStatus;
+  
+      await order.save();
+  
+      res.json(order);
+    } catch (error) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
 // Lấy toàn bộ đơn hàng
 app.get('/order', async (req, res) => {
     try {
