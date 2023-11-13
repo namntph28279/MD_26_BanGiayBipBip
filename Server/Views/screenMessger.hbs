@@ -1,0 +1,219 @@
+<html lang="en">
+
+<head>
+    <title>Tin Nhắn</title>
+    <link rel="stylesheet" href="styles.css">
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <style>
+        .modal-title {
+            font-weight: bold;
+        }
+
+
+        body {
+            margin: 7px auto auto;
+        }
+
+        .card-header {
+            font-weight: bold;
+            font-size: 20px;
+        }
+
+        .card-body {
+            padding: 20px;
+        }
+
+        /* Style cho các button */
+        .btn {
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        /* Style cho bảng sản phẩm */
+        .table td {
+            vertical-align: middle;
+        }
+
+        .table .table-actions a {
+            margin-right: 5px;
+        }
+
+        .mess {
+            position: relative;
+            display: inline-block;
+        }
+
+        .mess::after {
+            content: "";
+            position: absolute;
+            left: 0;
+            bottom: 0;
+            width: 0;
+            height: 1px;
+            background-color: white;
+            transition: width 0.5s ease-in-out;
+        }
+
+        .mess:hover::after {
+            width: 100%;
+        }
+
+        .box-chat {
+            width: 20%;
+            border-right-width: 1px;
+            border-right-color: black;
+            margin-right: 8px;
+            padding-right: 8px;
+        }
+
+        .information {
+            align-items: center;
+            display: flex;
+            flex-direction: row;
+            background: #eadada;
+            border-radius: 8px;
+            margin: 7px
+        }
+
+        .img-box {
+            width: 50px;
+            height: 50px;
+            margin-right: 8px
+        }
+    </style>
+</head>
+
+<body class="bg-gray-200">
+<div class="flex h-full ">
+    <!--Side Navbar-->
+    <div class="bg-indigo-900 w-1/6 ">
+        <div class=" bg-indigo-800">
+            <div class=" text-xl text-gray-200 uppercase font-bold" style="padding: 33px;">Shop BipBip</div>
+        </div>
+
+        <a href="/home" class=" cursor-pointer mess ml-3 mt-3 w-10/12" style="text-decoration: none ">
+            <div class="flex" style=" padding: 12px;">
+                <div>
+                    <img class="w-5 h-5" src="dashboard.png" alt="">
+                </div>
+                <div class="mx-3 text-sm text-gray-100 ">Đơn Hàng</div>
+            </div>
+        </a>
+
+
+        <a href="/mess" class="cursor-pointer mess ml-3 mt-3 w-10/12"
+           style="border-bottom-width: 1px; text-decoration: none">
+            <div class="flex" style=" padding: 12px;">
+                <div>
+                    <img class="w-5 h-5 " src="messages.png" alt="">
+                </div>
+                <div class="mx-3 text-sm text-gray-100 ">Tin Nhắn</div>
+            </div>
+        </a>
+
+        <a href="/warehouse" class="cursor-pointer mess ml-3 mt-3 w-10/12" style="text-decoration: none">
+            <div class="flex" style=" padding: 12px;">
+                <div>
+                    <img class="w-5 h-5" src="kho.svg" alt="">
+                </div>
+                <div class="mx-3 text-sm text-gray-100">Kho Hàng</div>
+            </div>
+        </a>
+    </div>
+    <!--Side Navbar-->
+
+    <!--Main area-->
+
+    <div class="flex-1">
+        <!--Top navbar-->
+        <div>
+
+            <div class="bg-white px-2 py-0.5 h-18 flex">
+                <div class="left md:w-3/4 sm:w-1/3 flex p-3">
+                    <img src="person.png" class="w-10 h-10" alt="">
+                    <span class="block p-2">Admin</span>
+                </div>
+                <div class="right md:w-1/4 sm:w-2/3 flex  justify-content-end ">
+                    <img src="message.png" class="w-7 h-7 bg-gray-100 rounded-full p-1 mx-2 my-4 cursor-pointer" alt="">
+                </div>
+            </div>
+        </div>
+        <!--Top navbar-->
+
+        <div class="card-container flex m-7 space-x-6 ">
+            <div class="card w-full" style="display: flex;flex-direction: row;padding: 8px">
+                <div class="box-chat">
+                    {{#each dataChat}}
+                        <div class="information">
+                            <img src="avt.png" class="img-box"/>
+                            <div onclick="openChat('{{this.user}}')">
+                                {{this.fullName}}
+                            </div>
+                        </div>
+                    {{/each}}
+                </div>
+                <div style="width: 80%">
+                    <div style="    background: #f3f4f6;height: 500px;margin: 7px;border-radius: 8px;padding: 8px;">
+                        Nội dung
+                    </div>
+                    <form action="" method="POST" class="mb-3" style="margin: 0 14px;">
+                        <div class="input-group">
+                            <label class="form-control">
+                                <input type="text" name="title" placeholder="Nhập nội dung">
+                            </label>
+                            <div class="input-group-append" style="margin-left: 8px;">
+                                <button class="btn btn-primary" type="submit">Gửi</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+<script>
+    setInterval(() => {
+        fetchData();
+    }, 500);
+
+    function fetchData() {
+        fetch('/chatAllShop', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+                .then(response => {
+                    console.log(response)})
+                .then(data => {  
+                })
+                .catch(error => {
+                    console.error(error);
+                });
+    }
+
+    function openChat(userId) {
+        fetch('/chatShop', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({user: userId})
+        })
+                .then(response => response.json())
+                .then(data => {
+                    // Xử lý dữ liệu
+                    console.log(data.content);
+                })
+                .catch(error => {
+                    console.error(error);
+                });
+    }
+</script>
+</html>
