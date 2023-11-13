@@ -2,14 +2,16 @@ import React, { useState, useEffect } from 'react';
 import {View, Text, TextInput, TouchableOpacity, StyleSheet, Image} from 'react-native';
 import RNPickerSelect from 'react-native-picker-select';
 import DatePicker from 'react-native-datepicker';
+import AsyncStorage from "@react-native-async-storage/async-storage";
 const EditProfile = ({ route,navigation }) => {
     const [fullname, setFullname] = useState('');
     const [gender, setGender] = useState('');
     const [avatar, setAvatar] = useState('');
     const [birthday, setBirthday] = useState('');
     const userID = route.params?.userID || '';
-    useEffect(() => {
-        fetch(`https://md26bipbip-496b6598561d.herokuapp.com/profile/${userID}`)
+    useEffect(async () => {
+        const email = await AsyncStorage.getItem('Email');
+        fetch(`https://md26bipbip-496b6598561d.herokuapp.com/profile/${email}`)
             .then(response => response.json())
             .then(data => {
                 setFullname(data.fullname);
@@ -21,11 +23,11 @@ const EditProfile = ({ route,navigation }) => {
                 console.error('Lỗi lấy dữ liệu người dùng:', error);
             });
     }, []);
-    const updateUserProfile = () => {
+    const updateUserProfile = async () => {
         const userId = '64b9770a589e84422206b99b';
-
+        const email = await AsyncStorage.getItem('Email');
         const profileData = {
-            user: userID,
+            user: email,
             fullname,
             gender,
             avatar,
@@ -41,8 +43,8 @@ const EditProfile = ({ route,navigation }) => {
         })
             .then(response => response.json())
             .then(data => {
-                console.log('update Thành công profile:', data);
-                navigation.navigate('TabNavi', { isAuthenticated: true ,userID});
+                console.log('update Thành công profile:', data,email);
+                navigation.navigate('TabNavi', {isAuthenticated: true, email});
             })
             .catch(error => {
                 console.error('Lỗi cập nhật profile:', error);
