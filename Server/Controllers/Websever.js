@@ -50,9 +50,7 @@ app.get('/home', async (req, res) => {
 
 app.get('/mess', async (req, res) => {
     try {
-        const dataChat = await ChatShop.find().lean();
-        console.log(dataChat)
-        res.render('../Views/screenMessger.hbs',{dataChat});
+        res.render('../Views/screenMessger.hbs');
     } catch (error) {
         res.status(500).json({message: error.message});
     }
@@ -290,9 +288,12 @@ app.post('/chatShop', async (req, res) => {
     try {
         const data = req.body;
         const products = await ChatShop.findOne({user: data.user}).lean();
-        return res.send(products)
+        if (products ) {
+            return res.send(products)
+        }
+
     } catch (error) {
-        res.status(500).json({message: error.message});
+        res.send([]);
     }
 });
 
@@ -304,11 +305,11 @@ app.post('/chatAllShop', async (req, res) => {
         res.status(500).json({message: error.message});
     }
 });
-app.post('/delete',async (req,res)=>{
+app.post('/delete', async (req, res) => {
     try {
-        const  id = req.body;
+        const id = req.body;
         await ChatShop.findByIdAndDelete(id._id);
-    }catch (err){
+    } catch (err) {
         console.log(err)
     }
 })
@@ -345,7 +346,6 @@ app.post('/home/chatShop', async (req, res) => {
         }
     }
 })
-
 
 
 module.exports = app;

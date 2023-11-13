@@ -67,7 +67,6 @@
             border-right-width: 1px;
             border-right-color: black;
             margin-right: 8px;
-            padding-right: 8px;
         }
 
         .information {
@@ -76,19 +75,37 @@
             flex-direction: row;
             background: #eadada;
             border-radius: 8px;
-            margin: 7px
+            margin: 7px;
+            padding: 8px;
+            cursor: pointer;
         }
 
-        .img-box {
-            width: 50px;
-            height: 50px;
-            margin-right: 8px
+        .user {
+            max-width: fit-content;
+            background: #d4d4d4;
+            padding: 7px;
+            border-radius: 8px;
+            text-align: left;
+            width: 80%;
+            margin: 8px 0;
         }
+
+        .admin {
+            max-width: fit-content;
+            background: #4842ff;
+            padding: 7px;
+            border-radius: 8px;
+            margin-left: auto;
+            width: 80%;
+            color: white;
+            margin-bottom: 8px;
+        }
+
     </style>
 </head>
 
 <body class="bg-gray-200">
-<div class="flex h-full ">
+<div class="flex">
     <!--Side Navbar-->
     <div class="bg-indigo-900 w-1/6 ">
         <div class=" bg-indigo-800">
@@ -146,24 +163,19 @@
 
         <div class="card-container flex m-7 space-x-6 ">
             <div class="card w-full" style="display: flex;flex-direction: row;padding: 8px">
-                <div class="box-chat">
-                    {{#each dataChat}}
-                        <div class="information">
-                            <img src="avt.png" class="img-box"/>
-                            <div onclick="openChat('{{this.user}}')">
-                                {{this.fullName}}
-                            </div>
-                        </div>
-                    {{/each}}
+                <div class="box-chat" style="height: 555px">
+
                 </div>
-                <div style="width: 80%">
-                    <div style="    background: #f3f4f6;height: 500px;margin: 7px;border-radius: 8px;padding: 8px;">
-                        Nội dung
+                <div id="checkData"  style="width: 80%">
+                    <div id="listConten" class="contenChat"
+                         style="background: #f3f4f6;height: 500px;margin: 7px;border-radius: 8px;padding: 8px;overflow: auto;display:flex;flex-direction: column;justify-content: end">
+
                     </div>
-                    <form action="" method="POST" class="mb-3" style="margin: 0 14px;">
+                    <form id="myForm" class="mb-3" style="margin: 0 14px;">
                         <div class="input-group">
                             <label class="form-control">
-                                <input type="text" name="title" placeholder="Nhập nội dung">
+                                <input id="myInput" style="width: 100%;outline: unset !important;" type="text" name="conTenMain"
+                                       placeholder="Nhập nội dung">
                             </label>
                             <div class="input-group-append" style="margin-left: 8px;">
                                 <button class="btn btn-primary" type="submit">Gửi</button>
@@ -178,9 +190,48 @@
 
 </body>
 <script>
-    setInterval(() => {
-        fetchData();
-    }, 500);
+    let idDataChat = '';
+
+    function updateChatBox(dataChat) {
+        const boxChatDiv = document.querySelector('.box-chat');
+        boxChatDiv.innerHTML = '';
+        dataChat.forEach(item => {
+            const informationDiv = document.createElement('div');
+            informationDiv.classList.add('information');
+            const nameDiv = document.createElement('div');
+            nameDiv.textContent = item.fullName;
+            informationDiv.addEventListener('click', function () {
+                idDataChat = item.user;
+            });
+            informationDiv.appendChild(nameDiv);
+            boxChatDiv.appendChild(informationDiv);
+        });
+    }
+
+    function updateContentChat(dataChat) {
+        const boxChatDiv = document.querySelector('.contenChat');
+        boxChatDiv.innerHTML = '';
+        const checkDt = document.getElementById("checkData");
+        if (dataChat !== undefined) {
+            checkDt.style.display="block"
+            dataChat.forEach(item => {
+                const informationDiv = document.createElement('div');
+                if (item.beLong === "user") {
+                    informationDiv.classList.add('user');
+                } else {
+                    informationDiv.classList.add('admin');
+                }
+                const content = document.createElement('div');
+                content.textContent = item.conTenMain;
+                informationDiv.appendChild(content);
+                boxChatDiv.appendChild(informationDiv);
+
+            });
+
+        }else {
+            checkDt.style.display="none"
+        }
+    }
 
     function fetchData() {
         fetch('/chatAllShop', {
@@ -189,31 +240,70 @@
                 'Content-Type': 'application/json'
             }
         })
-                .then(response => {
-                    console.log(response)})
-                .then(data => {  
+                .then(response => response.json())
+                .then(data => {
+                    updateChatBox(data);
                 })
                 .catch(error => {
                     console.error(error);
                 });
     }
 
-    function openChat(userId) {
+    fetchData();
+
+    setInterval(fetchData, 1000);
+    setInterval(openChat, 1000);
+
+    function openChat() {
+        console.log(idDataChat)
         fetch('/chatShop', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({user: userId})
+            body: JSON.stringify({user: idDataChat})
         })
                 .then(response => response.json())
                 .then(data => {
-                    // Xử lý dữ liệu
+                    updateContentChat(data.content)
                     console.log(data.content);
                 })
                 .catch(error => {
                     console.error(error);
                 });
     }
+
+    document.getElementById("myForm").addEventListener("submit", function (event) {
+        event.preventDefault(); // Ngăn chặn mặc định của biểu mẫu
+        var formData = new FormData(this); // Tạo đối tượng FormData từ biểu mẫu
+        formData.forEach(function (value, key) {
+            fetch('/home/chatShop', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({user: idDataChat, conTenMain: value, beLong: "admin"})
+            })
+                    .then(response => response.json())
+                    .then(data => {
+                        document.getElementById("myInput").value = "";
+                    })
+                    .catch(error => {
+                        console.error(error);
+                    });
+        });
+    });
+    function renderDataFromBottomUp() {
+        var container = document.getElementById("listConten");
+        var children = container.children;
+
+        var reversedChildren = Array.from(children).reverse();
+
+        container.innerHTML = "";
+        reversedChildren.forEach(function(child) {
+            container.appendChild(child);
+        });
+    }
+
 </script>
 </html>
