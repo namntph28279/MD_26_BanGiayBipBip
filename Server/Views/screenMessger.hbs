@@ -255,7 +255,6 @@
     setInterval(openChat, 1000);
 
     function openChat() {
-        console.log(idDataChat)
         fetch('/chatShop', {
             method: 'POST',
             headers: {
@@ -266,7 +265,6 @@
                 .then(response => response.json())
                 .then(data => {
                     updateContentChat(data.content)
-                    console.log(data.content);
                 })
                 .catch(error => {
                     console.error(error);
