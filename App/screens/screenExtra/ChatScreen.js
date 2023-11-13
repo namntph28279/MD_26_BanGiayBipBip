@@ -17,7 +17,6 @@ const ChatScreen = ({route}) => {
                 const email = await AsyncStorage.getItem('Email');
                 const response = await url.post("/chatShop", {user: email});
                 const newData = response.data.content;
-                console.log(newData)
                 if (newData !== undefined) {
                     newData.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
                     setDataALL(newData)
