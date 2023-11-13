@@ -8,7 +8,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import {fetchDataAndSetToRedux} from "../../redux/AllData";
 import {useDispatch} from "react-redux";
 
-function User({ route, navigation }) {
+function User({ navigation }) {
     const [userData, setUserData] = useState(null);
     const auth = getAuth(firebase);
     // const userId = '64b9770a589e84422206b99b';
@@ -65,7 +65,7 @@ function User({ route, navigation }) {
     const handleaddress = async () => {
 
         const email = await AsyncStorage.getItem('Email');
-        navigation.navigate('AllDiaChi', {email, fromThanhToan: false});
+        navigation.navigate('AllDiaChi', { userID: email, fromThanhToan: false});
     };
     if (!userData) {
         return null;
