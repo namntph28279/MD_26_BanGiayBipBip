@@ -1,6 +1,9 @@
 const Product = require('../Models/Product');
 const Color = require('../Models/Color');
 const Size = require('../Models/Size');
+const ChatShop = require('../Models/chatShop');
+
+const User = require('../Models/User');
 
 const express = require('express');
 const app = express();
@@ -39,7 +42,25 @@ app.use(express.json());
 app.get('/home', async (req, res) => {
     try {
         const products = await Product.find().lean();
-        res.render('../Views/home.hbs', {products});
+        res.render('../Views/screenHome.hbs');
+    } catch (error) {
+        res.status(500).json({message: error.message});
+    }
+});
+
+app.get('/mess', async (req, res) => {
+    try {
+        const dataChat = await ChatShop.find().lean();
+        console.log(dataChat)
+        res.render('../Views/screenMessger.hbs',{dataChat});
+    } catch (error) {
+        res.status(500).json({message: error.message});
+    }
+});
+app.get('/warehouse', async (req, res) => {
+    try {
+        const products = await Product.find().lean();
+        res.render('../Views/screenWarehouse.hbs', {products});
     } catch (error) {
         res.status(500).json({message: error.message});
     }
@@ -264,4 +285,67 @@ app.post('/home/detail/colors/delete/:colorId/:productId', async (req, res) => {
         res.status(500).json({error: 'Lỗi server'});
     }
 });
+
+app.post('/chatShop', async (req, res) => {
+    try {
+        const data = req.body;
+        const products = await ChatShop.findOne({user: data.user}).lean();
+        return res.send(products)
+    } catch (error) {
+        res.status(500).json({message: error.message});
+    }
+});
+
+app.post('/chatAllShop', async (req, res) => {
+    try {
+        const dataChat = await ChatShop.find().lean();
+        return res.send(dataChat)
+    } catch (error) {
+        res.status(500).json({message: error.message});
+    }
+});
+app.post('/delete',async (req,res)=>{
+    try {
+        const  id = req.body;
+        await ChatShop.findByIdAndDelete(id._id);
+    }catch (err){
+        console.log(err)
+    }
+})
+app.post('/home/chatShop', async (req, res) => {
+    const data = req.body;
+    const check = await ChatShop.findOne({user: data.user})
+    if (check) {
+        const newChat = {
+            beLong: data.beLong,
+            conTenMain: data.conTenMain,
+        }
+
+        try {
+            check.content.push(newChat)
+            await check.save()
+            return res.json({message: "Thêm chat thành công"});
+        } catch (error) {
+            console.log(error)
+        }
+    } else {
+        try {
+            const newChat = new ChatShop({
+                user: data.user,
+                fullName: data.fullName,
+                content: [{
+                    beLong: data.beLong,
+                    conTenMain: data.conTenMain
+                }]
+            })
+            await newChat.save()
+            return res.json({message: "Tạo chat thành công"});
+        } catch (error) {
+            console.log(error);
+        }
+    }
+})
+
+
+
 module.exports = app;

@@ -29,7 +29,7 @@ export default function App() {
   return (
       <Provider store={store}>
         <NavigationContainer>
-          <Stack.Navigator initialRouteName='SplashScreen'
+          <Stack.Navigator initialRouteName='TabNavi'
            screenOptions={{gestureEnabled: false,
            }}>
             <Stack.Screen name='SplashScreen' component={SplashScreen} options={{ headerShown: false }} />
@@ -49,7 +49,7 @@ export default function App() {
                 initialParams={{ userID: userID }}
                 options={{ title: 'Thông tin người dùng' }}
             />
-            <Stack.Screen name='ChatScreen' component={ChatScreen} options={{ title: 'Nhóm chat cộng đồng' }} />
+            <Stack.Screen name='ChatScreen' component={ChatScreen} options={{ title: 'Chat với cửa hàng' }} />
             <Stack.Screen name='ChangePassword' component={ChangePassword} options={{ title: 'Đổi Mật Khẩu' }} />
             <Stack.Screen name='Oder' component={Oder} options={{ title: 'Đơn mua' }} />
             <Stack.Screen name='EditProfile' component={EditProfile} options={{ title: 'Chỉnh sửa hồ sơ' }} />
