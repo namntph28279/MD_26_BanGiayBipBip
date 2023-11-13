@@ -1,7 +1,7 @@
-import { StatusBar } from 'expo-status-bar';
+
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { StyleSheet, Text, View } from 'react-native';
+import {Alert, Platform, StyleSheet, Text, View} from 'react-native';
 import SplashScreen from './screens/screenExtra/SplashScreen';
 import Login from './screens/screenExtra/Login';
 import Register from "./screens/screenExtra/Register";
@@ -20,12 +20,54 @@ import ScreenAddresst from "./screens/screenExtra/screenAddresst";
 import ThanhToanScreen from './screens/screenExtra/ThanhToanScreen';
 import { Provider } from 'react-redux';
 import { store } from './redux/store';
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import AllDiaChi from "./screens/screenExtra/AllDiaChi";
+import * as Notifications from "expo-notifications";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
+Notifications.setNotificationHandler({
+    handleNotification: async () => {
+        return {
+            shouldPlaySound: false,
+            shouldSetBadge: false,
+            shouldShowAlert: true,
+        };
+    },
+});
 export default function App() {
   const Stack = createNativeStackNavigator();
   const [userID, setUserID] = useState('');
+    useEffect(() => {
+        async function configurePushNotifications() {
+            const email = await AsyncStorage.getItem('Email');
+            console.log("123: "+email)
+            const { status } = await Notifications.getPermissionsAsync();
+            let finalStatus = status;
+
+            if (finalStatus !== 'granted') {
+                const { status } = await Notifications.requestPermissionsAsync();
+                finalStatus = status;
+            }
+
+            if (finalStatus !== 'granted') {
+                Alert.alert(
+                    'Thông báo',
+                    'Bạn hãy bật thông báo của ứng dụng trong phần cài dặt để nhận được những thông báo mới nhất từ chúng tôi.'
+                );
+                return;
+            }
+            const pushTokenData = await Notifications.getExpoPushTokenAsync();
+            console.log(pushTokenData);
+
+            if (Platform.OS === 'android') {
+                Notifications.setNotificationChannelAsync('default', {
+                    name: 'default',
+                    importance: Notifications.AndroidImportance.DEFAULT,
+                });
+            }
+        }
+        configurePushNotifications();
+    }, []);
   return (
       <Provider store={store}>
         <NavigationContainer>
