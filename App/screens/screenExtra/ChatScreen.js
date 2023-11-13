@@ -1,64 +1,58 @@
-import React, { useEffect, useState } from 'react';
-import { View, FlatList, TextInput, TouchableOpacity, StyleSheet, Text } from 'react-native';
-import { getDatabase, ref, onValue, off, set, push } from 'firebase/database';
+import React, {useEffect, useState} from 'react';
+import {View, FlatList, TextInput, TouchableOpacity, StyleSheet, Text} from 'react-native';
+import {getDatabase, ref, onValue, off, set, push} from 'firebase/database';
 import firebase from '../../config/FirebaseConfig';
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import url from "../../api/url";
 
-const ChatScreen = ({ route }) => {
-    const { userId, userName } = route.params;
+const ChatScreen = ({route}) => {
     const [message, setMessage] = useState('');
-    const [messages, setMessages] = useState([]);
+    const [dataAll, setDataALL] = useState();
+
 
     useEffect(() => {
-        const database = getDatabase(firebase);
-        const chatRef = ref(database, 'chats');
+        const fetchData = async () => {
+            try {
+                const email = await AsyncStorage.getItem('Email');
+                const response = await url.post("/chatShop", {user: email});
+                const newData = response.data.content;
+                console.log(newData)
+                if (newData !== undefined) {
+                    newData.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+                    setDataALL(newData)
+                    return
+                }
+                setDataALL([])
 
-        onValue(chatRef, (snapshot) => {
-            const data = snapshot.val();
-            if (data) {
-                const messageList = Object.values(data).sort((a, b) => a.timestamp - b.timestamp);
-                setMessages(messageList);
-            } else {
-                setMessages([]);
+            } catch (error) {
+                console.error("Error fetching data:", error);
             }
-        });
-
-        return () => {
-            off(chatRef);
         };
+        fetchData();
+        const intervalId = setInterval(fetchData, 1100);
+        return () => clearInterval(intervalId);
+
     }, []);
 
-    const handleSendMessage = () => {
-        if (message.trim() !== '') {
-            const database = getDatabase(firebase);
-            const chatRef = ref(database, 'chats');
-            const newMessageRef = push(chatRef);
 
-            set(newMessageRef, {
-                sender: userId,
-                name: userName,
-                content: message,
-                timestamp: Date.now(),
-            })
-                .then(() => {
-                    setMessage('');
-                })
-                .catch((error) => {
-                    console.log('Lỗi chat', error);
-                });
+    const handleSendMessage = async () => {
+        const email = await AsyncStorage.getItem('Email');
+        const name = await AsyncStorage.getItem('Name');
+        console.log(name + email)
+        if (message.length>0){
+            await url.post("/home/chatShop", {user: email,fullName:name,beLong:"user",conTenMain:message});
+            setMessage('')
         }
     };
 
-    const renderItem = ({ item }) => {
-        const isCurrentUser = item.sender === userId;
+    const renderItem = ({item}) => {
+        const isCurrentUser = item.beLong === "user";
         const messageStyle = isCurrentUser ? styles.sentMessage : styles.receivedMessage;
         const textStyle = isCurrentUser ? styles.sentText : styles.receivedText;
-
         return (
-            <View style={messageStyle}>
-                <Text style={textStyle}>{item.name} :</Text>
-                <Text></Text>
-                <Text style={{fontSize: 20}}>{item.content}</Text>
+            <View style={ messageStyle}>
+                <Text style={textStyle}>{item.conTenMain}</Text>
             </View>
         );
     };
@@ -72,11 +66,13 @@ const ChatScreen = ({ route }) => {
         >
         <View style={styles.container}>
             <FlatList
-                data={messages.slice().reverse()}
+                data={dataAll}
                 renderItem={renderItem}
-                keyExtractor={(item) => item.timestamp.toString()}
+                scrollEnabled={false}
                 inverted
+                keyExtractor={(item) => item._id.toString()}
             />
+
 
             <View style={styles.inputContainer}>
                 <TextInput
@@ -97,17 +93,16 @@ const ChatScreen = ({ route }) => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#bd6e6e',
     },
     inputContainer: {
-        marginTop:10,
+        marginTop: 10,
         marginBottom: 30,
         flexDirection: 'row',
         alignItems: 'center',
         paddingHorizontal: 10,
         paddingVertical: 5,
         borderTopWidth: 1,
-        borderTopColor: '#CCCCCC',
+        borderTopColor: '#a19e9e',
     },
     input: {
         flex: 1,
@@ -131,33 +126,26 @@ const styles = StyleSheet.create({
         fontSize: 16,
     },
     sentMessage: {
-        alignSelf: 'flex-end',
-        backgroundColor: '#53b904',
-        borderRadius: 10,
-        marginTop: 5,
-        marginRight: 10,
-        marginLeft: 50,
-        padding: 10,
+        margin: 7,
+        maxWidth: "80%",
+        backgroundColor:'#3967d9',
+        marginLeft:"auto",
+        padding:14,
+        borderRadius:14
     },
     receivedMessage: {
-        alignSelf: 'flex-start',
-        backgroundColor: '#FFFFFF',
-        borderRadius: 10,
-        marginTop: 5,
-        marginLeft: 10,
-        marginRight: 50,
-        padding: 10,
+        margin: 7,
+        maxWidth: "80%",
+        backgroundColor:'#adadad',
+        marginRight:"auto",
+        padding:14,
+        borderRadius:14
     },
     sentText: {
-        color: '#004bec',
-        fontSize:10,
-        marginLeft:55,
+        color:'white'
     },
     receivedText: {
-        color: '#c50c0c',
-        fontSize:10,
-        marginRight:55,
+        color:'black'
     },
 });
-
 export default ChatScreen;

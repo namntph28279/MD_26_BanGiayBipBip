@@ -48,7 +48,9 @@ const Login = ({ navigation }) => {
                     const userID = userData._id;
                     console.log(userID);
                     if (userID) {
+                        const username = userName.split('@')[0];
                         await AsyncStorage.setItem("Email", userID);
+                        await AsyncStorage.setItem("Name",username);
                         navigation.navigate('TabNavi', { isAuthenticated: true, userID,screen: 'Home' });
                     } else {
                         console.error('Không nhận được ID người dùng từ phản hồi JSON');
