@@ -9,12 +9,16 @@ import url from "../../api/url";
 const ChatScreen = ({route}) => {
     const [message, setMessage] = useState('');
     const [dataAll, setDataALL] = useState();
-
+    const [dataName, setDataName] = useState();
+    const [dataId, setDataId] = useState();
 
     useEffect(() => {
         const fetchData = async () => {
             try {
                 const email = await AsyncStorage.getItem('Email');
+                const name = await AsyncStorage.getItem('Name');
+                setDataName(name);
+                setDataId(email);
                 const response = await url.post("/chatShop", {user: email});
                 const newData = response.data.content;
                 if (newData !== undefined) {
@@ -36,11 +40,8 @@ const ChatScreen = ({route}) => {
 
 
     const handleSendMessage = async () => {
-        const email = await AsyncStorage.getItem('Email');
-        const name = await AsyncStorage.getItem('Name');
-        console.log(name + email)
-        if (message.length>0){
-            await url.post("/home/chatShop", {user: email,fullName:name,beLong:"user",conTenMain:message});
+        if (message.length > 0) {
+            await url.post("/home/chatShop", {user: dataId, fullName: dataName, beLong: "user", conTenMain: message});
             setMessage('')
         }
     };
@@ -50,7 +51,7 @@ const ChatScreen = ({route}) => {
         const messageStyle = isCurrentUser ? styles.sentMessage : styles.receivedMessage;
         const textStyle = isCurrentUser ? styles.sentText : styles.receivedText;
         return (
-            <View style={ messageStyle}>
+            <View style={messageStyle}>
                 <Text style={textStyle}>{item.conTenMain}</Text>
             </View>
         );
@@ -58,33 +59,33 @@ const ChatScreen = ({route}) => {
 
     return (
         <KeyboardAwareScrollView
-            contentContainerStyle={{ flex: 1 }}
+            contentContainerStyle={{flex: 1}}
             extraScrollHeight={10}
             enableOnAndroid={true}
             keyboardShouldPersistTaps="handled"
         >
-        <View style={styles.container}>
-            <FlatList
-                data={dataAll}
-                renderItem={renderItem}
-                scrollEnabled={false}
-                inverted
-                keyExtractor={(item) => item._id.toString()}
-            />
-
-
-            <View style={styles.inputContainer}>
-                <TextInput
-                    style={styles.input}
-                    placeholder="Vui lòng nhập tin nhắn..."
-                    value={message}
-                    onChangeText={setMessage}
+            <View style={styles.container}>
+                <FlatList
+                    data={dataAll}
+                    renderItem={renderItem}
+                    scrollEnabled={false}
+                    inverted
+                    keyExtractor={(item) => item._id.toString()}
                 />
-                <TouchableOpacity style={styles.sendButton} onPress={handleSendMessage}>
-                    <Text style={styles.sendButtonText}>Gửi</Text>
-                </TouchableOpacity>
+
+
+                <View style={styles.inputContainer}>
+                    <TextInput
+                        style={styles.input}
+                        placeholder="Vui lòng nhập tin nhắn..."
+                        value={message}
+                        onChangeText={setMessage}
+                    />
+                    <TouchableOpacity style={styles.sendButton} onPress={handleSendMessage}>
+                        <Text style={styles.sendButtonText}>Gửi</Text>
+                    </TouchableOpacity>
+                </View>
             </View>
-        </View>
         </KeyboardAwareScrollView>
     );
 };
@@ -127,24 +128,24 @@ const styles = StyleSheet.create({
     sentMessage: {
         margin: 7,
         maxWidth: "80%",
-        backgroundColor:'#3967d9',
-        marginLeft:"auto",
-        padding:14,
-        borderRadius:14
+        backgroundColor: '#3967d9',
+        marginLeft: "auto",
+        padding: 14,
+        borderRadius: 14
     },
     receivedMessage: {
         margin: 7,
         maxWidth: "80%",
-        backgroundColor:'#adadad',
-        marginRight:"auto",
-        padding:14,
-        borderRadius:14
+        backgroundColor: '#adadad',
+        marginRight: "auto",
+        padding: 14,
+        borderRadius: 14
     },
     sentText: {
-        color:'white'
+        color: 'white'
     },
     receivedText: {
-        color:'black'
+        color: 'black'
     },
 });
 export default ChatScreen;
