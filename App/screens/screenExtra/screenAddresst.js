@@ -81,6 +81,7 @@ export default function ScreenAddresst({ route, navigation }) {
                 })
                 .catch(error => {
                     console.error('Lỗi trong quá trình gửi dữ liệu lên máy chủ:', error);
+                    navigation.navigate('AllDiaChi', {userID});
                 });
         }
 
