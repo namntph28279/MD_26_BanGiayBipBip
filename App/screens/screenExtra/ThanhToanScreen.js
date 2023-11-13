@@ -159,13 +159,19 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 const ThanhToanScreen = ({ route, navigation }) => {
     const selectedProducts = route.params?.selectedProducts || [];
     const userID = route.params?.userID || '';
-    const [totalAmount, setTotalAmount] = useState(0);
     const [paymentMethod, setPaymentMethod] = useState('');
     const [shippingAddress, setShippingAddress] = useState('');
     const [isAddressSelected, setIsAddressSelected] = useState(false);
     const [isPaymentModalVisible, setPaymentModalVisible] = useState(false);
     const [isMomoSelected, setIsMomoSelected] = useState(false);
     const [isCODSelected, setIsCODSelected] = useState(false);
+    //
+    const [productTotal, setProductTotal] = useState(0);
+    const [insuranceFee, setInsuranceFee] = useState(0);
+    const [shippingFee, setShippingFee] = useState(30000);
+    const [totalPayment, setTotalPayment] = useState(0);
+
+    //
 
     const productList = [
         { id: 1, name: 'Sản phẩm A', quantity: 2, price: 20, image: require('../../image/logo.png') },
@@ -190,12 +196,18 @@ const ThanhToanScreen = ({ route, navigation }) => {
     }, [route.params?.selectedAddress]);
 
     const calculateTotalAmount = () => {
-        let total = 0;
+        let productTotal = 0;
         selectedProducts.forEach((product) => {
-            total += product.quantity * product.productPrice;
+            productTotal += product.quantity * product.productPrice;
         });
-        setTotalAmount(total);
+        setProductTotal(productTotal);
+        const insurance = productTotal * 0.01;
+        setInsuranceFee(insurance > 3000 ? insurance : 3000);
+        setInsuranceFee(insurance);
+        const total = productTotal + insuranceFee + shippingFee;
+        setTotalPayment(total);
     };
+
 
 
 
@@ -260,20 +272,66 @@ const ThanhToanScreen = ({ route, navigation }) => {
             <ScrollView style={styles.scrollContainer}>
                 {selectedProducts.map(renderProductItem)}
             </ScrollView>
+            <View style={styles.paymentDetailsContainer}>
+                <View style={styles.paymentDetailHeader}>
+                    <Icon name="dollar" size={20} color="red" style={styles.invoiceIcon} />
+
+                    <Text style={styles.paymentDetailHeaderText}>Chi Tiết Thanh Toán</Text>
+                </View>
+                <View style={styles.paymentDetailItem}>
+                    <Text style={styles.detailLabel}>Tổng tiền hàng:</Text>
+                    <Text style={styles.detailValue}>{productTotal} VNĐ</Text>
+                </View>
+                <View style={styles.paymentDetailItem}>
+                    <Text style={styles.detailLabel}>Phí bảo hiểm:</Text>
+                    <Text style={styles.detailValue}>{insuranceFee} VNĐ</Text>
+                </View>
+                <View style={styles.paymentDetailItem}>
+                    <Text style={styles.detailLabel}>Phí vận chuyển:</Text>
+                    <Text style={styles.detailValue}>{shippingFee} VNĐ</Text>
+                </View>
+                <View style={styles.paymentDetailItem}>
+                    <Text style={styles.detailLabel1}>Tổng thanh toán:</Text>
+                    <Text style={styles.detailValue1}>{totalPayment} VNĐ</Text>
+                </View>
+            </View>
+
             <TouchableOpacity style={styles.paymentMethodContainer} onPress={handlePaymentMethodPress}>
                 <Icon name="credit-card" size={30} color="#3498db" />
                 <View>
-                    <Text style={styles.inputLabel}>Phương thức thanh toán:</Text>
-                    <Text>{isMomoSelected ? 'Momo' : isCODSelected ? 'Thanh Toán Khi Nhận Hàng' : ''}</Text>
+                    <Text style={styles.inputLabel}>Phương Thức Thanh Toán:</Text>
+                    <Text style={{alignSelf: 'center'}}>{isMomoSelected ? 'MoMo' : isCODSelected ? 'Thanh Toán Khi Nhận Hàng' : ''}</Text>
                 </View>
             </TouchableOpacity>
             <View style={styles.bottomContainer}>
                 <View style={styles.totalAmountContainer}>
-                    <Text style={styles.totalAmountText}>Tổng giá: {totalAmount} VNĐ</Text>
+                    <Text style={styles.totalAmountText}>Tổng Tiền:</Text>
+                    <Text style={styles.detailValue1}>{totalPayment} VNĐ</Text>
                 </View>
-                <TouchableOpacity style={styles.orderButton} onPress={handleOrder}>
-                    <Icon name="check" size={20} color="#ffffff" />
-                    <Text style={styles.orderButtonText}>Đặt hàng</Text>
+                <TouchableOpacity
+                    style={{
+                        backgroundColor: "#666666",
+                        margin: 7,
+                        padding: 15,
+                        borderRadius: 20,
+                    }}
+                    onPress={handleOrder}
+                >
+                    <View
+                        style={{
+                            flexDirection: "row",
+                            justifyContent: "space-between",
+                        }}
+                    >
+                        <Text
+                            style={{ color: "white", fontSize: 15, fontWeight: "bold", marginRight: 10 }}
+                        >
+                            THANH TOÁN
+                        </Text>
+                        <Image style={{
+                           alignSelf:'center',
+                        }} source={require("../../image/next.png")} />
+                    </View>
                 </TouchableOpacity>
             </View>
 
@@ -284,7 +342,7 @@ const ThanhToanScreen = ({ route, navigation }) => {
                             <Text style={styles.modalTitle}>Chọn phương thức thanh toán</Text>
                             <TouchableOpacity onPress={handleMomoCheckboxChange} style={styles.paymentIcon}>
                                 <Icon name={isMomoSelected ? 'check-circle' : 'circle'} size={30} color="#000" />
-                                <Text style={styles.paymentText}>Ví Momo</Text>
+                                <Text style={styles.paymentText}>Ví MoMo</Text>
                             </TouchableOpacity>
                             <TouchableOpacity onPress={handleCODCheckboxChange} style={styles.paymentIcon}>
                                 <Icon name={isCODSelected ? 'check-circle' : 'circle'} size={30} color="#000" />
@@ -382,12 +440,14 @@ const styles = StyleSheet.create({
         borderTopColor: '#ddd',
     },
     totalAmountContainer: {
-        alignItems: 'flex-start',
+        flexDirection: 'column',
+        justifyContent: 'space-between',
+        marginBottom: 8,
     },
     totalAmountText: {
-        fontSize: 18,
+        fontSize: 14,
         fontWeight: 'bold',
-        marginBottom: 8,
+        marginRight: 15,
     },
     orderButton: {
         backgroundColor: '#f39c12',
@@ -457,6 +517,51 @@ const styles = StyleSheet.create({
         fontSize: 16,
         textAlign: 'center',
     },
+    paymentDetailsContainer: {
+        padding: 16,
+        borderTopWidth: 2,
+        borderTopColor: '#d71a1a',
+        marginTop: 16,
+        borderWidth: 2,
+        borderColor: '#da0c0c',
+    },
+
+    paymentDetailItem: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        marginBottom: 8,
+    },
+    detailLabel: {
+        fontSize: 10,
+        fontWeight: 'bold',
+    },
+    detailLabel1: {
+        fontSize: 10,
+        fontWeight: 'bold',
+    },
+    detailValue: {
+        fontSize: 10,
+    },
+    detailValue1: {
+        fontSize: 16,
+        color:'red',
+        fontWeight:'bold'
+    },
+    invoiceIcon: {
+        marginRight: 10,
+    },
+    paymentDetailHeader: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginBottom: 10,
+    },
+    paymentDetailHeaderText: {
+        fontSize: 18,
+        fontWeight: 'bold',
+    },
+
+
+
 });
 
 export default ThanhToanScreen;
