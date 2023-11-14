@@ -38,6 +38,14 @@ app.use(bodyParser.json());
 //quay lại cd ..
 
 
+// Chờ xác nhận: Waiting for confirmation
+// Đang chuẩn bị hàng: Preparing for shipment
+// Đang giao: On delivery
+// Yêu cầu hủy đơn: Request for cancellation
+// Đơn đã hủy: Order canceled
+// Đã nhận hàng: Order received
+
+
 // Middleware để xử lý dữ liệu JSON
 app.use(express.json());
 
@@ -324,61 +332,41 @@ app.get('/favourite/:userId', async (req, res) => {
 });
 
 // Đặt hàng
-app.post('/order/add', async (req, res) => {
-    const { customer_email, products, address_id } = req.body;
-
+app.post('/order/addd', async (req, res) => {
     try {
-        // Tìm tất cả sản phẩm theo danh sách product_id
-        const foundProducts = await Product.find({ _id: { $in: products.map(item => item.product_id) } });
+      // Trích xuất dữ liệu từ phần thân của yêu cầu
+      const { user, customer_email, products, address } = req.body;
 
-        // Kiểm tra xem tất cả các sản phẩm trong danh sách có tồn tại hay không
-        if (foundProducts.length !== products.length) {
-            res.status(404).json({ message: 'Một hoặc nhiều sản phẩm không tồn tại' });
-        } else {
-            // Tạo danh sách sản phẩm và số lượng tương ứng
-            const orderedProducts = [];
-
-            for (const item of products) {
-                const foundProduct = foundProducts.find(product => product._id.equals(item.product_id));
-                const { colorId } = item;
-
-                // Trừ số lượng từ size_quantity thông qua colorId
-                const size = await Size.findOneAndUpdate({ colorId, product: foundProduct._id }, { $inc: { size_quantity: -item.quantity } });
-
-                if (!size) {
-                    res.status(404).json({ message: 'Không tìm thấy kích thước phù hợp cho sản phẩm' });
-                    return;
-                }
-
-                orderedProducts.push({ product: foundProduct._id, quantity: item.quantity });
-            }
-
-            // Tìm địa chỉ theo ID
-            const address = await Address.findById(address_id);
-
-            if (!address) {
-                res.status(404).json({ message: 'Địa chỉ không tồn tại' });
-            } else {
-                // Tạo đơn hàng mới
-                const order = new Order({
-                    customer_email,
-                    products: orderedProducts,
-                    addresses: [{
-                        address_id,
-                        address: address.address,
-                        name: address.name,
-                        phone: address.phone
-                    }]
-                });
-
-                await order.save();
-                res.json(order);
-            }
-        }
+      // Kiểm tra và giảm số lượng kích thước
+    for (const product of products) {
+        const sizeId = product.sizeId;
+        const quantityToReduce = product.quantity;
+  
+        await Size.findByIdAndUpdate(
+          sizeId,
+          { $inc: { size_quantity: -quantityToReduce } },
+          { new: true }
+        );
+      }
+  
+      // Tạo một đơn hàng mới
+      const newOrder = new Order({
+        user,
+        customer_email,
+        products,
+        address,
+      });
+  
+      
+      const savedOrder = await newOrder.save();
+  
+      res.status(201).json(savedOrder); 
     } catch (error) {
-        res.status(500).json({ message: error.message });
+      console.error(error);
+      res.status(500).json({ message: 'Lỗi máy chủ nội bộ' });
     }
-});
+  });
+  
 
 //lấy về đơn hàng theo trạng thái
 app.get('/orders/:status', async (req, res) => {
@@ -422,6 +410,20 @@ app.get('/order', async (req, res) => {
     try {
         // Tìm tất cả các đơn hàng trong cơ sở dữ liệu
         const orders = await Order.find();
+
+        res.json(orders);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
+// Lấy toàn bộ đơn hàng của một người dùng
+app.get('/orders/:userId', async (req, res) => {
+    const userId = req.params.userId;
+
+    try {
+        // Tìm tất cả các đơn hàng của người dùng trong cơ sở dữ liệu
+        const orders = await Order.find({ user: userId });
 
         res.json(orders);
     } catch (error) {
@@ -662,6 +664,17 @@ app.get('/address/:id', async (req, res) => {
         } else {
             res.json(add);
         }
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
+
+// getAll
+app.get('/address', async (req, res) => {
+    try {
+        const address = await Address.find();
+        res.json(address);
     } catch (error) {
         res.status(500).json({ message: error.message });
     }

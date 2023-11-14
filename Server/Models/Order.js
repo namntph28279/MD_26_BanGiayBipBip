@@ -1,6 +1,11 @@
 const mongoose = require('mongoose');
 
 const orderSchema = new mongoose.Schema({
+  user: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    required: true
+  },
   customer_email: {
     type: String,
     required: true
@@ -14,33 +19,28 @@ const orderSchema = new mongoose.Schema({
     quantity: {
       type: Number,
       required: true
-    }
-  }],
-  addresses: [{
-    address_id: {
+    },
+    colorId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'Address',
-      required: true
+      ref: 'Color',
+      required: true,
     },
-    address: {
-      type: String,
-      required: true
-    },
-    name: {
-      type: String,
-      required: true
-    },
-    phone: {
-      type: String,
-      required: true
+    sizeId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Size',
+      required: true,
     }
-
   }],
+  address: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Address',
+    required: true
+  },
   order_date: {
     type: Date,
     default: Date.now
   },
-  status:{
+  status: {
     type: String,
     default: "none"
   }
