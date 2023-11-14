@@ -1,22 +1,25 @@
 import React, {useEffect, useState} from 'react';
-import {View, FlatList, TextInput, TouchableOpacity, StyleSheet, Text} from 'react-native';
+import {View, FlatList, TextInput, TouchableOpacity, StyleSheet, Text, Image} from 'react-native';
 import {getDatabase, ref, onValue, off, set, push} from 'firebase/database';
 import firebase from '../../config/FirebaseConfig';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import url from "../../api/url";
 
-const ChatScreen = ({route}) => {
+const ChatScreen = ({navigation}) => {
     const [message, setMessage] = useState('');
     const [dataAll, setDataALL] = useState();
     const [dataName, setDataName] = useState();
     const [dataId, setDataId] = useState();
+    const [IDApp,setIdApp] = useState()
 
     useEffect(() => {
         const fetchData = async () => {
             try {
                 const email = await AsyncStorage.getItem('Email');
                 const name = await AsyncStorage.getItem('Name');
+                const idApp = await AsyncStorage.getItem('TokenApp');
+                setIdApp(idApp);
                 setDataName(name);
                 setDataId(email);
                 const response = await url.post("/chatShop", {user: email});
@@ -41,7 +44,7 @@ const ChatScreen = ({route}) => {
 
     const handleSendMessage = async () => {
         if (message.length > 0) {
-            await url.post("/home/chatShop", {user: dataId, fullName: dataName, beLong: "user", conTenMain: message});
+            await url.post("/home/chatShop", {user: dataId, fullName: dataName, beLong: "user", conTenMain: message,status:"true"});
             setMessage('')
         }
     };
@@ -57,6 +60,12 @@ const ChatScreen = ({route}) => {
         );
     };
 
+    const backScreen = async () => {
+
+        await url.post("/checkClientMess", {user: dataId, IdClient: IDApp, status: false});
+        navigation.navigate('TabNavi');
+    }
+
     return (
         <KeyboardAwareScrollView
             contentContainerStyle={{flex: 1}}
@@ -64,7 +73,16 @@ const ChatScreen = ({route}) => {
             enableOnAndroid={true}
             keyboardShouldPersistTaps="handled"
         >
+
             <View style={styles.container}>
+              <View style={{display:"flex",flexDirection:"row",alignItems:"center",padding:24,borderBottomWidth:1}}>
+                  <TouchableOpacity onPress={backScreen}>
+                      <Image source={require('../../image/back.png')}  style={{width:28,height:28}}/>
+                  </TouchableOpacity>
+                  <Text style={{fontSize:18,marginLeft:8}}>
+                      Chat với Shop
+                  </Text>
+              </View>
                 <FlatList
                     data={dataAll}
                     renderItem={renderItem}

@@ -7,10 +7,14 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import {fetchDataAndSetToRedux} from "../../redux/AllData";
 import {useDispatch} from "react-redux";
+import url from "../../api/url";
+import * as Notifications from "expo-notifications";
 
 function User({ navigation }) {
     const [userData, setUserData] = useState(null);
-    const auth = getAuth(firebase);
+    const [userID,setUserID] = useState()
+    const [IDApp,setIdApp] = useState()
+
     // const userId = '64b9770a589e84422206b99b';
     const dispatch = useDispatch(); //trả về một đối tượng điều phối
     useEffect(() => {
@@ -24,6 +28,10 @@ function User({ navigation }) {
     const fetchUserData = async () => {
         try {
             const email = await AsyncStorage.getItem('Email');
+            const idApp = await AsyncStorage.getItem('TokenApp');
+            setUserID(email);
+            setIdApp(idApp);
+
             const response = await fetch(`https://md26bipbip-496b6598561d.herokuapp.com/profile/${email}`);
             if (!response.ok) {
                 throw new Error('Lỗi khi lấy thông tin người dùng');
@@ -44,6 +52,8 @@ function User({ navigation }) {
         signOut(auth)
             .then(async () => {
                 console.log('Đăng xuất thành công');
+
+                await url.post("/checkClientUser", {user: userID,IdClient:IDApp,status:false});
                 // navigation.navigate('Login');
                 await AsyncStorage.setItem("Email", "");
                 navigation.navigate('TabNavi');
@@ -54,6 +64,11 @@ function User({ navigation }) {
 
 
     };
+    const ChatWithShop =async () => {
+        await url.post("/checkClientMess", {user: userID,IdClient:IDApp,status:true});
+        navigation.navigate('ChatScreen');
+
+    }
     const openFacebookPage = () => {
         const url = 'https://www.facebook.com/profile.php?id=100067198388586';
         Linking.openURL(url);
@@ -109,10 +124,7 @@ function User({ navigation }) {
                 </TouchableOpacity>
                 <TouchableOpacity
                     style={styles.section}
-                    onPress={async () => {
-                        const email = await AsyncStorage.getItem('Email');
-                        navigation.navigate('ChatScreen', {userId: email, userName: userData.fullname,})
-                    }}
+                    onPress={ChatWithShop}
                 >
                     <Icon name="comment" size={20} color="green" />
                     <Text style={styles.sectionText}>Chat Với Người Dùng</Text>

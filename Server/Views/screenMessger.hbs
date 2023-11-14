@@ -79,6 +79,17 @@
             padding: 8px;
             cursor: pointer;
         }
+        .informationNew {
+            align-items: center;
+            display: flex;
+            font-weight: bold;
+            flex-direction: row;
+            background: #eadada;
+            border-radius: 8px;
+            margin: 7px;
+            padding: 8px;
+            cursor: pointer;
+        }
 
         .user {
             max-width: fit-content;
@@ -167,10 +178,19 @@
 
                 </div>
                 <div id="checkData"  style="width: 80%">
-                    <div id="listConten" class="contenChat"
-                         style="background: #f3f4f6;height: 500px;margin: 7px;border-radius: 8px;padding: 8px;overflow: auto;display:flex;flex-direction: column;justify-content: end">
+                   <div style=" background: #f3f4f6;
+  height: 500px;
+  margin: 7px;
+  border-radius: 8px;
+  padding: 8px;
+  overflow: auto;">
+                       <div id="listConten" class="contenChat"
+                            style="display: flex;
+  flex-direction: column;
+  justify-content: flex-end;">
 
-                    </div>
+                       </div>
+                   </div>
                     <form id="myForm" class="mb-3" style="margin: 0 14px;">
                         <div class="input-group">
                             <label class="form-control">
@@ -197,8 +217,13 @@
         boxChatDiv.innerHTML = '';
         dataChat.forEach(item => {
             const informationDiv = document.createElement('div');
-            informationDiv.classList.add('information');
+
             const nameDiv = document.createElement('div');
+            if (item.status === true){
+                informationDiv.classList.add('informationNew');
+
+            }
+            informationDiv.classList.add('information');
             nameDiv.textContent = item.fullName;
             informationDiv.addEventListener('click', function () {
                 idDataChat = item.user;
@@ -242,7 +267,13 @@
         })
                 .then(response => response.json())
                 .then(data => {
-                    updateChatBox(data);
+                    const sortedData = data.sort((a, b) => {
+                        if (a.status === b.status) {
+                            return 0;
+                        }
+                        return a.status ? -1 : 1;
+                    });
+                    updateChatBox(sortedData);
                 })
                 .catch(error => {
                     console.error(error);
@@ -280,17 +311,91 @@
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({user: idDataChat, conTenMain: value, beLong: "admin"})
+                body: JSON.stringify({user: idDataChat, conTenMain: value, beLong: "admin",status:false})
             })
                     .then(response => response.json())
                     .then(data => {
-                        document.getElementById("myInput").value = "";
+                        document.getElementById("myInput").value = ""
+                        checkNottifi(idDataChat,value)
                     })
                     .catch(error => {
                         console.error(error);
                     });
         });
     });
+
+    function checkNottifi(idDataChat,value){
+        console.log(1)
+        fetch('/sendNotificationClient', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({user: idDataChat})
+        })
+                .then(response => response.json())
+                .then(data => {
+                    const  dataIdApp = data.client;
+                    const filteredData = dataIdApp.filter(item => item.status === "true");
+               if (filteredData.length === 0){
+                   return
+               }
+                    console.log(filteredData)
+                    checkNottifiMess(idDataChat,value)
+
+                })
+                .catch(error => {
+                    console.error(error);
+                });
+
+    }
+
+    function checkNottifiMess(idDataChat,value){
+        console.log(1)
+        fetch('/sendNotificationMess', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({user: idDataChat})
+        })
+                .then(response => response.json())
+                .then(data => {
+                    const  dataIdApp = data.client
+                    const filteredData = dataIdApp.filter(item => item.status === "false");
+                    if (filteredData.length === 0){
+                        return
+                    }
+                    const idClientArray = filteredData.map(item => item.IdClient);
+                    console.log(idClientArray)
+                    NotificaionClient(idClientArray,value)
+
+                })
+                .catch(error => {
+                    console.error(error);
+                });
+
+    }
+
+    function NotificaionClient(id,mess){
+        console.log("ok")
+        fetch('https://exp.host/--/api/v2/push/send', {
+            mode: 'no-cors',
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                to: id,
+                title: 'ShopBipBip',
+                body: mess,
+                data: {
+                    message: mess,
+                },
+            })
+        });
+    }
+
     function renderDataFromBottomUp() {
         var container = document.getElementById("listConten");
         var children = container.children;
