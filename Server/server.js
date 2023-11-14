@@ -3,8 +3,10 @@ const mongoose = require('mongoose');
 const useController = require('./Controllers/Controller')
 const websever = require('./Controllers/Websever')
 const app = express();
+const cors = require('cors');
 app.use(express.static(__dirname + "/Images"))
 app.use(express.static(__dirname + "/CSS"))
+app.use(cors({ origin: 'http://localhost' }));
 var server_port = process.env.YOUR_PORT || process.env.PORT || 80;
 var server_host = process.env.YOUR_HOST || '0.0.0.0';
 // Kết nối tới MongoDB

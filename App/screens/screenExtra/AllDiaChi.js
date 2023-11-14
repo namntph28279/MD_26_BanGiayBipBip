@@ -4,6 +4,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useFocusEffect } from '@react-navigation/native';
 const AllDiaChi = ({ route, navigation }) => {
     const userID = route.params?.userID || '';
+    const selectedProducts = route.params?.selectedProducts || [];
     const [addresses, setAddresses] = useState([]);
     const [selectedAddress, setSelectedAddress] = useState(null);
     const isFromThanhToan = route.params?.fromThanhToan || false;
@@ -39,15 +40,12 @@ const AllDiaChi = ({ route, navigation }) => {
             onPress={() => {
                 setSelectedAddress(item);
                 if (isFromThanhToan) {
-                    navigation.navigate('ThanhToanScreen', { selectedAddress: item });
-                    return;
-                }else  if (isFromCart){
-                    navigation.navigate('Cart', { selectedAddress: item });
-                }
-                else {
+                    navigation.navigate('ThanhToanScreen', { selectedAddress: item, userID, selectedProducts });
+                } else if (isFromCart) {
+                    navigation.navigate('Cart', { selectedAddress: item, userID ,selectedProducts});
+                } else {
                     navigation.navigate('ScreenAddresst', { userID });
                 }
-
             }}
         >
             <Text style={{ fontWeight: 'bold', marginBottom: 5 }}>{item.name}</Text>
@@ -55,6 +53,7 @@ const AllDiaChi = ({ route, navigation }) => {
             <Text>Số điện thoại: {item.phone}</Text>
         </TouchableOpacity>
     );
+
 
     const navigateToScreenAddresst = () => {
         navigation.navigate('ScreenAddresst', { userID });

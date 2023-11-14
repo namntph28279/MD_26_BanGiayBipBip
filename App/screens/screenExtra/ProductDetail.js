@@ -41,6 +41,9 @@ function ProductDetail({ route, navigation }) {
     const [userFavorites, setUserFavorites] = useState([]);
     const [sizeOptions, setSizeOptions] = useState([]);
     const [isImageModalVisible, setImageModalVisible] = useState(false);
+    const [selectedProducts, setSelectedProducts] = useState([]);
+    const [productImageURL, setProductImageURL] = useState(null);
+
     // const userId = '64ab9784b65d14d1076c3477';
 
     useEffect(() => {
@@ -61,6 +64,7 @@ function ProductDetail({ route, navigation }) {
                         colorImagesData[color.color_name] = color.color_image;
                     });
                     setColorImages(colorImagesData);
+                    setProductImageURL(data.product_image);
                     fetchSizesForColor(data.colors[0]._id);
                 }
             })
@@ -262,9 +266,34 @@ function ProductDetail({ route, navigation }) {
     };
     const buyNow = async () => {
         const email = await AsyncStorage.getItem('Email');
-        toggleBuyNowModal();
-        navigation.navigate('ThanhToanScreen', {userID: email});
+        if (!email){
+            alert("Vui lòng đăng nhập");
+            navigation.navigate('Login');
+            return
+        }
+
+        if (selectedColor && selectedSize) {
+            if (email) {
+                const productInfo = {
+                    productId: productId,
+                    quantity: quantity,
+                    productPrice: product.product_price,
+                    selectedColor: selectedColor,
+                    selectedSize: selectedSize,
+                    productImageURL: productImageURL,
+                    productName: product.product_title,
+                };
+
+                const updatedSelectedProducts = [...selectedProducts, productInfo];
+
+                navigation.navigate('ThanhToanScreen', { userID: email, selectedProducts: updatedSelectedProducts });
+            }
+        } else {
+            console.log('chưa chọn màu sắc hoặc kích cỡ');
+            alert('chưa chọn màu sắc hoặc kích cỡ');
+        }
     };
+
 
     return (
         <SafeAreaView style={styles.container}>
@@ -272,9 +301,14 @@ function ProductDetail({ route, navigation }) {
                 <ActivityIndicator size="large" color="#0000ff" />
             ) : (
                 <>
-                    {product && (
+                    {/*{product && (*/}
+                    {/*    <TouchableOpacity onPress={openImageModal}>*/}
+                    {/*        <Image source={{ uri: product.product_image }} style={styles.productImage} />*/}
+                    {/*    </TouchableOpacity>*/}
+                    {/*)}*/}
+                    {productImageURL && (
                         <TouchableOpacity onPress={openImageModal}>
-                            <Image source={{ uri: product.product_image }} style={styles.productImage} />
+                            <Image source={{ uri: productImageURL }} style={styles.productImage} />
                         </TouchableOpacity>
                     )}
 

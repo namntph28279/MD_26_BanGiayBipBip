@@ -110,6 +110,7 @@
 
         <div class="card-container flex m-7 space-x-6 ">
             <div class="card w-full">
+                <button type="button" class="btn btn-danger" onclick="NotificaionClient()">Test thông báo</button>
                 <div style=" display: flex; line-height: 48px;  margin: 0 14px; justify-content: space-between;">
                   <div>
                       <button class="btn-cf default-selected" style=" padding: 0 8px;" onclick="openOrder('confirm')">Chờ xác nhận</button>
@@ -224,6 +225,21 @@
         defaultButton.click();
     };
 
+    function NotificaionClient(){
+        console.log("ok")
+        fetch('https://exp.host/--/api/v2/push/send', {
+            mode: 'no-cors',
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                to: 'ExponentPushToken[sNvUaVDQyEQ21M2aVt60nz]',
+                title: 'ShopBipBip',
+                body: 'Hello'
+            })
+        });
+    }
     function openOrder(orderName) {
         let i;
         const x = document.getElementsByClassName("status");
