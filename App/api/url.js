@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const instance = axios.create({
-    baseURL: "https://md26bipbip-496b6598561d.herokuapp.com",
+    baseURL: "http://md26bipbip-496b6598561d.herokuapp.com",
 });
 
 instance.interceptors.request.use(//thêm yêu cầu trước mỗi lần gọi 

@@ -12,11 +12,14 @@ import { getAuth, signOut, deleteUser } from "firebase/auth";
 import firebase from "../../config/FirebaseConfig";
 import Icon from "react-native-vector-icons/FontAwesome";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+
 import { fetchDataAndSetToRedux } from "../../redux/AllData";
 import { useDispatch } from "react-redux";
 
 function User({ navigation }) {
   const [userData, setUserData] = useState(null);
+   const [userID,setUserID] = useState()
+    const [IDApp,setIdApp] = useState()
   // const userId = '64b9770a589e84422206b99b';
   const dispatch = useDispatch(); //trả về một đối tượng điều phối
   useEffect(() => {
@@ -29,7 +32,10 @@ function User({ navigation }) {
   }, []);
   const fetchUserData = async () => {
     try {
-      const email = await AsyncStorage.getItem("Email");
+     const email = await AsyncStorage.getItem('Email');
+            const idApp = await AsyncStorage.getItem('TokenApp');
+            setUserID(email);
+            setIdApp(idApp);
       const response = await fetch(
         `https://md26bipbip-496b6598561d.herokuapp.com/profile/${email}`
       );
@@ -47,10 +53,17 @@ function User({ navigation }) {
   const handleLogout = async () => {
     const auth = getAuth();
     dispatch(fetchDataAndSetToRedux());
+     await url.post("/checkClientUser", {user: userID,IdClient:IDApp,status:false});
     navigation.navigate("Login");
     await AsyncStorage.setItem("Email", "");
     console.log("Đăng xuất thành công");
   };
+  
+   const ChatWithShop =async () => {
+        await url.post("/checkClientMess", {user: userID,IdClient:IDApp,status:true});
+        navigation.navigate('ChatScreen');
+
+    }
   const openFacebookPage = () => {
     const url = "https://www.facebook.com/profile.php?id=100067198388586";
     Linking.openURL(url);
@@ -143,6 +156,7 @@ function User({ navigation }) {
       </View>
     </View>
   );
+
 }
 
 export default User;

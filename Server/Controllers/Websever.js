@@ -2,7 +2,8 @@ const Product = require('../Models/Product');
 const Color = require('../Models/Color');
 const Size = require('../Models/Size');
 const ChatShop = require('../Models/chatShop');
-
+const checkClient = require('../Models/CheckClientUser');
+const checkClientMess = require('../Models/CheckClientMess');
 const User = require('../Models/User');
 
 const express = require('express');
@@ -288,7 +289,7 @@ app.post('/chatShop', async (req, res) => {
     try {
         const data = req.body;
         const products = await ChatShop.findOne({user: data.user}).lean();
-        if (products ) {
+        if (products) {
             return res.send(products)
         }
 
@@ -323,6 +324,7 @@ app.post('/home/chatShop', async (req, res) => {
         }
 
         try {
+            check.status = data.status;
             check.content.push(newChat)
             await check.save()
             return res.json({message: "Thêm chat thành công"});
@@ -334,6 +336,7 @@ app.post('/home/chatShop', async (req, res) => {
             const newChat = new ChatShop({
                 user: data.user,
                 fullName: data.fullName,
+                status: true,
                 content: [{
                     beLong: data.beLong,
                     conTenMain: data.conTenMain
@@ -346,6 +349,123 @@ app.post('/home/chatShop', async (req, res) => {
         }
     }
 })
+
+app.get("/AllId",async (req,res)=>{
+    try {
+        const dataChat = await checkClient.find().lean();
+        return res.send(dataChat)
+    } catch (error) {
+        res.status(500).json({message: error.message});
+    }
+})
+app.get("/AllIdMess",async (req,res)=>{
+    try {
+        const dataChat = await checkClientMess.find().lean();
+        return res.send(dataChat)
+    } catch (error) {
+        res.status(500).json({message: error.message});
+    }
+})
+
+app.post('/sendNotificationClient',async (req,res)=>{
+    const data = req.body;
+    try {
+        const check = await checkClient.findOne({ user: data.user });
+        return res.send(check)
+    } catch (error) {
+        res.status(500).json({message: error.message});
+    }
+})
+
+app.post('/sendNotificationMess',async (req,res)=>{
+    const data = req.body;
+    try {
+        const check = await checkClientMess.findOne({ user: data.user });
+        return res.send(check)
+    } catch (error) {
+        res.status(500).json({message: error.message});
+    }
+})
+
+app.post('/checkClientUser', async (req, res) => {
+    const data = req.body;
+    if (data.user === null){
+        return
+    }
+    try {
+        const check = await checkClient.findOne({ user: data.user });
+
+        if (check) {
+            const clientUser = check.client.find((c) => c.IdClient === data.IdClient);
+
+            if (clientUser) {
+                clientUser.status = data.status;
+                await check.save();
+                return res.json({ message: "Cập nhật client thành công" });
+            } else {
+                const updatedCheckClient = await checkClient.findOneAndUpdate(
+                    { user: data.user },
+                    { $push: { client: { IdClient: data.IdClient, status: data.status } } },
+                    { new: true, upsert: true }
+                );
+                return res.json({ message: "Tạo client thành công", data: updatedCheckClient });
+            }
+        } else {
+            const newCheckClient = new checkClient({
+                user: data.user,
+                client: [{
+                    IdClient: data.IdClient,
+                    status: data.status,
+                }]
+            });
+            await newCheckClient.save();
+            return res.json({ message: "Tạo client thành công", data: newCheckClient });
+        }
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ error: "Lỗi xử lý yêu cầu" });
+    }
+});
+
+app.post('/checkClientMess', async (req, res) => {
+    const data = req.body;
+    if (data.user === null){
+        return
+    }
+    try {
+        const check = await checkClientMess.findOne({ user: data.user });
+
+        if (check) {
+            const clientUser = check.client.find((c) => c.IdClient === data.IdClient);
+
+            if (clientUser) {
+                clientUser.status = data.status;
+                await check.save();
+                return res.json({ message: "Cập nhật trạng thái thành công" });
+            } else {
+                const updatedCheckClient = await checkClientMess.findOneAndUpdate(
+                    { user: data.user },
+                    { $push: { client: { IdClient: data.IdClient, status: data.status } } },
+                    { new: true, upsert: true }
+                );
+                return res.json({ message: "Tạo trạng thái thành công", data: updatedCheckClient });
+            }
+        } else {
+            const newCheckClient = new checkClientMess({
+                user: data.user,
+                client: [{
+                    IdClient: data.IdClient,
+                    status: data.status,
+                }]
+            });
+            await newCheckClient.save();
+            return res.json({ message: "Tạo client thành công", data: newCheckClient });
+        }
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ error: "Lỗi xử lý yêu cầu" });
+    }
+});
 
 
 module.exports = app;

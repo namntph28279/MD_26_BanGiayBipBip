@@ -24,6 +24,7 @@ import {useEffect, useState} from "react";
 import AllDiaChi from "./screens/screenExtra/AllDiaChi";
 import * as Notifications from "expo-notifications";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import url from "./api/url";
 
 Notifications.setNotificationHandler({
     handleNotification: async () => {
@@ -37,10 +38,10 @@ Notifications.setNotificationHandler({
 export default function App() {
   const Stack = createNativeStackNavigator();
   const [userID, setUserID] = useState('');
+
     useEffect(() => {
         async function configurePushNotifications() {
             const email = await AsyncStorage.getItem('Email');
-            console.log("123: "+email)
             const { status } = await Notifications.getPermissionsAsync();
             let finalStatus = status;
 
@@ -56,9 +57,6 @@ export default function App() {
                 );
                 return;
             }
-            const pushTokenData = await Notifications.getExpoPushTokenAsync();
-            console.log(pushTokenData);
-
             if (Platform.OS === 'android') {
                 Notifications.setNotificationChannelAsync('default', {
                     name: 'default',
@@ -91,7 +89,7 @@ export default function App() {
                 initialParams={{ userID: userID }}
                 options={{ title: 'Thông tin người dùng' }}
             />
-            <Stack.Screen name='ChatScreen' component={ChatScreen} options={{ title: 'Chat với cửa hàng' }} />
+            <Stack.Screen name='ChatScreen' component={ChatScreen}  options={{ headerShown: false }} />
             <Stack.Screen name='ChangePassword' component={ChangePassword} options={{ title: 'Đổi Mật Khẩu' }} />
             <Stack.Screen name='Oder' component={Oder} options={{ title: 'Đơn mua' }} />
             <Stack.Screen name='EditProfile' component={EditProfile} options={{ title: 'Chỉnh sửa hồ sơ' }} />
