@@ -31,7 +31,7 @@ const TabNavi = () => {
 
     useEffect(() => {
         getUserId();
-    }, [useIsFocused()]);
+    }, [useIsFocused(),userID]);
     const getUserId = async () =>{
         const user = await AsyncStorage.getItem("Email");
         setUserID(user);
