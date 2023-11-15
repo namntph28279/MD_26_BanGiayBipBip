@@ -49,7 +49,7 @@ const AllDiaChi = ({ route, navigation }) => {
             }}
         >
             <Text style={{ fontWeight: 'bold', marginBottom: 5 }}>{item.name}</Text>
-            <Text>{item.label}: {item.address}</Text>
+            <Text>Địa chỉ: {item.label}: {item.address}</Text>
             <Text>Số điện thoại: {item.phone}</Text>
         </TouchableOpacity>
     );

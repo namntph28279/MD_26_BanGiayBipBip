@@ -53,7 +53,7 @@ function User({ navigation }) {
   const handleLogout = async () => {
     const auth = getAuth();
     dispatch(fetchDataAndSetToRedux());
-     await url.post("/checkClientUser", {user: userID,IdClient:IDApp,status:false});
+    //  await url.post("/checkClientUser", {user: userID,IdClient:IDApp,status:false});
     navigation.navigate("Login");
     await AsyncStorage.setItem("Email", "");
     console.log("Đăng xuất thành công");
@@ -122,7 +122,7 @@ function User({ navigation }) {
           }}
         >
           <Icon name="comment" size={20} color="green" />
-          <Text style={styles.sectionText}>Chat Với Người Dùng</Text>
+          <Text style={styles.sectionText}>Chat Với Cửa Hàng</Text>
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.section}

@@ -1,17 +1,17 @@
-import React, {useEffect, useState} from 'react';
-import {View, FlatList, TextInput, TouchableOpacity, StyleSheet, Text, Image} from 'react-native';
-import {getDatabase, ref, onValue, off, set, push} from 'firebase/database';
+import React, { useEffect, useState } from 'react';
+import { View, FlatList, TextInput, TouchableOpacity, StyleSheet, Text, Image, SafeAreaView } from 'react-native';
+import { getDatabase, ref, onValue, off, set, push } from 'firebase/database';
 import firebase from '../../config/FirebaseConfig';
-import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import url from "../../api/url";
 
-const ChatScreen = ({navigation}) => {
+const ChatScreen = ({ navigation }) => {
     const [message, setMessage] = useState('');
     const [dataAll, setDataALL] = useState();
     const [dataName, setDataName] = useState();
     const [dataId, setDataId] = useState();
-    const [IDApp,setIdApp] = useState()
+    const [IDApp, setIdApp] = useState()
 
     useEffect(() => {
         const fetchData = async () => {
@@ -22,7 +22,7 @@ const ChatScreen = ({navigation}) => {
                 setIdApp(idApp);
                 setDataName(name);
                 setDataId(email);
-                const response = await url.post("/chatShop", {user: email});
+                const response = await url.post("/chatShop", { user: email });
                 const newData = response.data.content;
                 if (newData !== undefined) {
                     newData.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
@@ -44,12 +44,12 @@ const ChatScreen = ({navigation}) => {
 
     const handleSendMessage = async () => {
         if (message.length > 0) {
-            await url.post("/home/chatShop", {user: dataId, fullName: dataName, beLong: "user", conTenMain: message,status:"true"});
+            await url.post("/home/chatShop", { user: dataId, fullName: dataName, beLong: "user", conTenMain: message, status: "true" });
             setMessage('')
         }
     };
 
-    const renderItem = ({item}) => {
+    const renderItem = ({ item }) => {
         const isCurrentUser = item.beLong === "user";
         const messageStyle = isCurrentUser ? styles.sentMessage : styles.receivedMessage;
         const textStyle = isCurrentUser ? styles.sentText : styles.receivedText;
@@ -62,27 +62,27 @@ const ChatScreen = ({navigation}) => {
 
     const backScreen = async () => {
 
-        await url.post("/checkClientMess", {user: dataId, IdClient: IDApp, status: false});
+        await url.post("/checkClientMess", { user: dataId, IdClient: IDApp, status: false });
         navigation.navigate('TabNavi');
     }
 
     return (
+
         <KeyboardAwareScrollView
-            contentContainerStyle={{flex: 1}}
+            contentContainerStyle={{ flex: 1 }}
             extraScrollHeight={10}
             enableOnAndroid={true}
             keyboardShouldPersistTaps="handled"
         >
-
-            <View style={styles.container}>
-              <View style={{display:"flex",flexDirection:"row",alignItems:"center",padding:24,borderBottomWidth:1}}>
-                  <TouchableOpacity onPress={backScreen}>
-                      <Image source={require('../../image/back.png')}  style={{width:28,height:28}}/>
-                  </TouchableOpacity>
-                  <Text style={{fontSize:18,marginLeft:8}}>
-                      Chat với Shop
-                  </Text>
-              </View>
+        <View style={styles.container}>
+                <View style={{ display: "flex", flexDirection: "row", alignItems: "center", padding: 24, borderBottomWidth: 1 }}>
+                    <TouchableOpacity onPress={backScreen}>
+                        <Image source={require('../../image/back.png')} style={{ width: 28, height: 28 }} />
+                    </TouchableOpacity>
+                    <Text style={{ fontSize: 18, marginLeft: 8 }}>
+                        Chat với Shop
+                    </Text>
+                </View>
                 <FlatList
                     data={dataAll}
                     renderItem={renderItem}
@@ -103,8 +103,9 @@ const ChatScreen = ({navigation}) => {
                         <Text style={styles.sendButtonText}>Gửi</Text>
                     </TouchableOpacity>
                 </View>
-            </View>
+        </View>
         </KeyboardAwareScrollView>
+
     );
 };
 
