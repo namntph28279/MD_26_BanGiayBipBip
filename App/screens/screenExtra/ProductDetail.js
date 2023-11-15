@@ -43,6 +43,7 @@ function ProductDetail({ route, navigation }) {
     const [isImageModalVisible, setImageModalVisible] = useState(false);
     const [selectedProducts, setSelectedProducts] = useState([]);
     const [productImageURL, setProductImageURL] = useState(null);
+    const [selectedColorData, setSelectedColorData] = useState(null);
 
     // const userId = '64ab9784b65d14d1076c3477';
 
@@ -230,6 +231,12 @@ function ProductDetail({ route, navigation }) {
 
     const selectColor = (color) => {
         setSelectedColor(color);
+        if (product && product.colors) {
+            const colorData = product.colors.find((c) => c.color_name === color);
+            setSelectedColorData(colorData);
+            fetchSizesForColor(colorData._id);
+        }
+        console.log(selectedColorData)
     };
 
     const selectSize = (size) => {
@@ -280,6 +287,7 @@ function ProductDetail({ route, navigation }) {
                     productPrice: product.product_price,
                     selectedColor: selectedColor,
                     selectedSize: selectedSize,
+                    selectedColorId :selectedColorData._id,
                     productImageURL: productImageURL,
                     productName: product.product_title,
                 };
@@ -368,7 +376,7 @@ function ProductDetail({ route, navigation }) {
                                     styles.optionButton,
                                     selectedSize === size && styles.selectedOptionSize,
                                 ]}
-                                onPress={() => setSelectedSize(size)}
+                                onPress={() => selectSize(size)}
                             >
                                 <Text>{size.size_name}</Text>
                             </TouchableOpacity>
