@@ -15,6 +15,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import { fetchDataAndSetToRedux } from "../../redux/AllData";
 import { useDispatch } from "react-redux";
+import url from "../../api/url";
 
 function User({ navigation }) {
   const [userData, setUserData] = useState(null);
@@ -113,13 +114,7 @@ function User({ navigation }) {
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.section}
-          onPress={async () => {
-            const email = await AsyncStorage.getItem("Email");
-            navigation.navigate("ChatScreen", {
-              userId: email,
-              userName: userData.fullname,
-            });
-          }}
+          onPress={ChatWithShop}
         >
           <Icon name="comment" size={20} color="green" />
           <Text style={styles.sectionText}>Chat Với Người Dùng</Text>
