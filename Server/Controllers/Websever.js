@@ -429,18 +429,23 @@ app.post('/checkClientUser', async (req, res) => {
 
 app.post('/checkClientMess', async (req, res) => {
     const data = req.body;
+    console.log(data)
+    console.log("start")
     if (data.user === null){
         return
     }
     try {
+
         const check = await checkClientMess.findOne({ user: data.user });
 
         if (check) {
             const clientUser = check.client.find((c) => c.IdClient === data.IdClient);
 
             if (clientUser) {
+
                 clientUser.status = data.status;
                 await check.save();
+                console.log(1)
                 return res.json({ message: "Cập nhật trạng thái thành công" });
             } else {
                 const updatedCheckClient = await checkClientMess.findOneAndUpdate(
