@@ -79,6 +79,7 @@
             padding: 8px;
             cursor: pointer;
         }
+
         .informationNew {
             align-items: center;
             display: flex;
@@ -174,27 +175,32 @@
 
         <div class="card-container flex m-7 space-x-6 ">
             <div class="card w-full" style="display: flex;flex-direction: row;padding: 8px">
-                <div class="box-chat" style="height: 555px">
-
-                </div>
-                <div id="checkData"  style="width: 80%">
-                   <div style=" background: #f3f4f6;
-  height: 500px;
+                <div class="box-chat" style=" height: 555px;
   margin: 7px;
   border-radius: 8px;
   padding: 8px;
   overflow: auto;">
-                       <div id="listConten" class="contenChat"
-                            style="display: flex;
+
+                </div>
+                <div id="checkData" style="width: 80%">
+                    <div style=" background: #f3f4f6;
+  height: 555px;
+  margin: 7px;
+  border-radius: 8px;
+  padding: 8px;
+  overflow: auto;">
+                        <div id="listConten" class="contenChat"
+                             style="display: flex;
   flex-direction: column;
   justify-content: flex-end;">
 
-                       </div>
-                   </div>
+                        </div>
+                    </div>
                     <form id="myForm" class="mb-3" style="margin: 0 14px;">
                         <div class="input-group">
                             <label class="form-control">
-                                <input id="myInput" style="width: 100%;outline: unset !important;" type="text" name="conTenMain"
+                                <input id="myInput" style="width: 100%;outline: unset !important;" type="text"
+                                       name="conTenMain"
                                        placeholder="Nhập nội dung">
                             </label>
                             <div class="input-group-append" style="margin-left: 8px;">
@@ -219,7 +225,7 @@
             const informationDiv = document.createElement('div');
 
             const nameDiv = document.createElement('div');
-            if (item.status === true){
+            if (item.status === true) {
                 informationDiv.classList.add('informationNew');
 
             }
@@ -238,7 +244,7 @@
         boxChatDiv.innerHTML = '';
         const checkDt = document.getElementById("checkData");
         if (dataChat !== undefined) {
-            checkDt.style.display="block"
+            checkDt.style.display = "block"
             dataChat.forEach(item => {
                 const informationDiv = document.createElement('div');
                 if (item.beLong === "user") {
@@ -253,8 +259,8 @@
 
             });
 
-        }else {
-            checkDt.style.display="none"
+        } else {
+            checkDt.style.display = "none"
         }
     }
 
@@ -311,12 +317,12 @@
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({user: idDataChat, conTenMain: value, beLong: "admin",status:false})
+                body: JSON.stringify({user: idDataChat, conTenMain: value, beLong: "admin", status: false})
             })
                     .then(response => response.json())
                     .then(data => {
                         document.getElementById("myInput").value = ""
-                        checkNottifi(idDataChat,value)
+                        checkNottifi(idDataChat, value)
                     })
                     .catch(error => {
                         console.error(error);
@@ -324,7 +330,7 @@
         });
     });
 
-    function checkNottifi(idDataChat,value){
+    function checkNottifi(idDataChat, value) {
         fetch('/sendNotificationClient', {
             method: 'POST',
             headers: {
@@ -334,12 +340,12 @@
         })
                 .then(response => response.json())
                 .then(data => {
-                    const  dataIdApp = data.client;
+                    const dataIdApp = data.client;
                     const filteredData = dataIdApp.filter(item => item.status === "true");
-               if (filteredData.length === 0){
-                   return
-               }
-                    checkNottifiMess(idDataChat,value)
+                    if (filteredData.length === 0) {
+                        return
+                    }
+                    checkNottifiMess(idDataChat, value)
 
                 })
                 .catch(error => {
@@ -348,7 +354,7 @@
 
     }
 
-    function checkNottifiMess(idDataChat,value){
+    function checkNottifiMess(idDataChat, value) {
         fetch('/sendNotificationMess', {
             method: 'POST',
             headers: {
@@ -358,13 +364,13 @@
         })
                 .then(response => response.json())
                 .then(data => {
-                    const  dataIdApp = data.client
+                    const dataIdApp = data.client
                     const filteredData = dataIdApp.filter(item => item.status === "false");
-                    if (filteredData.length === 0){
+                    if (filteredData.length === 0) {
                         return
                     }
                     const idClientArray = filteredData.map(item => item.IdClient);
-                    NotificaionClient(idClientArray,value)
+                    NotificaionClient(idClientArray, value)
 
                 })
                 .catch(error => {
@@ -373,7 +379,7 @@
 
     }
 
-    function NotificaionClient(id,mess){
+    function NotificaionClient(id, mess) {
         fetch('https://exp.host/--/api/v2/push/send', {
             mode: 'no-cors',
             method: 'POST',
@@ -398,7 +404,7 @@
         var reversedChildren = Array.from(children).reverse();
 
         container.innerHTML = "";
-        reversedChildren.forEach(function(child) {
+        reversedChildren.forEach(function (child) {
             container.appendChild(child);
         });
     }
