@@ -54,7 +54,7 @@ function User({ navigation }) {
   const handleLogout = async () => {
     const auth = getAuth();
     dispatch(fetchDataAndSetToRedux());
-    //  await url.post("/checkClientUser", {user: userID,IdClient:IDApp,status:false});
+       await url.post("/checkClientUser", {user: userID,IdClient:IDApp,status:false});
     navigation.navigate("Login");
     await AsyncStorage.setItem("Email", "");
     console.log("Đăng xuất thành công");
