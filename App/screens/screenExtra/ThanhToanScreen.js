@@ -94,14 +94,41 @@ const ThanhToanScreen = ({ route, navigation }) => {
         setIsCODSelected(true);
         setIsMomoSelected(false);
     };
+    const handleOrder = async () => {
+        try {
+            const products = selectedProducts.map(product => ({
+                product: product.productId,
+                quantity: product.quantity,
+                colorId: product.selectedColorId,
+                sizeId: product.selectedSize._id,
+            }));
 
-    const handleOrder = () => {
-        if (isMomoSelected) {
+            const orderData = {
+                user: userID || '',
+                customer_email: "damhientest@gmail.com" || '',
+                products: products || [],
+                address: shippingAddress._id || '',
+            };
 
-        } else if (isCODSelected) {
+            console.log('Order Data:', orderData);
+            const response = await fetch('https://md26bipbip-496b6598561d.herokuapp.com/order/addd', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify(orderData),
+                        });
 
+                        if (response.ok) {
+                            const result = await response.json();
+                            console.log('Đặt hàng thành công:', result);
+                        } else {
+                            console.error('Lỗi đặt hàng:', response.status, response.statusText);
+                        }
+
+        } catch (error) {
+            console.error('Error while placing the order:', error);
         }
-
     };
 
     return (
