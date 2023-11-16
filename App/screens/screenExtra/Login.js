@@ -48,11 +48,14 @@ const Login = ({ navigation }) => {
                 if (response.status === 200) {
                     const userData = await response.json();
                     const userID = userData._id;
+                    const Name = userData.username;
                     console.log(userID);
+                    console.log(userData);
                     if (userID) {
                         const username = userName.split('@')[0];
                         await AsyncStorage.setItem("Email", userID);
                         await AsyncStorage.setItem("Name",username);
+                        await AsyncStorage.setItem("Name1",Name);
                         const pushTokenData = await Notifications.getExpoPushTokenAsync();
                         await AsyncStorage.setItem("TokenApp", pushTokenData.data);
                         await url.post("/checkClientUser", {user: userID, IdClient: pushTokenData.data, status: true});

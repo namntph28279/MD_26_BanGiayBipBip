@@ -18,6 +18,7 @@ import AllShoes from './screens/screenExtra/AllShoes';
 import EditProfile from "./screens/screenExtra/EditProfile";
 import ScreenAddresst from "./screens/screenExtra/screenAddresst";
 import ThanhToanScreen from './screens/screenExtra/ThanhToanScreen';
+import InformationLine from './screens/screenExtra/InformationLine';
 import { Provider } from 'react-redux';
 import { store } from './redux/store';
 import {useEffect, useState} from "react";
@@ -92,6 +93,7 @@ export default function App() {
             <Stack.Screen name='ChatScreen' component={ChatScreen}  options={{ headerShown: false }} />
             <Stack.Screen name='ChangePassword' component={ChangePassword} options={{ title: 'Đổi Mật Khẩu' }} />
             <Stack.Screen name='Oder' component={Oder} options={{ title: 'Đơn mua' }} />
+            <Stack.Screen name='InformationLine' component={InformationLine} options={{ title: 'Thông tin đơn hàng' }} />
             <Stack.Screen name='EditProfile' component={EditProfile} options={{ title: 'Chỉnh sửa hồ sơ' }} />
             <Stack.Screen name='ScreenAddresst' component={ScreenAddresst} options={{ title: 'Thêm địa chỉ' }} />
             <Stack.Screen name="AllDiaChi" component={AllDiaChi} options={{ title: 'Địa chỉ' }}/>
