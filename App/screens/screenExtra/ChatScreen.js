@@ -75,7 +75,7 @@ const ChatScreen = ({ navigation }) => {
             keyboardShouldPersistTaps="handled"
         >
         <View style={styles.container}>
-                <View style={{ display: "flex", flexDirection: "row", alignItems: "center", padding: 24, borderBottomWidth: 1 }}>
+                <View style={{ display: "flex", flexDirection: "row", alignItems: "center", padding: 14,marginTop:17, borderBottomWidth: 1 }}>
                     <TouchableOpacity onPress={backScreen}>
                         <Image source={require('../../image/back.png')} style={{ width: 28, height: 28 }} />
                     </TouchableOpacity>
@@ -115,7 +115,6 @@ const styles = StyleSheet.create({
     },
     inputContainer: {
         marginTop: 10,
-        marginBottom: 30,
         flexDirection: 'row',
         alignItems: 'center',
         paddingHorizontal: 10,

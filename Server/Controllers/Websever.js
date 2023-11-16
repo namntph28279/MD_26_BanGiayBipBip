@@ -429,18 +429,23 @@ app.post('/checkClientUser', async (req, res) => {
 
 app.post('/checkClientMess', async (req, res) => {
     const data = req.body;
+    console.log(data)
+    console.log("start")
     if (data.user === null){
         return
     }
     try {
+
         const check = await checkClientMess.findOne({ user: data.user });
 
         if (check) {
             const clientUser = check.client.find((c) => c.IdClient === data.IdClient);
 
             if (clientUser) {
+
                 clientUser.status = data.status;
                 await check.save();
+                console.log(1)
                 return res.json({ message: "Cập nhật trạng thái thành công" });
             } else {
                 const updatedCheckClient = await checkClientMess.findOneAndUpdate(
@@ -466,6 +471,35 @@ app.post('/checkClientMess', async (req, res) => {
         return res.status(500).json({ error: "Lỗi xử lý yêu cầu" });
     }
 });
-
+app.get('/login', async (req, res) => {
+    try {
+        res.render('../Views/login.hbs', {});
+    } catch (error) {
+        console.log(error);
+    }
+});
+app.post('/login', async (req, res) => {
+    try {
+        const { username, password } = req.body;
+        const user = await User.findOne({ username });
+        console.log(username);
+        console.log(password);
+        if (!user) {
+            res.status(404).json({ message: 'Tài khoản không tồn tại' });
+        } else {
+            if (password !== user.password) {
+                res.status(401).json({ message: 'Sai mật khẩu' });
+            } else {
+                user.status = true;
+                await user.save();
+                res.json(user);
+                res.render('../Views/home.hbs', {});
+            }
+        }
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    } 
+    
+});
 
 module.exports = app;
