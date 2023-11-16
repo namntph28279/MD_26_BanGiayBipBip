@@ -107,7 +107,6 @@ const ThanhToanScreen = ({ route, navigation }) => {
     return (
         <View style={styles.container}>
             <TouchableOpacity style={styles.addressContainer} onPress={handleAddressPress}>
-                
                 <View>
                     <Text style={styles.addressLabel}>Địa chỉ nhận hàng:</Text>
                     <Text style={styles.addressText}>Tên: {shippingAddress.name}</Text>
