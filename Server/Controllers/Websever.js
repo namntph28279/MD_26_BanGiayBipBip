@@ -478,28 +478,62 @@ app.get('/login', async (req, res) => {
         console.log(error);
     }
 });
-app.post('/login', async (req, res) => {
-    try {
-        const { username, password } = req.body;
-        const user = await User.findOne({ username });
-        console.log(username);
-        console.log(password);
-        if (!user) {
-            res.status(404).json({ message: 'Tài khoản không tồn tại' });
-        } else {
-            if (password !== user.password) {
-                res.status(401).json({ message: 'Sai mật khẩu' });
-            } else {
-                user.status = true;
-                await user.save();
-                res.json(user);
-                res.render('../Views/home.hbs', {});
-            }
-        }
-    } catch (error) {
-        res.status(500).json({ message: error.message });
-    } 
-    
+app.post("/web/login", async (req, res) => {
+  try {
+    const { username, password } = req.body;
+    const user = await User.findOne({ username });
+    if (!user || user.role !== 2) {
+      const error = "Tài khoản không tồn tại";
+      res.redirect("/login");
+    } else {
+      if (password !== user.password) {
+        const error = "Sai mật khẩu";
+        res.redirect("/login");
+      } else {
+        user.status = true;
+        await user.save();
+        res.redirect("/home");
+      }
+    }
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+app.post("/web/register", async (req, res) => {
+  const { username, password, repassword, fullname } = req.body;
+
+  try {
+    const existingUser = await User.findOne({ username });
+
+    if (existingUser) {
+      const error = "Tài khoản đã tồn tại";
+      res.redirect("/login");
+    } else {
+      if (password != repassword) {
+        res.flash("Xác nhận mật khẩu mới không khớp");
+        const error = "Xác nhận mật khẩu mới không khớp";
+        res.redirect("/login");
+      }
+      const user = new User({
+        username,
+        password,
+        role: 2,
+      });
+      await user.save();
+      const newProfile = new Profile({
+        user: user._id,
+        fullname: fullname,
+        gender: "Nam",
+        avatar: "https://st.quantrimang.com/photos/image/072015/22/avatar.jpg",
+        birthday: "01-01-2000",
+      });
+      await newProfile.save();
+      //thông báo đăng ký thành công
+      res.redirect("/login");
+    }
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
+  }
 });
 
 module.exports = app;
