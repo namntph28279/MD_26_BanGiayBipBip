@@ -28,6 +28,7 @@ const AllDiaChi = ({ route, navigation }) => {
             setAddresses(data);
             if (data.length > 0 && !selectedAddress) {
                 setSelectedAddress(data[0]);
+                AsyncStorage.setItem('DefaultAddress', JSON.stringify(data[0]));
             }
         } catch (error) {
             console.error('Lỗi', error);
