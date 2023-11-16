@@ -44,6 +44,7 @@ function ProductDetail({ route, navigation }) {
     const [selectedProducts, setSelectedProducts] = useState([]);
     const [productImageURL, setProductImageURL] = useState(null);
     const [selectedColorData, setSelectedColorData] = useState(null);
+    const [selectedColorImage, setSelectedColorImage] = useState(null);
 
     // const userId = '64ab9784b65d14d1076c3477';
 
@@ -235,6 +236,8 @@ function ProductDetail({ route, navigation }) {
             const colorData = product.colors.find((c) => c.color_name === color);
             setSelectedColorData(colorData);
             fetchSizesForColor(colorData._id);
+            //ảnh
+            setSelectedColorImage(colorImages[color]);
         }
         console.log(selectedColorData)
     };
@@ -316,7 +319,11 @@ function ProductDetail({ route, navigation }) {
                     {/*)}*/}
                     {productImageURL && (
                         <TouchableOpacity onPress={openImageModal}>
-                            <Image source={{ uri: productImageURL }} style={styles.productImage} />
+                            {/*<Image source={{ uri: productImageURL }} style={styles.productImage} />*/}
+                            <Image
+                                source={{ uri: selectedColorImage || productImageURL }}
+                                style={styles.productImage}
+                            />
                         </TouchableOpacity>
                     )}
 
@@ -422,10 +429,14 @@ function ProductDetail({ route, navigation }) {
 
                         {product && (
                             <PinchGestureHandler onGestureEvent={handleZoom} onHandlerStateChange={handleZoomState}>
+                                {/*<Animated.Image*/}
+                                {/*    source={{ uri: product.product_image }}*/}
+                                {/*    style={[styles.productImage, { transform: [{ scale: zoom }] }]}*/}
+                                {/*        />*/}
                                 <Animated.Image
-                                    source={{ uri: product.product_image }}
+                                    source={{ uri: selectedColorImage || productImageURL }}
                                     style={[styles.productImage, { transform: [{ scale: zoom }] }]}
-                                        />
+                                />
                                         </PinchGestureHandler>
                         )}
                     </View>
