@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, ScrollView, Image, StyleSheet ,Modal,TouchableWithoutFeedback} from 'react-native';
 import { CheckBox } from "react-native-elements";
 import Icon from 'react-native-vector-icons/FontAwesome';
+import AsyncStorage from "@react-native-async-storage/async-storage";
 const ThanhToanScreen = ({ route, navigation }) => {
     const selectedProducts = route.params?.selectedProducts || [];
     const userID = route.params?.userID || '';
@@ -95,6 +96,7 @@ const ThanhToanScreen = ({ route, navigation }) => {
         setIsMomoSelected(false);
     };
     const handleOrder = async () => {
+        const name = await AsyncStorage.getItem('Name1');
         try {
             const products = selectedProducts.map(product => ({
                 product: product.productId,
@@ -105,7 +107,7 @@ const ThanhToanScreen = ({ route, navigation }) => {
 
             const orderData = {
                 user: userID || '',
-                customer_email: "damhientest@gmail.com" || '',
+                customer_email: name || '',
                 products: products || [],
                 address: shippingAddress._id || '',
             };
