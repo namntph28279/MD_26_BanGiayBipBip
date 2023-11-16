@@ -1,91 +1,173 @@
 import React, { Children, useEffect, useState } from 'react';
-import { Text, View, StyleSheet, Image, TouchableOpacity, ScrollView } from 'react-native';
+import { Text, View, StyleSheet, Image, TouchableOpacity, ScrollView, SafeAreaView, Dimensions, FlatList } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { getDatabase, ref, onValue, off, remove, push, set, child, orderByKey } from 'firebase/database';
 import { getAuth } from 'firebase/auth';
 import firebase from '../../config/FirebaseConfig';
+import { useNavigation } from '@react-navigation/native';
+import axios from 'axios';
 
 const Oder = ({ route }) => {
-    const [oderProductsList, setOderProductsList] = useState([]);
-    const auth = getAuth(firebase);
-    const database = getDatabase(firebase);
+    const [orderProductsList, setOrderProductsList] = useState([]);
+    const [status, setStatus] = useState('All');
+    // console.log('hiidfdfdf', orderProductsList)
+    const [data, setData] = useState([]);
+    const [loading, setLoading] = useState(true);
     const { userId } = route.params;
-    useEffect(() => {
+    // //List Sản phẩm trong hóa đơn
 
+
+    const fetchDataList = async () => {
+        try {
+            console.log('Fetching data...');
+            const response = await axios.get('https://md26bipbip-496b6598561d.herokuapp.com/order');
+            console.log('Response:', response);
+            const data = response.data;
+
+
+            const formattedData = data.map(order => ({
+                id: order._id,
+                status: order.status,
+                customerEmail: order.customer_email,
+                products: order.products.map(product => ({
+                    id: product._id,
+                    productId: product.product,
+                    quantity: product.quantity,
+                    colorId: product.colorId,
+                    sizeId: product.sizeId,
+                })),
+                addressId: order.address,
+                orderDate: order.order_date,
+            }));
+
+            console.log('Formatted data', formattedData);
+
+            setOrderProductsList(formattedData);
+            setDatalist(formattedData);
+            setLoading(false);
+
+        } catch (error) {
+            console.error('Error fetching data:', error);
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => {
         fetchDataList();
     }, []);
 
-    const countSelectedProducts = () => {
-        return oderProductsList.length;
+    const navigation = useNavigation();
+
+    const listTab = [
+        { status: 'Chờ xác nhận' },
+        { status: 'Chờ lấy hàng' },
+        { status: 'Chờ giao hàng' },
+        { status: 'Đã giao' },
+        { status: 'Đã hủy' },
+    ];
+
+    const renderItem = ({ item, index }) => {
+        return (
+            <TouchableOpacity
+                style={styles.frame}
+                onPress={() => {
+                    console.log('Product ID:', item.productId);
+                    navigation.navigate("InformationLine",
+                        { productId: item.product })
+                }}
+            >
+                <View key={index} style={styles.productBox}>
+                    {/* <Text>{`Order ID: ${item.id}`}</Text> */}
+                    {/* <Text>{`Status: ${item.status}`}</Text> */}
+                    <Text style={styles.itemName}>{`Email: ${item.customerEmail}`}</Text>
+                    {item.products.map(product => (
+                        <View key={product.id}>
+                            <Text >{`Product ID: ${product.productId}`}</Text>
+                            <Text>{`Quantity: ${product.quantity}`}</Text>
+                            <Text>{`Color ID: ${product.colorId}`}</Text>
+                            <Text>{`Size ID: ${product.sizeId}`}</Text>
+                        </View>
+                    ))}
+                    <Text>{`Address ID: ${item.addressId}`}</Text>
+                    <Text>{`Order Date: ${item.orderDate}`}</Text>
+                </View>
+            </TouchableOpacity>
+        );
     };
 
-    //List Sản phẩm trong hóa đơn
-    const fetchDataList = () => {
-        const oderRef = ref(database, `Order/${userId}`);
-        onValue(oderRef, (snapshot) => {
-            const data = snapshot.val();
-            if (data) {
-                const dataArray = [];
-                Object.keys(data).forEach((key) => {
-                    // Lấy dữ liệu từng nhánh con
-                    const childData = data[key];
 
-                    const variableArray = [];
 
-                    Object.keys(childData).forEach((variableKey) => {
-                        const variableValue = childData[variableKey];
+    const [datalist, setDatalist] = useState(orderProductsList);
 
-                        variableArray.push({ key: variableKey, value: variableValue });
-                    });
-                    // Thêm dữ liệu vào mảng
-                    dataArray.push({ key, variables: variableArray });
-                });
+    const setStatusFilter = status => {
+        let filteredData;
 
-                setOderProductsList(dataArray);
-
-            } else {
-                console.log('Không có dữ liệu');
-                
-            }
-        });
-        return () => {
-            off(oderRef);
-        };
-    }
-    const sumSelectedProductsPrice = (key) => {
-        let sum = 0;
-
-        oderProductsList.forEach((product) => {
-            if (key === product.key) {
-                product.variables.map((item) => {
-                    sum += item.value.price * item.value.quantity;
-
-                })
-            }
-        });
-        return sum;
+        if (status === 'Chờ xác nhận') {
+            // For 'Chờ giao hàng', show all items with status 'none'
+            filteredData = orderProductsList.filter(e => e.status === 1);
+        } else if (status === 'Chờ lấy hàng') {
+            // For other statuses, filter based on the selected status
+            filteredData = orderProductsList.filter(e => e.status === 2);
+        } else if (status === 'Chờ giao hàng') {
+            // For other statuses, filter based on the selected status
+            filteredData = orderProductsList.filter(e => e.status === 3);
+        } else if (status === 'Đã giao') {
+            // For other statuses, filter based on the selected status
+            filteredData = orderProductsList.filter(e => e.status === 4);
+        } else if (status === 'Đã hủy') {
+            // For other statuses, filter based on the selected status
+            filteredData = orderProductsList.filter(e => e.status === 5);
+        } else {
+            // For 'All', show all items
+            filteredData = orderProductsList;
+        }
+        console.log(`Filtered Data for ${status}:`, filteredData);
+        setDatalist(filteredData);
+        setStatus(status);
     };
 
-    const handleRemoveProduct = (productId) => {
-        const userId = auth.currentUser.uid;
-        const cartRef = ref(database, `Order/${userId}/${productId}`);
-
-        remove(cartRef)
-            .then(() => {
-                console.log('Đã xóa sản phẩm thành công');
-                setOderProductsList((prevItems) => prevItems.filter((item) => item.key !== productId));
-                alert('Đã xóa thành công đơn mua !');
-            })
-            .catch((error) => {
-                console.error('Lỗi xóa sản phẩm:', error);
-            });
-    };
     return (
         <View style={styles.container}>
-            <Text style={styles.title} >ĐƠN MUA</Text>
+            <SafeAreaView style={styles.container1}>
+                <ScrollView
+                    horizontal
+                    showsHorizontalScrollIndicator={false}
+                    contentContainerStyle={styles.scrollContainer}
+                >
+                    <View style={styles.listTab}>
+                        {listTab.map(e => (
+                            <TouchableOpacity
+                                key={e.status}
+                                style={[styles.btnTab, status === e.status && styles.btnTabActive]}
+                                onPress={() => {
+                                    console.log(`Clicked on ${e.status} tab`);
+                                    setStatusFilter(e.status);
+                                }}
+                            >
+                                <Text style={[styles.textTab, status === e.status && styles.textTabActive]}>
+                                    {e.status}
+                                </Text>
+                            </TouchableOpacity>
+                        ))}
+                    </View>
+                </ScrollView>
+                {loading ? (
+                    <Text>Loading...</Text>
+                ) : (
+                    <FlatList
+                        style={styles.list}
+                        data={datalist}
+                        keyExtractor={(item) => item.id.toString()}
+                        renderItem={renderItem}
+                    />
+                )}
+            </SafeAreaView>
             <View style={{ width: '100%', backgroundColor: 'black', height: 1 }} />
-            <View style={{ margin: 15 }}>
-                <Text style={{ fontSize: 16, fontWeight: 'bold' }}>Số Hóa đơn: {countSelectedProducts()}</Text>
+            {/* <View style={{ margin: 15 }}>
+                <Text style={{ fontSize: 16, fontWeight: 'bold' }}>Bạn có thể tham khảo: {countSelectedProducts()}</Text>
+            </View> */}
+            {/* <View style={{ margin: 15 }}>
+                <Text style={{ fontSize: 16, fontWeight: 'bold' }}>Bạn có thể tham khảo: {countSelectedProducts()}</Text>
             </View>
             <ScrollView style={{ paddingHorizontal: 16 }}>
                 {
@@ -128,7 +210,7 @@ const Oder = ({ route }) => {
                         </View>
                     ))
                 }
-            </ScrollView>
+            </ScrollView> */}
         </View>
     );
 }
@@ -137,6 +219,78 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
     },
+    container1: {
+        flex: 1,
+        paddingHorizontal: 10,
+        justifyContent: 'center',
+        height: '100%',
+    },
+    listTab: {
+
+        flexDirection: 'row',
+        alignSelf: 'center',
+        marginBottom: 20,
+    },
+
+    btnTab: {
+        width: Dimensions.get('window').width / 3.5,
+        flexDirection: 'row',
+        borderWidth: 0.5,
+        borderColor: '#EBEBEB',
+        padding: 10,
+        justifyContent: 'center',
+    },
+
+    textTab: {
+        fontSize: 16,
+    },
+
+    btnTabActive: {
+        backgroundColor: '#E6838D'
+    },
+
+    textTabActive: {
+        color: '#fff'
+    },
+
+    itemContainer: {
+        flexDirection: 'row',
+        paddingVertical: 10,
+    },
+
+    scrollContainer: {
+        // width: '1000%',
+        height: 100,
+    },
+
+    itemBody: {
+        flex: 1,
+        paddingHorizontal: 10,
+        justifyContent: 'center',
+    },
+    itemName: {
+        fontWeight: 'bold',
+        fontSize: 16,
+    },
+
+    itemLogo: {
+        padding: 10
+    },
+    itemImage: {
+        width: 50,
+        height: 50,
+    },
+
+    list: {
+        width: '100%',
+        height: '100%',
+    },
+
+    frame: {
+        marginRight: '3%',
+        marginLeft: '3%',
+    },
+
     title: {
         fontSize: 18,
         fontWeight: 'bold',
@@ -145,6 +299,22 @@ const styles = StyleSheet.create({
         marginBottom: 7
 
     },
+    button2: {
+        backgroundColor: '#444444',
+        paddingHorizontal: 10,
+        paddingVertical: 8,
+        borderRadius: 8,
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginLeft: 1,
+    },
+    title1: {
+        color: 'white',
+        fontSize: 16,
+    },
+    // itemEmail: {
+    //     width:'100%',
+    // },
 
     productContainer: {
         alignItems: 'center',
@@ -160,6 +330,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         padding: 8,
         width: '100%',
+        marginBottom: 10,
     },
     productBox1: {
         backgroundColor: 'white',
