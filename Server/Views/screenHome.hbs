@@ -55,18 +55,19 @@
 <body class="bg-gray-200">
 <div class="flex h-full">
     <!--Side Navbar-->
-    <div class="bg-indigo-900 w-1/6 ">
+    <div class="bg-indigo-900 w-1/6" style=" height: 876px;">
         <div class=" bg-indigo-800">
             <div class=" text-xl text-gray-200 uppercase font-bold" style="padding: 33px;">Shop BipBip</div>
         </div>
 
-        <a href="/home" class=" cursor-pointer mess ml-3 mt-3 w-10/12" style="border-bottom-width: 1px; text-decoration: none ">
-           <div class="flex" style=" padding: 12px;">
-               <div>
-                   <img class="w-5 h-5" src="dashboard.png" alt="">
-               </div>
-               <div class="mx-3 text-sm text-gray-100 ">Đơn Hàng</div>
-           </div>
+        <a href="/home" class=" cursor-pointer mess ml-3 mt-3 w-10/12"
+           style="border-bottom-width: 1px; text-decoration: none ">
+            <div class="flex" style=" padding: 12px;">
+                <div>
+                    <img class="w-5 h-5" src="dashboard.png" alt="">
+                </div>
+                <div class="mx-3 text-sm text-gray-100 ">Đơn Hàng</div>
+            </div>
         </a>
 
 
@@ -80,12 +81,12 @@
         </a>
 
         <a href="/warehouse" class="cursor-pointer mess ml-3 mt-3 w-10/12" style="text-decoration: none">
-          <div class="flex" style=" padding: 12px;">
-              <div>
-                  <img class="w-5 h-5" src="kho.svg" alt="">
-              </div>
-              <div class="mx-3 text-sm text-gray-100">Kho Hàng</div>
-          </div>
+            <div class="flex" style=" padding: 12px;">
+                <div>
+                    <img class="w-5 h-5" src="kho.svg" alt="">
+                </div>
+                <div class="mx-3 text-sm text-gray-100">Kho Hàng</div>
+            </div>
         </a>
     </div>
     <!--Side Navbar-->
@@ -102,7 +103,9 @@
                     <span class="block p-2">Admin</span>
                 </div>
                 <div class="right md:w-1/4 sm:w-2/3 flex  justify-content-end ">
+<!--
                     <img src="message.png" class="w-7 h-7 bg-gray-100 rounded-full p-1 mx-2 my-4 cursor-pointer" alt="">
+-->
                 </div>
             </div>
         </div>
@@ -110,105 +113,649 @@
 
         <div class="card-container flex m-7 space-x-6 ">
             <div class="card w-full">
-                <button type="button" class="btn btn-danger" onclick="NotificaionClient()">Test thông báo</button>
+
                 <div style=" display: flex; line-height: 48px;  margin: 0 14px; justify-content: space-between;">
-                  <div>
-                      <button class="btn-cf default-selected" style=" padding: 0 8px;" onclick="openOrder('confirm')">Chờ xác nhận</button>
-                      <button class="btn-cf" style=" padding: 0 8px;" onclick="openOrder('pickup')">Chờ lấy hàng</button>
-                      <button class="btn-cf" style=" padding: 0 8px;" onclick="openOrder('delivery')">Chờ giao hàng</button>
-                      <button class="btn-cf" style=" padding: 0 8px;" onclick="openOrder('delivered')">Đã giao</button>
-                      <button class="btn-cf" style=" padding: 0 8px;" onclick="openOrder('returns')">Trả hàng</button>
-                  </div>
-                    <button class="btn-cf" style=" padding: 0 8px;" onclick="openOrder('history')">Lịch sử</button>
+                    <div>
+                        <button class="btn-cf default-selected" style=" padding: 0 8px;" onclick="openOrder('confirm')">
+                            Chờ xác nhận
+                        </button>
+                        <button class="btn-cf" style=" padding: 0 8px;" onclick="openOrder('pickup')">Đang chuẩn bị
+                            hàng
+                        </button>
+                        <button class="btn-cf" style=" padding: 0 8px;" onclick="openOrder('delivered')">Đang giao
+                        </button>
+                        <button class="btn-cf" style=" padding: 0 8px;" onclick="openOrder('returns')">Yêu cầu hủy đơn
+                        </button>
+                    </div>
+                    <div>
+                        <button class="btn-cf" style=" padding: 0 8px;" onclick="openOrder('delivery')">Đã nhận</button>
+                        <button class="btn-cf" style=" padding: 0 8px;" onclick="openOrder('history')">Đã hủy</button>
+                    </div>
                 </div>
-                <div style="margin: 8px;color: #0008ff;display: flex;" >
+                <div style="margin: 8px;color: #0008ff;display: flex;">
                     <div>Đơn hàng</div>
                     <div id="selectedText"></div>
                 </div>
-                <div id="confirm" class=" status" style="padding: 0 8px;">
-                    <table class="table table-bordered ">
-                        <thead>
-                        <tr>
-                            <th style="text-align: center;width: 110px">STT</th>
-                            <th style="text-align: center;">Mã Đơn Hàng</th>
-                            <th style="text-align: center;width: 120px">Số lượng</th>
-                            <th style="text-align: center;width: 130px">Giá tiền</th>
-                            <th style="text-align: center;width: 130px">Chi tiết</th>
-                            <th style="text-align: center;width: 345px;">Thao tác</th>
-                        </tr>
-                        </thead>
-                    </table>
-                </div>
-                <div id="pickup" class=" status" style="display:none ;padding: 0 8px;">
-                    <table class="table table-bordered ">
-                        <thead>
-                        <tr>
-                            <th style="text-align: center;width: 110px">STT</th>
-                            <th style="text-align: center;">Mã Đơn Hàng</th>
-                            <th style="text-align: center;width: 120px">Số lượng</th>
-                            <th style="text-align: center;width: 130px">Giá tiền</th>
-                            <th style="text-align: center;width: 130px">Chi tiết</th>
-                            <th style="text-align: center;width: 345px;">Thao tác</th>
-                        </tr>
-                        </thead>
-                    </table>
-                </div>
-                <div id="delivery" class=" status" style="display:none ;padding: 0 8px;">
-                    <table class="table table-bordered ">
-                        <thead>
-                        <tr>
-                            <th style="text-align: center;width: 110px">STT</th>
-                            <th style="text-align: center;">Mã Đơn Hàng</th>
-                            <th style="text-align: center;width: 120px">Số lượng</th>
-                            <th style="text-align: center;width: 130px">Giá tiền</th>
-                            <th style="text-align: center;width: 130px">Chi tiết</th>
-                            <th style="text-align: center;width: 345px;">Thao tác</th>
-                        </tr>
-                        </thead>
-                    </table>
-                </div>
-                <div id="delivered" class=" status" style="display:none ;padding: 0 8px;">
-                    <table class="table table-bordered ">
-                        <thead>
-                        <tr>
-                            <th style="text-align: center;width: 110px">STT</th>
-                            <th style="text-align: center;">Mã Đơn Hàng</th>
-                            <th style="text-align: center;width: 120px">Số lượng</th>
-                            <th style="text-align: center;width: 130px">Giá tiền</th>
-                            <th style="text-align: center;width: 130px">Chi tiết</th>
-                            <th style="text-align: center;width: 345px;">Thao tác</th>
-                        </tr>
-                        </thead>
-                    </table>
-                </div>
-                <div id="returns" class=" status" style="display:none ;padding: 0 8px;">
-                    <table class="table table-bordered ">
-                        <thead>
-                        <tr>
-                            <th style="text-align: center;width: 110px">STT</th>
-                            <th style="text-align: center;">Mã Đơn Hàng</th>
-                            <th style="text-align: center;width: 120px">Số lượng</th>
-                            <th style="text-align: center;width: 130px">Giá tiền</th>
-                            <th style="text-align: center;width: 130px">Chi tiết</th>
-                            <th style="text-align: center;width: 345px;">Thao tác</th>
-                        </tr>
-                        </thead>
-                    </table>
-                </div>
-                <div id="history" class=" status" style="display:none ;padding: 0 8px;">
-                    <table class="table table-bordered ">
-                        <thead>
-                        <tr>
-                            <th style="text-align: center;width: 110px">STT</th>
-                            <th style="text-align: center;">Mã Đơn Hàng</th>
-                            <th style="text-align: center;width: 120px">Số lượng</th>
-                            <th style="text-align: center;width: 130px">Giá tiền</th>
-                            <th style="text-align: center;width: 130px">Chi tiết</th>
-                        </tr>
-                        </thead>
-                    </table>
-                </div>
 
+                <div style="height: 555px;
+                      margin: 7px;
+                      border-radius: 8px;
+                      padding: 8px;
+                      overflow: auto">
+                    <div id="confirm" class=" status" style="padding: 0 8px;">
+                        <table class="table table-bordered ">
+                            <thead>
+                            <tr>
+                                <th style="text-align: center;width: 110px">STT</th>
+                                <th style="text-align: center;">Mã Đơn Hàng</th>
+                                <th style="text-align: center;">Tài khoản đặt</th>
+                                <th style="text-align: center;width: 120px">Số lượng</th>
+                                <th style="text-align: center;width: 130px">Giá tiền</th>
+                                <th style="text-align: center;width: 150px">Chi tiết</th>
+                                <th style="text-align: center;width: 234px;">Thao tác</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {{#each confirm}}
+                                <tr>
+                                    <td>{{@index}}</td>
+                                    <td>{{this._id}}</td>
+                                    <td>{{this.customer_email}}</td>
+                                    <td>{{this.products.length}}</td>
+                                    <td>0</td>
+                                    <td>
+                                        <a href="#" class="btn btn-primary btn-sm" data-toggle="modal"
+                                           data-target="#detail{{this._id}}">Xem chi
+                                            tiết</a></td>
+                                    <td><a href="#" class="btn btn-success btn-sm" data-toggle="modal"
+                                           data-target="#succ{{this._id}}">Xác nhận</a>
+                                        <a href="#" class="btn btn-danger btn-sm" data-toggle="modal"
+                                           data-target="#delete{{this._id}}"
+                                           data-product-name="Tên sản phẩm">Hủy đơn</a></td>
+                                </tr>
+                                <div class="modal fade" id="detail{{this._id}}" tabindex="-1" role="dialog"
+                                     aria-labelledby="deleteProductModalLabel">
+                                    <div class="modal-dialog" role="document">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="deleteProductModalLabel">Thông tin đơn
+                                                    hàng</h5>
+                                                <button type="button" class="close" data-dismiss="modal"
+                                                        aria-label="Close">
+                                                    <span aria-hidden="true">&times;</span>
+                                                </button>
+                                            </div>
+
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Huỷ
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="modal fade" id="succ{{this._id}}" tabindex="-1" role="dialog"
+                                     aria-labelledby="addProductModalLabel" aria-hidden="true">
+                                    <div class="modal-dialog" role="document">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="addProductModalLabel">Xác nhận đơn</h5>
+                                                <button type="button" class="close" data-dismiss="modal"
+                                                        aria-label="Close">
+                                                    <span aria-hidden="true">&times;</span>
+                                                </button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <form id="addProductForm">
+
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="modal fade" id="delete{{this._id}}" tabindex="-1" role="dialog"
+                                     aria-labelledby="deleteProductModalLabel">
+                                    <div class="modal-dialog" role="document">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="deleteProductModalLabel">Huỷ đơn hàng</h5>
+                                                <button type="button" class="close" data-dismiss="modal"
+                                                        aria-label="Close">
+                                                    <span aria-hidden="true">&times;</span>
+                                                </button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <p>Bạn có chắc chắn muốn hủy đơn hàng của tài
+                                                    khoản: {{this.customer_email}}?</p>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-dismiss="modal">
+                                                    Thoát
+                                                </button>
+                                                <form action="/order/status/{{this._id}}" method="POST">
+                                                    <button type="submit" class="btn btn-danger">Hủy</button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            {{/each}}
+                            </tbody>
+
+                        </table>
+                    </div>
+                    <div id="pickup" class=" status" style="display:none ;padding: 0 8px;">
+                        <table class="table table-bordered ">
+                            <thead>
+                            <tr>
+                                <th style="text-align: center;width: 110px">STT</th>
+                                <th style="text-align: center;">Mã Đơn Hàng</th>
+                                <th style="text-align: center;">Tài khoản đặt</th>
+                                <th style="text-align: center;width: 120px">Số lượng</th>
+                                <th style="text-align: center;width: 130px">Giá tiền</th>
+                                <th style="text-align: center;width: 150px">Chi tiết</th>
+                                <th style="text-align: center;width: 234px;">Thao tác</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {{#each pickup}}
+                                <tr>
+                                    <td>{{@index}}</td>
+                                    <td>{{this._id}}</td>
+                                    <td>{{this.customer_email}}</td>
+                                    <td>{{this.products.length}}</td>
+                                    <td>0</td>
+                                    <td>
+                                        <a href="#" class="btn btn-primary btn-sm" data-toggle="modal"
+                                           data-target="#detail{{this._id}}">Xem chi
+                                            tiết</a></td>
+                                    <td><a href="#" class="btn btn-success btn-sm" data-toggle="modal"
+                                           data-target="#succ{{this._id}}">Xác nhận</a>
+                                        <a href="#" class="btn btn-danger btn-sm" data-toggle="modal"
+                                           data-target="#delete{{this._id}}"
+                                           data-product-name="Tên sản phẩm">Hủy đơn</a></td>
+                                </tr>
+                                <div class="modal fade" id="detail{{this._id}}" tabindex="-1" role="dialog"
+                                     aria-labelledby="deleteProductModalLabel">
+                                    <div class="modal-dialog" role="document">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="deleteProductModalLabel">Thông tin đơn
+                                                    hàng</h5>
+                                                <button type="button" class="close" data-dismiss="modal"
+                                                        aria-label="Close">
+                                                    <span aria-hidden="true">&times;</span>
+                                                </button>
+                                            </div>
+
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Huỷ
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="modal fade" id="succ{{this._id}}" tabindex="-1" role="dialog"
+                                     aria-labelledby="addProductModalLabel" aria-hidden="true">
+                                    <div class="modal-dialog" role="document">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="addProductModalLabel">Xác nhận đơn</h5>
+                                                <button type="button" class="close" data-dismiss="modal"
+                                                        aria-label="Close">
+                                                    <span aria-hidden="true">&times;</span>
+                                                </button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <form id="addProductForm">
+
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="modal fade" id="delete{{this._id}}" tabindex="-1" role="dialog"
+                                     aria-labelledby="deleteProductModalLabel">
+                                    <div class="modal-dialog" role="document">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="deleteProductModalLabel">Huỷ đơn hàng</h5>
+                                                <button type="button" class="close" data-dismiss="modal"
+                                                        aria-label="Close">
+                                                    <span aria-hidden="true">&times;</span>
+                                                </button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <p>Bạn có chắc chắn muốn hủy đơn hàng của tài
+                                                    khoản: {{this.customer_email}}?</p>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-dismiss="modal">
+                                                    Thoát
+                                                </button>
+                                                <form action="/order/status/{{this._id}}" method="POST">
+                                                    <button type="submit" class="btn btn-danger">Hủy</button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            {{/each}}
+                            </tbody>
+                        </table>
+                    </div>
+                    <div id="delivery" class=" status" style="display:none ;padding: 0 8px;">
+                        <table class="table table-bordered ">
+                            <thead>
+                            <tr>
+                                <th style="text-align: center;width: 110px">STT</th>
+                                <th style="text-align: center;">Mã Đơn Hàng</th>
+                                <th style="text-align: center;">Tài khoản đặt</th>
+                                <th style="text-align: center;width: 120px">Số lượng</th>
+                                <th style="text-align: center;width: 130px">Giá tiền</th>
+                                <th style="text-align: center;width: 150px">Chi tiết</th>
+                                <th style="text-align: center;width: 234px;">Thao tác</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {{#each delivery}}
+                                <tr>
+                                    <td>{{@index}}</td>
+                                    <td>{{this._id}}</td>
+                                    <td>{{this.customer_email}}</td>
+                                    <td>{{this.products.length}}</td>
+                                    <td>0</td>
+                                    <td>
+                                        <a href="#" class="btn btn-primary btn-sm" data-toggle="modal"
+                                           data-target="#detail{{this._id}}">Xem chi
+                                            tiết</a></td>
+                                    <td><a href="#" class="btn btn-success btn-sm" data-toggle="modal"
+                                           data-target="#succ{{this._id}}">Xác nhận</a>
+                                        <a href="#" class="btn btn-danger btn-sm" data-toggle="modal"
+                                           data-target="#delete{{this._id}}"
+                                           data-product-name="Tên sản phẩm">Hủy đơn</a></td>
+                                </tr>
+                                <div class="modal fade" id="detail{{this._id}}" tabindex="-1" role="dialog"
+                                     aria-labelledby="deleteProductModalLabel">
+                                    <div class="modal-dialog" role="document">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="deleteProductModalLabel">Thông tin đơn
+                                                    hàng</h5>
+                                                <button type="button" class="close" data-dismiss="modal"
+                                                        aria-label="Close">
+                                                    <span aria-hidden="true">&times;</span>
+                                                </button>
+                                            </div>
+
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Huỷ
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="modal fade" id="succ{{this._id}}" tabindex="-1" role="dialog"
+                                     aria-labelledby="addProductModalLabel" aria-hidden="true">
+                                    <div class="modal-dialog" role="document">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="addProductModalLabel">Xác nhận đơn</h5>
+                                                <button type="button" class="close" data-dismiss="modal"
+                                                        aria-label="Close">
+                                                    <span aria-hidden="true">&times;</span>
+                                                </button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <form id="addProductForm">
+
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="modal fade" id="delete{{this._id}}" tabindex="-1" role="dialog"
+                                     aria-labelledby="deleteProductModalLabel">
+                                    <div class="modal-dialog" role="document">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="deleteProductModalLabel">Huỷ đơn hàng</h5>
+                                                <button type="button" class="close" data-dismiss="modal"
+                                                        aria-label="Close">
+                                                    <span aria-hidden="true">&times;</span>
+                                                </button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <p>Bạn có chắc chắn muốn hủy đơn hàng của tài
+                                                    khoản: {{this.customer_email}}?</p>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-dismiss="modal">
+                                                    Thoát
+                                                </button>
+                                                <form action="/order/status/{{this._id}}" method="POST">
+                                                    <button type="submit" class="btn btn-danger">Hủy</button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            {{/each}}
+                            </tbody>
+                        </table>
+                    </div>
+                    <div id="delivered" class=" status" style="display:none ;padding: 0 8px;">
+                        <table class="table table-bordered ">
+                            <thead>
+                            <tr>
+                                <th style="text-align: center;width: 110px">STT</th>
+                                <th style="text-align: center;">Mã Đơn Hàng</th>
+                                <th style="text-align: center;">Tài khoản đặt</th>
+                                <th style="text-align: center;width: 120px">Số lượng</th>
+                                <th style="text-align: center;width: 130px">Giá tiền</th>
+                                <th style="text-align: center;width: 150px">Chi tiết</th>
+                                <th style="text-align: center;width: 234px;">Thao tác</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {{#each delivered}}
+                                <tr>
+                                    <td>{{@index}}</td>
+                                    <td>{{this._id}}</td>
+                                    <td>{{this.customer_email}}</td>
+                                    <td>{{this.products.length}}</td>
+                                    <td>0</td>
+                                    <td>
+                                        <a href="#" class="btn btn-primary btn-sm" data-toggle="modal"
+                                           data-target="#detail{{this._id}}">Xem chi
+                                            tiết</a></td>
+                                    <td><a href="#" class="btn btn-success btn-sm" data-toggle="modal"
+                                           data-target="#succ{{this._id}}">Xác nhận</a>
+                                        <a href="#" class="btn btn-danger btn-sm" data-toggle="modal"
+                                           data-target="#delete{{this._id}}"
+                                           data-product-name="Tên sản phẩm">Hủy đơn</a></td>
+                                </tr>
+                                <div class="modal fade" id="detail{{this._id}}" tabindex="-1" role="dialog"
+                                     aria-labelledby="deleteProductModalLabel">
+                                    <div class="modal-dialog" role="document">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="deleteProductModalLabel">Thông tin đơn
+                                                    hàng</h5>
+                                                <button type="button" class="close" data-dismiss="modal"
+                                                        aria-label="Close">
+                                                    <span aria-hidden="true">&times;</span>
+                                                </button>
+                                            </div>
+
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Huỷ
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="modal fade" id="succ{{this._id}}" tabindex="-1" role="dialog"
+                                     aria-labelledby="addProductModalLabel" aria-hidden="true">
+                                    <div class="modal-dialog" role="document">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="addProductModalLabel">Xác nhận đơn</h5>
+                                                <button type="button" class="close" data-dismiss="modal"
+                                                        aria-label="Close">
+                                                    <span aria-hidden="true">&times;</span>
+                                                </button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <form id="addProductForm">
+
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="modal fade" id="delete{{this._id}}" tabindex="-1" role="dialog"
+                                     aria-labelledby="deleteProductModalLabel">
+                                    <div class="modal-dialog" role="document">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="deleteProductModalLabel">Huỷ đơn hàng</h5>
+                                                <button type="button" class="close" data-dismiss="modal"
+                                                        aria-label="Close">
+                                                    <span aria-hidden="true">&times;</span>
+                                                </button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <p>Bạn có chắc chắn muốn hủy đơn hàng của tài
+                                                    khoản: {{this.customer_email}}?</p>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-dismiss="modal">
+                                                    Thoát
+                                                </button>
+                                                <form action="/order/status/{{this._id}}" method="POST">
+                                                    <button type="submit" class="btn btn-danger">Hủy</button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            {{/each}}
+                            </tbody>
+                        </table>
+                    </div>
+                    <div id="returns" class=" status" style="display:none ;padding: 0 8px;">
+                        <table class="table table-bordered ">
+                            <thead>
+                            <tr>
+                                <th style="text-align: center;width: 110px">STT</th>
+                                <th style="text-align: center;">Mã Đơn Hàng</th>
+                                <th style="text-align: center;">Tài khoản đặt</th>
+                                <th style="text-align: center;width: 120px">Số lượng</th>
+                                <th style="text-align: center;width: 130px">Giá tiền</th>
+                                <th style="text-align: center;width: 150px">Chi tiết</th>
+                                <th style="text-align: center;width: 234px;">Thao tác</th>
+
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {{#each returns}}
+                                <tr>
+                                    <td>{{@index}}</td>
+                                    <td>{{this._id}}</td>
+                                    <td>{{this.customer_email}}</td>
+                                    <td>{{this.products.length}}</td>
+                                    <td>0</td>
+                                    <td>
+                                        <a href="#" class="btn btn-primary btn-sm" data-toggle="modal"
+                                           data-target="#detail{{this._id}}">Xem chi
+                                            tiết</a>
+                                    </td>
+
+                                    <td>
+                                        <a href="#" class="btn btn-success btn-sm" data-toggle="modal"
+                                           data-target="#succ{{this._id}}">Xác nhận</a>
+                                        <a href="#" class="btn btn-danger btn-sm" data-toggle="modal"
+                                           data-target="#delete{{this._id}}"
+                                           data-product-name="Tên sản phẩm">Hủy đơn</a>
+                                    </td>
+                                </tr>
+                                <div class="modal fade" id="detail{{this._id}}" tabindex="-1" role="dialog"
+                                     aria-labelledby="deleteProductModalLabel">
+                                    <div class="modal-dialog" role="document">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="deleteProductModalLabel">Thông tin đơn
+                                                    hàng</h5>
+                                                <button type="button" class="close" data-dismiss="modal"
+                                                        aria-label="Close">
+                                                    <span aria-hidden="true">&times;</span>
+                                                </button>
+                                            </div>
+
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Huỷ
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="modal fade" id="succ{{this._id}}" tabindex="-1" role="dialog"
+                                     aria-labelledby="addProductModalLabel" aria-hidden="true">
+                                    <div class="modal-dialog" role="document">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="addProductModalLabel">Xác nhận đơn</h5>
+                                                <button type="button" class="close" data-dismiss="modal"
+                                                        aria-label="Close">
+                                                    <span aria-hidden="true">&times;</span>
+                                                </button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <form id="addProductForm">
+
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="modal fade" id="delete{{this._id}}" tabindex="-1" role="dialog"
+                                     aria-labelledby="deleteProductModalLabel">
+                                    <div class="modal-dialog" role="document">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="deleteProductModalLabel">Huỷ đơn hàng</h5>
+                                                <button type="button" class="close" data-dismiss="modal"
+                                                        aria-label="Close">
+                                                    <span aria-hidden="true">&times;</span>
+                                                </button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <p>Bạn có chắc chắn muốn hủy đơn hàng của tài
+                                                    khoản: {{this.customer_email}}?</p>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-dismiss="modal">
+                                                    Thoát
+                                                </button>
+                                                <form action="/order/status/{{this._id}}" method="POST">
+                                                    <button type="submit" class="btn btn-danger">Hủy</button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            {{/each}}
+                            </tbody>
+                        </table>
+                    </div>
+                    <div id="history" class=" status" style="display:none ;padding: 0 8px;">
+                        <table class="table table-bordered ">
+                            <thead>
+                            <tr>
+                                <th style="text-align: center;width: 110px">STT</th>
+                                <th style="text-align: center;">Mã Đơn Hàng</th>
+                                <th style="text-align: center;">Tài khoản đặt</th>
+                                <th style="text-align: center;width: 120px">Số lượng</th>
+                                <th style="text-align: center;width: 130px">Giá tiền</th>
+                                <th style="text-align: center;width: 150px">Chi tiết</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {{#each history}}
+                                <tr>
+                                    <td>{{@index}}</td>
+                                    <td>{{this._id}}</td>
+                                    <td>{{this.customer_email}}</td>
+                                    <td>{{this.products.length}}</td>
+                                    <td>0</td>
+                                    <td>
+                                        <a href="#" class="btn btn-primary btn-sm" data-toggle="modal"
+                                           data-target="#detail{{this._id}}">Xem chi
+                                            tiết</a>
+                                    </td>
+                                </tr>
+                                <div class="modal fade" id="detail{{this._id}}" tabindex="-1" role="dialog"
+                                     aria-labelledby="deleteProductModalLabel">
+                                    <div class="modal-dialog" role="document">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="deleteProductModalLabel">Thông tin đơn
+                                                    hàng</h5>
+                                                <button type="button" class="close" data-dismiss="modal"
+                                                        aria-label="Close">
+                                                    <span aria-hidden="true">&times;</span>
+                                                </button>
+                                            </div>
+
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Huỷ
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="modal fade" id="succ{{this._id}}" tabindex="-1" role="dialog"
+                                     aria-labelledby="addProductModalLabel" aria-hidden="true">
+                                    <div class="modal-dialog" role="document">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="addProductModalLabel">Xác nhận đơn</h5>
+                                                <button type="button" class="close" data-dismiss="modal"
+                                                        aria-label="Close">
+                                                    <span aria-hidden="true">&times;</span>
+                                                </button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <form id="addProductForm">
+
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="modal fade" id="delete{{this._id}}" tabindex="-1" role="dialog"
+                                     aria-labelledby="deleteProductModalLabel">
+                                    <div class="modal-dialog" role="document">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="deleteProductModalLabel">Huỷ đơn hàng</h5>
+                                                <button type="button" class="close" data-dismiss="modal"
+                                                        aria-label="Close">
+                                                    <span aria-hidden="true">&times;</span>
+                                                </button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <p>Bạn có chắc chắn muốn hủy đơn hàng của tài
+                                                    khoản: {{this.customer_email}}?</p>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-dismiss="modal">
+                                                    Thoát
+                                                </button>
+                                                <form action="/order/status/{{this._id}}" method="POST">
+                                                    <button type="submit" class="btn btn-danger">Hủy</button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            {{/each}}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
 
 
@@ -220,12 +767,12 @@
 <script>
     let selectedCity = null;
     let addedTexts = [];
-    window.onload = function() {
+    window.onload = function () {
         const defaultButton = document.querySelector('.btn-cf.default-selected');
         defaultButton.click();
     };
 
-    function NotificaionClient(){
+    function NotificaionClient() {
         console.log("ok")
         fetch('https://exp.host/--/api/v2/push/send', {
             mode: 'no-cors',
@@ -240,6 +787,7 @@
             })
         });
     }
+
     function openOrder(orderName) {
         let i;
         const x = document.getElementsByClassName("status");
@@ -248,19 +796,19 @@
         console.log(buttonText)
         if (!addedTexts.includes(orderName)) {
             selectedCity = orderName
-            addedTexts= orderName
+            addedTexts = orderName
             console.log("Đã chọn: " + orderName);
             console.log(addedTexts)
             const selectedText = document.getElementById("selectedText");
             selectedText.textContent = "  > " + buttonText.innerText;
         }
         for (i = 0; i < buttons.length; i++) {
-             buttons[i].style.background="white";
+            buttons[i].style.background = "white";
         }
         for (i = 0; i < x.length; i++) {
             x[i].style.display = "none";
         }
-        buttonText.style.background="rgba(229, 231, 235, 255)"
+        buttonText.style.background = "rgba(229, 231, 235, 255)"
         document.getElementById(orderName).style.display = "block";
     }
 </script>

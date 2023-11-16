@@ -5,13 +5,13 @@ const ChatShop = require('../Models/chatShop');
 const checkClient = require('../Models/CheckClientUser');
 const checkClientMess = require('../Models/CheckClientMess');
 const User = require('../Models/User');
-
 const express = require('express');
 const app = express();
 const expressHbs = require('express-handlebars');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const currencyFormatter = require('currency-formatter');
+const Order = require("../Models/Order");
 
 app.set('Views', __dirname + '/views');
 
@@ -35,15 +35,24 @@ app.set('view engine', '.hbs');
 
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(bodyParser.json());
-
-const ObjectId = mongoose.Types.ObjectId;
-
 app.use(express.json());
 //màn hình home
 app.get('/home', async (req, res) => {
     try {
-        const products = await Product.find().lean();
-        res.render('../Views/screenHome.hbs');
+        const confirm = await Order.find({status:"none"});
+        const pickup = await Order.find({status:2});
+        const delivered = await Order.find({status:3});
+        const returns = await Order.find({status:4});
+        const history = await Order.find({status:5});
+        const delivery = await Order.find({status:6});
+        res.render('../Views/screenHome.hbs',{
+            confirm: confirm,
+                pickup: pickup,
+                delivery: delivery,
+                delivered: delivered,
+                returns: returns,
+                history: history
+        });
     } catch (error) {
         res.status(500).json({message: error.message});
     }
@@ -65,28 +74,37 @@ app.get('/warehouse', async (req, res) => {
     }
 });
 
-app.get('/screen_order', async (req, res) => {
-    try {
 
-        res.render('../Views/order.hbs');
-    } catch (error) {
-        res.status(500).json({message: error.message});
-    }
-});
 
-app.post('/home/search', async (req, res) => {
+app.post('/screenWarehouse/search', async (req, res) => {
     const {title} = req.body;
     try {
         const searchString = String(title);
 
         const products = await Product.find({product_title: {$regex: searchString, $options: 'i'}}).lean();
-        res.render('../Views/home.hbs', {products});
+        res.render('../Views/screenWarehouse.hbs', {products});
+
     } catch (error) {
 
         res.status(500).json({message: error.message});
     }
 });
+app.post('/order/status/:orderId', async (req, res) => {
+    const orderId = req.params.orderId;
+    console.log(orderId)
+    try {
+        const order = await Order.findById(orderId);
 
+        if (!order) {
+            return res.status(404).json({ message: 'Đơn hàng không tồn tại' });
+        }
+        order.status = 5;
+        await order.save();
+        res.redirect('/home')
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
 app.post('/home/add', async (req, res) => {
     const {product_title, product_price, product_image, product_quantity, product_category} = req.body;
 
