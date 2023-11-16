@@ -1,161 +1,8 @@
-// import React, { useState, useEffect } from 'react';
-// import { View, Text, TouchableOpacity, ScrollView, Image, StyleSheet } from 'react-native';
-//
-// const ThanhToanScreen = ({ route, navigation }) => {
-//     const userID = route.params?.userID || '';
-//     const [totalAmount, setTotalAmount] = useState(0);
-//     const [paymentMethod, setPaymentMethod] = useState('');
-//     const [shippingAddress, setShippingAddress] = useState('');
-//
-//     const productList = [
-//         { id: 1, name: 'Sản phẩm A', quantity: 2, price: 20, image: require('../../image/logo.png') },
-//         { id: 2, name: 'Sản phẩm B', quantity: 1, price: 30, image: require('../../image/logo.png') },
-//     ];
-//     useEffect(() => {
-//         if (!userID) {
-//             console.log('Không có user ID.', userID);
-//             return;
-//         }
-//     }, [userID]);
-//     useEffect(() => {
-//         calculateTotalAmount();
-//         if (route.params?.selectedAddress) {
-//             const selected = route.params.selectedAddress;
-//             setShippingAddress(selected);
-//         }
-//     }, [route.params?.selectedAddress]);
-//
-//     const handleOrder = () => {
-//     };
-//
-//     const calculateTotalAmount = () => {
-//         let total = 0;
-//         productList.forEach((product) => {
-//             total += product.quantity * product.price;
-//         });
-//         setTotalAmount(total);
-//     };
-//
-//     const renderProductItem = (product) => (
-//         <View key={product.id} style={styles.productItem}>
-//             <Image source={product.image} style={styles.productImage} />
-//             <View style={styles.productDetails}>
-//                 <Text>{product.name}</Text>
-//                 <Text>Số lượng: {product.quantity}</Text>
-//                 <Text>Giá: {product.price} VNĐ</Text>
-//             </View>
-//         </View>
-//     );
-//
-//     const handleAddressPress = () => {
-//         navigation.navigate('AllDiaChi', { userID, fromThanhToan: true });
-//     };
-//
-//     return (
-//         <View style={styles.container}>
-//             <ScrollView style={styles.scrollContainer}>
-//                 <TouchableOpacity style={styles.addressContainer} onPress={handleAddressPress}>
-//                     <Text style={styles.addressLabel}>Địa chỉ nhận hàng:</Text>
-//                     <Text style={styles.addressText}>Tên: {shippingAddress.name}</Text>
-//                     <Text style={styles.addressText}>Số điện thoại: {shippingAddress.phone}</Text>
-//                     <Text style={styles.addressText}>Địa chỉ: {shippingAddress.label}: {shippingAddress.address}</Text>
-//                 </TouchableOpacity>
-//                 {productList.map(renderProductItem)}
-//                 <View style={styles.paymentMethodContainer}>
-//                     <Text style={styles.inputLabel}>Phương thức thanh toán:</Text>
-//                     <Text>{paymentMethod}</Text>
-//                 </View>
-//             </ScrollView>
-//             <View style={styles.bottomContainer}>
-//                 <View style={styles.totalAmountContainer}>
-//                     <Text style={styles.totalAmountText}>Tổng giá: {totalAmount} VNĐ</Text>
-//                 </View>
-//                 <TouchableOpacity style={styles.orderButton} onPress={handleOrder}>
-//                     <Text style={styles.orderButtonText}>Đặt hàng</Text>
-//                 </TouchableOpacity>
-//             </View>
-//         </View>
-//     );
-//
-//
-// };
-//
-// const styles = StyleSheet.create({
-//     container: {
-//         flex: 1,
-//     },
-//     scrollContainer: {
-//         flex: 1,
-//         padding: 16,
-//     },
-//     productItem: {
-//         flexDirection: 'row',
-//         alignItems: 'center',
-//         marginBottom: 16,
-//         borderBottomWidth: 1,
-//         borderBottomColor: '#ddd',
-//         paddingBottom: 16,
-//     },
-//     productImage: {
-//         width: 80,
-//         height: 80,
-//         marginRight: 16,
-//     },
-//     productDetails: {
-//         flex: 1,
-//     },
-//     inputLabel: {
-//         fontSize: 16,
-//         marginTop: 16,
-//         marginBottom: 8,
-//     },
-//     addressContainer: {
-//         marginBottom: 16,
-//     },
-//     addressLabel: {
-//         fontSize: 16,
-//         fontWeight: 'bold',
-//         marginBottom: 8,
-//     },
-//     addressText: {
-//         marginBottom: 8,
-//     },
-//     paymentMethodContainer: {
-//         marginBottom: 16,
-//     },
-//     bottomContainer: {
-//         flexDirection: 'row',
-//         justifyContent: 'space-between',
-//         alignItems: 'center',
-//         padding: 16,
-//         borderTopWidth: 1,
-//         borderTopColor: '#ddd',
-//     },
-//     totalAmountContainer: {
-//         alignItems: 'flex-start',
-//     },
-//     totalAmountText: {
-//         fontSize: 18,
-//         fontWeight: 'bold',
-//         marginBottom: 8,
-//     },
-//     orderButton: {
-//         backgroundColor: '#f39c12',
-//         paddingVertical: 10,
-//         paddingHorizontal: 20,
-//         borderRadius: 5,
-//     },
-//     orderButtonText: {
-//         color: '#ffffff',
-//         fontWeight: 'bold',
-//     },
-// });
-//
-// export default ThanhToanScreen;
 import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, ScrollView, Image, StyleSheet ,Modal,TouchableWithoutFeedback} from 'react-native';
 import { CheckBox } from "react-native-elements";
 import Icon from 'react-native-vector-icons/FontAwesome';
+import AsyncStorage from "@react-native-async-storage/async-storage";
 const ThanhToanScreen = ({ route, navigation }) => {
     const selectedProducts = route.params?.selectedProducts || [];
     const userID = route.params?.userID || '';
@@ -248,26 +95,55 @@ const ThanhToanScreen = ({ route, navigation }) => {
         setIsCODSelected(true);
         setIsMomoSelected(false);
     };
+    const handleOrder = async () => {
+        const name = await AsyncStorage.getItem('Name1');
+        try {
+            const products = selectedProducts.map(product => ({
+                product: product.productId,
+                quantity: product.quantity,
+                colorId: product.selectedColorId,
+                sizeId: product.selectedSize._id,
+            }));
 
-    const handleOrder = () => {
-        if (isMomoSelected) {
+            const orderData = {
+                user: userID || '',
+                customer_email: name || '',
+                products: products || [],
+                address: shippingAddress._id || '',
+            };
 
-        } else if (isCODSelected) {
+            console.log('Order Data:', orderData);
+            const response = await fetch('https://md26bipbip-496b6598561d.herokuapp.com/order/addd', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify(orderData),
+                        });
 
+                        if (response.ok) {
+                            const result = await response.json();
+                            console.log('Đặt hàng thành công:', result);
+                        } else {
+                            console.error('Lỗi đặt hàng:', response.status, response.statusText);
+                        }
+
+        } catch (error) {
+            console.error('Error while placing the order:', error);
         }
-
     };
 
     return (
         <View style={styles.container}>
             <TouchableOpacity style={styles.addressContainer} onPress={handleAddressPress}>
-                <Icon name="globe" size={100} color="#1abc9c" />
+                
                 <View>
                     <Text style={styles.addressLabel}>Địa chỉ nhận hàng:</Text>
                     <Text style={styles.addressText}>Tên: {shippingAddress.name}</Text>
                     <Text style={styles.addressText}>Số điện thoại: {shippingAddress.phone}</Text>
                     <Text style={styles.addressText}>Địa chỉ: {shippingAddress.label}: {shippingAddress.address}</Text>
                 </View>
+                <Icon name="globe" size={100} color="#1abc9c" />
             </TouchableOpacity>
             <ScrollView style={styles.scrollContainer}>
                 {selectedProducts.map(renderProductItem)}
@@ -341,11 +217,11 @@ const ThanhToanScreen = ({ route, navigation }) => {
                         <View style={styles.modalContent}>
                             <Text style={styles.modalTitle}>Chọn phương thức thanh toán</Text>
                             <TouchableOpacity onPress={handleMomoCheckboxChange} style={styles.paymentIcon}>
-                                <Icon name={isMomoSelected ? 'check-circle' : 'circle'} size={30} color="#000" />
+                                <Icon name={isMomoSelected ? 'check-circle' : 'circle'} size={30} color="#000" width={40} />
                                 <Text style={styles.paymentText}>Ví MoMo</Text>
                             </TouchableOpacity>
                             <TouchableOpacity onPress={handleCODCheckboxChange} style={styles.paymentIcon}>
-                                <Icon name={isCODSelected ? 'check-circle' : 'circle'} size={30} color="#000" />
+                                <Icon name={isCODSelected ? 'check-circle' : 'circle'} size={30} color="#000" width={40}/>
                                 <Text style={styles.paymentText}>Thanh Toán Khi Nhận Hàng</Text>
                             </TouchableOpacity>
                             <TouchableOpacity onPress={handlePaymentModalClose} style={styles.modalCloseButton}>
@@ -465,7 +341,6 @@ const styles = StyleSheet.create({
     modalContainer: {
         flex: 1,
         justifyContent: 'flex-end',
-        alignItems: 'center',
         backgroundColor: 'rgba(0, 0, 0, 0.5)',
     },
     modalTitle: {
@@ -499,12 +374,12 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
     },
     paymentIcon: {
-        flexDirection: 'column',
-        alignItems: 'center',
+        flexDirection: 'row',
     },
     paymentText: {
         marginTop: 10,
         fontSize: 16,
+        width: 200
     },
     modalCloseButton: {
         marginTop: 20,

@@ -9,11 +9,26 @@ import NotLoginUser from "./screens/screenExtra/NotLoginUser";
 import {useEffect, useState} from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useIsFocused } from "@react-navigation/native";
+import * as Notifications from "expo-notifications";
+import {Alert, Platform} from "react-native";
+import url from "./api/url";
+
+Notifications.setNotificationHandler({
+    handleNotification: async () => {
+        return {
+            shouldPlaySound: false,
+            shouldSetBadge: false,
+            shouldShowAlert: true,
+        };
+    },
+});
 
 const Tab = createBottomTabNavigator();
 
 const TabNavi = () => {
     const [userID,setUserID] = useState("");
+
+
     useEffect(() => {
         getUserId();
     }, [useIsFocused(),userID]);
@@ -21,7 +36,6 @@ const TabNavi = () => {
         const user = await AsyncStorage.getItem("Email");
         setUserID(user);
     }
-
     return (
         <Tab.Navigator
             initialRouteName={"Home"}
