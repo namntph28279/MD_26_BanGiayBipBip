@@ -41,8 +41,12 @@ const orderSchema = new mongoose.Schema({
     default: Date.now
   },
   status: {
-    type: String,
-    default: "none"
+    type: Number,
+    default: 0
+  },
+  total_amount: {
+    type: Number,
+    default: 0
   }
 });
 
