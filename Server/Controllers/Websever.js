@@ -39,19 +39,19 @@ app.use(express.json());
 //màn hình home
 app.get('/home', async (req, res) => {
     try {
-        const confirm = await Order.find({status:"none"});
-        const pickup = await Order.find({status:2});
-        const delivered = await Order.find({status:3});
-        const returns = await Order.find({status:4});
-        const history = await Order.find({status:5});
-        const delivery = await Order.find({status:6});
-        res.render('../Views/screenHome.hbs',{
+        const confirm = await Order.find({status: 0});//chờ xác nhận
+        const pickup = await Order.find({status: 1});//đang chuẩn bị
+        const delivered = await Order.find({status: 2});//đang giao
+        const returns = await Order.find({status: 3});//yêu cầu  hủy đơn
+        const history = await Order.find({status: 4});//đã hủy
+        const delivery = await Order.find({status: 5});//đã nhận
+        res.render('../Views/screenHome.hbs', {
             confirm: confirm,
-                pickup: pickup,
-                delivery: delivery,
-                delivered: delivered,
-                returns: returns,
-                history: history
+            pickup: pickup,
+            delivery: delivery,
+            delivered: delivered,
+            returns: returns,
+            history: history
         });
     } catch (error) {
         res.status(500).json({message: error.message});
@@ -75,7 +75,6 @@ app.get('/warehouse', async (req, res) => {
 });
 
 
-
 app.post('/screenWarehouse/search', async (req, res) => {
     const {title} = req.body;
     try {
@@ -94,17 +93,51 @@ app.post('/order/status/:orderId', async (req, res) => {
     console.log(orderId)
     try {
         const order = await Order.findById(orderId);
-
         if (!order) {
-            return res.status(404).json({ message: 'Đơn hàng không tồn tại' });
+            return res.status(404).json({message: 'Đơn hàng không tồn tại'});
         }
-        order.status = 5;
+        order.status = 4;
         await order.save();
         res.redirect('/home')
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        res.status(500).json({message: error.message});
     }
 });
+
+
+app.post('/order/status/Comfig/:id', async (req, res) => {
+    const orderId = req.params.id;
+    console.log(orderId)
+    try {
+                const order = await Order.findById(orderId);
+                console.log(order)
+                if (!order) {
+                    return res.status(404).json({message: 'Đơn hàng không tồn tại'});
+                }
+                if (order.status === 0) {
+                    order.status = 1;
+                    await order.save();
+                    res.redirect('/home')
+                } else if (order.status === 1) {
+                    order.status = 2;
+                    await order.save();
+                    res.redirect('/home')
+                } else if (order.status === 2) {
+                    order.status = 3;
+                    await order.save();
+                    res.redirect('/home')
+                } else {
+                    order.status = 4;
+                    await order.save();
+            res.redirect('/home')
+        }
+
+    } catch (error) {
+        res.status(500).json({message: error.message});
+    }
+});
+
+
 app.post('/home/add', async (req, res) => {
     const {product_title, product_price, product_image, product_quantity, product_category} = req.body;
 
@@ -368,7 +401,7 @@ app.post('/home/chatShop', async (req, res) => {
     }
 })
 
-app.get("/AllId",async (req,res)=>{
+app.get("/AllId", async (req, res) => {
     try {
         const dataChat = await checkClient.find().lean();
         return res.send(dataChat)
@@ -376,7 +409,7 @@ app.get("/AllId",async (req,res)=>{
         res.status(500).json({message: error.message});
     }
 })
-app.get("/AllIdMess",async (req,res)=>{
+app.get("/AllIdMess", async (req, res) => {
     try {
         const dataChat = await checkClientMess.find().lean();
         return res.send(dataChat)
@@ -385,20 +418,20 @@ app.get("/AllIdMess",async (req,res)=>{
     }
 })
 
-app.post('/sendNotificationClient',async (req,res)=>{
+app.post('/sendNotificationClient', async (req, res) => {
     const data = req.body;
     try {
-        const check = await checkClient.findOne({ user: data.user });
+        const check = await checkClient.findOne({user: data.user});
         return res.send(check)
     } catch (error) {
         res.status(500).json({message: error.message});
     }
 })
 
-app.post('/sendNotificationMess',async (req,res)=>{
+app.post('/sendNotificationMess', async (req, res) => {
     const data = req.body;
     try {
-        const check = await checkClientMess.findOne({ user: data.user });
+        const check = await checkClientMess.findOne({user: data.user});
         return res.send(check)
     } catch (error) {
         res.status(500).json({message: error.message});
@@ -407,11 +440,11 @@ app.post('/sendNotificationMess',async (req,res)=>{
 
 app.post('/checkClientUser', async (req, res) => {
     const data = req.body;
-    if (data.user === null){
+    if (data.user === null) {
         return
     }
     try {
-        const check = await checkClient.findOne({ user: data.user });
+        const check = await checkClient.findOne({user: data.user});
 
         if (check) {
             const clientUser = check.client.find((c) => c.IdClient === data.IdClient);
@@ -419,14 +452,14 @@ app.post('/checkClientUser', async (req, res) => {
             if (clientUser) {
                 clientUser.status = data.status;
                 await check.save();
-                return res.json({ message: "Cập nhật client thành công" });
+                return res.json({message: "Cập nhật client thành công"});
             } else {
                 const updatedCheckClient = await checkClient.findOneAndUpdate(
-                    { user: data.user },
-                    { $push: { client: { IdClient: data.IdClient, status: data.status } } },
-                    { new: true, upsert: true }
+                    {user: data.user},
+                    {$push: {client: {IdClient: data.IdClient, status: data.status}}},
+                    {new: true, upsert: true}
                 );
-                return res.json({ message: "Tạo client thành công", data: updatedCheckClient });
+                return res.json({message: "Tạo client thành công", data: updatedCheckClient});
             }
         } else {
             const newCheckClient = new checkClient({
@@ -437,11 +470,11 @@ app.post('/checkClientUser', async (req, res) => {
                 }]
             });
             await newCheckClient.save();
-            return res.json({ message: "Tạo client thành công", data: newCheckClient });
+            return res.json({message: "Tạo client thành công", data: newCheckClient});
         }
     } catch (error) {
         console.error(error);
-        return res.status(500).json({ error: "Lỗi xử lý yêu cầu" });
+        return res.status(500).json({error: "Lỗi xử lý yêu cầu"});
     }
 });
 
@@ -449,12 +482,12 @@ app.post('/checkClientMess', async (req, res) => {
     const data = req.body;
     console.log(data)
     console.log("start")
-    if (data.user === null){
+    if (data.user === null) {
         return
     }
     try {
 
-        const check = await checkClientMess.findOne({ user: data.user });
+        const check = await checkClientMess.findOne({user: data.user});
 
         if (check) {
             const clientUser = check.client.find((c) => c.IdClient === data.IdClient);
@@ -464,14 +497,14 @@ app.post('/checkClientMess', async (req, res) => {
                 clientUser.status = data.status;
                 await check.save();
                 console.log(1)
-                return res.json({ message: "Cập nhật trạng thái thành công" });
+                return res.json({message: "Cập nhật trạng thái thành công"});
             } else {
                 const updatedCheckClient = await checkClientMess.findOneAndUpdate(
-                    { user: data.user },
-                    { $push: { client: { IdClient: data.IdClient, status: data.status } } },
-                    { new: true, upsert: true }
+                    {user: data.user},
+                    {$push: {client: {IdClient: data.IdClient, status: data.status}}},
+                    {new: true, upsert: true}
                 );
-                return res.json({ message: "Tạo trạng thái thành công", data: updatedCheckClient });
+                return res.json({message: "Tạo trạng thái thành công", data: updatedCheckClient});
             }
         } else {
             const newCheckClient = new checkClientMess({
@@ -482,11 +515,11 @@ app.post('/checkClientMess', async (req, res) => {
                 }]
             });
             await newCheckClient.save();
-            return res.json({ message: "Tạo client thành công", data: newCheckClient });
+            return res.json({message: "Tạo client thành công", data: newCheckClient});
         }
     } catch (error) {
         console.error(error);
-        return res.status(500).json({ error: "Lỗi xử lý yêu cầu" });
+        return res.status(500).json({error: "Lỗi xử lý yêu cầu"});
     }
 });
 app.get('/login', async (req, res) => {
@@ -497,61 +530,61 @@ app.get('/login', async (req, res) => {
     }
 });
 app.post("/web/login", async (req, res) => {
-  try {
-    const { username, password } = req.body;
-    const user = await User.findOne({ username });
-    if (!user || user.role !== 2) {
-      const error = "Tài khoản không tồn tại";
-      res.redirect("/login");
-    } else {
-      if (password !== user.password) {
-        const error = "Sai mật khẩu";
-        res.redirect("/login");
-      } else {
-        user.status = true;
-        await user.save();
-        res.redirect("/home");
-      }
+    try {
+        const {username, password} = req.body;
+        const user = await User.findOne({username});
+        if (!user || user.role !== 2) {
+            const error = "Tài khoản không tồn tại";
+            res.redirect("/login");
+        } else {
+            if (password !== user.password) {
+                const error = "Sai mật khẩu";
+                res.redirect("/login");
+            } else {
+                user.status = true;
+                await user.save();
+                res.redirect("/home");
+            }
+        }
+    } catch (error) {
+        res.status(500).json({message: error.message});
     }
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
 });
 app.post("/web/register", async (req, res) => {
-  const { username, password, repassword, fullname } = req.body;
+    const {username, password, repassword, fullname} = req.body;
 
-  try {
-    const existingUser = await User.findOne({ username });
+    try {
+        const existingUser = await User.findOne({username});
 
-    if (existingUser) {
-      const error = "Tài khoản đã tồn tại";
-      res.redirect("/login");
-    } else {
-      if (password != repassword) {
-        res.flash("Xác nhận mật khẩu mới không khớp");
-        const error = "Xác nhận mật khẩu mới không khớp";
-        res.redirect("/login");
-      }
-      const user = new User({
-        username,
-        password,
-        role: 2,
-      });
-      await user.save();
-      const newProfile = new Profile({
-        user: user._id,
-        fullname: fullname,
-        gender: "Nam",
-        avatar: "https://st.quantrimang.com/photos/image/072015/22/avatar.jpg",
-        birthday: "01-01-2000",
-      });
-      await newProfile.save();
-      //thông báo đăng ký thành công
-      res.redirect("/login");
+        if (existingUser) {
+            const error = "Tài khoản đã tồn tại";
+            res.redirect("/login");
+        } else {
+            if (password != repassword) {
+                res.flash("Xác nhận mật khẩu mới không khớp");
+                const error = "Xác nhận mật khẩu mới không khớp";
+                res.redirect("/login");
+            }
+            const user = new User({
+                username,
+                password,
+                role: 2,
+            });
+            await user.save();
+            const newProfile = new Profile({
+                user: user._id,
+                fullname: fullname,
+                gender: "Nam",
+                avatar: "https://st.quantrimang.com/photos/image/072015/22/avatar.jpg",
+                birthday: "01-01-2000",
+            });
+            await newProfile.save();
+            //thông báo đăng ký thành công
+            res.redirect("/login");
+        }
+    } catch (error) {
+        return res.status(500).json({message: error.message});
     }
-  } catch (error) {
-    return res.status(500).json({ message: error.message });
-  }
 });
 
 module.exports = app;

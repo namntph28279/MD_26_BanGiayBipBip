@@ -43,7 +43,11 @@ const orderSchema = new mongoose.Schema({
   total_amount: {
     type: Number,
     default: 0
-  }
+  },
+  status: {
+    type: Number,
+    default: 0
+  },
 });
 
 const Order = mongoose.model('Order', orderSchema);

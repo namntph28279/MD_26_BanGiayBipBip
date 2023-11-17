@@ -103,9 +103,9 @@
                     <span class="block p-2">Admin</span>
                 </div>
                 <div class="right md:w-1/4 sm:w-2/3 flex  justify-content-end ">
-<!--
-                    <img src="message.png" class="w-7 h-7 bg-gray-100 rounded-full p-1 mx-2 my-4 cursor-pointer" alt="">
--->
+                    <!--
+                                        <img src="message.png" class="w-7 h-7 bg-gray-100 rounded-full p-1 mx-2 my-4 cursor-pointer" alt="">
+                    -->
                 </div>
             </div>
         </div>
@@ -119,8 +119,7 @@
                         <button class="btn-cf default-selected" style=" padding: 0 8px;" onclick="openOrder('confirm')">
                             Chờ xác nhận
                         </button>
-                        <button class="btn-cf" style=" padding: 0 8px;" onclick="openOrder('pickup')">Đang chuẩn bị
-                            hàng
+                        <button class="btn-cf" style=" padding: 0 8px;" onclick="openOrder('pickup')">Đang chuẩn bị hàng
                         </button>
                         <button class="btn-cf" style=" padding: 0 8px;" onclick="openOrder('delivered')">Đang giao
                         </button>
@@ -151,8 +150,8 @@
                                 <th style="text-align: center;">Tài khoản đặt</th>
                                 <th style="text-align: center;width: 120px">Số lượng</th>
                                 <th style="text-align: center;width: 130px">Giá tiền</th>
-                                <th style="text-align: center;width: 150px">Chi tiết</th>
-                                <th style="text-align: center;width: 234px;">Thao tác</th>
+                                <th style="text-align: center;width: 100px">Chi tiết</th>
+                                <th style="text-align: center;width: 145px;">Thao tác</th>
                             </tr>
                             </thead>
                             <tbody>
@@ -162,16 +161,21 @@
                                     <td>{{this._id}}</td>
                                     <td>{{this.customer_email}}</td>
                                     <td>{{this.products.length}}</td>
-                                    <td>0</td>
+                                    <td>{{formatCurrency this.total_amount}}</td>
                                     <td>
-                                        <a href="#" class="btn btn-primary btn-sm" data-toggle="modal"
-                                           data-target="#detail{{this._id}}">Xem chi
-                                            tiết</a></td>
-                                    <td><a href="#" class="btn btn-success btn-sm" data-toggle="modal"
-                                           data-target="#succ{{this._id}}">Xác nhận</a>
-                                        <a href="#" class="btn btn-danger btn-sm" data-toggle="modal"
-                                           data-target="#delete{{this._id}}"
-                                           data-product-name="Tên sản phẩm">Hủy đơn</a></td>
+                                        <img width="50px" src="detail.png" class="btn btn-primary btn-sm"
+                                             data-toggle="modal"
+                                             data-target="#detail{{this._id}}"/>
+                                    </td>
+                                    <td>
+                                        <img width="50px" src="tick.png" class="btn btn-success btn-sm"
+                                             data-toggle="modal"
+                                             data-target="#succ{{this._id}}"/>
+                                        <img width="50px" src="close.png" class="btn btn-danger btn-sm"
+                                             data-toggle="modal"
+                                             data-target="#delete{{this._id}}"
+                                             data-product-name="Tên sản phẩm"/>
+                                    </td>
                                 </tr>
                                 <div class="modal fade" id="detail{{this._id}}" tabindex="-1" role="dialog"
                                      aria-labelledby="deleteProductModalLabel">
@@ -204,11 +208,20 @@
                                                     <span aria-hidden="true">&times;</span>
                                                 </button>
                                             </div>
-                                            <div class="modal-body">
-                                                <form id="addProductForm">
 
+                                            <div class="modal-body">
+                                                <p>Bạn có chắc chắn muốn xác nhận đơn hàng của tài
+                                                    khoản: {{this.customer_email}}?</p>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-dismiss="modal">
+                                                    Thoát
+                                                </button>
+                                                <form action="/order/status/Comfig/{{this._id}}" method="POST">
+                                                    <button type="submit" class="btn btn-primary">Xác nhận</button>
                                                 </form>
                                             </div>
+
                                         </div>
                                     </div>
                                 </div>
@@ -233,7 +246,7 @@
                                                     Thoát
                                                 </button>
                                                 <form action="/order/status/{{this._id}}" method="POST">
-                                                    <button type="submit" class="btn btn-danger">Hủy</button>
+                                                    <button type="submit" class="btn btn-danger">Xác nhận</button>
                                                 </form>
                                             </div>
                                         </div>
@@ -254,8 +267,8 @@
                                 <th style="text-align: center;">Tài khoản đặt</th>
                                 <th style="text-align: center;width: 120px">Số lượng</th>
                                 <th style="text-align: center;width: 130px">Giá tiền</th>
-                                <th style="text-align: center;width: 150px">Chi tiết</th>
-                                <th style="text-align: center;width: 234px;">Thao tác</th>
+                                <th style="text-align: center;width: 100px">Chi tiết</th>
+                                <th style="text-align: center;width: 145px;">Thao tác</th>
                             </tr>
                             </thead>
                             <tbody>
@@ -265,16 +278,21 @@
                                     <td>{{this._id}}</td>
                                     <td>{{this.customer_email}}</td>
                                     <td>{{this.products.length}}</td>
-                                    <td>0</td>
+                                    <td>{{formatCurrency this.total_amount}}</td>
                                     <td>
-                                        <a href="#" class="btn btn-primary btn-sm" data-toggle="modal"
-                                           data-target="#detail{{this._id}}">Xem chi
-                                            tiết</a></td>
-                                    <td><a href="#" class="btn btn-success btn-sm" data-toggle="modal"
-                                           data-target="#succ{{this._id}}">Xác nhận</a>
-                                        <a href="#" class="btn btn-danger btn-sm" data-toggle="modal"
-                                           data-target="#delete{{this._id}}"
-                                           data-product-name="Tên sản phẩm">Hủy đơn</a></td>
+                                        <img width="50px" src="detail.png" class="btn btn-primary btn-sm"
+                                             data-toggle="modal"
+                                             data-target="#detail{{this._id}}"/>
+                                    </td>
+                                    <td>
+                                        <img width="50px" src="tick.png" class="btn btn-success btn-sm"
+                                             data-toggle="modal"
+                                             data-target="#succ{{this._id}}"/>
+                                        <img width="50px" src="close.png" class="btn btn-danger btn-sm"
+                                             data-toggle="modal"
+                                             data-target="#delete{{this._id}}"
+                                             data-product-name="Tên sản phẩm"/>
+                                    </td>
                                 </tr>
                                 <div class="modal fade" id="detail{{this._id}}" tabindex="-1" role="dialog"
                                      aria-labelledby="deleteProductModalLabel">
@@ -307,15 +325,23 @@
                                                     <span aria-hidden="true">&times;</span>
                                                 </button>
                                             </div>
-                                            <div class="modal-body">
-                                                <form id="addProductForm">
 
+                                            <div class="modal-body">
+                                                <p>Bạn có chắc chắn muốn xác nhận đơn hàng của tài
+                                                    khoản: {{this.customer_email}}?</p>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-dismiss="modal">
+                                                    Thoát
+                                                </button>
+                                                <form action="/order/status/Comfig/{{this._id}}" method="POST">
+                                                    <button type="submit" class="btn btn-primary">Xác nhận</button>
                                                 </form>
                                             </div>
+
                                         </div>
                                     </div>
                                 </div>
-
                                 <div class="modal fade" id="delete{{this._id}}" tabindex="-1" role="dialog"
                                      aria-labelledby="deleteProductModalLabel">
                                     <div class="modal-dialog" role="document">
@@ -336,13 +362,12 @@
                                                     Thoát
                                                 </button>
                                                 <form action="/order/status/{{this._id}}" method="POST">
-                                                    <button type="submit" class="btn btn-danger">Hủy</button>
+                                                    <button type="submit" class="btn btn-danger">Xác nhận</button>
                                                 </form>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-
                             {{/each}}
                             </tbody>
                         </table>
@@ -356,8 +381,7 @@
                                 <th style="text-align: center;">Tài khoản đặt</th>
                                 <th style="text-align: center;width: 120px">Số lượng</th>
                                 <th style="text-align: center;width: 130px">Giá tiền</th>
-                                <th style="text-align: center;width: 150px">Chi tiết</th>
-                                <th style="text-align: center;width: 234px;">Thao tác</th>
+                                <th style="text-align: center;width: 100px">Chi tiết</th>
                             </tr>
                             </thead>
                             <tbody>
@@ -367,16 +391,13 @@
                                     <td>{{this._id}}</td>
                                     <td>{{this.customer_email}}</td>
                                     <td>{{this.products.length}}</td>
-                                    <td>0</td>
+                                    <td>{{formatCurrency this.total_amount}}</td>
                                     <td>
-                                        <a href="#" class="btn btn-primary btn-sm" data-toggle="modal"
-                                           data-target="#detail{{this._id}}">Xem chi
-                                            tiết</a></td>
-                                    <td><a href="#" class="btn btn-success btn-sm" data-toggle="modal"
-                                           data-target="#succ{{this._id}}">Xác nhận</a>
-                                        <a href="#" class="btn btn-danger btn-sm" data-toggle="modal"
-                                           data-target="#delete{{this._id}}"
-                                           data-product-name="Tên sản phẩm">Hủy đơn</a></td>
+                                        <img width="50px" src="detail.png" class="btn btn-primary btn-sm"
+                                             data-toggle="modal"
+                                             data-target="#detail{{this._id}}"/>
+                                    </td>
+
                                 </tr>
                                 <div class="modal fade" id="detail{{this._id}}" tabindex="-1" role="dialog"
                                      aria-labelledby="deleteProductModalLabel">
@@ -458,8 +479,8 @@
                                 <th style="text-align: center;">Tài khoản đặt</th>
                                 <th style="text-align: center;width: 120px">Số lượng</th>
                                 <th style="text-align: center;width: 130px">Giá tiền</th>
-                                <th style="text-align: center;width: 150px">Chi tiết</th>
-                                <th style="text-align: center;width: 234px;">Thao tác</th>
+                                <th style="text-align: center;width: 100px">Chi tiết</th>
+                                <th style="text-align: center;width: 145px;">Thao tác</th>
                             </tr>
                             </thead>
                             <tbody>
@@ -469,16 +490,21 @@
                                     <td>{{this._id}}</td>
                                     <td>{{this.customer_email}}</td>
                                     <td>{{this.products.length}}</td>
-                                    <td>0</td>
+                                    <td>{{formatCurrency this.total_amount}}</td>
                                     <td>
-                                        <a href="#" class="btn btn-primary btn-sm" data-toggle="modal"
-                                           data-target="#detail{{this._id}}">Xem chi
-                                            tiết</a></td>
-                                    <td><a href="#" class="btn btn-success btn-sm" data-toggle="modal"
-                                           data-target="#succ{{this._id}}">Xác nhận</a>
-                                        <a href="#" class="btn btn-danger btn-sm" data-toggle="modal"
-                                           data-target="#delete{{this._id}}"
-                                           data-product-name="Tên sản phẩm">Hủy đơn</a></td>
+                                        <img width="50px" src="detail.png" class="btn btn-primary btn-sm"
+                                             data-toggle="modal"
+                                             data-target="#detail{{this._id}}"/>
+                                    </td>
+                                    <td>
+                                        <img width="50px" src="tick.png" class="btn btn-success btn-sm"
+                                             data-toggle="modal"
+                                             data-target="#succ{{this._id}}"/>
+                                        <img width="50px" src="close.png" class="btn btn-danger btn-sm"
+                                             data-toggle="modal"
+                                             data-target="#delete{{this._id}}"
+                                             data-product-name="Tên sản phẩm"/>
+                                    </td>
                                 </tr>
                                 <div class="modal fade" id="detail{{this._id}}" tabindex="-1" role="dialog"
                                      aria-labelledby="deleteProductModalLabel">
@@ -511,15 +537,23 @@
                                                     <span aria-hidden="true">&times;</span>
                                                 </button>
                                             </div>
-                                            <div class="modal-body">
-                                                <form id="addProductForm">
 
+                                            <div class="modal-body">
+                                                <p>Bạn có chắc chắn muốn xác nhận đơn hàng của tài
+                                                    khoản: {{this.customer_email}}?</p>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-dismiss="modal">
+                                                    Thoát
+                                                </button>
+                                                <form action="/order/status/Comfig/{{this._id}}" method="POST">
+                                                    <button type="submit" class="btn btn-primary">Xác nhận</button>
                                                 </form>
                                             </div>
+
                                         </div>
                                     </div>
                                 </div>
-
                                 <div class="modal fade" id="delete{{this._id}}" tabindex="-1" role="dialog"
                                      aria-labelledby="deleteProductModalLabel">
                                     <div class="modal-dialog" role="document">
@@ -540,7 +574,7 @@
                                                     Thoát
                                                 </button>
                                                 <form action="/order/status/{{this._id}}" method="POST">
-                                                    <button type="submit" class="btn btn-danger">Hủy</button>
+                                                    <button type="submit" class="btn btn-danger">Xác nhận</button>
                                                 </form>
                                             </div>
                                         </div>
@@ -560,8 +594,8 @@
                                 <th style="text-align: center;">Tài khoản đặt</th>
                                 <th style="text-align: center;width: 120px">Số lượng</th>
                                 <th style="text-align: center;width: 130px">Giá tiền</th>
-                                <th style="text-align: center;width: 150px">Chi tiết</th>
-                                <th style="text-align: center;width: 234px;">Thao tác</th>
+                                <th style="text-align: center;width: 100px">Chi tiết</th>
+                                <th style="text-align: center;width: 145px;">Thao tác</th>
 
                             </tr>
                             </thead>
@@ -572,19 +606,20 @@
                                     <td>{{this._id}}</td>
                                     <td>{{this.customer_email}}</td>
                                     <td>{{this.products.length}}</td>
-                                    <td>0</td>
+                                    <td>{{formatCurrency this.total_amount}}</td>
                                     <td>
-                                        <a href="#" class="btn btn-primary btn-sm" data-toggle="modal"
-                                           data-target="#detail{{this._id}}">Xem chi
-                                            tiết</a>
+                                        <img width="50px" src="detail.png" class="btn btn-primary btn-sm"
+                                             data-toggle="modal"
+                                             data-target="#detail{{this._id}}"/>
                                     </td>
-
                                     <td>
-                                        <a href="#" class="btn btn-success btn-sm" data-toggle="modal"
-                                           data-target="#succ{{this._id}}">Xác nhận</a>
-                                        <a href="#" class="btn btn-danger btn-sm" data-toggle="modal"
-                                           data-target="#delete{{this._id}}"
-                                           data-product-name="Tên sản phẩm">Hủy đơn</a>
+                                        <img width="50px" src="tick.png" class="btn btn-success btn-sm"
+                                             data-toggle="modal"
+                                             data-target="#succ{{this._id}}"/>
+                                        <img width="50px" src="close.png" class="btn btn-danger btn-sm"
+                                             data-toggle="modal"
+                                             data-target="#delete{{this._id}}"
+                                             data-product-name="Tên sản phẩm"/>
                                     </td>
                                 </tr>
                                 <div class="modal fade" id="detail{{this._id}}" tabindex="-1" role="dialog"
@@ -618,11 +653,20 @@
                                                     <span aria-hidden="true">&times;</span>
                                                 </button>
                                             </div>
-                                            <div class="modal-body">
-                                                <form id="addProductForm">
 
+                                            <div class="modal-body">
+                                                <p>Bạn có chắc chắn muốn xác nhận đơn hàng của tài
+                                                    khoản: {{this.customer_email}}?</p>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-dismiss="modal">
+                                                    Thoát
+                                                </button>
+                                                <form action="/order/status/Comfig/{{this._id}}" method="POST">
+                                                    <button type="submit" class="btn btn-primary">Xác nhận</button>
                                                 </form>
                                             </div>
+
                                         </div>
                                     </div>
                                 </div>
@@ -647,7 +691,7 @@
                                                     Thoát
                                                 </button>
                                                 <form action="/order/status/{{this._id}}" method="POST">
-                                                    <button type="submit" class="btn btn-danger">Hủy</button>
+                                                    <button type="submit" class="btn btn-danger">Xác nhận</button>
                                                 </form>
                                             </div>
                                         </div>
@@ -677,7 +721,7 @@
                                     <td>{{this._id}}</td>
                                     <td>{{this.customer_email}}</td>
                                     <td>{{this.products.length}}</td>
-                                    <td>0</td>
+                                    <td>{{formatCurrency this.total_amount}}</td>
                                     <td>
                                         <a href="#" class="btn btn-primary btn-sm" data-toggle="modal"
                                            data-target="#detail{{this._id}}">Xem chi
