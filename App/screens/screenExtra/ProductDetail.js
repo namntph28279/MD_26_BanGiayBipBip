@@ -234,7 +234,7 @@ function ProductDetail({ route, navigation }) {
         setSelectedColor(color);
         if (product && product.colors) {
             const colorData = product.colors.find((c) => c.color_name === color);
-            setSelectedColorData(colorData);
+            setSelectedColorData(colorData._id);
             fetchSizesForColor(colorData._id);
             //ảnh
             setSelectedColorImage(colorImages[color]);
@@ -290,7 +290,7 @@ function ProductDetail({ route, navigation }) {
                     productPrice: product.product_price,
                     selectedColor: selectedColor,
                     selectedSize: selectedSize,
-                    selectedColorId :selectedColorData._id,
+                    selectedColorId :selectedColorData,
                     productImageURL: productImageURL,
                     productName: product.product_title,
                 };

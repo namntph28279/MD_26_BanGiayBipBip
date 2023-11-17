@@ -4,7 +4,7 @@ import { CheckBox } from "react-native-elements";
 import Icon from 'react-native-vector-icons/FontAwesome';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 const ThanhToanScreen = ({ route, navigation }) => {
-    const selectedProducts = route.params?.selectedProducts || [];
+    const [selectedProducts, setSelectedProducts] = useState([]);
     const userID = route.params?.userID || '';
     const [paymentMethod, setPaymentMethod] = useState('');
     const [shippingAddress, setShippingAddress] = useState('');
@@ -35,6 +35,25 @@ const ThanhToanScreen = ({ route, navigation }) => {
         }
     }, [userID]);
     useEffect(() => {
+        setSelectedProducts(route.params?.selectedProducts || []);
+    }, [route.params?.selectedProducts]);
+    useEffect(() => {
+        const fetchDefaultAddress = async () => {
+            try {
+                const defaultAddress = await AsyncStorage.getItem('DefaultAddress');
+                if (defaultAddress) {
+                    const parsedDefaultAddress = JSON.parse(defaultAddress);
+                    setShippingAddress(parsedDefaultAddress);
+                }
+            } catch (error) {
+                console.error('Lỗi lấy dữ liệu ', error);
+            }
+        };
+
+        fetchDefaultAddress();
+    }, []);
+
+    useEffect(() => {
         calculateTotalAmount();
         if (route.params?.selectedAddress) {
             const selected = route.params.selectedAddress;
@@ -56,6 +75,21 @@ const ThanhToanScreen = ({ route, navigation }) => {
     };
 
 
+    const handleQuantityChange = (productId, action) => {
+        const updatedProducts = selectedProducts.map((product) => {
+            if (product.id === productId) {
+                if (action === 'increase') {
+                    return { ...product, quantity: product.quantity + 1 };
+                } else if (action === 'decrease' && product.quantity > 1) {
+                    return { ...product, quantity: product.quantity - 1 };
+                }
+            }
+            return product;
+        });
+
+        setSelectedProducts(updatedProducts);
+        calculateTotalAmount();
+    };
 
 
     const renderProductItem = (product) => (
@@ -63,13 +97,22 @@ const ThanhToanScreen = ({ route, navigation }) => {
             <Image source={{ uri: product.productImageURL }} style={styles.productImage} />
             <View style={styles.productDetails}>
                 <Text>Giày: {product.productName}</Text>
-                <Text>Số lượng: {product.quantity}</Text>
-                <Text>Giá: {product.productPrice}</Text>
                 <Text>Màu: {product.selectedColor}</Text>
                 <Text>Kích thước: {product.selectedSize.size_name}</Text>
+                <Text>Giá: {product.productPrice}</Text>
+                <View style={styles.quantityContainer}>
+                    <TouchableOpacity onPress={() => handleQuantityChange(product.id, 'decrease')}>
+                        <Text style={styles.quantityButton}>-</Text>
+                    </TouchableOpacity>
+                    <Text style={styles.quantity}>{product.quantity}</Text>
+                    <TouchableOpacity onPress={() => handleQuantityChange(product.id, 'increase')}>
+                        <Text style={styles.quantityButton}>+</Text>
+                    </TouchableOpacity>
+                </View>
             </View>
         </View>
     );
+
 
 
 
@@ -110,6 +153,7 @@ const ThanhToanScreen = ({ route, navigation }) => {
                 customer_email: name || '',
                 products: products || [],
                 address: shippingAddress._id || '',
+                total_amount: totalPayment || '',
             };
 
             console.log('Order Data:', orderData);
@@ -129,7 +173,7 @@ const ThanhToanScreen = ({ route, navigation }) => {
                         }
 
         } catch (error) {
-            console.error('Error while placing the order:', error);
+            console.error('lỗi đặt hàng:', error);
         }
     };
 
@@ -242,6 +286,26 @@ const styles = StyleSheet.create({
         flex: 1,
         padding: 16,
     },
+    quantityContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        position: 'absolute',
+        bottom: 0,
+        right: 0,
+        marginBottom: 8,
+        marginRight: 8,
+        alignSelf: 'flex-end',
+    },
+    quantityButton: {
+        fontSize: 18,
+        fontWeight: 'bold',
+        marginHorizontal: 8,
+        color: '#3498db',
+    },
+    quantity: {
+        fontSize: 16,
+    },
+
     productItem: {
         flexDirection: 'row',
         alignItems: 'center',

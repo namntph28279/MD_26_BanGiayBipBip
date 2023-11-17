@@ -40,10 +40,6 @@ const orderSchema = new mongoose.Schema({
     type: Date,
     default: Date.now
   },
-  status: {
-    type: Number,
-    default: 0
-  },
   total_amount: {
     type: Number,
     default: 0

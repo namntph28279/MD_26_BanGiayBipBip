@@ -7,6 +7,7 @@ const Address = require('../Models/Address');
 const Profile = require('../Models/Profile');
 const Color = require('../Models/Color');
 const Size = require('../Models/Size');
+const OrderStatus = require('../Models/OrderStatus');
 
 const express = require('express');
 const app = express();
@@ -38,12 +39,12 @@ app.use(bodyParser.json());
 //quay lại cd ..
 
 
-// Chờ xác nhận: Waiting for confirmation
-// Đang chuẩn bị hàng: Preparing for shipment
-// Đang giao: On delivery
-// Yêu cầu hủy đơn: Request for cancellation
-// Đơn đã hủy: Order canceled
-// Đã nhận hàng: Order received
+// Chờ xác nhận: 1
+// Đang chuẩn bị hàng: 2
+// Đang giao: 3
+// Yêu cầu hủy đơn: 4
+// Đơn đã hủy: 5
+// Đã nhận hàng: 6
 
 
 // Middleware để xử lý dữ liệu JSON
@@ -334,76 +335,190 @@ app.get('/favourite/:userId', async (req, res) => {
 // Đặt hàng
 app.post('/order/addd', async (req, res) => {
     try {
-      // Trích xuất dữ liệu từ phần thân của yêu cầu
-      const { user, customer_email, products, address } = req.body;
+        // Trích xuất dữ liệu từ phần thân của yêu cầu
+        const { user, customer_email, products, address, total_amount } = req.body;
 
-      // Kiểm tra và giảm số lượng kích thước
-    for (const product of products) {
-        const sizeId = product.sizeId;
-        const quantityToReduce = product.quantity;
+        // Kiểm tra và giảm số lượng kích thước
+        for (const product of products) {
+            const sizeId = product.sizeId;
+            const quantityToReduce = product.quantity;
+
+            await Size.findByIdAndUpdate(
+                sizeId,
+                { $inc: { size_quantity: -quantityToReduce } },
+                { new: true }
+            );
+        }
+
+        // Tạo một đơn hàng mới
+        const newOrder = new Order({
+            user,
+            customer_email,
+            products,
+            address,
+            total_amount
+        });
+
+
+        const savedOrder = await newOrder.save();
+
+        res.status(201).json(savedOrder);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Lỗi máy chủ nội bộ' });
+    }
+});
+
+//sửa đơn hàng
+app.put('/order/edit/:orderId', async (req, res) => {
+    const orderId = req.params.orderId;
+    const { user, customer_email, products, address, total_amount } = req.body;
+
+    try {
+        // Kiểm tra và giảm số lượng kích thước
+        for (const product of products) {
+            const sizeId = product.sizeId;
+            const quantityToReduce = product.quantity;
+
+            await Size.findByIdAndUpdate(
+                sizeId,
+                { $inc: { size_quantity: -quantityToReduce } },
+                { new: true }
+            );
+        }
+
+        // Cập nhật đơn hàng
+        const updatedOrder = await Order.findByIdAndUpdate(orderId, {
+            user,
+            customer_email,
+            products,
+            address,
+            total_amount
+        }, { new: true });
+
+        if (!updatedOrder) {
+            return res.status(404).json({ message: 'Không tìm thấy đơn hàng' });
+        }
+
+        res.json(updatedOrder);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Lỗi máy chủ nội bộ' });
+    }
+});
+
+
+
+//lấy về đơn hàng theo trạng thái server
+app.get('/orders/:condition', async (req, res) => {
+    const condition = parseInt(req.params.condition);
   
-        await Size.findByIdAndUpdate(
-          sizeId,
-          { $inc: { size_quantity: -quantityToReduce } },
-          { new: true }
-        );
-      }
+    try {
+      const orders = await OrderStatus.aggregate([
+        {
+          $match: { condition: condition }
+        },
+        {
+          $lookup: {
+            from: 'orders',
+            localField: 'order',
+            foreignField: '_id',
+            as: 'orderDetails'
+          }
+        },
+        {
+          $unwind: '$orderDetails'
+        },
+        {
+          $project: {
+            _id: '$orderDetails._id',
+            user: '$orderDetails.user',
+            customer_email: '$orderDetails.customer_email',
+            products: '$orderDetails.products',
+            address: '$orderDetails.address',
+            order_date: '$orderDetails.order_date',
+            total_amount: '$orderDetails.total_amount',
+            condition: '$condition',
+            content: '$content'
+          }
+        }
+      ]);
   
-      // Tạo một đơn hàng mới
-      const newOrder = new Order({
-        user,
-        customer_email,
-        products,
-        address,
-      });
-  
-      
-      const savedOrder = await newOrder.save();
-  
-      res.status(201).json(savedOrder); 
+      res.json(orders);
     } catch (error) {
       console.error(error);
       res.status(500).json({ message: 'Lỗi máy chủ nội bộ' });
     }
   });
-  
 
-//lấy về đơn hàng theo trạng thái
-app.get('/orders/:status', async (req, res) => {
-    const status = req.params.status;
+//lấy về đơn hàng theo trạng thái client
+app.get('/orders/:userId/:condition', async (req, res) => {
+    const userId = req.params.userId;
+    const condition = parseInt(req.params.condition);
   
     try {
-      const orders = await Order.find({ status });
+      const orders = await OrderStatus.aggregate([
+        {
+          $match: { condition: condition }
+        },
+        {
+          $lookup: {
+            from: 'orders',
+            localField: 'order',
+            foreignField: '_id',
+            as: 'orderDetails'
+          }
+        },
+        {
+          $unwind: '$orderDetails'
+        },
+        {
+          $match: { 'orderDetails.user': mongoose.Types.ObjectId(userId) }
+        },
+        {
+          $project: {
+            _id: '$orderDetails._id',
+            user: '$orderDetails.user',
+            customer_email: '$orderDetails.customer_email',
+            products: '$orderDetails.products',
+            address: '$orderDetails.address',
+            order_date: '$orderDetails.order_date',
+            total_amount: '$orderDetails.total_amount',
+            condition: '$condition',
+            content: '$content'
+          }
+        }
+      ]);
   
       res.json(orders);
     } catch (error) {
-      res.status(500).json({ message: error.message });
+      console.error(error);
+      res.status(500).json({ message: 'Lỗi máy chủ nội bộ' });
     }
   });
 
 
-// Route để chuyển đổi trạng thái đơn hàng
+// chuyển đổi trạng thái đơn hàng
 app.put('/order/edit-status/:orderId', async (req, res) => {
     const orderId = req.params.orderId;
-    const newStatus = req.body.newStatus;
-  
+    const { condition, content } = req.body;
+
     try {
-      // Tìm đơn hàng theo ID
-      const order = await Order.findById(orderId);
-  
-      if (!order) {
-        return res.status(404).json({ message: 'Đơn hàng không tồn tại' });
-      }
-  
-      order.status = newStatus;
-  
-      await order.save();
-  
-      res.json(order);
+        const updatedOrder = await OrderStatus.findByIdAndUpdate(orderId, {
+            condition,
+            content
+        }, { new: true });
+
+        if (!findByIdAndUpdate) {
+            return res.status(404).json({ message: 'không tồn tại' });
+        }
+
+
+        res.json(updatedOrder);
     } catch (error) {
-      res.status(500).json({ message: error.message });
+        res.status(500).json({ message: error.message });
     }
-  });
+});
 
 // Lấy toàn bộ đơn hàng
 app.get('/order', async (req, res) => {
@@ -430,6 +545,79 @@ app.get('/orders/:userId', async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 });
+
+//chi tiết đơn hàng
+// app.get('/order/getOne/:orderId', async (req, res) => {
+//     const orderId = req.params.orderId;
+
+//     try {
+//         // Tìm đơn hàng theo ID
+//         const order = await Order.findById(orderId);
+
+//         if (!order) {
+//             return res.status(404).json({ message: 'Không tìm thấy đơn hàng' });
+//         }
+
+//         res.json(order);
+//     } catch (error) {
+//         console.error(error);
+//         res.status(500).json({ message: 'Lỗi máy chủ nội bộ' });
+//     }
+// });
+
+app.get('/order/getOne/:orderId', async (req, res) => {
+    const orderId = req.params.orderId;
+  
+    try {
+      const orderDetails = await Order.aggregate([
+        {
+          $match: { _id: mongoose.Types.ObjectId(orderId) }
+        },
+        {
+          $unwind: '$products'
+        },
+        {
+          $lookup: {
+            from: 'products',
+            localField: 'products.product',
+            foreignField: '_id',
+            as: 'productDetails'
+          }
+        },
+        {
+          $unwind: '$productDetails'
+        },
+        {
+          $project: {
+            user: 1,
+            customer_email: 1,
+            order_date: 1,
+            total_amount: 1,
+            'products.product': '$products.product',
+            'products.quantity': '$products.quantity',
+            'products.colorId': '$products.colorId',
+            'products.sizeId': '$products.sizeId',
+            'products.product_title': '$productDetails.product_title',
+            'products.product_price': '$productDetails.product_price',
+            'products.product_image': '$productDetails.product_image',
+            'products.product_quantity': '$productDetails.product_quantity',
+            'products.product_quantityColor': '$productDetails.product_quantityColor',
+            'products.product_category': '$productDetails.product_category',
+          }
+        }
+      ]);
+  
+      if (orderDetails.length > 0) {
+        res.json(orderDetails[0]);
+      } else {
+        res.status(404).json({ message: 'Không tìm thấy đơn hàng' });
+      }
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: 'Lỗi máy chủ nội bộ' });
+    }
+  });
+
 
 // Top sản phẩm bán chạy
 app.get('/top-selling', async (req, res) => {
@@ -490,7 +678,7 @@ app.post('/logout/:iduser', async (req, res) => {
     const idUser = req.params.iduser;
 
     try {
-        
+
         const user = await User.findById(idUser);
 
         if (!user) {
@@ -524,7 +712,7 @@ app.post('/register', async (req, res) => {
 
         const newProfile = new Profile({
             user: user._id,
-            fullname: username.split('@')[0], 
+            fullname: username.split('@')[0],
             gender: 'Nam',
             avatar: 'https://st.quantrimang.com/photos/image/072015/22/avatar.jpg',
             birthday: '01-01-2000'
@@ -532,7 +720,7 @@ app.post('/register', async (req, res) => {
 
         await newProfile.save();
 
-       return res.sendStatus(201);
+        return res.sendStatus(201);
     } catch (error) {
         return res.status(500).json({ message: error.message });
     }
