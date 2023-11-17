@@ -15,7 +15,7 @@ import { getMonney } from "../../util/money";
 
 import { useDispatch, useSelector } from "react-redux";
 import { fetchDataAndSetToRedux } from "../../redux/AllData";
-import axios from "axios";
+import url from "../../api/url";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import NoProduct from "../../components/NoProduct";
 
@@ -45,9 +45,7 @@ function Cart({ route, navigation }) {
 
   const fetchData = async () => {
     const email = await AsyncStorage.getItem("Email");
-    const cartRef = await fetch(
-      "https://md26bipbip-496b6598561d.herokuapp.com/cart/" + email
-    );
+    const cartRef = await url.get(`/cart/${email}`);
     const cartData = await cartRef.json();
     if (cartData) {
       const products = Object.keys(cartData).map((key) => ({
@@ -76,9 +74,7 @@ function Cart({ route, navigation }) {
   const fetchShippingAddress = async () => {
     try {
       const email = await AsyncStorage.getItem("Email");
-      const response = await fetch(
-        `https://md26bipbip-496b6598561d.herokuapp.com/address/${email}`
-      );
+      const response = await url.get(`/address/${email}`);
       const data = await response.json();
 
       if (data.length > 0) {
@@ -119,11 +115,9 @@ function Cart({ route, navigation }) {
     //   });
   };
 
-  const handleRemoveProduct = (productId) => {
-    axios
-      .delete(
-        "https://md26bipbip-496b6598561d.herokuapp.com/cart/delete/" + productId
-      )
+  const handleRemoveProduct = async (cartId) => {
+    const response = await url.get(`/cart/delete/${cartId}`);
+    response
       .then((response) => {
         fetchData();
       })
@@ -287,7 +281,10 @@ function Cart({ route, navigation }) {
             <TouchableOpacity
               onPress={async () => {
                 const email = await AsyncStorage.getItem("Email");
-                navigation.navigate("AllDiaChi", { userID: email, fromCart: true });
+                navigation.navigate("AllDiaChi", {
+                  userID: email,
+                  fromCart: true,
+                });
               }}
             >
               <View

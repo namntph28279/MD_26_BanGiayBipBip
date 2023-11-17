@@ -9,10 +9,10 @@ import {
   SafeAreaView,
 } from "react-native";
 import axios from "axios";
+import url from "../../api/url";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const ChangePassword = ({ route, navigation }) => {
-  const userId = route.params?.userId || "";
-
   const [oldPassword, setOldPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -23,9 +23,13 @@ const ChangePassword = ({ route, navigation }) => {
 
   const [userData, setUserData] = useState([]);
   useEffect(() => {
+    changePassword();
+  });
+  const changePassword = async () => {
+    const userId = await AsyncStorage.getItem("Email");
     if (userId) {
-      axios
-        .get(`https://md26bipbip-496b6598561d.herokuapp.com/user/${userId}`)
+      const response = await url.get(`/user/${userId}`);
+      response
         .then((response) => {
           const User = response.data;
           setUserData(User);
@@ -34,9 +38,9 @@ const ChangePassword = ({ route, navigation }) => {
           console.error("Have an error:", error);
         });
     }
-  }, [userId]);
+  };
 
-  const handleSavePassword = () => {
+  const handleSavePassword = async () => {
     if (newPassword.length < 6) {
       setErrorNewPassword(true);
       return;
@@ -50,17 +54,16 @@ const ChangePassword = ({ route, navigation }) => {
     } else {
       setErrorConfirmPassword(false);
     }
-
-    axios
-      .post("https://md26bipbip-496b6598561d.herokuapp.com/changepassword", {
-        username: userData.username,
-        oldPassword: oldPassword,
-        newPassword: newPassword,
-      })
+    const response = await url.get("/changepassword", {
+      username: userData.username,
+      oldPassword: oldPassword,
+      newPassword: newPassword,
+    });
+    response
       .then((response) => {
         if (response.status === 200) {
           alert("Đổi mật khẩu thành công");
-          navigation.navigate("TabNavi", { isAuthenticated: true });
+          navigation.navigate("TabNavi");
         }
       })
       .catch((error) => {
@@ -138,9 +141,9 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#fff",
   },
-  formContainer:{
-    marginTop:20,
-    marginBottom:20,
+  formContainer: {
+    marginTop: 20,
+    marginBottom: 20,
   },
   inputContainer: {
     alignSelf: "center",
