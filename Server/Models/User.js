@@ -12,19 +12,11 @@ const userSchema = new mongoose.Schema({
   },
   status: {
     type: Boolean,
-<<<<<<< HEAD
-    default: false 
-  },
-  role: {
-    type: Number,
-    default: 1
-=======
     default: false,
   },
   role:{
     type: Number,
     default: 1,
->>>>>>> d95301213b4124b8654aee3808ba5ca8b4778567
   }
 });
 
