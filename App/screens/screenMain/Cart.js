@@ -46,7 +46,7 @@ function Cart({ route, navigation }) {
   const fetchData = async () => {
     const email = await AsyncStorage.getItem("Email");
     const cartRef = await url.get(`/cart/${email}`);
-    const cartData = await cartRef.json();
+    const cartData = cartRef.data;
     if (cartData) {
       const products = Object.keys(cartData).map((key) => ({
         id: key,
@@ -75,7 +75,7 @@ function Cart({ route, navigation }) {
     try {
       const email = await AsyncStorage.getItem("Email");
       const response = await url.get(`/address/${email}`);
-      const data = await response.json();
+      const data = response.data;
 
       if (data.length > 0) {
         setShippingAddress(data[0].address);
@@ -116,14 +116,12 @@ function Cart({ route, navigation }) {
   };
 
   const handleRemoveProduct = async (cartId) => {
-    const response = await url.get(`/cart/delete/${cartId}`);
-    response
-      .then((response) => {
-        fetchData();
-      })
-      .catch((error) => {
+    const response = await url.delete(`/cart/delete/${cartId}`);
+    if(response.status==200) {
+        return fetchData();
+    }else{
         console.error("Lỗi khi xóa khỏi giỏ hàng", error);
-      });
+    }
   };
 
   const startAnimation = () => {

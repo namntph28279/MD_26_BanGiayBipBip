@@ -29,14 +29,7 @@ const ChangePassword = ({ route, navigation }) => {
     const userId = await AsyncStorage.getItem("Email");
     if (userId) {
       const response = await url.get(`/user/${userId}`);
-      response
-        .then((response) => {
-          const User = response.data;
-          setUserData(User);
-        })
-        .catch((error) => {
-          console.error("Have an error:", error);
-        });
+      setUserData(response.data);
     }
   };
 
@@ -59,21 +52,20 @@ const ChangePassword = ({ route, navigation }) => {
       oldPassword: oldPassword,
       newPassword: newPassword,
     });
-    response
-      .then((response) => {
-        if (response.status === 200) {
-          alert("Đổi mật khẩu thành công");
-          navigation.navigate("TabNavi");
-        }
-      })
-      .catch((error) => {
-        if (error) {
-          setErrorOldPassword(true);
-          return;
-        } else {
-          setErrorOldPassword(false);
-        }
-      });
+
+    if (response.status === 200) {
+      alert("Đổi mật khẩu thành công");
+      navigation.navigate("TabNavi");
+    }
+    if (response.status === 404 || response.status === 401) {
+      setErrorOldPassword(true);
+      return;
+    } else {
+      setErrorOldPassword(false);
+    }
+    if(response.status === 500){
+        alert("Có lỗi xảy ra vui lòng khởi động lại ứng dụng");
+    }
   };
 
   return (
