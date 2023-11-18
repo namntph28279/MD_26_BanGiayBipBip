@@ -313,6 +313,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     backgroundColor: "white",
     shadowColor: "gray",
+    marginLeft:20
   },
   saleImageContainer: {
     width: "100%",
