@@ -11,8 +11,11 @@ import RNPickerSelect from "react-native-picker-select";
 import DatePicker from "react-native-datepicker";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import url from "../../api/url";
+import {fetchDataAndSetToRedux, fetchDataUser} from "../../redux/AllData";
+import {useDispatch} from "react-redux";
 const EditProfile = ({ navigation }) => {
-  const [fullname, setFullname] = useState("");
+    const dispatch = useDispatch();
+    const [fullname, setFullname] = useState("");
   const [gender, setGender] = useState("");
   const [avatar, setAvatar] = useState("");
   const [birthday, setBirthday] = useState("");
@@ -50,6 +53,7 @@ const EditProfile = ({ navigation }) => {
             const data = response.data;
 
             console.log("update Thành công profile:", data, email);
+            dispatch(fetchDataUser());
             navigation.navigate("TabNavi");
         } catch (error) {
             console.error("Lỗi cập nhật profile:", error);
