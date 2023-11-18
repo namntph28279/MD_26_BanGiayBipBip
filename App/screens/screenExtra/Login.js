@@ -4,6 +4,8 @@ import axios from 'axios';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as Notifications from "expo-notifications";
 import url from "../../api/url";
+import {fetchDataAndSetToRedux} from "../../redux/AllData";
+import {useDispatch} from "react-redux";
 
 const Login = ({ navigation }) => {
     const [userName, setUserName] = useState('');
@@ -14,7 +16,7 @@ const Login = ({ navigation }) => {
     const [ktPass, setKtPass] = useState(true);
     const reUserName = /^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/;
     const rePassword = /^.{6,}$/;
-
+    const dispatch = useDispatch(); //trả về một đối tượng điều phối
     const validate = () => {
         if (userName.length === 0 || !reUserName.test(userName)) {
             setCheckUserName(false);
@@ -48,22 +50,19 @@ const Login = ({ navigation }) => {
                     "/login",
                     {
                       username: userName,
-                      password: password,
+                       password,
                     },
-                    {
-                      headers: {
-                        "Content-Type": "application/json",
-                      },
-                    }
                   );
+                console.log(response)
 
                 if (response.status === 200) {
-                    const userData = await response.json();
+                    const userData = await response.data;
                     const userID = userData._id;
                     const Name = userData.username;
                     console.log(userID);
                     console.log(userData);
                     if (userID) {
+                        console.log(1)
                         const username = userName.split('@')[0];
                         await AsyncStorage.setItem("Email", userID);
                         await AsyncStorage.setItem("Name",username);
@@ -72,7 +71,7 @@ const Login = ({ navigation }) => {
                         await AsyncStorage.setItem("TokenApp", pushTokenData.data);
                         await url.post("/checkClientUser", {user: userID, IdClient: pushTokenData.data, status: true});
                         console.log(pushTokenData);
-
+                        dispatch(fetchDataAndSetToRedux());
                         navigation.navigate('TabNavi', {screen: 'Home' });
  
                     } else {

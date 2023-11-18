@@ -1,6 +1,7 @@
 import {createSlice} from "@reduxjs/toolkit";
 import url from "../api/url"
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import * as Notifications from "expo-notifications";
 
 const getDataProduct = async () => {
     try {
@@ -31,13 +32,48 @@ const getDataFavourite = async () => {
     }
 };
 
+const getAsyncStorage = async () => {
+    try {
+        const email = await AsyncStorage.getItem('Email');
+        console.log(email)
+             return email;
+
+    } catch (error) {
+        return [];
+    }
+};
+
+const getDataUser = async () => {
+    try {
+        const email = await AsyncStorage.getItem('Email');
+        const response = await url.get(`/profile/${email}`);
+        console.log(response.data)
+        return response.data;
+    } catch (error) {
+        return [];
+    }
+};
+
+const getTokenApp = async () => {
+    try {
+        const pushTokenData = await Notifications.getExpoPushTokenAsync();
+        console.log(pushTokenData.data)
+        return pushTokenData.data;
+    } catch (error) {
+        return [];
+    }
+};
+
 const dataAll = createSlice({
     name: 'data',
 
     initialState: {
         dataSP: [],
         dataSPBestSale:[],
-        dataSPFav:[]
+        dataSPFav:[],
+        dataUserID:[],
+        dataUser:[] ,
+        dataTokenApp:[]
     },
     reducers: {
         setDataSP: (state, action) => {
@@ -48,11 +84,20 @@ const dataAll = createSlice({
         },
         setDataSPFav: (state, action) => {
             state.dataSPFav = action.payload;
+        },
+        setAsyncStorage: (state, action) => {
+            state.dataUserID = action.payload;
+        },
+        setUser: (state, action) => {
+            state.dataUser = action.payload;
+        },
+        setTokenApp: (state, action) => {
+            state.dataTokenApp = action.payload;
         }
     }
 })
 
-export const { setDataSP,setDataSPBestSale,setDataSPFav } = dataAll.actions;
+export const { setDataSP,setDataSPBestSale,setDataSPFav,setAsyncStorage,setUser ,setTokenApp} = dataAll.actions;
 
 
 export const fetchDataAndSetToRedux = () => async (dispatch) => {
@@ -62,13 +107,21 @@ export const fetchDataAndSetToRedux = () => async (dispatch) => {
     dispatch(setDataSPBestSale(dataBestSale));
     const dataSPFav = await getDataFavourite();
     dispatch(setDataSPFav(dataSPFav));
+    const dataUserID = await  getAsyncStorage();
+    dispatch(setAsyncStorage(dataUserID))
+    const dataUser = await  getDataUser();
+    dispatch(setUser(dataUser))
+    const dataTokenApp = await  getTokenApp();
+    dispatch(setTokenApp(dataTokenApp))
 };
 
 export const fetchDataAndFav = () => async (dispatch) => {
     const dataSPFav = await getDataFavourite();
     dispatch(setDataSPFav(dataSPFav));
-
-
+};
+export const fetchDataUser = () => async (dispatch) => {
+    const dataUser = await  getDataUser();
+    dispatch(setUser(dataUser))
 };
 
 export default dataAll.reducer;

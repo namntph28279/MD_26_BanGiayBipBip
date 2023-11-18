@@ -1,7 +1,9 @@
 import { Image, StyleSheet, Text, View, TouchableOpacity } from 'react-native'
 import React from 'react'
+import {useNavigation} from "@react-navigation/native";
 
-export default function NotLoginUser({ navigation }) {
+export default function NotLoginUser() {
+    const navigation = useNavigation();
     return (
         <View style={styles.container}>
             <Text style={styles.title}>TÀI KHOẢN</Text>
@@ -62,11 +64,11 @@ const styles = StyleSheet.create({
     },
     container: {
         alignItems: 'center',
+        paddingTop: 40,
     },
     title: {
         fontSize: 18,
         fontWeight: 'bold',
-        marginTop: 40,
         marginLeft: 15,
         marginBottom: 7,
     },
