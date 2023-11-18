@@ -15,6 +15,7 @@ import { getMonney } from "../../util/money";
 import axios from "axios";
 import _ from "lodash";
 import { useSelector } from "react-redux";
+import url from "../../api/url";
 
 function Search({ navigation }) {
   const [searchText, setSearchText] = useState("");
@@ -121,9 +122,18 @@ function Search({ navigation }) {
           title: searchText,
         };
 
-        const response = await axios.post(
-          "https://md26bipbip-496b6598561d.herokuapp.com/products/search",
-          // "http://192.168.1.125/products/search",
+        // const response = await axios.post(
+        //   //"https://md26bipbip-496b6598561d.herokuapp.com/products/search",
+        //   "http://192.168.1.125/products/search",
+        //   requestData,
+        //   {
+        //     headers: {
+        //       "Content-Type": "application/json", // Đảm bảo rằng dữ liệu được gửi dưới dạng JSON
+        //     },
+        //   }
+        // );
+        const response = await url.post(
+          "/products/search",
           requestData,
           {
             headers: {

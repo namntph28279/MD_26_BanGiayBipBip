@@ -37,13 +37,25 @@ const Login = ({ navigation }) => {
     const handleLogin = async () => {
         if (validate()) {
             try {
-                const response = await fetch('https://md26bipbip-496b6598561d.herokuapp.com/login', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
+                // const response = await fetch('https://md26bipbip-496b6598561d.herokuapp.com/login', {
+                //     method: 'POST',
+                //     headers: {
+                //         'Content-Type': 'application/json',
+                //     },
+                //     body: JSON.stringify({ username: userName, password }),
+                // });
+                const response = await url.post(
+                    "/login",
+                    {
+                      username: userName,
+                      password: password,
                     },
-                    body: JSON.stringify({ username: userName, password }),
-                });
+                    {
+                      headers: {
+                        "Content-Type": "application/json",
+                      },
+                    }
+                  );
 
                 if (response.status === 200) {
                     const userData = await response.json();
