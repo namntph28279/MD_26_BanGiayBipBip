@@ -10,7 +10,7 @@ import {
 import RNPickerSelect from "react-native-picker-select";
 import DatePicker from "react-native-datepicker";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-
+import url from "../../api/url";
 const EditProfile = ({ navigation }) => {
   const [fullname, setFullname] = useState("");
   const [gender, setGender] = useState("");
@@ -19,47 +19,42 @@ const EditProfile = ({ navigation }) => {
   useEffect(() => {
     fetchData();
   }, []);
-  const fetchData = async () => {
-    const email = await AsyncStorage.getItem("Email");
-    fetch(`https://md26bipbip-496b6598561d.herokuapp.com/profile/${email}`)
-      .then((response) => response.json())
-      .then((data) => {
-        setFullname(data.fullname);
-        setGender(data.gender || "");
-        setAvatar(data.avatar || "");
-        setBirthday(data.birthday);
-      })
-      .catch((error) => {
-        console.error("Lỗi lấy dữ liệu người dùng:", error);
-      });
-  };
+    const fetchData = async () => {
+        const email = await AsyncStorage.getItem("Email");
 
-  const updateUserProfile = async () => {
-    const email = await AsyncStorage.getItem("Email");
-    const profileData = {
-      user: email,
-      fullname,
-      gender,
-      avatar,
-      birthday,
+        try {
+            const response = await url.get(`/profile/${email}`);
+            const data = response.data;
+
+            setFullname(data.fullname);
+            setGender(data.gender || "");
+            setAvatar(data.avatar || "");
+            setBirthday(data.birthday);
+        } catch (error) {
+            console.error("Lỗi lấy dữ liệu người dùng:", error);
+        }
     };
 
-    fetch("https://md26bipbip-496b6598561d.herokuapp.com/profile/edit", {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(profileData),
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        console.log("update Thành công profile:", data, email);
-        navigation.navigate("TabNavi");
-      })
-      .catch((error) => {
-        console.error("Lỗi cập nhật profile:", error);
-      });
-  };
+    const updateUserProfile = async () => {
+        const email = await AsyncStorage.getItem("Email");
+        const profileData = {
+            user: email,
+            fullname,
+            gender,
+            avatar,
+            birthday,
+        };
+
+        try {
+            const response = await url.put("/profile/edit", profileData);
+            const data = response.data;
+
+            console.log("update Thành công profile:", data, email);
+            navigation.navigate("TabNavi");
+        } catch (error) {
+            console.error("Lỗi cập nhật profile:", error);
+        }
+    };
 
   return (
     <View style={styles.container}>

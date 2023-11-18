@@ -3,6 +3,7 @@ import { View, Text, TouchableOpacity, ScrollView, Image, StyleSheet ,Modal,Touc
 import { CheckBox } from "react-native-elements";
 import Icon from 'react-native-vector-icons/FontAwesome';
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import url from "../../api/url";
 const ThanhToanScreen = ({ route, navigation }) => {
     const [selectedProducts, setSelectedProducts] = useState([]);
     const userID = route.params?.userID || '';
@@ -52,6 +53,9 @@ const ThanhToanScreen = ({ route, navigation }) => {
 
         fetchDefaultAddress();
     }, []);
+    useEffect(() => {
+        calculateTotalAmount();
+    }, [selectedProducts, insuranceFee, shippingFee]);
 
     useEffect(() => {
         calculateTotalAmount();
@@ -157,29 +161,26 @@ const ThanhToanScreen = ({ route, navigation }) => {
             };
 
             console.log('Order Data:', orderData);
-            const response = await fetch('https://md26bipbip-496b6598561d.herokuapp.com/order/addd', {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                            },
-                            body: JSON.stringify(orderData),
-                        });
 
-                        if (response.ok) {
-                            const result = await response.json();
-                            console.log('Đặt hàng thành công:', result);
-                        } else {
-                            console.error('Lỗi đặt hàng:', response.status, response.statusText);
-                        }
+            const response = await url.post('/order/addd', orderData);
+
+            if (response.status === 201) {
+                const result = response.data;
+                console.log('Đặt hàng thành công:', result);
+            } else {
+                console.error('Lỗi đặt hàng:', response.status, response.statusText);
+                console.error('Server response:', response.data); // Log the server response for more details
+            }
 
         } catch (error) {
-            console.error('lỗi đặt hàng:', error);
+            console.error('Lỗi đặt hàng:', error);
         }
     };
 
     return (
         <View style={styles.container}>
             <TouchableOpacity style={styles.addressContainer} onPress={handleAddressPress}>
+
                 <View>
                     <Text style={styles.addressLabel}>Địa chỉ nhận hàng:</Text>
                     <Text style={styles.addressText}>Tên: {shippingAddress.name}</Text>
@@ -248,7 +249,7 @@ const ThanhToanScreen = ({ route, navigation }) => {
                             THANH TOÁN
                         </Text>
                         <Image style={{
-                           alignSelf:'center',
+                            alignSelf:'center',
                         }} source={require("../../image/next.png")} />
                     </View>
                 </TouchableOpacity>

@@ -33,21 +33,15 @@ function User({ navigation }) {
   }, []);
   const fetchUserData = async () => {
     try {
-     const email = await AsyncStorage.getItem('Email');
-            const idApp = await AsyncStorage.getItem('TokenApp');
-            setUserID(email);
-            setIdApp(idApp);
-      const response = await fetch(
-        `https://md26bipbip-496b6598561d.herokuapp.com/profile/${email}`
-      );
-      if (!response.ok) {
-        throw new Error("Lỗi khi lấy thông tin người dùng");
-      }
+      const email = await AsyncStorage.getItem("Email");
+      const idApp = await AsyncStorage.getItem("TokenApp");
+      setUserID(email);
+      setIdApp(idApp);
 
-      const data = await response.json();
-      setUserData(data);
+      const response = await url.get(`/profile/${email}`);
+      setUserData(response.data);
     } catch (error) {
-      // console.error('Lỗi:', error);
+      console.error('Error:', error);
     }
   };
 
