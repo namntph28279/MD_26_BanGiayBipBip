@@ -5,24 +5,23 @@ import firebase from '../../config/FirebaseConfig';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import url from "../../api/url";
+import {useSelector} from "react-redux";
 
 const ChatScreen = ({ navigation }) => {
     const [message, setMessage] = useState('');
     const [dataAll, setDataALL] = useState();
     const [dataName, setDataName] = useState();
-    const [dataId, setDataId] = useState();
-    const [IDApp, setIdApp] = useState()
+    
+    const dataUserID = useSelector((state) => state.dataAll.dataUserID);
+    const tokenApp = useSelector((state) => state.dataAll.dataTokenApp);
 
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const email = await AsyncStorage.getItem('Email');
                 const name = await AsyncStorage.getItem('Name');
-                const idApp = await AsyncStorage.getItem('TokenApp');
-                setIdApp(idApp);
                 setDataName(name);
-                setDataId(email);
-                const response = await url.post("/chatShop", { user: email });
+
+                const response = await url.post("/chatShop", { user: dataUserID });
                 const newData = response.data.content;
                 if (newData !== undefined) {
                     newData.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
@@ -44,7 +43,7 @@ const ChatScreen = ({ navigation }) => {
 
     const handleSendMessage = async () => {
         if (message.length > 0) {
-            await url.post("/home/chatShop", { user: dataId, fullName: dataName, beLong: "user", conTenMain: message, status: "true" });
+            await url.post("/home/chatShop", { user: dataUserID, fullName: dataName, beLong: "user", conTenMain: message, status: "true" });
             setMessage('')
         }
     };
@@ -62,7 +61,7 @@ const ChatScreen = ({ navigation }) => {
 
     const backScreen = async () => {
 
-        await url.post("/checkClientMess", { user: dataId, IdClient: IDApp, status: false });
+        await url.post("/checkClientMess", { user: dataUserID, IdClient: tokenApp, status: false });
         navigation.navigate('TabNavi');
     }
 
