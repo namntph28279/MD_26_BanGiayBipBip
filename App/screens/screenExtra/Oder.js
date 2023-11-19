@@ -2,6 +2,7 @@ import React, { Children, useEffect, useState } from 'react';
 import { Text, View, StyleSheet, Image, TouchableOpacity, ScrollView, SafeAreaView, Dimensions, FlatList } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import axios from 'axios';
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import url from "../../api/url";
 
 const Oder = ({ route }) => {
@@ -9,39 +10,36 @@ const Oder = ({ route }) => {
     const [status, setStatus] = useState('Chờ xác nhận');
     const [loading, setLoading] = useState(true);
 
-    // console.log('hiidfdfdf', orderProductsList)
-    // const [data, setData] = useState([]);
-    // const { userId } = route.params;
-    // //List Sản phẩm trong hóa đơn
-
     const fetchDataList = async () => {
+        const email = await AsyncStorage.getItem("Email");
+        // const email = '654e236c065edfb9cbd65957';
+        console.log("oder", email);
         try {
             console.log('Fetching data...');
             const response = await url.get('/order');
             console.log('Response:', response);
             const data = response.data;
 
-
-            const formattedData = data.map(order => ({
-                id: order._id,
-                user: order.user,
-                status: order.status,
-                customerEmail: order.customer_email,
-                products: order.products.map(product => ({
-                    id: product._id,
-                    productId: product.product,
-                    quantity: product.quantity,
-                    colorId: product.colorId,
-                    sizeId: product.sizeId,
-                })),
-                addressId: order.address,
-                orderDate: order.order_date,
-            }));
-
-            console.log('Formatted data', formattedData);
-
+            const formattedData = data
+                .filter(order => order.user === email)
+                .map(order => ({
+                    id: order._id,
+                    user: order.user,
+                    status: order.status,
+                    customerEmail: order.customer_email,
+                    products: order.products.map(product => ({
+                        id: product._id,
+                        productId: product.product,
+                        quantity: product.quantity,
+                        colorId: product.colorId,
+                        sizeId: product.sizeId,
+                    })),
+                    addressId: order.address,
+                    orderDate: order.order_date,
+                }));
+            // console.log('Formatted data', formattedData);
             setOrderProductsList(formattedData);
-            setDatalist(formattedData);
+            // setDatalist(formattedData);
             setLoading(false);
 
         } catch (error) {
@@ -66,35 +64,74 @@ const Oder = ({ route }) => {
     ];
 
     const renderItem = ({ item, index }) => {
+        const fetchProductDetails = async (productId) => {
+            try {
+                const productApiUrl = `http://192.168.100.6/product/${productId}`;
+                const response = await fetch(productApiUrl);
+                const productDetails = await response.json();
+                console.log('Product Details:', productDetails);
+                return productDetails;
+            } catch (error) {
+                console.error('Error fetching product details:', error);
+                return null;
+            }
+        };
+
+        // Fetch details for each product in the order
+        const productDetailsPromises = item.products.map(async (product) => {
+            const details = await fetchProductDetails(product.productId);
+            return {
+                ...product,
+                details,
+            };
+        });
+        
+
         return (
             <TouchableOpacity
-                style={styles.frame}
-                onPress={() => {
-                    console.log('Product ID:', item.productId);
-                    navigation.navigate("InformationLine",
-                        { productId: item.product })
-                }}
-            >
-                <View key={index} style={styles.productBox}>
-                    <Text>{`user ID: ${item.user}`}</Text>
-                    <Text>{`Status: ${item.status}`}</Text>
-                    <Text style={styles.itemName}>{`Email: ${item.customerEmail}`}</Text>
-                    {item.products.map(product => (
-                        <View key={product.id}>
-                            <Text >{`Product ID: ${product.productId}`}</Text>
-                            <Text>{`Quantity: ${product.quantity}`}</Text>
-                            <Text>{`Color ID: ${product.colorId}`}</Text>
-                            <Text>{`Size ID: ${product.sizeId}`}</Text>
-                        </View>
-                    ))}
-                    <Text>{`Address ID: ${item.addressId}`}</Text>
-                    <Text>{`Order Date: ${item.orderDate}`}</Text>
-                </View>
-            </TouchableOpacity>
+            style={styles.frame}
+            onPress={() => {
+                console.log('Product ID:', item.productId);
+                navigation.navigate("InformationLine", { productId: item.product });
+            }}
+        >
+            <View key={index} style={styles.productBox}>
+                <Text>{`user ID: ${item.user}`}</Text>
+                <Text>{`Status: ${item.status}`}</Text>
+                <Text style={styles.itemName}>{`Email: ${item.customerEmail}`}</Text>
+                {item.products.map(product => (
+                    <View key={product.id}>
+                        <Text>{`Product ID: ${product.productId}`}</Text>
+                        <Text>{`Quantity: ${product.quantity}`}</Text>
+                        {/* Display product details */}
+                        {product.details && (
+                            <View>
+                                <Text>{`Product Name: ${product.details.product_title}`}</Text>
+                                <Text>{`Product Price: ${product.details.product_price}`}</Text>
+                                {/* Display colors */}
+                                <Text>Colors:</Text>
+                                {product.details.colors.map(color => (
+                                    <View key={color._id}>
+                                        <Text>{`Color Name: ${color.color_name}`}</Text>
+                                        <Text>{`Color Image: ${color.color_image}`}</Text>
+                                    </View>
+                                ))}
+                                {/* Display sizes */}
+                                <Text>Sizes:</Text>
+                                {product.details.sizes.map(size => (
+                                    <View key={size._id}>
+                                        <Text>{`Size Name: ${size.size_name}`}</Text>
+                                        <Text>{`Size Quantity: ${size.size_quantity}`}</Text>
+                                    </View>
+                                ))}
+                            </View>
+                        )}
+                    </View>
+                ))}
+            </View>
+        </TouchableOpacity>
         );
     };
-
-
 
     const [datalist, setDatalist] = useState(orderProductsList);
 
@@ -103,10 +140,10 @@ const Oder = ({ route }) => {
 
         if (setStatusFilter === 'Chờ xác nhận') {
             // For 'Chờ giao hàng', show all items with status 'none'
-            filteredData = orderProductsList.filter(e => e.status === '0');
+            filteredData = orderProductsList.filter(e => e.status === 0);
         } else if (setStatusFilter === 'Chờ lấy hàng') {
             // For other statuses, filter based on the selected status
-            filteredData = orderProductsList.filter(e => e.status === 'none');
+            filteredData = orderProductsList.filter(e => e.status === 1);
         } else if (setStatusFilter === 'Chờ giao hàng') {
             // For other statuses, filter based on the selected status
             filteredData = orderProductsList.filter(e => e.status === 3);
@@ -162,54 +199,6 @@ const Oder = ({ route }) => {
                 )}
             </SafeAreaView>
             <View style={{ width: '100%', backgroundColor: 'black', height: 1 }} />
-            {/* <View style={{ margin: 15 }}>
-                <Text style={{ fontSize: 16, fontWeight: 'bold' }}>Bạn có thể tham khảo: {countSelectedProducts()}</Text>
-            </View> */}
-            {/* <View style={{ margin: 15 }}>
-                <Text style={{ fontSize: 16, fontWeight: 'bold' }}>Bạn có thể tham khảo: {countSelectedProducts()}</Text>
-            </View>
-            <ScrollView style={{ paddingHorizontal: 16 }}>
-                {
-                    oderProductsList.map((product, index) => (
-                        <View key={product.key} style={styles.productContainer}>
-                            <View style={styles.productBox}>
-                                <Text style={styles.productName}>Hóa đơn thứ: {index + 1}</Text>
-                                {product.variables.map((variable) => (
-                                    <View key={variable.key} style={styles.productItemContainer}>
-
-                                        <View style={styles.productBox1}>
-
-                                            <Image source={{ uri: variable.value.search_image }} style={styles.productImage} />
-                                            <View style={styles.productInfo}>
-
-                                                <Text style={styles.productName}>{variable.value.brands_filter_facet}</Text>
-                                                <Text style={styles.productquantity}>Số lượng: {variable.value.quantity}</Text>
-                                                <Text style={styles.productPrice}>{variable.value.price * variable.value.quantity} VNĐ</Text>
-                                            </View>
-                                        </View>
-                                    </View>
-                                ))}
-                                <View style={{ marginBottom: 8, flexDirection: 'row', justifyContent: 'space-between' }}>
-                                    <Text style={{ fontSize: 20, fontWeight: 'bold', marginLeft: 15 }}>Tổng:</Text>
-                                    <Text style={{ fontSize: 20, fontWeight: 'bold', color: 'red', marginLeft: 15 }}>
-                                        {sumSelectedProductsPrice(product.key)} VNĐ
-                                    </Text>
-                                </View>
-                                <View style={styles.buttonContainer}>
-                                    <TouchableOpacity style={styles.button1} onPress={() => handleBuyNow(product)}>
-                                        <Ionicons name="cart-outline" size={24} color="#ff6" />
-                                        <Text style={styles.buttonText1}>Đánh giá</Text>
-                                    </TouchableOpacity>
-                                    <TouchableOpacity style={styles.button} onPress={() => handleRemoveProduct(product.key)}>
-                                        <Ionicons name="trash-outline" size={24} color="#fff" />
-                                        <Text style={styles.buttonText}>Xóa</Text>
-                                    </TouchableOpacity>
-                                </View>
-                            </View>
-                        </View>
-                    ))
-                }
-            </ScrollView> */}
         </View>
     );
 }
@@ -225,7 +214,8 @@ const styles = StyleSheet.create({
         height: '100%',
     },
     listTab: {
-
+        // height: '10%',
+        textAlign: 'center',
         flexDirection: 'row',
         alignSelf: 'center',
         marginBottom: 20,
@@ -259,7 +249,7 @@ const styles = StyleSheet.create({
 
     scrollContainer: {
         // width: '1000%',
-        height: 100,
+        height: 74,
     },
 
     itemBody: {
