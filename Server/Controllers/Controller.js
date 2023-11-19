@@ -14,6 +14,9 @@ const app = express();
 const Handlebars = require('express-handlebars');
 const bodyParser = require('body-parser');
 const handlebarshelper = require("../handlebars-helpers");
+const checkClient = require("../Models/CheckClientUser");
+const orderDetail = require("../Models/Oderdetail");
+const mongoose = require("mongoose");
 
 app.set('Views', __dirname + '/views');
 
@@ -1108,5 +1111,51 @@ app.get('/sizes/:colorId', async (req, res) => {
     }
 });
 
+app.get('/order/addOderDetail/All',async (req,res)=>{
+    const oderAll = await orderDetail.find({ });
 
+    res.json(oderAll);
+})
+
+app.post('/order/addOderDetail', async (req, res) => {
+    try {
+       const data = req.body;
+        console.log(data.products.length)
+        let dataProductOrder = []
+
+        for (let i = 0; i < data.products.length; i++) {
+            const dataProduct= {
+                product:data.products[i].product,
+                img_product:data.products[i].img_product,
+                name_Product:data.products[i].name_Product,
+                name_Size:data.products[i].name_Size,
+                name_Price:data.products[i].name_Price,
+                quantityProduct:data.products[i].quantityProduct
+            }
+
+            dataProductOrder.push(dataProduct)
+        }
+        const newOder = new orderDetail({
+            user:data.user,
+            customer_email: data.customer_email,
+            products: dataProductOrder,
+            total_amount:data.total_amount,
+            userName:data.userName,
+            phone:data.phone,
+            address:data.address,
+
+            total_product:data.total_product,
+            total_insurance_amount:data.total_insurance_amount,
+            total_shipping_fee:data.total_shipping_fee,
+            total_All:data.total_All,
+        });
+        const savedOrder = await newOder.save();
+
+        res.status(201).json(savedOrder);
+        console.log(data)
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Lỗi máy chủ nội bộ' });
+    }
+});
 module.exports = app;

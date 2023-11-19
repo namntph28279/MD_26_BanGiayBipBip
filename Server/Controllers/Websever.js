@@ -90,7 +90,6 @@ app.post('/screenWarehouse/search', async (req, res) => {
 });
 app.post('/order/status/:orderId', async (req, res) => {
     const orderId = req.params.orderId;
-    console.log(orderId)
     try {
         const order = await Order.findById(orderId);
         if (!order) {
@@ -107,10 +106,8 @@ app.post('/order/status/:orderId', async (req, res) => {
 
 app.post('/order/status/Comfig/:id', async (req, res) => {
     const orderId = req.params.id;
-    console.log(orderId)
     try {
                 const order = await Order.findById(orderId);
-                console.log(order)
                 if (!order) {
                     return res.status(404).json({message: 'Đơn hàng không tồn tại'});
                 }
@@ -440,6 +437,7 @@ app.post('/sendNotificationMess', async (req, res) => {
 
 app.post('/checkClientUser', async (req, res) => {
     const data = req.body;
+    console.log(data)
     if (data.user === null) {
         return
     }
@@ -480,7 +478,6 @@ app.post('/checkClientUser', async (req, res) => {
 
 app.post('/checkClientMess', async (req, res) => {
     const data = req.body;
-    console.log(data)
     console.log("start")
     if (data.user === null) {
         return
