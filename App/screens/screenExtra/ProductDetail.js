@@ -40,6 +40,7 @@ function ProductDetail({ route, navigation }) {
     const [productImageURL, setProductImageURL] = useState(null);
     const [selectedColorData, setSelectedColorData] = useState(null);
     const [selectedColorImage, setSelectedColorImage] = useState(null);
+    const [availableSizes, setAvailableSizes] = useState([]);
 
     // const userId = '64ab9784b65d14d1076c3477';
 
@@ -84,11 +85,17 @@ function ProductDetail({ route, navigation }) {
             const data = response.data;
 
             setSizeOptions(data);
-            setSelectedSize(data[0]);
+            const availableSizesData = data.map((size) => ({
+                ...size,
+                available: size.size_quantity > 0,
+            }));
+            setAvailableSizes(availableSizesData);
+            setSelectedSize(availableSizesData.find((size) => size.available));
         } catch (error) {
             console.error('Error:', error);
         }
     };
+
 
 
     useEffect(() => {
@@ -380,27 +387,32 @@ function ProductDetail({ route, navigation }) {
 
 
 
-                    <ScrollView
-                        style={styles.sizeOptionsContainer}
-                        horizontal={true}
-                        showsHorizontalScrollIndicator={false}
-                    >
-                        {sizeOptions.map((size, index) => (
-                            <TouchableOpacity
-                                key={index}
-                                style={[
-                                    styles.optionButton,
-                                    selectedSize === size && styles.selectedOptionSize,
-                                ]}
-                                onPress={() => selectSize(size)}
-                            >
-                                <Text>{size.size_name}</Text>
-                            </TouchableOpacity>
-                        ))}
-                    </ScrollView>
+                        <ScrollView
+                            style={styles.sizeOptionsContainer}
+                            horizontal={true}
+                            showsHorizontalScrollIndicator={false}
+                        >
+                            {availableSizes.map((size, index) => (
+                                <TouchableOpacity
+                                    key={index}
+                                    style={[
+                                        styles.optionButton,
+                                        selectedSize === size && styles.selectedOptionSize,
+                                        !size.available && styles.disabledOption,
+                                    ]}
+                                    onPress={() => size.available && selectSize(size)}
+                                    activeOpacity={size.available ? 0.8 : 1}
+                                >
+                                    <Text style={size.available ? {} : styles.disabledOptionText}>
+                                        {size.size_name}
+                                    </Text>
+                                </TouchableOpacity>
+                            ))}
+                        </ScrollView>
 
 
-                    <View style={styles.quantityContainer}>
+
+                        <View style={styles.quantityContainer}>
                         <TouchableOpacity style={styles.quantityButton} onPress={decreaseQuantity}>
                             <Text style={styles.quantityButtonText}>-</Text>
                         </TouchableOpacity>
@@ -489,6 +501,15 @@ const styles = StyleSheet.create({
         backgroundColor: 'grey',
         color: 'black',
     },
+    disabledOption: {
+        backgroundColor: '#ccc',
+        opacity: 0.7,
+    },
+
+    disabledOptionText: {
+        color: '#888',
+    },
+
     optionButtonText: {
         fontSize: 16,
         fontWeight: 'bold',
