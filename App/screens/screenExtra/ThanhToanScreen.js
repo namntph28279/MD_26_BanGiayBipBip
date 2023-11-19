@@ -18,6 +18,7 @@ import { Alert } from 'react-native';
 const ThanhToanScreen = ({ route, navigation }) => {
     const [selectedProducts, setSelectedProducts] = useState([]);
     const userID = route.params?.userID || '';
+    const [soLuong,setSoLuong ]= useState();
     const [paymentMethod, setPaymentMethod] = useState('');
     const [shippingAddress, setShippingAddress] = useState('');
     const [isAddressSelected, setIsAddressSelected] = useState(false);
@@ -78,9 +79,12 @@ const ThanhToanScreen = ({ route, navigation }) => {
 
     const calculateTotalAmount = () => {
         let productTotal = 0;
+        let productSoLuong = 0;
         selectedProducts.forEach((product) => {
+            productSoLuong += product.quantity;
             productTotal += product.quantity * product.productPrice;
         });
+        setSoLuong(productSoLuong);
         setProductTotal(productTotal);
         const insurance = productTotal * 0.01;
         setInsuranceFee(insurance > 3000 ? insurance : 3000);
@@ -194,7 +198,8 @@ const ThanhToanScreen = ({ route, navigation }) => {
                 total_product:productTotal,
                 total_insurance_amount:insuranceFee,
                 total_shipping_fee:shippingFee,
-                total_All:totalPayment
+                total_All:totalPayment,
+                total_quantity:soLuong
             };
 
 
