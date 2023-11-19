@@ -39,19 +39,23 @@ app.use(express.json());
 //màn hình home
 app.get('/home', async (req, res) => {
     try {
-        const confirm = await Order.find({status: 0}).sort({order_date: -1});//chờ xác nhận
-        const pickup = await Order.find({status: 1}).sort({order_date: -1});//đang chuẩn bị
-        const delivered = await Order.find({status: 2}).sort({order_date: -1});//đang giao
-        const returns = await Order.find({status: 3}).sort({order_date: -1});//yêu cầu  hủy đơn
-        const history = await Order.find({status: 4}).sort({order_date: -1});//đã hủy
-        const delivery = await Order.find({status: 5}).sort({order_date: -1});//đã nhận
+        const choXacNhan = await Order.find({status: 0}).sort({order_date: -1});//chờ xác nhận
+        const choLayHang = await Order.find({status: 1}).sort({order_date: -1});//Chờ lấy hàng
+        const choGiaoHang = await Order.find({status: 2}).sort({order_date: -1});//Chờ giao hàng
+
+        const daGiao = await Order.find({status: 3}).sort({order_date: -1});//Đã giao
+
+        const daHuy = await Order.find({status: 4}).sort({order_date: -1});//đã hủy
+
+        const traHang = await Order.find({status: 5}).sort({order_date: -1});//Trả hàng
+
         res.render('../Views/screenHome.hbs', {
-            confirm: confirm,
-            pickup: pickup,
-            delivery: delivery,
-            delivered: delivered,
-            returns: returns,
-            history: history
+            choXacNhan: choXacNhan,
+            choLayHang: choLayHang,
+            choGiaoHang: choGiaoHang,
+            daGiao: daGiao,
+            daHuy: daHuy,
+            traHang: traHang
         });
     } catch (error) {
         res.status(500).json({message: error.message});
@@ -123,11 +127,8 @@ app.post('/order/status/Comfig/:id', async (req, res) => {
                     order.status = 3;
                     await order.save();
                     res.redirect('/home')
-                } else {
-                    order.status = 4;
-                    await order.save();
-            res.redirect('/home')
-        }
+                }
+
 
     } catch (error) {
         res.status(500).json({message: error.message});
