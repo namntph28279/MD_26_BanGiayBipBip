@@ -47,7 +47,7 @@ const ChangePassword = ({ route, navigation }) => {
     } else {
       setErrorConfirmPassword(false);
     }
-    const response = await url.get("/changepassword", {
+    const response = await url.post("/changepassword", {
       username: userData.username,
       oldPassword: oldPassword,
       newPassword: newPassword,
