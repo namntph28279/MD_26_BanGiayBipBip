@@ -1,5 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TouchableOpacity, ScrollView, Image, StyleSheet ,Modal,TouchableWithoutFeedback} from 'react-native';
+import {
+    View,
+    Text,
+    TouchableOpacity,
+    ScrollView,
+    Image,
+    StyleSheet,
+    Modal,
+    TouchableWithoutFeedback,
+    ActivityIndicator
+} from 'react-native';
 import { CheckBox } from "react-native-elements";
 import Icon from 'react-native-vector-icons/FontAwesome';
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -19,13 +29,13 @@ const ThanhToanScreen = ({ route, navigation }) => {
     const [insuranceFee, setInsuranceFee] = useState(0);
     const [shippingFee, setShippingFee] = useState(30000);
     const [totalPayment, setTotalPayment] = useState(0);
-
+    const [isPaymentSuccessModalVisible, setPaymentSuccessModalVisible] = useState(false);
+    const [isPaymentFailureModalVisible, setPaymentFailureModalVisible] = useState(false);
+    const [isPaymentSuccess, setIsPaymentSuccess] = useState(false);
+    const [isCheckmarkVisible, setIsCheckmarkVisible] = useState(true);
     //
 
-    const productList = [
-        { id: 1, name: 'Sản phẩm A', quantity: 2, price: 20, image: require('../../image/logo.png') },
-        { id: 2, name: 'Sản phẩm B', quantity: 1, price: 30, image: require('../../image/logo.png') },
-    ];
+
     useEffect(() => {
         console.log('Selected Products:', selectedProducts);
         if (!userID) {
@@ -127,12 +137,22 @@ const ThanhToanScreen = ({ route, navigation }) => {
         navigation.navigate('AllDiaChi', { userID, fromThanhToan: true, selectedProducts });
 
     };
-    const handlePaymentMethodPress = () => {
-        setPaymentModalVisible(true);
+    const handlePaymentSuccess = () => {
+        setPaymentSuccessModalVisible(true);
+    };
+
+    const handlePaymentFailure = () => {
+        setPaymentFailureModalVisible(true);
     };
 
     const handlePaymentModalClose = () => {
         setPaymentModalVisible(false);
+        setPaymentSuccessModalVisible(false);
+        setPaymentFailureModalVisible(false);
+    };
+
+    const handlePaymentMethodPress = () => {
+        setPaymentModalVisible(true);
     };
 
     const handleMomoCheckboxChange = () => {
@@ -173,13 +193,31 @@ const ThanhToanScreen = ({ route, navigation }) => {
             if (response.status === 201) {
                 const result = response.data;
                 console.log('Đặt hàng thành công:', result);
+                handlePaymentSuccess();
+                setTimeout(() => {
+                    setIsCheckmarkVisible(true);
+                    setTimeout(() => {
+                        setIsCheckmarkVisible(false);
+                        setPaymentSuccessModalVisible(false);
+                    }, 2000);
+                }, 2000);
             } else {
                 console.error('Lỗi đặt hàng:', response.status, response.statusText);
                 console.error('Server response:', response.data);
+                handlePaymentFailure();
+                    setTimeout(() => {
+                        setIsCheckmarkVisible(false);
+                        setPaymentSuccessModalVisible(true);
+                    }, 2000);
             }
 
         } catch (error) {
             console.error('Lỗi đặt hàng:', error);
+            handlePaymentFailure();
+            setTimeout(() => {
+                setIsCheckmarkVisible(false);
+                setPaymentSuccessModalVisible(true);
+            }, 2000);
         }
     };
 
@@ -260,7 +298,43 @@ const ThanhToanScreen = ({ route, navigation }) => {
                     </View>
                 </TouchableOpacity>
             </View>
+            <Modal
+                animationType="slide"
+                transparent={true}
+                visible={isPaymentSuccessModalVisible}
+                onRequestClose={handlePaymentModalClose}>
+                <View style={styles.centeredView}>
+                    <View style={styles.modalContent}>
+                        {isCheckmarkVisible ? (
+                            <>
+                                <Icon name="check-circle" size={50} color="#1abc9c" />
+                                <Text style={styles.modalTitle}>Thanh toán thành công!</Text>
+                            </>
+                        ) : (
+                            <ActivityIndicator size="large" color="#1abc9c" />
+                        )}
+                    </View>
+                </View>
+            </Modal>
 
+            <Modal
+                animationType="slide"
+                transparent={true}
+                visible={isPaymentFailureModalVisible}
+                onRequestClose={() => setPaymentFailureModalVisible(false)}>
+                <View style={styles.centeredView}>
+                    <View style={styles.modalContent}>
+                        {isCheckmarkVisible ? (
+                            <>
+                                <Icon name="times-circle" size={50} color="red" />
+                                <Text style={styles.modalTitle}>Thanh toán thất bại!</Text>
+                            </>
+                        ) : (
+                            <ActivityIndicator size="large" color="#1abc9c" />
+                        )}
+                    </View>
+                </View>
+            </Modal>
             <Modal animationType="slide" transparent={true} visible={isPaymentModalVisible} onRequestClose={handlePaymentModalClose}>
                 <TouchableWithoutFeedback onPress={handlePaymentModalClose}>
                     <View style={styles.modalContainer}>
@@ -322,6 +396,18 @@ const styles = StyleSheet.create({
         paddingBottom: 16,
         backgroundColor: '#cbb9b9',
         borderRadius: 8,
+    },
+    centeredView: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+
+    successModalContent: {
+        backgroundColor: 'white',
+        borderRadius: 20,
+        padding: 20,
+        alignItems: 'center',
     },
     productImage: {
         width: 80,
