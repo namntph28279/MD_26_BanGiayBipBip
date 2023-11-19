@@ -94,12 +94,39 @@ app.post('/screenWarehouse/search', async (req, res) => {
 });
 app.post('/order/status/:orderId', async (req, res) => {
     const orderId = req.params.orderId;
+    const data = req.body
+    const mess = "Đơn hàng của bạn đã bị hủy vì: "+data.noiDung
+    console.log(mess)
     try {
-        const order = await Order.findById(orderId);
-        if (!order) {
+         const order = await Order.findById(orderId);
+         if (!order) {
             return res.status(404).json({message: 'Đơn hàng không tồn tại'});
         }
+        const idUserOrder = order.user;
+        const IDClient = await checkClient.findOne({user: idUserOrder});
+        const filteredData = IDClient.client.filter(item => item.status === "true");
+        const idClientArray = filteredData.map(item => item.IdClient);
+
+        function NotificaionClient(id, mess) {
+            fetch('https://exp.host/--/api/v2/push/send', {
+                mode: 'no-cors',
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    to: id,
+                    title: 'ShopBipBip',
+                    body: mess,
+                    data: {
+                        message: mess,
+                    },
+                })
+            });
+        }
+        NotificaionClient(idClientArray,mess)
         order.status = 4;
+        order.lyDoHuyDon =data.noiDung
         await order.save();
         res.redirect('/home')
     } catch (error) {
@@ -111,24 +138,49 @@ app.post('/order/status/:orderId', async (req, res) => {
 app.post('/order/status/Comfig/:id', async (req, res) => {
     const orderId = req.params.id;
     try {
-                const order = await Order.findById(orderId);
-                if (!order) {
-                    return res.status(404).json({message: 'Đơn hàng không tồn tại'});
-                }
-                if (order.status === 0) {
-                    order.status = 1;
-                    await order.save();
-                    res.redirect('/home')
-                } else if (order.status === 1) {
-                    order.status = 2;
-                    await order.save();
-                    res.redirect('/home')
-                } else if (order.status === 2) {
-                    order.status = 3;
-                    await order.save();
-                    res.redirect('/home')
-                }
+        const order = await Order.findById(orderId);
+        if (!order) {
+            return res.status(404).json({message: 'Đơn hàng không tồn tại'});
+        }
+        const idUserOrder = order.user;
+        const IDClient = await checkClient.findOne({user: idUserOrder});
+        const filteredData = IDClient.client.filter(item => item.status === "true");
+        const idClientArray = filteredData.map(item => item.IdClient);
 
+        function NotificaionClient(id, mess) {
+            fetch('https://exp.host/--/api/v2/push/send', {
+                mode: 'no-cors',
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    to: id,
+                    title: 'ShopBipBip',
+                    body: mess,
+                    data: {
+                        message: mess,
+                    },
+                })
+            });
+        }
+
+        if (order.status === 0) {
+            order.status = 1;
+            await order.save();
+            NotificaionClient(idClientArray, "Đơn hàng của bạn đã được xác nhận và đang chuẩn bị hàng")
+            res.redirect('/home')
+        } else if (order.status === 1) {
+            order.status = 2;
+            await order.save();
+            NotificaionClient(idClientArray, "Đơn hàng của bạn đã được chuẩn bị xong và đang đợi đơn vị vận chuyển")
+            res.redirect('/home')
+        } else if (order.status === 2) {
+            order.status = 3;
+            await order.save();
+            NotificaionClient(idClientArray, "Đơn hàng của bạn đã được giao cho đơn vị vận chuyển")
+            res.redirect('/home')
+        }
 
     } catch (error) {
         res.status(500).json({message: error.message});
