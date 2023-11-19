@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   Animated,
   ScrollView,
+  Alert,
 } from "react-native";
 
 import { Ionicons } from "@expo/vector-icons";
@@ -38,7 +39,7 @@ function Cart({ route, navigation }) {
   }, [navigation]);
 
   useEffect(() => {
-    fetchShippingAddress();
+    // fetchShippingAddress();
     fetchData();
     setDataSP(dataProduct);
   }, [dataProduct]);
@@ -60,33 +61,22 @@ function Cart({ route, navigation }) {
     }
   };
 
-  // const fetchShippingAddress = async () => {
-  //   const addressRef = await fetch(
-  //     "https://md26bipbip-496b6598561d.herokuapp.com/address/" + userID
-  //   );
-  //   const addressData = await addressRef.json();
-  //   if (addressData) {
-  //     setShippingAddress(addressData);
-  //   } else {
-  //     setShippingAddress("");
-  //   }
-  // };
-  const fetchShippingAddress = async () => {
-    try {
-      const email = await AsyncStorage.getItem("Email");
-      const response = await url.get(`/address/${email}`);
-      const data = response.data;
+//   const fetchShippingAddress = async () => {
+//     try {
+//       const email = await AsyncStorage.getItem("Email");
+//       const response = await url.get(`/address/${email}`);
+//       const data = response.data;
 
-      if (data.length > 0) {
-        setShippingAddress(data[0].address);
-      } else {
-        // console.warn('Không tìm thấy địa chỉ giao hàng.');
-        setShippingAddress("");
-      }
-    } catch (error) {
-      // console.error('Lỗi khi lấy địa chỉ giao hàng', error);
-    }
-  };
+//       if (data.length > 0) {
+//         setShippingAddress(data[0].address);
+//       } else {
+//         // console.warn('Không tìm thấy địa chỉ giao hàng.');
+//         setShippingAddress("");
+//       }
+//     } catch (error) {
+//       // console.error('Lỗi khi lấy địa chỉ giao hàng', error);
+//     }
+//   };
 
   const handleToggleSwitch = (productId) => {
     setCartProducts((prevCartProducts) => {
@@ -99,47 +89,19 @@ function Cart({ route, navigation }) {
       return updatedProducts;
     });
   };
-  const handleBuyNowAll = () => {
-    // const selectedProductIds = selectedProducts.map((product) => product.id);
-    // // Thêm các sản phẩm đã chọn vào bảng order
-    // push(orderRef, selectedProducts)
-    //   .then((newRef) => {
-    //     const orderItemId = newRef.key;
-    //     console.log("Người dùng với id:", userId);
-    //     console.log("Đã thêm sản phẩm vào giỏ hàng:", selectedProducts);
-    //     console.log("ID của sản phẩm trong giỏ hàng:", orderItemId);
-    //     navigation.navigate("Oder", { userId: userId });
-    //   })
-    //   .catch((error) => {
-    //     console.error("Lỗi:", error);
-    //   });
+  const handleCheckOut = () => {
+    
   };
 
   const handleRemoveProduct = async (cartId) => {
     const response = await url.delete(`/cart/delete/${cartId}`);
-    if(response.status==200) {
-        return fetchData();
-    }else{
-        console.error("Lỗi khi xóa khỏi giỏ hàng", error);
+    if (response.status == 200) {
+      return fetchData();
+    } else {
+      console.error("Lỗi khi xóa khỏi giỏ hàng", error);
     }
   };
 
-  const startAnimation = () => {
-    Animated.loop(
-      Animated.sequence([
-        Animated.timing(fadeAnim, {
-          toValue: 1,
-          duration: 500,
-          useNativeDriver: true,
-        }),
-        Animated.timing(fadeAnim, {
-          toValue: 0,
-          duration: 500,
-          useNativeDriver: true,
-        }),
-      ])
-    ).start();
-  };
 
   const sumSelectedProductsPrice = () => {
     let sum = 0;
@@ -174,6 +136,24 @@ function Cart({ route, navigation }) {
     );
     setSelectedProducts(updatedSelectedProducts);
   }, [cartProducts]);
+
+  const showConfirmDialog = (productId) => {
+    return Alert.alert(
+      "Are your sure?",
+      "Are you sure you want to remove this beautiful box?",
+      [
+        {
+          text: "Yes",
+          onPress: () => {
+            handleRemoveProduct(productId);
+          },
+        },
+        {
+          text: "No",
+        },
+      ]
+    );
+  };
 
   const renderItems = (product) => {
     const item = dataSP.find((item) => item._id === product.product);
@@ -214,9 +194,10 @@ function Cart({ route, navigation }) {
               >
                 <Text style={styles.quantityButtonText}>+</Text>
               </TouchableOpacity>
+
               <TouchableOpacity
                 style={styles.buttonDel}
-                onPress={() => handleRemoveProduct(product._id)}
+                onPress={() => showConfirmDialog(product._id)}
               >
                 <Ionicons name="trash-outline" size={20} color="red" />
               </TouchableOpacity>
@@ -276,7 +257,7 @@ function Cart({ route, navigation }) {
                 {getMonney(sumSelectedProductsPrice())}
               </Text>
             </View>
-            <TouchableOpacity
+            {/* <TouchableOpacity
               onPress={async () => {
                 const email = await AsyncStorage.getItem("Email");
                 navigation.navigate("AllDiaChi", {
@@ -294,7 +275,7 @@ function Cart({ route, navigation }) {
               >
                 <Text style={styles.addressText}>{shippingAddress}</Text>
               </View>
-            </TouchableOpacity>
+            </TouchableOpacity> */}
 
             <TouchableOpacity
               style={{
@@ -303,7 +284,7 @@ function Cart({ route, navigation }) {
                 padding: 15,
                 borderRadius: 20,
               }}
-              onPress={handleBuyNowAll}
+              onPress={handleCheckOut}
             >
               <View
                 style={{
