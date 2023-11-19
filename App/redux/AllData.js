@@ -129,18 +129,24 @@ export const { setDataSP,setDataSPBestSale,setDataSPFav,setAsyncStorage,setUser 
 export const fetchDataAndSetToRedux = () => async (dispatch) => {
     const data = await getDataProduct();
     dispatch(setDataSP(data));
+
     const dataBestSale = await getDataSPBestSale();
     dispatch(setDataSPBestSale(dataBestSale));
+
     const dataSPFav = await getDataFavourite();
     dispatch(setDataSPFav(dataSPFav));
+
     const dataUserID = await  getAsyncStorage();
     dispatch(setAsyncStorage(dataUserID))
+
     const dataUser = await  getDataUser();
     dispatch(setUser(dataUser))
+
     const dataTokenApp = await  getTokenApp();
     dispatch(setTokenApp(dataTokenApp))
+
     const dataCart = await  getDataCart();
-    dispatch(setTokenApp(dataCart))
+    dispatch(setDataCart(dataCart))
 };
 
 export const fetchDataAndFav = () => async (dispatch) => {
