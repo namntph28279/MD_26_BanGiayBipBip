@@ -105,6 +105,7 @@ const ThanhToanScreen = ({ route, navigation }) => {
                 <Text>Màu: {product.selectedColor}</Text>
                 <Text>Kích thước: {product.selectedSize.size_name}</Text>
                 <Text>Giá: {product.productPrice}</Text>
+                {/*<Text>id color: {product.selectedColorId}</Text>*/}
                 <View style={styles.quantityContainer}>
                     <TouchableOpacity onPress={() => handleQuantityChange(product.id, 'decrease')}>
                         <Text style={styles.quantityButton}>-</Text>
@@ -174,7 +175,7 @@ const ThanhToanScreen = ({ route, navigation }) => {
                 console.log('Đặt hàng thành công:', result);
             } else {
                 console.error('Lỗi đặt hàng:', response.status, response.statusText);
-                console.error('Server response:', response.data); // Log the server response for more details
+                console.error('Server response:', response.data);
             }
 
         } catch (error) {

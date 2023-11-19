@@ -54,8 +54,10 @@ function ProductDetail({ route, navigation }) {
 
                 if (data && data.colors) {
                     setColorOptions(data.colors.map((color) => color.color_name));
-                    setSelectedColor(data.colors[0].color_name);
 
+                    const firstColorId = data.colors[0]._id;
+
+                    setSelectedColor(data.colors[0].color_name);
                     const colorImagesData = {};
                     data.colors.forEach((color) => {
                         colorImagesData[color.color_name] = color.color_image;
@@ -63,7 +65,9 @@ function ProductDetail({ route, navigation }) {
 
                     setColorImages(colorImagesData);
                     setProductImageURL(data.product_image);
-                    fetchSizesForColor(data.colors[0]._id);
+
+                    setSelectedColorData(firstColorId);
+                    fetchSizesForColor(firstColorId);
                 }
             } catch (error) {
                 console.error('Error:', error);
@@ -73,6 +77,7 @@ function ProductDetail({ route, navigation }) {
 
         fetchData();
     }, [productId]);
+
     const fetchSizesForColor = async (colorId) => {
         try {
             const response = await url.get(`/sizes/${colorId}`);
@@ -243,7 +248,7 @@ function ProductDetail({ route, navigation }) {
             //ảnh
             setSelectedColorImage(colorImages[color]);
         }
-        console.log(selectedColorData)
+        console.log('màu của color',selectedColorData)
     };
 
     const selectSize = (size) => {

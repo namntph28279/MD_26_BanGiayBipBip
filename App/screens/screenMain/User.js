@@ -28,6 +28,7 @@ function User() {
   const handleLogout = async () => {
     await url.post("/checkClientUser", {user: dataUserID,IdClient:tokenApp,status:false});
     await AsyncStorage.setItem("Email", "");
+    await AsyncStorage.setItem("DefaultAddress", "");
     dispatch(fetchDataAndSetToRedux());
     console.log("Đăng xuất thành công");
   };
