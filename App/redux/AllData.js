@@ -47,7 +47,7 @@ const getDataUser = async () => {
     try {
         const email = await AsyncStorage.getItem('Email');
         const response = await url.get(`/profile/${email}`);
-        console.log(response.data)
+
         return response.data;
     } catch (error) {
         return [];
@@ -65,7 +65,7 @@ const getDataCart = async () => {
                 ...cartData[key],
                 selected: false,
             }));
-            console.log(products)
+
 
             return  products;
         } else {

@@ -53,16 +53,15 @@ const Login = ({ navigation }) => {
                        password,
                     },
                   );
-                console.log(response)
+
 
                 if (response.status === 200) {
                     const userData = await response.data;
                     const userID = userData._id;
                     const Name = userData.username;
-                    console.log(userID);
-                    console.log(userData);
+
                     if (userID) {
-                        console.log(1)
+
                         const username = userName.split('@')[0];
                         await AsyncStorage.setItem("Email", userID);
                         await AsyncStorage.setItem("Name",username);

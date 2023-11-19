@@ -17,7 +17,7 @@ const Oder = ({ route }) => {
         try {
             console.log('Fetching data...');
             const response = await url.get('/order');
-            console.log('Response:', response);
+
             const data = response.data;
 
             const formattedData = data
@@ -69,7 +69,7 @@ const Oder = ({ route }) => {
                 const productApiUrl = `http://192.168.100.6/product/${productId}`;
                 const response = await fetch(productApiUrl);
                 const productDetails = await response.json();
-                console.log('Product Details:', productDetails);
+
                 return productDetails;
             } catch (error) {
                 console.error('Error fetching product details:', error);
@@ -157,7 +157,7 @@ const Oder = ({ route }) => {
             // For 'All', show all items
             filteredData = orderProductsList;
         }
-        console.log(`Filtered Data for ${setStatusFilter}:`, filteredData);
+
         setDatalist(filteredData);
         setStatus(setStatusFilter);
     };

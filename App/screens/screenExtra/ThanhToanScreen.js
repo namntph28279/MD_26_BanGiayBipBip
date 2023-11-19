@@ -172,23 +172,33 @@ const ThanhToanScreen = ({ route, navigation }) => {
         const name = await AsyncStorage.getItem('Name1');
         try {
             const products = selectedProducts.map(product => ({
+
                 product: product.productId,
-                quantity: product.quantity,
-                colorId: product.selectedColorId,
-                sizeId: product.selectedSize._id,
+                img_product:product.productImageURL,
+                name_Product:product.productName,
+                name_Size:product.selectedSize.size_name,
+                name_Price:product.productPrice * product.quantity,
+                quantityProduct:product.quantity
             }));
+            console.log(products)
 
             const orderData = {
                 user: userID || '',
                 customer_email: name || '',
                 products: products || [],
-                address: shippingAddress._id || '',
-                total_amount: totalPayment || '',
+                total_amount:totalPayment ,
+                userName:shippingAddress.name,
+                phone:shippingAddress.phone,
+                address: shippingAddress.address,
+                total_product:productTotal,
+                total_insurance_amount:insuranceFee,
+                total_shipping_fee:shippingFee,
+                total_All:totalPayment
             };
 
-            console.log('Order Data:', orderData);
 
-            const response = await url.post('/order/addd', orderData);
+
+            const response = await url.post('/order/addOderDetail', orderData);
 
             if (response.status === 201) {
                 const result = response.data;
