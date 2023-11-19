@@ -32,6 +32,10 @@ const orderSchema = new mongoose.Schema({
             type:String,
             required:true
         },
+        name_Color:{
+            type:String,
+            required:true
+        },
         quantityProduct:{
             type:String,
             required:true
@@ -75,6 +79,9 @@ const orderSchema = new mongoose.Schema({
     total_All:{
       type:String,
       required:true
+    },
+    lyDoHuyDon:{
+        type:String,
     },
     status: {
         type: Number,

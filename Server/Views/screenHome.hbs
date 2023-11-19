@@ -189,7 +189,20 @@
                                                     <span aria-hidden="true">&times;</span>
                                                 </button>
                                             </div>
+                                            <div class="modal-body">
+                                                <div>
+                                                    Họ và tên: {{this.userName}} <br>
+                                                    Số điện thoại: {{this.phone}}<br>
+                                                    Địa chỉ: {{this.address}}
+                                                </div>
+                                                {{#each this.products}}
+                                                    <div>
+                                                        {{this.name_Product}}
+                                                    </div>
+                                                {{/each}}
 
+                                                Tổng tiền: {{formatCurrency this.total_All}}
+                                            </div>
                                             <div class="modal-footer">
                                                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Huỷ
                                                 </button>

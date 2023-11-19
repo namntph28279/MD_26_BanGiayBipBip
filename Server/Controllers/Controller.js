@@ -1130,6 +1130,7 @@ app.post('/order/addOderDetail', async (req, res) => {
                 name_Product:data.products[i].name_Product,
                 name_Size:data.products[i].name_Size,
                 name_Price:data.products[i].name_Price,
+                name_Color:data.products[i].name_Color,
                 quantityProduct:data.products[i].quantityProduct
             }
 

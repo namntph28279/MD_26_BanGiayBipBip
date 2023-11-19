@@ -11,7 +11,7 @@ const expressHbs = require('express-handlebars');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const currencyFormatter = require('currency-formatter');
-const Order = require("../Models/Order");
+const Order = require("../Models/Oderdetail");
 
 app.set('Views', __dirname + '/views');
 
@@ -39,12 +39,12 @@ app.use(express.json());
 //màn hình home
 app.get('/home', async (req, res) => {
     try {
-        const confirm = await Order.find({status: 0});//chờ xác nhận
-        const pickup = await Order.find({status: 1});//đang chuẩn bị
-        const delivered = await Order.find({status: 2});//đang giao
-        const returns = await Order.find({status: 3});//yêu cầu  hủy đơn
-        const history = await Order.find({status: 4});//đã hủy
-        const delivery = await Order.find({status: 5});//đã nhận
+        const confirm = await Order.find({status: 0}).sort({order_date: -1});//chờ xác nhận
+        const pickup = await Order.find({status: 1}).sort({order_date: -1});//đang chuẩn bị
+        const delivered = await Order.find({status: 2}).sort({order_date: -1});//đang giao
+        const returns = await Order.find({status: 3}).sort({order_date: -1});//yêu cầu  hủy đơn
+        const history = await Order.find({status: 4}).sort({order_date: -1});//đã hủy
+        const delivery = await Order.find({status: 5}).sort({order_date: -1});//đã nhận
         res.render('../Views/screenHome.hbs', {
             confirm: confirm,
             pickup: pickup,
