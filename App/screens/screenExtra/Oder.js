@@ -4,7 +4,7 @@ import { useNavigation } from '@react-navigation/native';
 import axios from 'axios';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import url from "../../api/url";
-import {getMonney} from "../../util/money";
+import { getMonney } from "../../util/money";
 
 const Oder = ({ route }) => {
     const [orderProductsList, setOrderProductsList] = useState([]);
@@ -19,7 +19,7 @@ const Oder = ({ route }) => {
     const fetchDataList = async () => {
         const email = await AsyncStorage.getItem("Email");
         // const email = '654e236c065edfb9cbd65957';
-        console.log("oder",email);
+        console.log("oder", email);
         try {
             console.log('Fetching data...');
             const response = await url.get('/order/addOderDetail/All');
@@ -28,25 +28,25 @@ const Oder = ({ route }) => {
 
 
             const formattedData = data
-            .filter(order => order.user === email)
-            .map(order => ({
-                id: order._id,
-                user: order.user,
-                status: order.status,
-                customerEmail: order.customer_email,
-                products: order.products.map(product => ({
-                    id: product._id,
-                    productId: product.product,
-                    img_product: product.img_product,
-                    name_Product: product.name_Product,
-                    name_Size: product.name_Size,
-                    name_Price: product.name_Price,
-                    name_Color: product.name_Color,
-                    quantityProduct: product.quantityProduct,
-                })),
-                address: order.address,
-                orderDate: order.order_date,
-            }));
+                .filter(order => order.user === email)
+                .map(order => ({
+                    id: order._id,
+                    user: order.user,
+                    status: order.status,
+                    customerEmail: order.customer_email,
+                    products: order.products.map(product => ({
+                        id: product._id,
+                        productId: product.product,
+                        img_product: product.img_product,
+                        name_Product: product.name_Product,
+                        name_Size: product.name_Size,
+                        name_Price: product.name_Price,
+                        name_Color: product.name_Color,
+                        quantityProduct: product.quantityProduct,
+                    })),
+                    address: order.address,
+                    orderDate: order.order_date,
+                }));
 
             // console.log('Formatted data', formattedData);
 
@@ -84,29 +84,22 @@ const Oder = ({ route }) => {
                     console.log('Item:', item);
                     navigation.navigate("InformationLine",
                         { product: item.productId })
-                        console.log('Product ID:', item.productId);
+                    console.log('Product ID:', item.productId);
                 }}
             >
-                 <View key={index} style={styles.productBox}>
-                    {/* <Text>{`User ID: ${item.user}`}</Text>
-                    <Text>{`Status: ${item.status}`}</Text>
-                    <Text>{`Customer Email: ${item.customerEmail}`}</Text> */}
+                <View key={index} style={styles.productBox}>
                     {item.products.map(product => (
                         <View key={product.id}>
                             <Image source={{ uri: product.img_product }} style={styles.productImage} />
-                            <Text>{`Product ID: ${product.productId}`}</Text>
-                           <View style={styles.productInfo}>
-                            <Text>{`Tên sản phẩm: ${product.name_Product}`}</Text>
-                            <Text>{`Size: ${product.name_Size}`}</Text>
-                            <Text>{`Size: ${product.name_Color}`}</Text>
-                            {/* <Text>{`Giá: ${product.name_Price}`}</Text> */}
-                           <Text> Giá : {getMonney(product.name_Price)}</Text>
-                            <Text>{`Số lượng: ${product.quantityProduct}`}</Text>
-                            </View>
+                            {/* <Text>{`Product ID: ${product.productId}`}</Text> */}
+
+                                <Text>{`Tên sản phẩm: ${product.name_Product}`}</Text>
+                                <Text>{`Size: ${product.name_Size}`}</Text>
+                                <Text>{`Size: ${product.name_Color}`}</Text>
+                                <Text> Giá : {getMonney(product.name_Price)}</Text>
+                                <Text>{`Số lượng: ${product.quantityProduct}`}</Text>
                         </View>
                     ))}
-                    {/* <Text>{`Address: ${item.address}`}</Text>
-                    <Text>{`Order Date: ${item.orderDate}`}</Text> */}
                 </View>
             </TouchableOpacity>
         );
@@ -183,7 +176,7 @@ const Oder = ({ route }) => {
                 )}
             </SafeAreaView>
             <View style={{ width: '100%', backgroundColor: 'black', height: 1 }} />
-            
+
         </View>
     );
 }
@@ -315,9 +308,11 @@ const styles = StyleSheet.create({
         width: '95%',
     },
     productImage: {
-        width: 90,
-        height: 60,
-        resizeMode: 'cover',
+        
+            width: 50, // Điều chỉnh kích thước hình ảnh theo nhu cầu của bạn
+            height: 50, // Điều chỉnh kích thước hình ảnh theo nhu cầu của bạn
+            marginRight: 10, // Điều chỉnh khoảng cách giữa hình ảnh và các thông tin khác
+          
         borderRadius: 8,
     },
     productInfo: {
