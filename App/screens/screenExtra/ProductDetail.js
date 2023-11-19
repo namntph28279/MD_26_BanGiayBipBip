@@ -15,11 +15,6 @@ import {
 import { Animated } from 'react-native';
 
 import { PinchGestureHandler, State } from 'react-native-gesture-handler';
-
-import axios from 'axios';
-import firebase from '../../config/FirebaseConfig';
-import { getDatabase, ref, push, get, child, onValue, remove } from 'firebase/database';
-import { getAuth } from 'firebase/auth';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { getMonney } from "../../util/money";
 import AsyncStorage from "@react-native-async-storage/async-storage";

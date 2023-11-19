@@ -54,6 +54,28 @@ const getDataUser = async () => {
     }
 };
 
+const getDataCart = async () => {
+    try {
+        const email = await AsyncStorage.getItem("Email");
+        const cartRef = await url.get(`/cart/${email}`);
+        const cartData = cartRef.data;
+        if (cartData) {
+            const products = Object.keys(cartData).map((key) => ({
+                id: key,
+                ...cartData[key],
+                selected: false,
+            }));
+            console.log(products)
+
+            return  products;
+        } else {
+            return  [];
+        }
+    } catch (error) {
+        return [];
+    }
+};
+
 const getTokenApp = async () => {
     try {
         const pushTokenData = await Notifications.getExpoPushTokenAsync();
@@ -73,7 +95,8 @@ const dataAll = createSlice({
         dataSPFav:[],
         dataUserID:[],
         dataUser:[] ,
-        dataTokenApp:[]
+        dataTokenApp:[],
+        dataCart:[]
     },
     reducers: {
         setDataSP: (state, action) => {
@@ -93,11 +116,14 @@ const dataAll = createSlice({
         },
         setTokenApp: (state, action) => {
             state.dataTokenApp = action.payload;
+        },
+        setDataCart: (state, action) => {
+            state.dataCart = action.payload;
         }
     }
 })
 
-export const { setDataSP,setDataSPBestSale,setDataSPFav,setAsyncStorage,setUser ,setTokenApp} = dataAll.actions;
+export const { setDataSP,setDataSPBestSale,setDataSPFav,setAsyncStorage,setUser ,setTokenApp,setDataCart} = dataAll.actions;
 
 
 export const fetchDataAndSetToRedux = () => async (dispatch) => {
@@ -113,11 +139,18 @@ export const fetchDataAndSetToRedux = () => async (dispatch) => {
     dispatch(setUser(dataUser))
     const dataTokenApp = await  getTokenApp();
     dispatch(setTokenApp(dataTokenApp))
+    const dataCart = await  getDataCart();
+    dispatch(setTokenApp(dataCart))
 };
 
 export const fetchDataAndFav = () => async (dispatch) => {
     const dataSPFav = await getDataFavourite();
     dispatch(setDataSPFav(dataSPFav));
+};
+
+export const fetchDataCart = () => async (dispatch) => {
+    const dataCart = await  getDataCart();
+    dispatch(setTokenApp(dataCart))
 };
 export const fetchDataUser = () => async (dispatch) => {
     const dataUser = await  getDataUser();

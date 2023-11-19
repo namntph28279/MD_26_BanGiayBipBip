@@ -8,8 +8,6 @@ import {
   Linking,
   Alert,
 } from "react-native";
-import { getAuth, signOut, deleteUser } from "firebase/auth";
-import firebase from "../../config/FirebaseConfig";
 import Icon from "react-native-vector-icons/FontAwesome";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
