@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, FlatList, TouchableOpacity, StyleSheet, Image } from 'react-native';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useFocusEffect } from '@react-navigation/native';
+import url from "../../api/url";
 const AllDiaChi = ({ route, navigation }) => {
     const userID = route.params?.userID || '';
     const selectedProducts = route.params?.selectedProducts || [];
@@ -21,10 +22,23 @@ const AllDiaChi = ({ route, navigation }) => {
             fetchAddresses();
         }, [userID])
     );
+    // const fetchAddresses = async () => {
+    //     try {
+    //         const response = await fetch(`https://md26bipbip-496b6598561d.herokuapp.com/address/${userID}`);
+    //         const data = await response.json();
+    //         setAddresses(data);
+    //         if (data.length > 0 && !selectedAddress) {
+    //             setSelectedAddress(data[0]);
+    //             AsyncStorage.setItem('DefaultAddress', JSON.stringify(data[0]));
+    //         }
+    //     } catch (error) {
+    //         console.error('Lỗi', error);
+    //     }
+    // };
     const fetchAddresses = async () => {
         try {
-            const response = await fetch(`https://md26bipbip-496b6598561d.herokuapp.com/address/${userID}`);
-            const data = await response.json();
+            const response = await url.get(`/address/${userID}`);
+            const data = response.data;
             setAddresses(data);
             if (data.length > 0 && !selectedAddress) {
                 setSelectedAddress(data[0]);
