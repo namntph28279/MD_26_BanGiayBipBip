@@ -80,6 +80,10 @@ const orderSchema = new mongoose.Schema({
       type:String,
       required:true
     },
+    total_quantity:{
+        type:String,
+        required:true
+    },
     lyDoHuyDon:{
         type:String,
     },

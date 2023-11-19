@@ -1144,7 +1144,7 @@ app.post('/order/addOderDetail', async (req, res) => {
             userName:data.userName,
             phone:data.phone,
             address:data.address,
-
+            total_quantity:data.total_quantity,
             total_product:data.total_product,
             total_insurance_amount:data.total_insurance_amount,
             total_shipping_fee:data.total_shipping_fee,
