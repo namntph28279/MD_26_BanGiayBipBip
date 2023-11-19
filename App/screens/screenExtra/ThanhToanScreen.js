@@ -178,6 +178,7 @@ const ThanhToanScreen = ({ route, navigation }) => {
                 name_Product:product.productName,
                 name_Size:product.selectedSize.size_name,
                 name_Price:product.productPrice * product.quantity,
+                name_Color:product.selectedColor,
                 quantityProduct:product.quantity
             }));
             console.log(products)
