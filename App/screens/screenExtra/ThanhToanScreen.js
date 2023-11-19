@@ -1,11 +1,24 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TouchableOpacity, ScrollView, Image, StyleSheet ,Modal,TouchableWithoutFeedback} from 'react-native';
+import {
+    View,
+    Text,
+    TouchableOpacity,
+    ScrollView,
+    Image,
+    StyleSheet,
+    Modal,
+    TouchableWithoutFeedback,
+    ActivityIndicator
+} from 'react-native';
 import { CheckBox } from "react-native-elements";
 import Icon from 'react-native-vector-icons/FontAwesome';
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import url from "../../api/url";
+import { Alert } from 'react-native';
 const ThanhToanScreen = ({ route, navigation }) => {
     const [selectedProducts, setSelectedProducts] = useState([]);
     const userID = route.params?.userID || '';
+    const [soLuong,setSoLuong ]= useState();
     const [paymentMethod, setPaymentMethod] = useState('');
     const [shippingAddress, setShippingAddress] = useState('');
     const [isAddressSelected, setIsAddressSelected] = useState(false);
@@ -17,13 +30,13 @@ const ThanhToanScreen = ({ route, navigation }) => {
     const [insuranceFee, setInsuranceFee] = useState(0);
     const [shippingFee, setShippingFee] = useState(30000);
     const [totalPayment, setTotalPayment] = useState(0);
-
+    const [isPaymentSuccessModalVisible, setPaymentSuccessModalVisible] = useState(false);
+    const [isPaymentFailureModalVisible, setPaymentFailureModalVisible] = useState(false);
+    const [isPaymentSuccess, setIsPaymentSuccess] = useState(false);
+    const [isCheckmarkVisible, setIsCheckmarkVisible] = useState(true);
     //
 
-    const productList = [
-        { id: 1, name: 'Sản phẩm A', quantity: 2, price: 20, image: require('../../image/logo.png') },
-        { id: 2, name: 'Sản phẩm B', quantity: 1, price: 30, image: require('../../image/logo.png') },
-    ];
+
     useEffect(() => {
         console.log('Selected Products:', selectedProducts);
         if (!userID) {
@@ -52,6 +65,9 @@ const ThanhToanScreen = ({ route, navigation }) => {
 
         fetchDefaultAddress();
     }, []);
+    useEffect(() => {
+        calculateTotalAmount();
+    }, [selectedProducts, insuranceFee, shippingFee]);
 
     useEffect(() => {
         calculateTotalAmount();
@@ -63,9 +79,12 @@ const ThanhToanScreen = ({ route, navigation }) => {
 
     const calculateTotalAmount = () => {
         let productTotal = 0;
+        let productSoLuong = 0;
         selectedProducts.forEach((product) => {
+            productSoLuong += product.quantity;
             productTotal += product.quantity * product.productPrice;
         });
+        setSoLuong(productSoLuong);
         setProductTotal(productTotal);
         const insurance = productTotal * 0.01;
         setInsuranceFee(insurance > 3000 ? insurance : 3000);
@@ -100,6 +119,7 @@ const ThanhToanScreen = ({ route, navigation }) => {
                 <Text>Màu: {product.selectedColor}</Text>
                 <Text>Kích thước: {product.selectedSize.size_name}</Text>
                 <Text>Giá: {product.productPrice}</Text>
+                {/*<Text>id color: {product.selectedColorId}</Text>*/}
                 <View style={styles.quantityContainer}>
                     <TouchableOpacity onPress={() => handleQuantityChange(product.id, 'decrease')}>
                         <Text style={styles.quantityButton}>-</Text>
@@ -121,12 +141,22 @@ const ThanhToanScreen = ({ route, navigation }) => {
         navigation.navigate('AllDiaChi', { userID, fromThanhToan: true, selectedProducts });
 
     };
-    const handlePaymentMethodPress = () => {
-        setPaymentModalVisible(true);
+    const handlePaymentSuccess = () => {
+        setPaymentSuccessModalVisible(true);
+    };
+
+    const handlePaymentFailure = () => {
+        setPaymentFailureModalVisible(true);
     };
 
     const handlePaymentModalClose = () => {
         setPaymentModalVisible(false);
+        setPaymentSuccessModalVisible(false);
+        setPaymentFailureModalVisible(false);
+    };
+
+    const handlePaymentMethodPress = () => {
+        setPaymentModalVisible(true);
     };
 
     const handleMomoCheckboxChange = () => {
@@ -139,47 +169,78 @@ const ThanhToanScreen = ({ route, navigation }) => {
         setIsMomoSelected(false);
     };
     const handleOrder = async () => {
+        if (!shippingAddress) {
+            Alert.alert('Hãy Thao Tác Lại', 'Vui lòng chọn địa chỉ nhận hàng trước khi thanh toán.');
+            return;
+        }
         const name = await AsyncStorage.getItem('Name1');
         try {
             const products = selectedProducts.map(product => ({
+
                 product: product.productId,
-                quantity: product.quantity,
-                colorId: product.selectedColorId,
-                sizeId: product.selectedSize._id,
+                img_product:product.productImageURL,
+                name_Product:product.productName,
+                name_Size:product.selectedSize.size_name,
+                name_Price:product.productPrice * product.quantity,
+                name_Color:product.selectedColor,
+                quantityProduct:product.quantity
             }));
+            console.log(products)
 
             const orderData = {
                 user: userID || '',
                 customer_email: name || '',
                 products: products || [],
-                address: shippingAddress._id || '',
-                total_amount: totalPayment || '',
+                total_amount:totalPayment ,
+                userName:shippingAddress.name,
+                phone:shippingAddress.phone,
+                address: shippingAddress.address,
+                total_product:productTotal,
+                total_insurance_amount:insuranceFee,
+                total_shipping_fee:shippingFee,
+                total_All:totalPayment,
+                total_quantity:soLuong
             };
 
-            console.log('Order Data:', orderData);
-            const response = await fetch('https://md26bipbip-496b6598561d.herokuapp.com/order/addd', {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                            },
-                            body: JSON.stringify(orderData),
-                        });
 
-                        if (response.ok) {
-                            const result = await response.json();
-                            console.log('Đặt hàng thành công:', result);
-                        } else {
-                            console.error('Lỗi đặt hàng:', response.status, response.statusText);
-                        }
+
+            const response = await url.post('/order/addOderDetail', orderData);
+
+            if (response.status === 201) {
+                const result = response.data;
+                console.log('Đặt hàng thành công:', result);
+                handlePaymentSuccess();
+                setTimeout(() => {
+                    setIsCheckmarkVisible(true);
+                    setTimeout(() => {
+                        setIsCheckmarkVisible(false);
+                        setPaymentSuccessModalVisible(false);
+                    }, 2000);
+                }, 2000);
+            } else {
+                console.error('Lỗi đặt hàng:', response.status, response.statusText);
+                console.error('Server response:', response.data);
+                handlePaymentFailure();
+                    setTimeout(() => {
+                        setIsCheckmarkVisible(false);
+                        setPaymentSuccessModalVisible(true);
+                    }, 2000);
+            }
 
         } catch (error) {
-            console.error('lỗi đặt hàng:', error);
+            console.error('Lỗi đặt hàng:', error);
+            handlePaymentFailure();
+            setTimeout(() => {
+                setIsCheckmarkVisible(false);
+                setPaymentSuccessModalVisible(true);
+            }, 2000);
         }
     };
 
     return (
         <View style={styles.container}>
             <TouchableOpacity style={styles.addressContainer} onPress={handleAddressPress}>
+
                 <View>
                     <Text style={styles.addressLabel}>Địa chỉ nhận hàng:</Text>
                     <Text style={styles.addressText}>Tên: {shippingAddress.name}</Text>
@@ -248,12 +309,48 @@ const ThanhToanScreen = ({ route, navigation }) => {
                             THANH TOÁN
                         </Text>
                         <Image style={{
-                           alignSelf:'center',
+                            alignSelf:'center',
                         }} source={require("../../image/next.png")} />
                     </View>
                 </TouchableOpacity>
             </View>
+            <Modal
+                animationType="slide"
+                transparent={true}
+                visible={isPaymentSuccessModalVisible}
+                onRequestClose={handlePaymentModalClose}>
+                <View style={styles.centeredView}>
+                    <View style={styles.modalContent}>
+                        {isCheckmarkVisible ? (
+                            <>
+                                <Icon name="check-circle" size={50} color="#1abc9c" />
+                                <Text style={styles.modalTitle}>Thanh toán thành công!</Text>
+                            </>
+                        ) : (
+                            <ActivityIndicator size="large" color="#1abc9c" />
+                        )}
+                    </View>
+                </View>
+            </Modal>
 
+            <Modal
+                animationType="slide"
+                transparent={true}
+                visible={isPaymentFailureModalVisible}
+                onRequestClose={() => setPaymentFailureModalVisible(false)}>
+                <View style={styles.centeredView}>
+                    <View style={styles.modalContent}>
+                        {isCheckmarkVisible ? (
+                            <>
+                                <Icon name="times-circle" size={50} color="red" />
+                                <Text style={styles.modalTitle}>Thanh toán thất bại!</Text>
+                            </>
+                        ) : (
+                            <ActivityIndicator size="large" color="#1abc9c" />
+                        )}
+                    </View>
+                </View>
+            </Modal>
             <Modal animationType="slide" transparent={true} visible={isPaymentModalVisible} onRequestClose={handlePaymentModalClose}>
                 <TouchableWithoutFeedback onPress={handlePaymentModalClose}>
                     <View style={styles.modalContainer}>
@@ -315,6 +412,18 @@ const styles = StyleSheet.create({
         paddingBottom: 16,
         backgroundColor: '#cbb9b9',
         borderRadius: 8,
+    },
+    centeredView: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+
+    successModalContent: {
+        backgroundColor: 'white',
+        borderRadius: 20,
+        padding: 20,
+        alignItems: 'center',
     },
     productImage: {
         width: 80,

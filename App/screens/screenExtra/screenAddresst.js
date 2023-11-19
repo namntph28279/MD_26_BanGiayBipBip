@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Button, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { TextInput } from 'react-native-paper';
 import axios from 'axios';
-
+import url from "../../api/url";
 export default function ScreenAddresst({ route, navigation }) {
     const userID = route.params?.userID || '';
     useEffect(() => {
@@ -70,18 +70,35 @@ export default function ScreenAddresst({ route, navigation }) {
         const jsonData = JSON.stringify(data);
 
         if (!nameError && !phoneError && !xaError && !huyenError && !tinhError) {
-            axios.post('https://md26bipbip-496b6598561d.herokuapp.com/address/add', jsonData, {
-                headers: {
-                    'Content-Type': 'application/json',
+            // axios.post('https://md26bipbip-496b6598561d.herokuapp.com/address/add', jsonData, {
+            //     headers: {
+            //         'Content-Type': 'application/json',
+            //     }
+            // })
+            //     .then(response => {
+            //         console.log('Dữ liệu đã được gửi thành công lên máy chủ:', response.data);
+            //         navigation.navigate('AllDiaChi', {userID});
+            //     })
+            //     .catch(error => {
+            //         console.error('Lỗi trong quá trình gửi dữ liệu lên máy chủ:', error);
+            //         navigation.navigate('AllDiaChi', {userID});
+            //     });
+            url.post(
+                "/address/add",
+                jsonData,
+                {
+                  headers: {
+                    "Content-Type": "application/json",
+                  },
                 }
-            })
-                .then(response => {
-                    console.log('Dữ liệu đã được gửi thành công lên máy chủ:', response.data);
-                    navigation.navigate('AllDiaChi', {userID});
+              )
+                .then((response) => {
+                  console.log("Dữ liệu đã được gửi thành công lên máy chủ:", response.data);
+                  navigation.navigate("AllDiaChi", { userID });
                 })
-                .catch(error => {
-                    console.error('Lỗi trong quá trình gửi dữ liệu lên máy chủ:', error);
-                    navigation.navigate('AllDiaChi', {userID});
+                .catch((error) => {
+                  console.error("Lỗi trong quá trình gửi dữ liệu lên máy chủ:", error);
+                  navigation.navigate("AllDiaChi", { userID });
                 });
         }
 

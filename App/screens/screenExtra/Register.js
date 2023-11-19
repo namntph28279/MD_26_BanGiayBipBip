@@ -5,6 +5,7 @@ import { nameValidator } from '../../helpers/nameValidator';
 import { passwordValidator } from '../../helpers/passwordValidator';
 import axios from 'axios';
 import { CommonActions } from '@react-navigation/native';
+import url from "../../api/url";
 
 function Register({ navigation }) {
     const [username, setUsername] = useState('');
@@ -44,7 +45,7 @@ function Register({ navigation }) {
     const Save = async () => {
         if (validate()) {
             try {
-                const response = await axios.post('https://md26bipbip-496b6598561d.herokuapp.com/register', {
+                const response = await url.post('/register', {
                     username,
                     password,
                 });

@@ -15,15 +15,10 @@ import {
 import { Animated } from 'react-native';
 
 import { PinchGestureHandler, State } from 'react-native-gesture-handler';
-
-import axios from 'axios';
-import firebase from '../../config/FirebaseConfig';
-import { getDatabase, ref, push, get, child, onValue, remove } from 'firebase/database';
-import { getAuth } from 'firebase/auth';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { getMonney } from "../../util/money";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-
+import url from "../../api/url";
 
 function ProductDetail({ route, navigation }) {
     const { productId } = route.params;
@@ -49,65 +44,77 @@ function ProductDetail({ route, navigation }) {
     // const userId = '64ab9784b65d14d1076c3477';
 
     useEffect(() => {
-        const apiUrl = `https://md26bipbip-496b6598561d.herokuapp.com/product/${productId}`;
+        const fetchData = async () => {
+            try {
+                const response = await url.get(`/product/${productId}`);
+                const data = response.data;
 
-        fetch(apiUrl)
-            .then((response) => response.json())
-            .then((data) => {
                 setProduct(data);
                 setIsLoading(false);
+
                 if (data && data.colors) {
                     setColorOptions(data.colors.map((color) => color.color_name));
+
+                    const firstColorId = data.colors[0]._id;
+
                     setSelectedColor(data.colors[0].color_name);
-
-
                     const colorImagesData = {};
                     data.colors.forEach((color) => {
                         colorImagesData[color.color_name] = color.color_image;
                     });
+
                     setColorImages(colorImagesData);
                     setProductImageURL(data.product_image);
-                    fetchSizesForColor(data.colors[0]._id);
+
+                    setSelectedColorData(firstColorId);
+                    fetchSizesForColor(firstColorId);
                 }
-            })
-            .catch((error) => {
-                console.error('Lôi:', error);
+            } catch (error) {
+                console.error('Error:', error);
                 setIsLoading(false);
-            });
+            }
+        };
+
+        fetchData();
     }, [productId]);
-    const fetchSizesForColor = (colorId) => {
-        axios.get(`https://md26bipbip-496b6598561d.herokuapp.com/sizes/${colorId}`)
-            .then(response => {
-                setSizeOptions(response.data);
-                setSelectedSize(response.data[0]);
-            })
-            .catch(error => {
-                console.error('Lôi:', error);
-            });
+
+    const fetchSizesForColor = async (colorId) => {
+        try {
+            const response = await url.get(`/sizes/${colorId}`);
+            const data = response.data;
+
+            setSizeOptions(data);
+            setSelectedSize(data[0]);
+        } catch (error) {
+            console.error('Error:', error);
+        }
     };
+
 
     useEffect(() => {
         fetchUserFavorites();
     }, []);
     const fetchUserFavorites = async () => {
-        const email = await AsyncStorage.getItem('Email');
-        if (!email){
-            return
+        try {
+            const email = await AsyncStorage.getItem('Email');
+            if (!email) {
+                return;
+            }
+
+            const response = await url.get(`/favourite/${email}`);
+            const favoriteItems = response.data;
+
+            setUserFavorites(favoriteItems);
+
+            const likedProductIds = favoriteItems.map((item) => item.product);
+            const isProductLiked = likedProductIds.includes(productId);
+
+            setIsLiked(isProductLiked);
+        } catch (error) {
+            console.error('Lỗi khi lấy sản phẩm trong favorites:', error);
         }
-        axios.get(`https://md26bipbip-496b6598561d.herokuapp.com/favourite/${email}`)
-            .then(response => {
-                const favoriteItems = response.data;
-                setUserFavorites(favoriteItems);
-                const likedProductIds = favoriteItems.map(item => item.product);
-
-                const isProductLiked = likedProductIds.includes(productId);
-
-                setIsLiked(isProductLiked);
-            })
-            .catch(error => {
-                console.error('Lỗi khi lấy sản phẩm trong favorites:', error);
-            });
     };
+
 
 
     const openImageModal = () => {
@@ -129,53 +136,55 @@ function ProductDetail({ route, navigation }) {
     };
 
     const addFavoriteProduct = async () => {
-        const email = await AsyncStorage.getItem('Email');
-        if (email) {
-            axios.post('https://md26bipbip-496b6598561d.herokuapp.com/favourite/add', {
-                product_id: productId,
-                user_id: email
-            })
-                .then(response => {
-                    setIsLiked(true);
-                    fetchUserFavorites();
-                })
-                .catch(error => {
-                    console.error('Lỗi:', error);
-                });
-        } else {
-            console.log('Vui lòng đăng nhập để tiếp tục');
-            alert('Vui lòng đăng nhập để tiếp tục');
-            navigation.navigate('Login');
-        }
+        try {
+            const email = await AsyncStorage.getItem('Email');
 
+            if (email) {
+                await url.post('/favourite/add', {
+                    product_id: productId,
+                    user_id: email,
+                });
+
+                setIsLiked(true);
+                fetchUserFavorites();
+            } else {
+                console.log('Vui lòng đăng nhập để tiếp tục');
+                alert('Vui lòng đăng nhập để tiếp tục');
+                navigation.navigate('Login');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+        }
     };
+
 
     const removeFavoriteProduct = async () => {
-        const email = await AsyncStorage.getItem('Email');
-        if (email) {
-            const favoriteItemToDelete = userFavorites.find(item => item.product === productId);
+        try {
+            const email = await AsyncStorage.getItem('Email');
 
-            if (favoriteItemToDelete) {
+            if (email) {
+                const favoriteItemToDelete = userFavorites.find((item) => item.product === productId);
 
-                const favoriteItemId = favoriteItemToDelete._id;
+                if (favoriteItemToDelete) {
+                    const favoriteItemId = favoriteItemToDelete._id;
 
-                axios.delete(`https://md26bipbip-496b6598561d.herokuapp.com/favourite/delete/${favoriteItemId}`)
-                    .then(response => {
-                        setIsLiked(false);
-                        fetchUserFavorites(); // Cập nhật danh sách yêu thích sau khi xóa
-                    })
-                    .catch(error => {
-                        console.error('Lỗi khi xóa khỏi danh sách yêu thích:', error);
-                    });
+                    await url.delete(`/favourite/delete/${favoriteItemId}`);
+
+                    setIsLiked(false);
+                    fetchUserFavorites(); // Update the favorites list after deletion
+                } else {
+                    console.error('Không tìm thấy mục yêu thích với productId:', productId, userFavorites);
+                }
             } else {
-                console.error('Không tìm thấy mục yêu thích với productId:', productId, userFavorites);
+                console.log('Vui lòng đăng nhập để tiếp tục');
+                alert('Vui lòng đăng nhập để tiếp tục');
+                navigation.navigate('Login');
             }
-        } else {
-            console.log('Vui lòng đăng nhập để tiếp tục');
-            alert('Vui lòng đăng nhập để tiếp tục');
-            navigation.navigate('Login');
+        } catch (error) {
+            console.error('Error:', error);
         }
     };
+
 
 
 
@@ -198,34 +207,34 @@ function ProductDetail({ route, navigation }) {
 
 
     const addToCart = async () => {
-        const email = await AsyncStorage.getItem('Email');
-        if (!email){
-            alert("Vui lòng đăng nhập");
-            navigation.navigate('Login');
-            return
-        }
-        if (selectedColor && selectedSize) {
-            if (email) {
+        try {
+            const email = await AsyncStorage.getItem('Email');
+
+            if (!email) {
+                alert('Vui lòng đăng nhập');
+                navigation.navigate('Login');
+                return;
+            }
+
+            if (selectedColor && selectedSize) {
                 const cartItem = {
                     product_id: productId,
                     quantity,
-                    // user_id: userId,
                     user_id: email,
                 };
 
-                axios.post('https://md26bipbip-496b6598561d.herokuapp.com/cart/add', cartItem)
-                    .then(response => {
-                        navigation.navigate('Cart', {userID: email});
-                    })
-                    .catch(error => {
-                        console.error('Lỗi thêm vào giỏ hàng:', error);
-                    });
+                await url.post('/cart/add', cartItem);
+
+                navigation.navigate('Cart', { userID: email });
+            } else {
+                console.log('chưa chọn màu sắc hoặc kích cỡ');
+                alert('chưa chọn màu sắc hoặc kích cỡ');
             }
-        } else {
-            console.log('chưa chọn màu sắc hoặc kích cỡ');
-            alert('chưa chọn màu sắc hoặc kích cỡ');
+        } catch (error) {
+            console.error('Lỗi thêm vào giỏ hàng:', error);
         }
     };
+
 
     // const sizeOptions = ['28', '29', '30', '31'];
     // const colorOptions = ['Đỏ', 'xanh', 'vàng'];
@@ -239,7 +248,7 @@ function ProductDetail({ route, navigation }) {
             //ảnh
             setSelectedColorImage(colorImages[color]);
         }
-        console.log(selectedColorData)
+        console.log('màu của color',selectedColorData)
     };
 
     const selectSize = (size) => {

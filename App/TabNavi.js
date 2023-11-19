@@ -8,7 +8,7 @@ import User from "./screens/screenMain/User";
 import NotLoginUser from "./screens/screenExtra/NotLoginUser";
 import {useEffect, useState} from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useIsFocused } from "@react-navigation/native";
+import {useIsFocused} from "@react-navigation/native";
 import * as Notifications from "expo-notifications";
 import {Alert, Platform} from "react-native";
 import url from "./api/url";
@@ -26,13 +26,13 @@ Notifications.setNotificationHandler({
 const Tab = createBottomTabNavigator();
 
 const TabNavi = () => {
-    const [userID,setUserID] = useState("");
+    const [userID, setUserID] = useState("");
 
 
     useEffect(() => {
         getUserId();
-    }, [useIsFocused(),userID]);
-    const getUserId = async () =>{
+    }, [useIsFocused(), userID]);
+    const getUserId = async () => {
         const user = await AsyncStorage.getItem("Email");
         setUserID(user);
     }
@@ -46,7 +46,6 @@ const TabNavi = () => {
                 tabBarLabelStyle: {marginBottom: 5}, // Điều chỉnh khoảng cách giữa icon và title
                 tabBarLabelPosition: 'below-icon', // Đặt vị trí của title
             }}>
-
             <Tab.Screen name="Home" component={Home}
                         initialParams={{userID}}
                         options={{
@@ -64,7 +63,6 @@ const TabNavi = () => {
                         options={{
                             tabBarIcon: ({color, size}) => <Ionicons name='heart' color={color} size={size}/>
                         }}/>
-
             <Tab.Screen
                 name="Giỏ Hàng"
                 component={Cart}
@@ -74,25 +72,15 @@ const TabNavi = () => {
                 }}
             />
 
-            {userID ? (
-                <Tab.Screen
-                    name="Tài Khoản"
-                    component={User}
-                    options={{
-                        tabBarLabel: 'Tài Khoản',
-                        tabBarIcon: ({color, size}) => <Ionicons name='person' color={color} size={size}/>
-                    }}
-                />
-            ) : (
-                <Tab.Screen
-                    name="Tài Khoản"
-                    component={NotLoginUser}
-                    options={{
-                        tabBarLabel: 'Tài Khoản',
-                        tabBarIcon: ({color, size}) => <Ionicons name='person' color={color} size={size}/>
-                    }}
-                />
-            )}
+            <Tab.Screen
+                name="Tài Khoản"
+                component={User}
+                options={{
+                    tabBarLabel: 'Tài Khoản',
+                    tabBarIcon: ({color, size}) => <Ionicons name='person' color={color} size={size}/>
+                }}
+            />
+
         </Tab.Navigator>
     )
 }
