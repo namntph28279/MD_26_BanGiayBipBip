@@ -1117,6 +1117,11 @@ app.get('/order/addOderDetail/All',async (req,res)=>{
     res.json(oderAll);
 })
 
+app.post('/order/addOderDetail/:id',async (req,res)=>{
+    const { id } = req.params;
+    await orderDetail.deleteOne({ _id: id });
+})
+
 app.post('/order/addOderDetail', async (req, res) => {
     try {
        const data = req.body;

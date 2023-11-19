@@ -160,7 +160,7 @@
                                     <td>{{@index}}</td>
                                     <td>{{this._id}}</td>
                                     <td>{{this.customer_email}}</td>
-                                    <td>{{this.products.length}}</td>
+                                    <td>{{this.total_quantity}}</td>
                                     <td>{{formatCurrency this.total_amount}}</td>
                                     <td>
                                         <img width="50px" src="detail.png" class="btn btn-primary btn-sm"
@@ -189,32 +189,49 @@
                                                     <span aria-hidden="true">&times;</span>
                                                 </button>
                                             </div>
-                                            <div class="modal-body">
+
+                                            <div style="margin-bottom: 2px" class="modal-body">
                                                 <div>
                                                     Họ và tên: {{this.userName}} <br>
                                                     Số điện thoại: {{this.phone}}<br>
                                                     Địa chỉ: {{this.address}}
                                                 </div>
                                                 {{#each this.products}}
-                                                    <div>
-                                                        {{this.name_Product}}
-                                                    </div>
-                                                    <div>
-                                                        {{this.img_product}}
-                                                    </div>
-                                                    <div>
-                                                        {{this.name_Size}}
-                                                    </div>
-                                                    <div>
-                                                        {{this.quantityProduct}}
-                                                    </div>
-                                                    <div>
-                                                        {{this.name_Price}}
+                                                    <div style="display: flex;padding: 12px">
+                                                        <img style="height: 80px; margin-right: 8px;width: 80px;  border-radius: 8px;" src={{this.img_product}}  >
+                                                       <div style="width: 100%">
+                                                           <div style="font-weight: 700;font-size: 16px">
+                                                              {{this.name_Product}}
+                                                           </div>
+                                                          <div style="display: flex;justify-content: space-between;">
+
+                                                             <div style="display: flex">
+                                                                 <div style="color:#656769; margin-right: 7px">
+                                                                     {{this.name_Color}}
+                                                                 </div>
+                                                                 <div style="color:#656769;">
+                                                                     {{this.name_Size}}
+                                                                 </div>
+                                                             </div>
+
+                                                              <div>
+                                                                  x{{this.quantityProduct}}
+                                                              </div>
+                                                          </div>
+                                                           <div style="text-align: end;color: red">
+
+                                                                  {{formatCurrency this.name_Price}}
+
+                                                           </div>
+                                                       </div>
                                                     </div>
                                                 {{/each}}
 
-                                                Tổng tiền: {{formatCurrency this.total_All}}
+                                              <div  style="display: flex; text-align: end;justify-content: end;">
+                                                  Tổng tiền: <div style="color: red;font-weight: 700;margin-left: 7px;"> {{formatCurrency this.total_All}}</div>
+                                              </div>
                                             </div>
+
                                             <div class="modal-footer">
                                                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Huỷ
                                                 </button>
@@ -331,6 +348,47 @@
                                                     <span aria-hidden="true">&times;</span>
                                                 </button>
                                             </div>
+                                            <div style="margin-bottom: 2px" class="modal-body">
+                                                <div>
+                                                    Họ và tên: {{this.userName}} <br>
+                                                    Số điện thoại: {{this.phone}}<br>
+                                                    Địa chỉ: {{this.address}}
+                                                </div>
+                                                {{#each this.products}}
+                                                    <div style="display: flex;padding: 12px">
+                                                        <img style="height: 80px; margin-right: 8px;width: 80px;  border-radius: 8px;" src={{this.img_product}}  >
+                                                        <div style="width: 100%">
+                                                            <div style="font-weight: 700;font-size: 16px">
+                                                                {{this.name_Product}}
+                                                            </div>
+                                                            <div style="display: flex;justify-content: space-between;">
+
+                                                                <div style="display: flex">
+                                                                    <div style="color:#656769; margin-right: 7px">
+                                                                        {{this.name_Color}}
+                                                                    </div>
+                                                                    <div style="color:#656769;">
+                                                                        {{this.name_Size}}
+                                                                    </div>
+                                                                </div>
+
+                                                                <div>
+                                                                    x{{this.quantityProduct}}
+                                                                </div>
+                                                            </div>
+                                                            <div style="text-align: end;color: red">
+
+                                                                {{formatCurrency this.name_Price}}
+
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                {{/each}}
+
+                                                <div  style="display: flex; text-align: end;justify-content: end;">
+                                                    Tổng tiền: <div style="color: red;font-weight: 700;margin-left: 7px;"> {{formatCurrency this.total_All}}</div>
+                                                </div>
+                                            </div>
 
                                             <div class="modal-footer">
                                                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Huỷ
@@ -436,7 +494,47 @@
                                                     <span aria-hidden="true">&times;</span>
                                                 </button>
                                             </div>
+                                            <div style="margin-bottom: 2px" class="modal-body">
+                                                <div>
+                                                    Họ và tên: {{this.userName}} <br>
+                                                    Số điện thoại: {{this.phone}}<br>
+                                                    Địa chỉ: {{this.address}}
+                                                </div>
+                                                {{#each this.products}}
+                                                    <div style="display: flex;padding: 12px">
+                                                        <img style="height: 80px; margin-right: 8px;width: 80px;  border-radius: 8px;" src={{this.img_product}}  >
+                                                        <div style="width: 100%">
+                                                            <div style="font-weight: 700;font-size: 16px">
+                                                                {{this.name_Product}}
+                                                            </div>
+                                                            <div style="display: flex;justify-content: space-between;">
 
+                                                                <div style="display: flex">
+                                                                    <div style="color:#656769; margin-right: 7px">
+                                                                        {{this.name_Color}}
+                                                                    </div>
+                                                                    <div style="color:#656769;">
+                                                                        {{this.name_Size}}
+                                                                    </div>
+                                                                </div>
+
+                                                                <div>
+                                                                    x{{this.quantityProduct}}
+                                                                </div>
+                                                            </div>
+                                                            <div style="text-align: end;color: red">
+
+                                                                {{formatCurrency this.name_Price}}
+
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                {{/each}}
+
+                                                <div  style="display: flex; text-align: end;justify-content: end;">
+                                                    Tổng tiền: <div style="color: red;font-weight: 700;margin-left: 7px;"> {{formatCurrency this.total_All}}</div>
+                                                </div>
+                                            </div>
                                             <div class="modal-footer">
                                                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Huỷ
                                                 </button>
@@ -543,7 +641,47 @@
                                                     <span aria-hidden="true">&times;</span>
                                                 </button>
                                             </div>
+                                            <div style="margin-bottom: 2px" class="modal-body">
+                                                <div>
+                                                    Họ và tên: {{this.userName}} <br>
+                                                    Số điện thoại: {{this.phone}}<br>
+                                                    Địa chỉ: {{this.address}}
+                                                </div>
+                                                {{#each this.products}}
+                                                    <div style="display: flex;padding: 12px">
+                                                        <img style="height: 80px; margin-right: 8px;width: 80px;  border-radius: 8px;" src={{this.img_product}}  >
+                                                        <div style="width: 100%">
+                                                            <div style="font-weight: 700;font-size: 16px">
+                                                                {{this.name_Product}}
+                                                            </div>
+                                                            <div style="display: flex;justify-content: space-between;">
 
+                                                                <div style="display: flex">
+                                                                    <div style="color:#656769; margin-right: 7px">
+                                                                        {{this.name_Color}}
+                                                                    </div>
+                                                                    <div style="color:#656769;">
+                                                                        {{this.name_Size}}
+                                                                    </div>
+                                                                </div>
+
+                                                                <div>
+                                                                    x{{this.quantityProduct}}
+                                                                </div>
+                                                            </div>
+                                                            <div style="text-align: end;color: red">
+
+                                                                {{formatCurrency this.name_Price}}
+
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                {{/each}}
+
+                                                <div  style="display: flex; text-align: end;justify-content: end;">
+                                                    Tổng tiền: <div style="color: red;font-weight: 700;margin-left: 7px;"> {{formatCurrency this.total_All}}</div>
+                                                </div>
+                                            </div>
                                             <div class="modal-footer">
                                                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Huỷ
                                                 </button>
@@ -652,14 +790,53 @@
                                     <div class="modal-dialog" role="document">
                                         <div class="modal-content">
                                             <div class="modal-header">
-                                                <h5 class="modal-title" id="deleteProductModalLabel">Thông tin đơn
-                                                    hàng</h5>
+                                                <h5 class="modal-title" id="deleteProductModalLabel">Thông tin đơn hàng</h5>
                                                 <button type="button" class="close" data-dismiss="modal"
                                                         aria-label="Close">
                                                     <span aria-hidden="true">&times;</span>
                                                 </button>
                                             </div>
+                                            <div style="margin-bottom: 2px" class="modal-body">
+                                                <div>
+                                                    Họ và tên: {{this.userName}} <br>
+                                                    Số điện thoại: {{this.phone}}<br>
+                                                    Địa chỉ: {{this.address}}
+                                                </div>
+                                                {{#each this.products}}
+                                                    <div style="display: flex;padding: 12px">
+                                                        <img style="height: 80px; margin-right: 8px;width: 80px;  border-radius: 8px;" src={{this.img_product}}  >
+                                                        <div style="width: 100%">
+                                                            <div style="font-weight: 700;font-size: 16px">
+                                                                {{this.name_Product}}
+                                                            </div>
+                                                            <div style="display: flex;justify-content: space-between;">
 
+                                                                <div style="display: flex">
+                                                                    <div style="color:#656769; margin-right: 7px">
+                                                                        {{this.name_Color}}
+                                                                    </div>
+                                                                    <div style="color:#656769;">
+                                                                        {{this.name_Size}}
+                                                                    </div>
+                                                                </div>
+
+                                                                <div>
+                                                                    x{{this.quantityProduct}}
+                                                                </div>
+                                                            </div>
+                                                            <div style="text-align: end;color: red">
+
+                                                                {{formatCurrency this.name_Price}}
+
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                {{/each}}
+
+                                                <div  style="display: flex; text-align: end;justify-content: end;">
+                                                    Tổng tiền: <div style="color: red;font-weight: 700;margin-left: 7px;"> {{formatCurrency this.total_All}}</div>
+                                                </div>
+                                            </div>
                                             <div class="modal-footer">
                                                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Huỷ
                                                 </button>
@@ -765,7 +942,47 @@
                                                     <span aria-hidden="true">&times;</span>
                                                 </button>
                                             </div>
+                                            <div style="margin-bottom: 2px" class="modal-body">
+                                                <div>
+                                                    Họ và tên: {{this.userName}} <br>
+                                                    Số điện thoại: {{this.phone}}<br>
+                                                    Địa chỉ: {{this.address}}
+                                                </div>
+                                                {{#each this.products}}
+                                                    <div style="display: flex;padding: 12px">
+                                                        <img style="height: 80px; margin-right: 8px;width: 80px;  border-radius: 8px;" src={{this.img_product}}  >
+                                                        <div style="width: 100%">
+                                                            <div style="font-weight: 700;font-size: 16px">
+                                                                {{this.name_Product}}
+                                                            </div>
+                                                            <div style="display: flex;justify-content: space-between;">
 
+                                                                <div style="display: flex">
+                                                                    <div style="color:#656769; margin-right: 7px">
+                                                                        {{this.name_Color}}
+                                                                    </div>
+                                                                    <div style="color:#656769;">
+                                                                        {{this.name_Size}}
+                                                                    </div>
+                                                                </div>
+
+                                                                <div>
+                                                                    x{{this.quantityProduct}}
+                                                                </div>
+                                                            </div>
+                                                            <div style="text-align: end;color: red">
+
+                                                                {{formatCurrency this.name_Price}}
+
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                {{/each}}
+
+                                                <div  style="display: flex; text-align: end;justify-content: end;">
+                                                    Tổng tiền: <div style="color: red;font-weight: 700;margin-left: 7px;"> {{formatCurrency this.total_All}}</div>
+                                                </div>
+                                            </div>
                                             <div class="modal-footer">
                                                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Huỷ
                                                 </button>
