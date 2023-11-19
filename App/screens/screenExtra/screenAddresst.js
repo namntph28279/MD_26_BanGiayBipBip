@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Button, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { TextInput } from 'react-native-paper';
 import axios from 'axios';
-
+import url from "../../api/url";
 export default function ScreenAddresst({ route, navigation }) {
     const userID = route.params?.userID || '';
     useEffect(() => {

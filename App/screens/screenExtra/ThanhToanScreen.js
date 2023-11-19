@@ -4,6 +4,7 @@ import { CheckBox } from "react-native-elements";
 import Icon from 'react-native-vector-icons/FontAwesome';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import url from "../../api/url";
+import { Alert } from 'react-native';
 const ThanhToanScreen = ({ route, navigation }) => {
     const [selectedProducts, setSelectedProducts] = useState([]);
     const userID = route.params?.userID || '';
@@ -143,6 +144,10 @@ const ThanhToanScreen = ({ route, navigation }) => {
         setIsMomoSelected(false);
     };
     const handleOrder = async () => {
+        if (!shippingAddress) {
+            Alert.alert('Hãy Thao Tác Lại', 'Vui lòng chọn địa chỉ nhận hàng trước khi thanh toán.');
+            return;
+        }
         const name = await AsyncStorage.getItem('Name1');
         try {
             const products = selectedProducts.map(product => ({
