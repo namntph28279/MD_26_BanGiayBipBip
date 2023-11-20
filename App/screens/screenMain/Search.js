@@ -22,9 +22,9 @@ function Search({ navigation }) {
   const [isSearching, setIsSearching] = useState(false);
   const [filteredProducts, setFilteredProducts] = useState([]);
   const [topSellingInProducts, setTopSellingInProducts] = useState([]);
-  LogBox.ignoreLogs([
-    "VirtualizedLists should never be nested inside plain ScrollViews",
-  ]);
+  useEffect(() => {
+    LogBox.ignoreLogs(["VirtualizedLists should never be nested"])
+  }, [])
 
   const products = useSelector((state) => state.dataAll.dataSP); //lấy toàn bộ mảng dữ liệu
   const topSellingProducts = useSelector(
@@ -141,10 +141,10 @@ function Search({ navigation }) {
             },
           }
         );
-
+       
         // Assuming the response data is an array of products
         const products = response.data;
-
+       
         setFilteredProducts(products);
         setIsSearching(true);
       }

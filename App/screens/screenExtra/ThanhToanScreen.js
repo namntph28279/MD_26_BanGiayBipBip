@@ -15,6 +15,7 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import url from "../../api/url";
 import { Alert } from 'react-native';
+import { getMonney } from '../../util/money';
 const ThanhToanScreen = ({ route, navigation }) => {
     const [selectedProducts, setSelectedProducts] = useState([]);
     const userID = route.params?.userID || '';
@@ -118,7 +119,7 @@ const ThanhToanScreen = ({ route, navigation }) => {
                 <Text>Giày: {product.productName}</Text>
                 <Text>Màu: {product.selectedColor}</Text>
                 <Text>Kích thước: {product.selectedSize.size_name}</Text>
-                <Text>Giá: {product.productPrice}</Text>
+                <Text>Giá: {getMonney(product.productPrice)}</Text>
                 {/*<Text>id color: {product.selectedColorId}</Text>*/}
                 <View style={styles.quantityContainer}>
                     <TouchableOpacity onPress={() => handleQuantityChange(product.id, 'decrease')}>
@@ -260,19 +261,19 @@ const ThanhToanScreen = ({ route, navigation }) => {
                 </View>
                 <View style={styles.paymentDetailItem}>
                     <Text style={styles.detailLabel}>Tổng tiền hàng:</Text>
-                    <Text style={styles.detailValue}>{productTotal} VNĐ</Text>
+                    <Text style={styles.detailValue}>{getMonney(productTotal)}</Text>
                 </View>
                 <View style={styles.paymentDetailItem}>
                     <Text style={styles.detailLabel}>Phí bảo hiểm:</Text>
-                    <Text style={styles.detailValue}>{insuranceFee} VNĐ</Text>
+                    <Text style={styles.detailValue}>{getMonney(insuranceFee)}</Text>
                 </View>
                 <View style={styles.paymentDetailItem}>
                     <Text style={styles.detailLabel}>Phí vận chuyển:</Text>
-                    <Text style={styles.detailValue}>{shippingFee} VNĐ</Text>
+                    <Text style={styles.detailValue}>{getMonney(shippingFee)}</Text>
                 </View>
                 <View style={styles.paymentDetailItem}>
                     <Text style={styles.detailLabel1}>Tổng thanh toán:</Text>
-                    <Text style={styles.detailValue1}>{totalPayment} VNĐ</Text>
+                    <Text style={styles.detailValue1}>{getMonney(totalPayment)}</Text>
                 </View>
             </View>
 
@@ -286,7 +287,7 @@ const ThanhToanScreen = ({ route, navigation }) => {
             <View style={styles.bottomContainer}>
                 <View style={styles.totalAmountContainer}>
                     <Text style={styles.totalAmountText}>Tổng Tiền:</Text>
-                    <Text style={styles.detailValue1}>{totalPayment} VNĐ</Text>
+                    <Text style={styles.detailValue1}>{getMonney(totalPayment)}</Text>
                 </View>
                 <TouchableOpacity
                     style={{

@@ -116,19 +116,21 @@
 
                 <div style=" display: flex; line-height: 48px;  margin: 0 14px; justify-content: space-between;">
                     <div>
-                        <button class="btn-cf default-selected" style=" padding: 0 8px;" onclick="openOrder('confirm')">
+                        <button class="btn-cf default-selected" style=" padding: 0 8px;"
+                                onclick="openOrder('choXacNhan')">
                             Chờ xác nhận
                         </button>
-                        <button class="btn-cf" style=" padding: 0 8px;" onclick="openOrder('pickup')">Đang chuẩn bị hàng
+                        <button class="btn-cf" style=" padding: 0 8px;" onclick="openOrder('choLayHang')">Đang chuẩn bị
+                            hàng
                         </button>
-                        <button class="btn-cf" style=" padding: 0 8px;" onclick="openOrder('delivered')">Đang giao
+                        <button class="btn-cf" style=" padding: 0 8px;" onclick="openOrder('choGiaoHang')">Chờ giao hàng
                         </button>
-                        <button class="btn-cf" style=" padding: 0 8px;" onclick="openOrder('returns')">Yêu cầu hủy đơn
+                        <button class="btn-cf" style=" padding: 0 8px;" onclick="openOrder('daGiao')">Đã giao
                         </button>
                     </div>
                     <div>
-                        <button class="btn-cf" style=" padding: 0 8px;" onclick="openOrder('delivery')">Đã nhận</button>
-                        <button class="btn-cf" style=" padding: 0 8px;" onclick="openOrder('history')">Đã hủy</button>
+                        <button class="btn-cf" style=" padding: 0 8px;" onclick="openOrder('daHuy')">Đã hủy</button>
+                        <button class="btn-cf" style=" padding: 0 8px;" onclick="openOrder('traHang')">Trả hàng</button>
                     </div>
                 </div>
                 <div style="margin: 8px;color: #0008ff;display: flex;">
@@ -141,7 +143,7 @@
                       border-radius: 8px;
                       padding: 8px;
                       overflow: auto">
-                    <div id="confirm" class=" status" style="padding: 0 8px;">
+                    <div id="choXacNhan" class=" status" style="padding: 0 8px;">
                         <table class="table table-bordered ">
                             <thead>
                             <tr>
@@ -155,7 +157,7 @@
                             </tr>
                             </thead>
                             <tbody>
-                            {{#each confirm}}
+                            {{#each choXacNhan}}
                                 <tr>
                                     <td>{{@index}}</td>
                                     <td>{{this._id}}</td>
@@ -198,38 +200,41 @@
                                                 </div>
                                                 {{#each this.products}}
                                                     <div style="display: flex;padding: 12px">
-                                                        <img style="height: 80px; margin-right: 8px;width: 80px;  border-radius: 8px;" src={{this.img_product}}  >
-                                                       <div style="width: 100%">
-                                                           <div style="font-weight: 700;font-size: 16px">
-                                                              {{this.name_Product}}
-                                                           </div>
-                                                          <div style="display: flex;justify-content: space-between;">
+                                                        <img style="height: 80px; margin-right: 8px;width: 80px;  border-radius: 8px;"
+                                                             src={{this.img_product}}  >
+                                                        <div style="width: 100%">
+                                                            <div style="font-weight: 700;font-size: 16px">
+                                                                {{this.name_Product}}
+                                                            </div>
+                                                            <div style="display: flex;justify-content: space-between;">
 
-                                                             <div style="display: flex">
-                                                                 <div style="color:#656769; margin-right: 7px">
-                                                                     {{this.name_Color}}
-                                                                 </div>
-                                                                 <div style="color:#656769;">
-                                                                     {{this.name_Size}}
-                                                                 </div>
-                                                             </div>
+                                                                <div style="display: flex">
+                                                                    <div style="color:#656769; margin-right: 7px">
+                                                                        {{this.name_Color}}
+                                                                    </div>
+                                                                    <div style="color:#656769;">
+                                                                        {{this.name_Size}}
+                                                                    </div>
+                                                                </div>
 
-                                                              <div>
-                                                                  x{{this.quantityProduct}}
-                                                              </div>
-                                                          </div>
-                                                           <div style="text-align: end;color: red">
+                                                                <div>
+                                                                    x{{this.quantityProduct}}
+                                                                </div>
+                                                            </div>
+                                                            <div style="text-align: end;color: red">
 
-                                                                  {{formatCurrency this.name_Price}}
+                                                                {{formatCurrency this.name_Price}}
 
-                                                           </div>
-                                                       </div>
+                                                            </div>
+                                                        </div>
                                                     </div>
                                                 {{/each}}
 
-                                              <div  style="display: flex; text-align: end;justify-content: end;">
-                                                  Tổng tiền: <div style="color: red;font-weight: 700;margin-left: 7px;"> {{formatCurrency this.total_All}}</div>
-                                              </div>
+                                                <div style="display: flex; text-align: end;justify-content: end;">
+                                                    Tổng tiền:
+                                                    <div style="color: red;font-weight: 700;margin-left: 7px;"> {{formatCurrency
+                                                            this.total_All}}</div>
+                                                </div>
                                             </div>
 
                                             <div class="modal-footer">
@@ -282,14 +287,20 @@
                                             <div class="modal-body">
                                                 <p>Bạn có chắc chắn muốn hủy đơn hàng của tài
                                                     khoản: {{this.customer_email}}?</p>
-                                            </div>
-                                            <div class="modal-footer">
-                                                <button type="button" class="btn btn-secondary" data-dismiss="modal">
-                                                    Thoát
-                                                </button>
-                                                <form action="/order/status/{{this._id}}" method="POST">
-                                                    <button type="submit" class="btn btn-danger">Xác nhận</button>
-                                                </form>
+                                                    <form action="/order/status/{{this._id}}" method="POST"
+                                                          class="mb-3">
+                                                        <div class="form-group">
+                                                            <label for="product_title">Lý do hủy đơn</label>
+                                                            <input type="text" class="form-control" id="product_title"
+                                                                   name="noiDung"
+                                                                   value="{{product_title}}" required placeholder="Vui lòng nhập lý do hủy đơn">
+                                                        </div>
+                                                        <button type="button" class="btn btn-secondary"
+                                                                data-dismiss="modal"> Thoát
+                                                        </button>
+                                                        <button type="submit" class="btn btn-danger">Xác nhận</button>
+                                                    </form>
+
                                             </div>
                                         </div>
                                     </div>
@@ -300,7 +311,7 @@
 
                         </table>
                     </div>
-                    <div id="pickup" class=" status" style="display:none ;padding: 0 8px;">
+                    <div id="choLayHang" class=" status" style="display:none ;padding: 0 8px;">
                         <table class="table table-bordered ">
                             <thead>
                             <tr>
@@ -314,7 +325,7 @@
                             </tr>
                             </thead>
                             <tbody>
-                            {{#each pickup}}
+                            {{#each choLayHang}}
                                 <tr>
                                     <td>{{@index}}</td>
                                     <td>{{this._id}}</td>
@@ -356,7 +367,8 @@
                                                 </div>
                                                 {{#each this.products}}
                                                     <div style="display: flex;padding: 12px">
-                                                        <img style="height: 80px; margin-right: 8px;width: 80px;  border-radius: 8px;" src={{this.img_product}}  >
+                                                        <img style="height: 80px; margin-right: 8px;width: 80px;  border-radius: 8px;"
+                                                             src={{this.img_product}}  >
                                                         <div style="width: 100%">
                                                             <div style="font-weight: 700;font-size: 16px">
                                                                 {{this.name_Product}}
@@ -385,8 +397,10 @@
                                                     </div>
                                                 {{/each}}
 
-                                                <div  style="display: flex; text-align: end;justify-content: end;">
-                                                    Tổng tiền: <div style="color: red;font-weight: 700;margin-left: 7px;"> {{formatCurrency this.total_All}}</div>
+                                                <div style="display: flex; text-align: end;justify-content: end;">
+                                                    Tổng tiền:
+                                                    <div style="color: red;font-weight: 700;margin-left: 7px;"> {{formatCurrency
+                                                            this.total_All}}</div>
                                                 </div>
                                             </div>
 
@@ -439,14 +453,20 @@
                                             <div class="modal-body">
                                                 <p>Bạn có chắc chắn muốn hủy đơn hàng của tài
                                                     khoản: {{this.customer_email}}?</p>
-                                            </div>
-                                            <div class="modal-footer">
-                                                <button type="button" class="btn btn-secondary" data-dismiss="modal">
-                                                    Thoát
-                                                </button>
-                                                <form action="/order/status/{{this._id}}" method="POST">
+                                                <form action="/order/status/{{this._id}}" method="POST"
+                                                      class="mb-3">
+                                                    <div class="form-group">
+                                                        <label for="product_title">Lý do hủy đơn</label>
+                                                        <input type="text" class="form-control" id="product_title"
+                                                               name="noiDung"
+                                                               value="{{product_title}}" required placeholder="Vui lòng nhập lý do hủy đơn">
+                                                    </div>
+                                                    <button type="button" class="btn btn-secondary"
+                                                            data-dismiss="modal"> Thoát
+                                                    </button>
                                                     <button type="submit" class="btn btn-danger">Xác nhận</button>
                                                 </form>
+
                                             </div>
                                         </div>
                                     </div>
@@ -455,7 +475,7 @@
                             </tbody>
                         </table>
                     </div>
-                    <div id="delivery" class=" status" style="display:none ;padding: 0 8px;">
+                    <div id="daHuy" class=" status" style="display:none ;padding: 0 8px;">
                         <table class="table table-bordered ">
                             <thead>
                             <tr>
@@ -468,7 +488,7 @@
                             </tr>
                             </thead>
                             <tbody>
-                            {{#each delivery}}
+                            {{#each daHuy}}
                                 <tr>
                                     <td>{{@index}}</td>
                                     <td>{{this._id}}</td>
@@ -502,7 +522,8 @@
                                                 </div>
                                                 {{#each this.products}}
                                                     <div style="display: flex;padding: 12px">
-                                                        <img style="height: 80px; margin-right: 8px;width: 80px;  border-radius: 8px;" src={{this.img_product}}  >
+                                                        <img style="height: 80px; margin-right: 8px;width: 80px;  border-radius: 8px;"
+                                                             src={{this.img_product}}  >
                                                         <div style="width: 100%">
                                                             <div style="font-weight: 700;font-size: 16px">
                                                                 {{this.name_Product}}
@@ -531,8 +552,10 @@
                                                     </div>
                                                 {{/each}}
 
-                                                <div  style="display: flex; text-align: end;justify-content: end;">
-                                                    Tổng tiền: <div style="color: red;font-weight: 700;margin-left: 7px;"> {{formatCurrency this.total_All}}</div>
+                                                <div style="display: flex; text-align: end;justify-content: end;">
+                                                    Tổng tiền:
+                                                    <div style="color: red;font-weight: 700;margin-left: 7px;"> {{formatCurrency
+                                                            this.total_All}}</div>
                                                 </div>
                                             </div>
                                             <div class="modal-footer">
@@ -593,7 +616,7 @@
                             </tbody>
                         </table>
                     </div>
-                    <div id="delivered" class=" status" style="display:none ;padding: 0 8px;">
+                    <div id="choGiaoHang" class=" status" style="display:none ;padding: 0 8px;">
                         <table class="table table-bordered ">
                             <thead>
                             <tr>
@@ -607,7 +630,7 @@
                             </tr>
                             </thead>
                             <tbody>
-                            {{#each delivered}}
+                            {{#each choGiaoHang}}
                                 <tr>
                                     <td>{{@index}}</td>
                                     <td>{{this._id}}</td>
@@ -649,7 +672,8 @@
                                                 </div>
                                                 {{#each this.products}}
                                                     <div style="display: flex;padding: 12px">
-                                                        <img style="height: 80px; margin-right: 8px;width: 80px;  border-radius: 8px;" src={{this.img_product}}  >
+                                                        <img style="height: 80px; margin-right: 8px;width: 80px;  border-radius: 8px;"
+                                                             src={{this.img_product}}  >
                                                         <div style="width: 100%">
                                                             <div style="font-weight: 700;font-size: 16px">
                                                                 {{this.name_Product}}
@@ -678,8 +702,10 @@
                                                     </div>
                                                 {{/each}}
 
-                                                <div  style="display: flex; text-align: end;justify-content: end;">
-                                                    Tổng tiền: <div style="color: red;font-weight: 700;margin-left: 7px;"> {{formatCurrency this.total_All}}</div>
+                                                <div style="display: flex; text-align: end;justify-content: end;">
+                                                    Tổng tiền:
+                                                    <div style="color: red;font-weight: 700;margin-left: 7px;"> {{formatCurrency
+                                                            this.total_All}}</div>
                                                 </div>
                                             </div>
                                             <div class="modal-footer">
@@ -720,26 +746,23 @@
                                 <div class="modal fade" id="delete{{this._id}}" tabindex="-1" role="dialog"
                                      aria-labelledby="deleteProductModalLabel">
                                     <div class="modal-dialog" role="document">
-                                        <div class="modal-content">
-                                            <div class="modal-header">
-                                                <h5 class="modal-title" id="deleteProductModalLabel">Huỷ đơn hàng</h5>
-                                                <button type="button" class="close" data-dismiss="modal"
-                                                        aria-label="Close">
-                                                    <span aria-hidden="true">&times;</span>
+                                        <div class="modal-body">
+                                            <p>Bạn có chắc chắn muốn hủy đơn hàng của tài
+                                                khoản: {{this.customer_email}}?</p>
+                                            <form action="/order/status/{{this._id}}" method="POST"
+                                                  class="mb-3">
+                                                <div class="form-group">
+                                                    <label for="product_title">Lý do hủy đơn</label>
+                                                    <input type="text" class="form-control" id="product_title"
+                                                           name="noiDung"
+                                                           value="{{product_title}}" required placeholder="Vui lòng nhập lý do hủy đơn">
+                                                </div>
+                                                <button type="button" class="btn btn-secondary"
+                                                        data-dismiss="modal"> Thoát
                                                 </button>
-                                            </div>
-                                            <div class="modal-body">
-                                                <p>Bạn có chắc chắn muốn hủy đơn hàng của tài
-                                                    khoản: {{this.customer_email}}?</p>
-                                            </div>
-                                            <div class="modal-footer">
-                                                <button type="button" class="btn btn-secondary" data-dismiss="modal">
-                                                    Thoát
-                                                </button>
-                                                <form action="/order/status/{{this._id}}" method="POST">
-                                                    <button type="submit" class="btn btn-danger">Xác nhận</button>
-                                                </form>
-                                            </div>
+                                                <button type="submit" class="btn btn-danger">Xác nhận</button>
+                                            </form>
+
                                         </div>
                                     </div>
                                 </div>
@@ -748,7 +771,7 @@
                             </tbody>
                         </table>
                     </div>
-                    <div id="returns" class=" status" style="display:none ;padding: 0 8px;">
+                    <div id="daGiao" class=" status" style="display:none ;padding: 0 8px;">
                         <table class="table table-bordered ">
                             <thead>
                             <tr>
@@ -758,12 +781,11 @@
                                 <th style="text-align: center;width: 120px">Số lượng</th>
                                 <th style="text-align: center;width: 130px">Giá tiền</th>
                                 <th style="text-align: center;width: 100px">Chi tiết</th>
-                                <th style="text-align: center;width: 145px;">Thao tác</th>
 
                             </tr>
                             </thead>
                             <tbody>
-                            {{#each returns}}
+                            {{#each daGiao}}
                                 <tr>
                                     <td>{{@index}}</td>
                                     <td>{{this._id}}</td>
@@ -775,22 +797,15 @@
                                              data-toggle="modal"
                                              data-target="#detail{{this._id}}"/>
                                     </td>
-                                    <td>
-                                        <img width="50px" src="tick.png" class="btn btn-success btn-sm"
-                                             data-toggle="modal"
-                                             data-target="#succ{{this._id}}"/>
-                                        <img width="50px" src="close.png" class="btn btn-danger btn-sm"
-                                             data-toggle="modal"
-                                             data-target="#delete{{this._id}}"
-                                             data-product-name="Tên sản phẩm"/>
-                                    </td>
+
                                 </tr>
                                 <div class="modal fade" id="detail{{this._id}}" tabindex="-1" role="dialog"
                                      aria-labelledby="deleteProductModalLabel">
                                     <div class="modal-dialog" role="document">
                                         <div class="modal-content">
                                             <div class="modal-header">
-                                                <h5 class="modal-title" id="deleteProductModalLabel">Thông tin đơn hàng</h5>
+                                                <h5 class="modal-title" id="deleteProductModalLabel">Thông tin đơn
+                                                    hàng</h5>
                                                 <button type="button" class="close" data-dismiss="modal"
                                                         aria-label="Close">
                                                     <span aria-hidden="true">&times;</span>
@@ -804,7 +819,8 @@
                                                 </div>
                                                 {{#each this.products}}
                                                     <div style="display: flex;padding: 12px">
-                                                        <img style="height: 80px; margin-right: 8px;width: 80px;  border-radius: 8px;" src={{this.img_product}}  >
+                                                        <img style="height: 80px; margin-right: 8px;width: 80px;  border-radius: 8px;"
+                                                             src={{this.img_product}}  >
                                                         <div style="width: 100%">
                                                             <div style="font-weight: 700;font-size: 16px">
                                                                 {{this.name_Product}}
@@ -833,8 +849,10 @@
                                                     </div>
                                                 {{/each}}
 
-                                                <div  style="display: flex; text-align: end;justify-content: end;">
-                                                    Tổng tiền: <div style="color: red;font-weight: 700;margin-left: 7px;"> {{formatCurrency this.total_All}}</div>
+                                                <div style="display: flex; text-align: end;justify-content: end;">
+                                                    Tổng tiền:
+                                                    <div style="color: red;font-weight: 700;margin-left: 7px;"> {{formatCurrency
+                                                            this.total_All}}</div>
                                                 </div>
                                             </div>
                                             <div class="modal-footer">
@@ -844,67 +862,12 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="modal fade" id="succ{{this._id}}" tabindex="-1" role="dialog"
-                                     aria-labelledby="addProductModalLabel" aria-hidden="true">
-                                    <div class="modal-dialog" role="document">
-                                        <div class="modal-content">
-                                            <div class="modal-header">
-                                                <h5 class="modal-title" id="addProductModalLabel">Xác nhận đơn</h5>
-                                                <button type="button" class="close" data-dismiss="modal"
-                                                        aria-label="Close">
-                                                    <span aria-hidden="true">&times;</span>
-                                                </button>
-                                            </div>
-
-                                            <div class="modal-body">
-                                                <p>Bạn có chắc chắn muốn xác nhận đơn hàng của tài
-                                                    khoản: {{this.customer_email}}?</p>
-                                            </div>
-                                            <div class="modal-footer">
-                                                <button type="button" class="btn btn-secondary" data-dismiss="modal">
-                                                    Thoát
-                                                </button>
-                                                <form action="/order/status/Comfig/{{this._id}}" method="POST">
-                                                    <button type="submit" class="btn btn-primary">Xác nhận</button>
-                                                </form>
-                                            </div>
-
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="modal fade" id="delete{{this._id}}" tabindex="-1" role="dialog"
-                                     aria-labelledby="deleteProductModalLabel">
-                                    <div class="modal-dialog" role="document">
-                                        <div class="modal-content">
-                                            <div class="modal-header">
-                                                <h5 class="modal-title" id="deleteProductModalLabel">Huỷ đơn hàng</h5>
-                                                <button type="button" class="close" data-dismiss="modal"
-                                                        aria-label="Close">
-                                                    <span aria-hidden="true">&times;</span>
-                                                </button>
-                                            </div>
-                                            <div class="modal-body">
-                                                <p>Bạn có chắc chắn muốn hủy đơn hàng của tài
-                                                    khoản: {{this.customer_email}}?</p>
-                                            </div>
-                                            <div class="modal-footer">
-                                                <button type="button" class="btn btn-secondary" data-dismiss="modal">
-                                                    Thoát
-                                                </button>
-                                                <form action="/order/status/{{this._id}}" method="POST">
-                                                    <button type="submit" class="btn btn-danger">Xác nhận</button>
-                                                </form>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
                             {{/each}}
                             </tbody>
                         </table>
                     </div>
-                    <div id="history" class=" status" style="display:none ;padding: 0 8px;">
+
+                    <div id="traHang" class=" status" style="display:none ;padding: 0 8px;">
                         <table class="table table-bordered ">
                             <thead>
                             <tr>
@@ -917,7 +880,7 @@
                             </tr>
                             </thead>
                             <tbody>
-                            {{#each history}}
+                            {{#each traHang}}
                                 <tr>
                                     <td>{{@index}}</td>
                                     <td>{{this._id}}</td>
@@ -950,7 +913,8 @@
                                                 </div>
                                                 {{#each this.products}}
                                                     <div style="display: flex;padding: 12px">
-                                                        <img style="height: 80px; margin-right: 8px;width: 80px;  border-radius: 8px;" src={{this.img_product}}  >
+                                                        <img style="height: 80px; margin-right: 8px;width: 80px;  border-radius: 8px;"
+                                                             src={{this.img_product}}  >
                                                         <div style="width: 100%">
                                                             <div style="font-weight: 700;font-size: 16px">
                                                                 {{this.name_Product}}
@@ -979,8 +943,10 @@
                                                     </div>
                                                 {{/each}}
 
-                                                <div  style="display: flex; text-align: end;justify-content: end;">
-                                                    Tổng tiền: <div style="color: red;font-weight: 700;margin-left: 7px;"> {{formatCurrency this.total_All}}</div>
+                                                <div style="display: flex; text-align: end;justify-content: end;">
+                                                    Tổng tiền:
+                                                    <div style="color: red;font-weight: 700;margin-left: 7px;"> {{formatCurrency
+                                                            this.total_All}}</div>
                                                 </div>
                                             </div>
                                             <div class="modal-footer">
