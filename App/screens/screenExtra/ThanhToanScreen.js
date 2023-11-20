@@ -198,16 +198,21 @@ const ThanhToanScreen = ({ route, navigation }) => {
         }
         const name = await AsyncStorage.getItem('Name1');
         try {
-            const products = selectedProducts.map(product => ({
+            const products = selectedProducts.map(product => {
+                const item = dataSP.find((item) => item._id === product.product);
+                return{
+                    product: product.product,
 
-                product: product.productId,
-                img_product:product.productImageURL,
-                name_Product:product.productName,
-                name_Size:product.selectedSize.size_name,
-                name_Price:product.productPrice * product.quantity,
-                name_Color:product.selectedColor,
-                quantityProduct:product.quantity
-            }));
+                    img_product:item.product_image,
+                    name_Product:item.product_title,
+                    name_Price:item.product_price * product.quantity,
+
+                    name_Size:product.size,
+                    name_Color:product.color,
+                    quantityProduct:product.quantity,
+                }
+            } 
+            );
             console.log(products)
 
             const orderData = {
