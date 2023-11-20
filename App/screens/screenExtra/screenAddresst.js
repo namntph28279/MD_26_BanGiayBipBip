@@ -1,14 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { Button, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { TextInput } from 'react-native-paper';
-import axios from 'axios';
+import axios from 'axios';import {useDispatch, useSelector} from "react-redux";
 import url from "../../api/url";
+
 export default function ScreenAddresst({ route, navigation }) {
     const userID = route.params?.userID || '';
     useEffect(() => {
-        console.log('Giá trị userID từ thêm địa chỉ:', userID);
+       // console.log('Giá trị userID từ thêm địa chỉ:', userID);
         if (!userID) {
-            console.log('Không có user ID.', userID);
+           // console.log('Không có user ID.', userID);
             return;
         }
     }, [userID]);
@@ -21,23 +22,49 @@ export default function ScreenAddresst({ route, navigation }) {
     const [huyen, setHuyen] = useState('');
     const [xa, setXa] = useState('');
     const [chiTiet, setChiTiet] = useState('');
-
+    const [oldUserData, setOldUserData] = useState([]);
     const [nameError, setNameError] = useState(false);
     const [phoneError, setPhoneError] = useState(false);
     const [tinhError, setTinhError] = useState(false);
     const [huyenError, setHuyenError] = useState(false);
     const [xaError, setXaError] = useState(false);
+    const [isEdit, setIsEdit] = useState(false);
     const [address, setAdddress] = useState('');
     // const [chiTietError, setChiTietError] = useState(false);
-
+    const dataUserID = useSelector((state) => state.dataAll.dataUserID);
     useEffect(() => {
-        const newAddress = `${xa} ${huyen} ${tinh}`;
+        const newAddress = xa + " - " + huyen + " - " + tinh;
         setAdddress(newAddress);
     }, [xa, huyen, tinh]);
+    
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const response = await url.get(`/address/${dataUserID}`);
+                const data = response.data;
+                setOldUserData(data);
+              
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        };
+        fetchData();
+    }, [dataUserID]);
+    useEffect(() => {
+        if (oldUserData.length > 0) {
+          console.log("Datauser here: "+oldUserData[0].name);
+          setName(oldUserData[0].name);
+          setPhone(oldUserData[0].phone);
+          const arr = oldUserData[0].address.split(" - ");
+          setXa(arr[0]);
+          setHuyen(arr[1]);
+          setTinh(arr[2]);
+          setIsEdit(true);
+        }
+      }, [oldUserData]);
 
     const handleComplete = () => {
         const nameError = !name;
-
         const tinhError = !tinh;
         const huyenError = !huyen;
         const xaError = !xa;
@@ -69,7 +96,7 @@ export default function ScreenAddresst({ route, navigation }) {
         };
         const jsonData = JSON.stringify(data);
 
-        if (!nameError && !phoneError && !xaError && !huyenError && !tinhError) {
+        if (!nameError && !phoneError && !xaError && !huyenError && !tinhError &&!isEdit) {
             // axios.post('https://md26bipbip-496b6598561d.herokuapp.com/address/add', jsonData, {
             //     headers: {
             //         'Content-Type': 'application/json',
@@ -85,6 +112,25 @@ export default function ScreenAddresst({ route, navigation }) {
             //     });
             url.post(
                 "/address/add",
+                jsonData,
+                {
+                  headers: {
+                    "Content-Type": "application/json",
+                  },
+                }
+              )
+                .then((response) => {
+                  console.log("Dữ liệu đã được gửi thành công lên máy chủ:", response.data);
+                  navigation.navigate("AllDiaChi", { userID });
+                })
+                .catch((error) => {
+                  console.error("Lỗi trong quá trình gửi dữ liệu lên máy chủ:", error);
+                  navigation.navigate("AllDiaChi", { userID });
+                });
+        }
+        if (!nameError && !phoneError && !xaError && !huyenError && !tinhError &&isEdit) {
+            url.put(
+                `/address/edit/${dataUserID}`,
                 jsonData,
                 {
                   headers: {
