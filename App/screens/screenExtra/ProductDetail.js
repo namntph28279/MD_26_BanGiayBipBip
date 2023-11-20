@@ -311,9 +311,8 @@ function ProductDetail({ route, navigation }) {
                     size:selectedSize.size_name,
                 };
                 const updatedSelectedProducts = [...selectedProducts, productInfo];
-                console.log(updatedSelectedProducts);
 
-                // navigation.navigate('ThanhToanScreen', { userID: email, selectedProducts: updatedSelectedProducts });
+                navigation.navigate('ThanhToanScreen', { userID: email, selectedProducts: updatedSelectedProducts });
             }
         } else {
             console.log('chưa chọn màu sắc hoặc kích cỡ');

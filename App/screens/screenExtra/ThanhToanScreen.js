@@ -16,6 +16,10 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import url from "../../api/url";
 import { Alert } from 'react-native';
 import { getMonney } from '../../util/money';
+
+import { useDispatch, useSelector } from "react-redux";
+import { fetchDataAndSetToRedux } from "../../redux/AllData";
+
 const ThanhToanScreen = ({ route, navigation }) => {
     const [selectedProducts, setSelectedProducts] = useState([]);
     const userID = route.params?.userID || '';
@@ -36,6 +40,20 @@ const ThanhToanScreen = ({ route, navigation }) => {
     const [isPaymentSuccess, setIsPaymentSuccess] = useState(false);
     const [isCheckmarkVisible, setIsCheckmarkVisible] = useState(true);
     //
+
+    const dispatch = useDispatch(); //trả về một đối tượng điều phối
+    const dataProduct = useSelector((state) => state.dataAll.dataSP);
+    const [dataSP, setDataSP] = useState([]);
+  
+    React.useEffect(() => {
+      const unsubscribe = navigation.addListener("focus", () => {
+        dispatch(fetchDataAndSetToRedux());
+      });
+      return unsubscribe;
+    }, [navigation]);
+    useEffect(() => {
+        setDataSP(dataProduct);
+      }, [dataProduct]);
 
 
     useEffect(() => {
@@ -82,8 +100,9 @@ const ThanhToanScreen = ({ route, navigation }) => {
         let productTotal = 0;
         let productSoLuong = 0;
         selectedProducts.forEach((product) => {
+            const item = dataSP.find((item) => item._id === product.product);
             productSoLuong += product.quantity;
-            productTotal += product.quantity * product.productPrice;
+            productTotal += product.quantity * item.product_price;
         });
         setSoLuong(productSoLuong);
         setProductTotal(productTotal);
@@ -112,14 +131,16 @@ const ThanhToanScreen = ({ route, navigation }) => {
     };
 
 
-    const renderProductItem = (product) => (
-        <View key={product.productId} style={styles.productItem}>
-            <Image source={{ uri: product.productImageURL }} style={styles.productImage} />
+    const renderProductItem = (product) => {
+        const item = dataSP.find((item) => item._id === product.product);
+    return(
+    <View key={product.sizeId} style={styles.productItem}>
+            <Image source={{ uri: item.product_image }} style={styles.productImage} />
             <View style={styles.productDetails}>
-                <Text>Giày: {product.productName}</Text>
-                <Text>Màu: {product.selectedColor}</Text>
-                <Text>Kích thước: {product.selectedSize.size_name}</Text>
-                <Text>Giá: {getMonney(product.productPrice)}</Text>
+                <Text>Giày: {item.product_title}</Text>
+                <Text>Màu: {product.color}</Text>
+                <Text>Kích thước: {product.size}</Text>
+                <Text>Giá: {getMonney(item.product_price)}</Text>
                 {/*<Text>id color: {product.selectedColorId}</Text>*/}
                 <View style={styles.quantityContainer}>
                     <TouchableOpacity onPress={() => handleQuantityChange(product.id, 'decrease')}>
@@ -132,7 +153,8 @@ const ThanhToanScreen = ({ route, navigation }) => {
                 </View>
             </View>
         </View>
-    );
+        )
+    };
 
 
 
@@ -240,6 +262,7 @@ const ThanhToanScreen = ({ route, navigation }) => {
 
     return (
         <View style={styles.container}>
+            <ScrollView>
             <TouchableOpacity style={styles.addressContainer} onPress={handleAddressPress}>
 
                 <View>
@@ -284,6 +307,7 @@ const ThanhToanScreen = ({ route, navigation }) => {
                     <Text style={{alignSelf: 'center'}}>{isMomoSelected ? 'MoMo' : isCODSelected ? 'Thanh Toán Khi Nhận Hàng' : ''}</Text>
                 </View>
             </TouchableOpacity>
+            </ScrollView>
             <View style={styles.bottomContainer}>
                 <View style={styles.totalAmountContainer}>
                     <Text style={styles.totalAmountText}>Tổng Tiền:</Text>
