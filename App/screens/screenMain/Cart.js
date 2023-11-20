@@ -5,7 +5,6 @@ import {
   StyleSheet,
   Image,
   TouchableOpacity,
-  Animated,
   ScrollView,
   Alert,
 } from "react-native";
@@ -21,11 +20,9 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import NoProduct from "../../components/NoProduct";
 
 function Cart({ route, navigation }) {
-  const [userData, setUserData] = useState(null);
   const [cartProducts, setCartProducts] = useState([]);
-  const [fadeAnim] = useState(new Animated.Value(0));
   const [selectedProducts, setSelectedProducts] = useState([]);
-  const [shippingAddress, setShippingAddress] = useState("");
+//   const [shippingAddress, setShippingAddress] = useState("");
 
   const dispatch = useDispatch(); //trả về một đối tượng điều phối
   const dataProduct = useSelector((state) => state.dataAll.dataSP);
@@ -89,8 +86,31 @@ function Cart({ route, navigation }) {
       return updatedProducts;
     });
   };
-  const handleCheckOut = () => {
-    
+  const handleCheckOut = async () => {
+    const email = await AsyncStorage.getItem('Email');
+        if (!email){
+            alert("Vui lòng đăng nhập");
+            navigation.navigate('Login');
+            return
+        }
+        if (selectedProducts.length > 0){ 
+           
+                // const productInfo = {
+                //     productId: productId,
+                //     quantity: quantity,
+                //     productPrice: product.product_price,
+                //     selectedColor: selectedColor,
+                //     selectedSize: selectedSize,
+                //     selectedColorId :selectedColorData,
+                //     productImageURL: productImageURL,
+                //     productName: product.product_title,
+                // };
+
+                navigation.navigate('ThanhToanScreen', { userID: email, selectedProducts: selectedProducts });
+            
+        } else {
+            alert('Vui lòng chọn sản phẩm trong giỏ hàng');
+        }
   };
 
   const handleRemoveProduct = async (cartId) => {
@@ -120,12 +140,12 @@ function Cart({ route, navigation }) {
   };
 
   const increaseQuantity = (quantity) => {
-    quantity++;
+    quantity+=1;
   };
 
   const decreaseQuantity = (quantity) => {
     if (quantity > 1) {
-      quantity--;
+      quantity-=1;
     }
   };
 
@@ -176,7 +196,7 @@ function Cart({ route, navigation }) {
           />
           <View style={styles.productInfo}>
             <Text style={styles.productName}>{item.product_title}</Text>
-            <Text style={styles.productType}>Phân loại : Vàng/37</Text>
+            <Text style={styles.productType}>Phân loại : {product.color}/{product.size}</Text>
             <Text style={styles.productPrice}>
               Giá: {getMonney(sumProductsPrice(item, product.quantity))}
             </Text>
