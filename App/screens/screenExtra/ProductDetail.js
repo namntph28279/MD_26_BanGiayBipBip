@@ -225,9 +225,11 @@ function ProductDetail({ route, navigation }) {
 
             if (selectedColor && selectedSize) {
                 const cartItem = {
-                    product_id: productId,
-                    quantity,
                     user_id: email,
+                    product_id: productId,
+                    size_id:selectedSize._id,
+                    color_id:selectedColorData,
+                    quantity: quantity,
                 };
 
                 await url.post('/cart/add', cartItem);
@@ -301,16 +303,13 @@ function ProductDetail({ route, navigation }) {
         if (selectedColor && selectedSize) {
             if (email) {
                 const productInfo = {
-                    productId: productId,
+                    product: productId,
+                    colorId :selectedSize.colorId,
+                    sizeId:selectedSize._id,
                     quantity: quantity,
-                    productPrice: product.product_price,
-                    selectedColor: selectedColor,
-                    selectedSize: selectedSize,
-                    selectedColorId :selectedColorData,
-                    productImageURL: productImageURL,
-                    productName: product.product_title,
+                    color:selectedColor,
+                    size:selectedSize.size_name,
                 };
-
                 const updatedSelectedProducts = [...selectedProducts, productInfo];
 
                 navigation.navigate('ThanhToanScreen', { userID: email, selectedProducts: updatedSelectedProducts });

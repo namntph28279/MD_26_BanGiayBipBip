@@ -6,6 +6,24 @@ const CartItemSchema = new mongoose.Schema({
     ref: 'Product',
     required: true
   },
+  colorId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Color',
+    required: true,
+  },
+  color:{
+    type: String,
+    required: true,
+  },
+  sizeId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Size',
+    required: true,
+  },
+  size:{
+    type: String,
+    required: true,
+  },
   user:{
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
@@ -15,14 +33,6 @@ const CartItemSchema = new mongoose.Schema({
     type: Number,
     required: true
   },
-  product_title: {
-    type: String,
-    required: true
-  },
-  product_image: {
-    type: String,
-    required: true
-  }
 });
 
 const CartItem = mongoose.model('CartItem', CartItemSchema);

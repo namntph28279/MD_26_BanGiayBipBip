@@ -47,24 +47,22 @@ const ChangePassword = ({ route, navigation }) => {
     } else {
       setErrorConfirmPassword(false);
     }
-    const response = await url.post("/changepassword", {
-      username: userData.username,
-      oldPassword: oldPassword,
-      newPassword: newPassword,
-    });
-
-    if (response.status === 200) {
+    try {
+      const response = await url.post("/changepassword", {
+        username: userData.username,
+        oldPassword: oldPassword,
+        newPassword: newPassword,
+      });
       alert("Đổi mật khẩu thành công");
       navigation.navigate("TabNavi");
-    }
-    if (response.status === 404 || response.status === 401) {
-      setErrorOldPassword(true);
-      return;
-    } else {
-      setErrorOldPassword(false);
-    }
-    if(response.status === 500){
-        alert("Có lỗi xảy ra vui lòng khởi động lại ứng dụng");
+    } catch (error) {
+      if (error.message == "Request failed with status code 401" || error.status == 401) {
+        setErrorOldPassword(true);
+        return;
+      } else {
+        setErrorOldPassword(false);
+      }
+      console.log();
     }
   };
 
