@@ -158,17 +158,12 @@ const Order = ({ route }) => {
                         </TouchableOpacity>
                     )}
                 />
-
-                {loading ? (
-                    <Text>Loading...</Text>
-                ) : (
                     <FlatList
                         style={styles.list}
                         data={datalist}
                         keyExtractor={(item) => item.id.toString()}
                         renderItem={renderItem}
                     />
-                )}
             </SafeAreaView>
             <View style={{ width: '100%', backgroundColor: 'black', height: 1 }} />
         </View>
