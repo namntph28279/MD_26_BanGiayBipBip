@@ -16,9 +16,10 @@ import { getMonney } from '../../util/money';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 const Order = ({ route }) => {
     const [orderProductsList, setOrderProductsList] = useState([]);
-    const [status, setStatus] = useState('Chờ xác nhận');
+    const [status, setStatus] = useState('Tất cả sản phẩm đã đặt');
     const [loading, setLoading] = useState(true);
     const [tab1DataLoaded, setTab1DataLoaded] = useState(false);
+    
     useEffect(() => {
         fetchDataList();
     }, []);
@@ -50,9 +51,10 @@ const Order = ({ route }) => {
                     orderDate: order.order_date,
                 }));
 
-            setOrderProductsList(formattedData);
-            setLoading(false);
-
+                setOrderProductsList(formattedData);
+                setDatalist(formattedData);
+                setLoading(false);
+                setTab1DataLoaded(true);
         } catch (error) {
             console.error('Error fetching data:', error);
             setLoading(false);
@@ -61,7 +63,7 @@ const Order = ({ route }) => {
 
     useEffect(() => {
         fetchDataList();
-        setStatusFilter('Chờ xác nhận');
+        setStatusFilter('Tất cả sản phẩm đã đặt');
     }, []);
 
     const navigation = useNavigation();
@@ -73,6 +75,7 @@ const Order = ({ route }) => {
         { status: 'Đã giao' },
         { status: 'Đã hủy' },
         { status: 'Trả hàng' },
+        { status: 'Tất cả sản phẩm đã đặt' },
     ];
 
     function handleCancelOrder(item) {
@@ -84,8 +87,8 @@ const Order = ({ route }) => {
             style={styles.frame}
             onPress={() => {
                 console.log('Item:', item);
-                navigation.navigate('InformationLine', { product: item.productId });
-                console.log('Product ID:', item.productId);
+                navigation.navigate('InformationLine', { productId: item.products[0].productId }); // Truyền product ID vào params
+                console.log('Product ID:', item.products[0].productId);
             }}
         >
             <View style={styles.productBox}>
@@ -93,11 +96,13 @@ const Order = ({ route }) => {
                     <View key={product.id} style={styles.productItemContainer}>
                         <Image source={{ uri: product.img_product }} style={styles.productImage} />
                         <View style={styles.productInfo}>
+                            <Text style={styles.productName}>{`Tên sản phẩm: ${product.productId}`}</Text>
                             <Text style={styles.productName}>{`Tên sản phẩm: ${product.name_Product}`}</Text>
                             <Text>{`Màu: ${product.name_Color}`}</Text>
+                            <Text>{`Size: ${product.name_Size}`}</Text>
                             <View style={styles.quantityAndPriceContainer}>
                                 <Text>{`SL: ${product.quantityProduct}`}</Text>
-                                <Text style={{ color: '#FF0000' , fontWeight:'bold'}}>{`Giá: ${getMonney(product.name_Price)}`}</Text>
+                                <Text style={{ color: '#FF0000', fontWeight: 'bold' }}>{`Giá: ${getMonney(product.name_Price)}`}</Text>
                             </View>
                         </View>
                     </View>
@@ -125,6 +130,8 @@ const Order = ({ route }) => {
 
         if (setStatusFilter === 'Chờ xác nhận') {
             filteredData = orderProductsList.filter((e) => e.status === 0);
+        }else if (setStatusFilter === 'Tất cả sản phẩm đã đặt') {
+            filteredData = orderProductsList;
         } else {
             filteredData = orderProductsList.filter(
                 (e) => e.status === listTab.findIndex((tab) => tab.status === setStatusFilter)
@@ -158,12 +165,12 @@ const Order = ({ route }) => {
                         </TouchableOpacity>
                     )}
                 />
-                    <FlatList
-                        style={styles.list}
-                        data={datalist}
-                        keyExtractor={(item) => item.id.toString()}
-                        renderItem={renderItem}
-                    />
+                <FlatList
+                    style={styles.list}
+                    data={datalist}
+                    keyExtractor={(item) => item.id.toString()}
+                    renderItem={renderItem}
+                />
             </SafeAreaView>
             <View style={{ width: '100%', backgroundColor: 'black', height: 1 }} />
         </View>
@@ -264,7 +271,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         padding: 8,
         width: '100%',
-        marginTop:10,
+        marginTop: 10,
         marginBottom: 10,
     },
     productBox1: {
