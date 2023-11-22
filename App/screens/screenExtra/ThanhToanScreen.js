@@ -164,6 +164,9 @@ const ThanhToanScreen = ({ route, navigation }) => {
         navigation.navigate('AllDiaChi', { userID, fromThanhToan: true, selectedProducts });
 
     };
+    const handleModalBackgroundPress = () => {
+        setPaymentSuccessModalVisible(false);
+    };
     const handlePaymentSuccess = () => {
         setPaymentSuccessModalVisible(true);
     };
@@ -237,6 +240,7 @@ const ThanhToanScreen = ({ route, navigation }) => {
             if (response.status === 201) {
                 const result = response.data;
                 console.log('Đặt hàng thành công:', result);
+                navigation.navigate('Oder');
                 handlePaymentSuccess();
                 setTimeout(() => {
                     setIsCheckmarkVisible(true);
@@ -348,19 +352,21 @@ const ThanhToanScreen = ({ route, navigation }) => {
                 animationType="slide"
                 transparent={true}
                 visible={isPaymentSuccessModalVisible}
-                onRequestClose={handlePaymentModalClose}>
-                <View style={styles.centeredView}>
-                    <View style={styles.modalContent}>
-                        {isCheckmarkVisible ? (
-                            <>
-                                <Icon name="check-circle" size={50} color="#1abc9c" />
-                                <Text style={styles.modalTitle}>Thanh toán thành công!</Text>
-                            </>
-                        ) : (
-                            <ActivityIndicator size="large" color="#1abc9c" />
-                        )}
+                onRequestClose={() => setPaymentSuccessModalVisible(false)}>
+                <TouchableWithoutFeedback onPress={handleModalBackgroundPress}>
+                    <View style={styles.centeredView}>
+                        <View style={styles.modalContent}>
+                            {isCheckmarkVisible ? (
+                                <>
+                                    <Icon name="check-circle" size={50} color="#1abc9c" />
+                                    <Text style={styles.modalTitle}>Thanh toán thành công!</Text>
+                                </>
+                            ) : (
+                                <ActivityIndicator size="large" color="#1abc9c" />
+                            )}
+                        </View>
                     </View>
-                </View>
+                </TouchableWithoutFeedback>
             </Modal>
 
             <Modal
