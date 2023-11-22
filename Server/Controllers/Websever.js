@@ -37,29 +37,41 @@ app.use(bodyParser.urlencoded({extended: false}));
 app.use(bodyParser.json());
 app.use(express.json());
 //màn hình home
+app.get('/loadData', async (req, res) => {
+    const choXacNhan = await Order.find({status: 0}).sort({order_date: -1});
+    const choLayHang = await Order.find({status: 1}).sort({order_date: -1});
+    const choGiaoHang = await Order.find({status: 2}).sort({order_date: -1});
+    const daGiao = await Order.find({status: 3}).sort({order_date: -1});
+    const daHuy = await Order.find({status: 4}).sort({order_date: -1});
+    const traHang = await Order.find({status: 5}).sort({order_date: -1});
+    const arr = [choXacNhan, choLayHang, choGiaoHang, daGiao, daHuy, traHang]
+
+    res.json(arr)
+})
 app.get('/home', async (req, res) => {
+
     try {
-        const choXacNhan = await Order.find({status: 0}).sort({order_date: -1});//chờ xác nhận
-        const choLayHang = await Order.find({status: 1}).sort({order_date: -1});//Chờ lấy hàng
-        const choGiaoHang = await Order.find({status: 2}).sort({order_date: -1});//Chờ giao hàng
-
-        const daGiao = await Order.find({status: 3}).sort({order_date: -1});//Đã giao
-
-        const daHuy = await Order.find({status: 4}).sort({order_date: -1});//đã hủy
-
-        const traHang = await Order.find({status: 5}).sort({order_date: -1});//Trả hàng
+        const choXacNhan = await Order.find({status: 0}).sort({order_date: -1});
+        const choLayHang = await Order.find({status: 1}).sort({order_date: -1});
+        const choGiaoHang = await Order.find({status: 2}).sort({order_date: -1});
+        const daGiao = await Order.find({status: 3}).sort({order_date: -1});
+        const donHuy = await Order.find({status: 4}).sort({order_date: -1});
+        const traHang = await Order.find({status: 5}).sort({order_date: -1});
+        const donHoan = await Order.find({status: 6}).sort({order_date: -1});
 
         res.render('../Views/screenHome.hbs', {
             choXacNhan: choXacNhan,
             choLayHang: choLayHang,
             choGiaoHang: choGiaoHang,
             daGiao: daGiao,
-            daHuy: daHuy,
-            traHang: traHang
+            daHuy: donHuy,
+            traHang: traHang,
+            donHoan: donHoan
         });
     } catch (error) {
-        res.status(500).json({message: error.message});
+        res.json({message: error.message});
     }
+
 });
 
 app.get('/mess', async (req, res) => {
@@ -95,11 +107,11 @@ app.post('/screenWarehouse/search', async (req, res) => {
 app.post('/order/status/:orderId', async (req, res) => {
     const orderId = req.params.orderId;
     const data = req.body
-    const mess = "Đơn hàng của bạn đã bị hủy vì: "+data.noiDung
+    const mess = "Đơn hàng của bạn đã bị hủy vì: " + data.noiDung
     console.log(mess)
     try {
-         const order = await Order.findById(orderId);
-         if (!order) {
+        const order = await Order.findById(orderId);
+        if (!order) {
             return res.status(404).json({message: 'Đơn hàng không tồn tại'});
         }
         const idUserOrder = order.user;
@@ -124,9 +136,10 @@ app.post('/order/status/:orderId', async (req, res) => {
                 })
             });
         }
-        NotificaionClient(idClientArray,mess)
+
+        NotificaionClient(idClientArray, mess)
         order.status = 4;
-        order.lyDoHuyDon =data.noiDung
+        order.lyDoHuyDon = data.noiDung
         await order.save();
         res.redirect('/home')
     } catch (error) {
@@ -179,6 +192,11 @@ app.post('/order/status/Comfig/:id', async (req, res) => {
             order.status = 3;
             await order.save();
             NotificaionClient(idClientArray, "Đơn hàng của bạn đã được giao cho đơn vị vận chuyển")
+            res.redirect('/home')
+        }else if (order.status === 5) {
+            order.status = 6;
+            await order.save();
+            NotificaionClient(idClientArray, "Bạn vui lòng liên hệ với shop thông qua phần tin nhắn hoặc hotline: 0987654321 để được hỗ trợ ")
             res.redirect('/home')
         }
 
