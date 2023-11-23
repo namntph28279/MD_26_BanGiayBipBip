@@ -8,6 +8,8 @@ import {
     ScrollView,
     SafeAreaView,
     FlatList,
+    Modal,
+    Alert
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -19,7 +21,9 @@ const Order = ({ route }) => {
     const [status, setStatus] = useState('Tất cả sản phẩm đã đặt');
     const [loading, setLoading] = useState(true);
     const [tab1DataLoaded, setTab1DataLoaded] = useState(false);
-    
+    const [isCancelModalVisible, setCancelModalVisible] = useState(false);
+    const [isSuccessModalVisible, setSuccessModalVisible] = useState(false);
+
     useEffect(() => {
         fetchDataList();
     }, []);
@@ -78,18 +82,83 @@ const Order = ({ route }) => {
         { status: 'Trả hàng' },
         { status: 'Tất cả sản phẩm đã đặt' },
     ];
+    const handleCancelOrder = async (item) => {
+        try {
+            // Show confirmation dialog
+            Alert.alert(
+                'Xác nhận hủy đơn hàng',
+                'Bạn có chắc muốn hủy đơn hàng?',
+                [
+                    { text: 'Hủy', style: 'cancel' },
+                    { text: 'Đồng ý', onPress: () => confirmCancelOrder(item) },
+                ],
+                { cancelable: false }
+            );
+        } catch (error) {
+            console.error('Lỗi', error);
+        }
+    };
+    const confirmCancelOrder = async (item) => {
+        try {
+            const orderId = item.id;
+            const response = await url.post(`/order/status/${orderId}`, {
+                noiDung: 'Không muốn mua nữa...',
+            }, {
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
 
-    function handleCancelOrder(item) {
-        return undefined;
-    }
+            if (response.status === 200) {
+                setCancelModalVisible(false);
+                setSuccessModalVisible(true);
+                showSuccessModal();
+                fetchDataList();
+            } else {
+                console.error('Lỗi', response.statusText);
+            }
+        } catch (error) {
+            console.error('Lỗi', error);
+        }
+    };
+    const hideSuccessModal = () => {
+        setSuccessModalVisible(false);
+    };
+    const showSuccessModal = () => {
+        setSuccessModalVisible(true);
+        setTimeout(() => {
+            hideSuccessModal();
+        }, 2000);
+    };
+
+    const renderSuccessModal = () => (
+        <Modal
+            animationType="slide"
+            transparent={true}
+            visible={isSuccessModalVisible}
+            onRequestClose={hideSuccessModal}
+        >
+            <TouchableOpacity
+                style={styles.modalBackground}
+                activeOpacity={1}
+                onPress={hideSuccessModal}
+            >
+                <View style={styles.modalContainer}>
+                    <Text>Xóa thành công</Text>
+                </View>
+            </TouchableOpacity>
+        </Modal>
+    );
+
 
     const renderItem = ({ item }) => (
         <TouchableOpacity
             style={styles.frame}
             onPress={() => {
                 // console.log('Item:', item);
-                navigation.navigate('InformationLine', { productId: item.products[0].productId }); // Truyền product ID vào params
+                navigation.navigate('InformationLine', { productId: item.products[0].productId , orderId: item.id }); // Truyền product ID vào params
                 console.log('Product ID:', item.products[0].productId);
+                console.log('oder ID:', item.id);
             }}
         >
             <View style={styles.productBox}>
@@ -147,6 +216,7 @@ const Order = ({ route }) => {
 
     return (
         <View style={styles.container}>
+            {renderSuccessModal()}
             <SafeAreaView style={styles.container1}>
                 <FlatList
                     horizontal
@@ -248,6 +318,17 @@ const styles = StyleSheet.create({
         marginTop: 40,
         marginLeft: 15,
         marginBottom: 7,
+    },
+    modalBackground: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    },
+    modalContainer: {
+        backgroundColor: 'white',
+        padding: 20,
+        borderRadius: 10,
     },
     button2: {
         backgroundColor: '#444444',
