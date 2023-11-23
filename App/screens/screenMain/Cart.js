@@ -139,14 +139,28 @@ function Cart({ route, navigation }) {
     return cartProducts.length;
   };
 
-  const increaseQuantity = (quantity) => {
-    quantity+=1;
+  const increaseQuantity = (productId) => {
+    setCartProducts((prevCartProducts) => {
+      const updatedProducts = prevCartProducts.map((product) => {
+        if (product.id === productId) {
+          return { ...product, quantity: product.quantity + 1 };
+        }
+        return product;
+      });
+      return updatedProducts;
+    });
   };
-
-  const decreaseQuantity = (quantity) => {
-    if (quantity > 1) {
-      quantity-=1;
-    }
+  
+  const decreaseQuantity = (productId) => {
+    setCartProducts((prevCartProducts) => {
+      const updatedProducts = prevCartProducts.map((product) => {
+        if (product.id === productId && product.quantity > 1) {
+          return { ...product, quantity: product.quantity - 1 };
+        }
+        return product;
+      });
+      return updatedProducts;
+    });
   };
 
   useEffect(() => {
@@ -200,17 +214,18 @@ function Cart({ route, navigation }) {
             <Text style={styles.productPrice}>
               Giá: {getMonney(sumProductsPrice(item, product.quantity))}
             </Text>
+
             <View style={styles.quantityContainer}>
               <TouchableOpacity
                 style={styles.quantityButton}
-                onPress={decreaseQuantity(product.quantity)}
+                onPress={() => decreaseQuantity(product.id)}
               >
                 <Text style={styles.quantityButtonText}>-</Text>
               </TouchableOpacity>
               <Text style={styles.quantityText}>{product.quantity}</Text>
               <TouchableOpacity
                 style={styles.quantityButton}
-                onPress={increaseQuantity(product.quantity)}
+                onPress={() => increaseQuantity(product.id)}
               >
                 <Text style={styles.quantityButtonText}>+</Text>
               </TouchableOpacity>

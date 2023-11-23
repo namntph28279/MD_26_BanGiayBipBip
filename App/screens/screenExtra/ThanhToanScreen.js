@@ -44,16 +44,16 @@ const ThanhToanScreen = ({ route, navigation }) => {
     const dispatch = useDispatch(); //trả về một đối tượng điều phối
     const dataProduct = useSelector((state) => state.dataAll.dataSP);
     const [dataSP, setDataSP] = useState([]);
-  
+
     React.useEffect(() => {
-      const unsubscribe = navigation.addListener("focus", () => {
-        dispatch(fetchDataAndSetToRedux());
-      });
-      return unsubscribe;
+        const unsubscribe = navigation.addListener("focus", () => {
+            dispatch(fetchDataAndSetToRedux());
+        });
+        return unsubscribe;
     }, [navigation]);
     useEffect(() => {
         setDataSP(dataProduct);
-      }, [dataProduct]);
+    }, [dataProduct]);
 
 
     useEffect(() => {
@@ -133,26 +133,26 @@ const ThanhToanScreen = ({ route, navigation }) => {
 
     const renderProductItem = (product) => {
         const item = dataSP.find((item) => item._id === product.product);
-    return(
-    <View key={product.sizeId} style={styles.productItem}>
-            <Image source={{ uri: item.product_image }} style={styles.productImage} />
-            <View style={styles.productDetails}>
-                <Text>Giày: {item.product_title}</Text>
-                <Text>Màu: {product.color}</Text>
-                <Text>Kích thước: {product.size}</Text>
-                <Text>Giá: {getMonney(item.product_price)}</Text>
-                {/*<Text>id color: {product.selectedColorId}</Text>*/}
-                <View style={styles.quantityContainer}>
-                    <TouchableOpacity onPress={() => handleQuantityChange(product.id, 'decrease')}>
-                        <Text style={styles.quantityButton}>-</Text>
-                    </TouchableOpacity>
-                    <Text style={styles.quantity}>{product.quantity}</Text>
-                    <TouchableOpacity onPress={() => handleQuantityChange(product.id, 'increase')}>
-                        <Text style={styles.quantityButton}>+</Text>
-                    </TouchableOpacity>
+        return(
+            <View key={product.sizeId} style={styles.productItem}>
+                <Image source={{ uri: item.product_image }} style={styles.productImage} />
+                <View style={styles.productDetails}>
+                    <Text>Giày: {item.product_title}</Text>
+                    <Text>Màu: {product.color}</Text>
+                    <Text>Kích thước: {product.size}</Text>
+                    <Text>Giá: {getMonney(item.product_price)}</Text>
+                    {/*<Text>id color: {product.selectedColorId}</Text>*/}
+                    <View style={styles.quantityContainer}>
+                        <TouchableOpacity onPress={() => handleQuantityChange(product.id, 'decrease')}>
+                            <Text style={styles.quantityButton}>-</Text>
+                        </TouchableOpacity>
+                        <Text style={styles.quantity}>{product.quantity}</Text>
+                        <TouchableOpacity onPress={() => handleQuantityChange(product.id, 'increase')}>
+                            <Text style={styles.quantityButton}>+</Text>
+                        </TouchableOpacity>
+                    </View>
                 </View>
             </View>
-        </View>
         )
     };
 
@@ -164,9 +164,21 @@ const ThanhToanScreen = ({ route, navigation }) => {
         navigation.navigate('AllDiaChi', { userID, fromThanhToan: true, selectedProducts });
 
     };
+    const handleModalBackgroundPress = () => {
+        setPaymentSuccessModalVisible(false);
+    };
     const handlePaymentSuccess = () => {
         setPaymentSuccessModalVisible(true);
+        setTimeout(() => {
+            setIsCheckmarkVisible(true);
+            setTimeout(() => {
+                setIsCheckmarkVisible(false);
+                setPaymentSuccessModalVisible(false);
+                navigation.replace('Oder');
+            }, 2000);
+        }, 2000);
     };
+
 
     const handlePaymentFailure = () => {
         setPaymentFailureModalVisible(true);
@@ -199,19 +211,19 @@ const ThanhToanScreen = ({ route, navigation }) => {
         const name = await AsyncStorage.getItem('Name1');
         try {
             const products = selectedProducts.map(product => {
-                const item = dataSP.find((item) => item._id === product.product);
-                return{
-                    product: product.product,
+                    const item = dataSP.find((item) => item._id === product.product);
+                    return{
+                        product: product.product,
 
-                    img_product:item.product_image,
-                    name_Product:item.product_title,
-                    name_Price:item.product_price * product.quantity,
+                        img_product:item.product_image,
+                        name_Product:item.product_title,
+                        name_Price:item.product_price * product.quantity,
 
-                    name_Size:product.size,
-                    name_Color:product.color,
-                    quantityProduct:product.quantity,
+                        name_Size:product.size,
+                        name_Color:product.color,
+                        quantityProduct:product.quantity,
+                    }
                 }
-            } 
             );
             console.log(products)
 
@@ -238,21 +250,14 @@ const ThanhToanScreen = ({ route, navigation }) => {
                 const result = response.data;
                 console.log('Đặt hàng thành công:', result);
                 handlePaymentSuccess();
-                setTimeout(() => {
-                    setIsCheckmarkVisible(true);
-                    setTimeout(() => {
-                        setIsCheckmarkVisible(false);
-                        setPaymentSuccessModalVisible(false);
-                    }, 2000);
-                }, 2000);
             } else {
                 console.error('Lỗi đặt hàng:', response.status, response.statusText);
                 console.error('Server response:', response.data);
                 handlePaymentFailure();
-                    setTimeout(() => {
-                        setIsCheckmarkVisible(false);
-                        setPaymentSuccessModalVisible(true);
-                    }, 2000);
+                setTimeout(() => {
+                    setIsCheckmarkVisible(false);
+                    setPaymentSuccessModalVisible(true);
+                }, 2000);
             }
 
         } catch (error) {
@@ -268,50 +273,50 @@ const ThanhToanScreen = ({ route, navigation }) => {
     return (
         <View style={styles.container}>
             <ScrollView>
-            <TouchableOpacity style={styles.addressContainer} onPress={handleAddressPress}>
+                <TouchableOpacity style={styles.addressContainer} onPress={handleAddressPress}>
 
-                <View>
-                    <Text style={styles.addressLabel}>Địa chỉ nhận hàng:</Text>
-                    <Text style={styles.addressText}>Tên: {shippingAddress.name}</Text>
-                    <Text style={styles.addressText}>Số điện thoại: {shippingAddress.phone}</Text>
-                    <Text style={styles.addressText}>Địa chỉ: {shippingAddress.label}: {shippingAddress.address}</Text>
-                </View>
-                <Icon name="globe" size={100} color="#1abc9c" />
-            </TouchableOpacity>
-            <ScrollView style={styles.scrollContainer}>
-                {selectedProducts.map(renderProductItem)}
-            </ScrollView>
-            <View style={styles.paymentDetailsContainer}>
-                <View style={styles.paymentDetailHeader}>
-                    <Icon name="dollar" size={20} color="red" style={styles.invoiceIcon} />
+                    <View>
+                        <Text style={styles.addressLabel}>Địa chỉ nhận hàng:</Text>
+                        <Text style={styles.addressText}>Tên: {shippingAddress.name}</Text>
+                        <Text style={styles.addressText}>Số điện thoại: {shippingAddress.phone}</Text>
+                        <Text style={styles.addressText}>Địa chỉ: {shippingAddress.label}: {shippingAddress.address}</Text>
+                    </View>
+                    <Icon name="globe" size={100} color="#1abc9c" />
+                </TouchableOpacity>
+                <ScrollView style={styles.scrollContainer}>
+                    {selectedProducts.map(renderProductItem)}
+                </ScrollView>
+                <View style={styles.paymentDetailsContainer}>
+                    <View style={styles.paymentDetailHeader}>
+                        <Icon name="dollar" size={20} color="red" style={styles.invoiceIcon} />
 
-                    <Text style={styles.paymentDetailHeaderText}>Chi Tiết Thanh Toán</Text>
+                        <Text style={styles.paymentDetailHeaderText}>Chi Tiết Thanh Toán</Text>
+                    </View>
+                    <View style={styles.paymentDetailItem}>
+                        <Text style={styles.detailLabel}>Tổng tiền hàng:</Text>
+                        <Text style={styles.detailValue}>{getMonney(productTotal)}</Text>
+                    </View>
+                    <View style={styles.paymentDetailItem}>
+                        <Text style={styles.detailLabel}>Phí bảo hiểm:</Text>
+                        <Text style={styles.detailValue}>{getMonney(insuranceFee)}</Text>
+                    </View>
+                    <View style={styles.paymentDetailItem}>
+                        <Text style={styles.detailLabel}>Phí vận chuyển:</Text>
+                        <Text style={styles.detailValue}>{getMonney(shippingFee)}</Text>
+                    </View>
+                    <View style={styles.paymentDetailItem}>
+                        <Text style={styles.detailLabel1}>Tổng thanh toán:</Text>
+                        <Text style={styles.detailValue1}>{getMonney(totalPayment)}</Text>
+                    </View>
                 </View>
-                <View style={styles.paymentDetailItem}>
-                    <Text style={styles.detailLabel}>Tổng tiền hàng:</Text>
-                    <Text style={styles.detailValue}>{getMonney(productTotal)}</Text>
-                </View>
-                <View style={styles.paymentDetailItem}>
-                    <Text style={styles.detailLabel}>Phí bảo hiểm:</Text>
-                    <Text style={styles.detailValue}>{getMonney(insuranceFee)}</Text>
-                </View>
-                <View style={styles.paymentDetailItem}>
-                    <Text style={styles.detailLabel}>Phí vận chuyển:</Text>
-                    <Text style={styles.detailValue}>{getMonney(shippingFee)}</Text>
-                </View>
-                <View style={styles.paymentDetailItem}>
-                    <Text style={styles.detailLabel1}>Tổng thanh toán:</Text>
-                    <Text style={styles.detailValue1}>{getMonney(totalPayment)}</Text>
-                </View>
-            </View>
 
-            <TouchableOpacity style={styles.paymentMethodContainer} onPress={handlePaymentMethodPress}>
-                <Icon name="credit-card" size={30} color="#3498db" />
-                <View>
-                    <Text style={styles.inputLabel}>Phương Thức Thanh Toán:</Text>
-                    <Text style={{alignSelf: 'center'}}>{isMomoSelected ? 'MoMo' : isCODSelected ? 'Thanh Toán Khi Nhận Hàng' : ''}</Text>
-                </View>
-            </TouchableOpacity>
+                <TouchableOpacity style={styles.paymentMethodContainer} onPress={handlePaymentMethodPress}>
+                    <Icon name="credit-card" size={30} color="#3498db" />
+                    <View>
+                        <Text style={styles.inputLabel}>Phương Thức Thanh Toán:</Text>
+                        <Text style={{alignSelf: 'center'}}>{isMomoSelected ? 'MoMo' : isCODSelected ? 'Thanh Toán Khi Nhận Hàng' : ''}</Text>
+                    </View>
+                </TouchableOpacity>
             </ScrollView>
             <View style={styles.bottomContainer}>
                 <View style={styles.totalAmountContainer}>
@@ -348,19 +353,21 @@ const ThanhToanScreen = ({ route, navigation }) => {
                 animationType="slide"
                 transparent={true}
                 visible={isPaymentSuccessModalVisible}
-                onRequestClose={handlePaymentModalClose}>
-                <View style={styles.centeredView}>
-                    <View style={styles.modalContent}>
-                        {isCheckmarkVisible ? (
-                            <>
-                                <Icon name="check-circle" size={50} color="#1abc9c" />
-                                <Text style={styles.modalTitle}>Thanh toán thành công!</Text>
-                            </>
-                        ) : (
-                            <ActivityIndicator size="large" color="#1abc9c" />
-                        )}
+                onRequestClose={() => setPaymentSuccessModalVisible(false)}>
+                <TouchableWithoutFeedback onPress={handleModalBackgroundPress}>
+                    <View style={styles.centeredView}>
+                        <View style={styles.modalContent}>
+                            {isCheckmarkVisible ? (
+                                <>
+                                    <Icon name="check-circle" size={50} color="#1abc9c" />
+                                    <Text style={styles.modalTitle}>Thanh toán thành công!</Text>
+                                </>
+                            ) : (
+                                <ActivityIndicator size="large" color="#1abc9c" />
+                            )}
+                        </View>
                     </View>
-                </View>
+                </TouchableWithoutFeedback>
             </Modal>
 
             <Modal
