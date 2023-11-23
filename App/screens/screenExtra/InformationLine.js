@@ -4,6 +4,7 @@ import {
   View,
   StyleSheet,
   Image,
+  ScrollView,
   TouchableOpacity,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
@@ -20,108 +21,69 @@ const InformationLine = ({ route, navigation }) => {
   const [tab1DataLoaded, setTab1DataLoaded] = useState(false);
   const [datalist, setDatalist] = useState(orderProductsList);
   const { productId } = route.params;
-  // console.log('Data List:', datalist);
+
   useEffect(() => {
     fetchDataList();
   }, []);
+
   const fetchDataList = async () => {
     const email = await AsyncStorage.getItem('Email');
-    // console.log('================================', email);
+    const { orderId } = route.params; // Thay đổi này để lấy orderId từ route params
+
     try {
       console.log('Fetching data...');
-      const response = await url.get('/order/addOderDetail/All');
+      const response = await url.get(`/order/detail/${orderId}`); // Sửa đổi này để sử dụng orderId
       const data = response.data;
-      const filteredData = data.filter((order) => order.user === email);
 
-      if (productId) {
-        const trimmedProductId = productId.trim();
-        const productOrder = filteredData.find((order) => {
-          return order.products.some((product) => product.product === trimmedProductId);
-        });
-        console.log('Filtered Data:', JSON.stringify(filteredData, null, 2));
-        console.log('Product ID to find:', productId);
-
-        if (productOrder) {
-          const formattedProduct = {
-            id: productOrder.id,
-            user: productOrder.user,
-            status: productOrder.status,
-            customerEmail: productOrder.customer_email,
-            products: productOrder.products.map((product) => ({
-              id: product._id,
-              productId: product.product,
-              img_product: product.img_product,
-              name_Product: product.name_Product,
-              name_Size: product.name_Size,
-              name_Price: product.name_Price,
-              name_Color: product.name_Color,
-              quantityProduct: product.quantityProduct,
-            })),
-            total_amount: productOrder.total_amount,
-            total_insurance_amount: productOrder.total_insurance_amount,
-            total_shipping_fee: productOrder.total_shipping_fee,
-            address: productOrder.address,
-            userName: productOrder.userName,
-            phone: productOrder.phone,
-            orderDate: productOrder.order_date,
-          };
-          setOrderProductsList([formattedProduct]);
-          setDatalist([formattedProduct]);
-          setLoading(false);
-          setTab1DataLoaded(true);
-          setStatus(productOrder.status); // Set the status based on the order status
-        } else {
-          console.log(`Product with ID ${productId} not found`);
-          setLoading(false);
-        }
-      } else {
-        const formattedData = filteredData.map((order) => ({
-          id: order._id,
-          user: order.user,
-          status: order.status,
-          customerEmail: order.customer_email,
-          products: order.products.map((product) => ({
-            id: product._id,
-            productId: product.product,
-            img_product: product.img_product,
-            name_Product: product.name_Product,
-            name_Size: product.name_Size,
-            name_Price: product.name_Price,
-            name_Color: product.name_Color,
-            quantityProduct: product.quantityProduct,
-          })),
-          total_amount: order.total_amount,
-          total_insurance_amount: order.total_insurance_amount,
-          total_shipping_fee: order.total_shipping_fee,
-          address: order.address,
-          userName: order.userName,
-          phone: order.phone,
-          orderDate: order.order_date,
-        }));
-
-        if (formattedData.length > 0) {
-          setStatus(formattedData[0].status); // Set the status based on the first item in the array
-        }
-
-        setOrderProductsList(formattedData);
-        setDatalist(formattedData);
+      if (!data) {
+        console.log('Order not found');
         setLoading(false);
-        setTab1DataLoaded(true);
+        return;
       }
+
+      const formattedProducts = data.products.map((product) => ({
+        id: product._id,
+        productId: product.product,
+        img_product: product.img_product,
+        name_Product: product.name_Product,
+        name_Size: product.name_Size,
+        name_Price: product.name_Price,
+        name_Color: product.name_Color,
+        quantityProduct: product.quantityProduct,
+      }));
+
+      const formattedOrder = {
+        id: data._id,
+        user: data.user,
+        status: data.status,
+        customerEmail: data.customer_email,
+        products: formattedProducts,
+        total_amount: data.total_amount,
+        total_insurance_amount: data.total_insurance_amount,
+        total_shipping_fee: data.total_shipping_fee,
+        address: data.address,
+        userName: data.userName,
+        phone: data.phone,
+        orderDate: data.order_date,
+      };
+
+      setOrderProductsList([formattedOrder]);
+      setDatalist([formattedOrder]);
+      setLoading(false);
+      setTab1DataLoaded(true);
+      setStatus(data.status);
+      console.log(formattedOrder)
     } catch (error) {
-      console.error('Error fetching data111:', error);
+      console.error('Error fetching data:', error);
       setLoading(false);
     }
   };
   return (
-    <View style={styles.container}>
       <View style={styles.container}>
-        {datalist.map((item) => (
-          <View key={item.id}>
-            {item.products.map((product) => (
-              <View key={product.id}>
+        <View style={styles.container}>
+          {datalist.map((item) => (
+              <View key={item.id}>
                 <View style={styles.addressContainer}>
-
                   <View>
                     <Text style={styles.addressLabel}>Địa chỉ nhận hàng:</Text>
                     <Text style={styles.addressText}>{`Họ tên: ${item.userName}`}</Text>
@@ -131,31 +93,33 @@ const InformationLine = ({ route, navigation }) => {
                   <Icon name="globe" size={100} color="#1abc9c" />
                 </View>
 
-
-                <View style={styles.productBox}>
-                  <View style={styles.productItemContainer}>
-                    <Image source={{ uri: product.img_product }} style={styles.productImage} />
-                    <View style={styles.productInfo}>
-                      {/* <Text style={styles.productName}>{`Product ID: ${product.productId}`}</Text> */}
-                      <Text style={styles.productName}>{`${product.name_Product}`}</Text>
-                      <Text>{`Màu: ${product.name_Color}`}</Text>
-                      <Text>{`Size: ${product.name_Size}`}</Text>
-                      <View style={styles.quantityAndPriceContainer}>
-                        <Text>{`SL: ${product.quantityProduct}`}</Text>
-                        <Text style={{ color: '#FF0000', fontWeight: 'bold' }}>{`Giá: ${getMonney(item.total_amount)}`}</Text>
+                <ScrollView style={styles.productScrollView}>
+                  {item.products.map((product) => (
+                      <View key={product.id} style={styles.productBox}>
+                        <View style={styles.productItemContainer}>
+                          <Image source={{ uri: product.img_product }} style={styles.productImage} />
+                          <View style={styles.productInfo}>
+                            <Text style={styles.productName}>{`${product.name_Product}`}</Text>
+                            <Text>{`Màu: ${product.name_Color}`}</Text>
+                            <Text>{`Size: ${product.name_Size}`}</Text>
+                            <View style={styles.quantityAndPriceContainer}>
+                              <Text>{`SL: ${product.quantityProduct}`}</Text>
+                              <Text style={{ color: '#FF0000', fontWeight: 'bold' }}>{`Giá: ${getMonney(product.name_Price)}`}</Text>
+                            </View>
+                          </View>
+                        </View>
                       </View>
-                    </View>
-                  </View>
-                </View>
+                  ))}
+                </ScrollView>
+
                 <View style={styles.paymentDetailsContainer}>
                   <View style={styles.paymentDetailHeader}>
                     <Icon name="dollar" size={20} color="red" style={styles.invoiceIcon} />
-
                     <Text style={styles.paymentDetailHeaderText}>Chi Tiết Thanh Toán</Text>
                   </View>
                   <View style={styles.paymentDetailItem}>
                     <Text style={styles.detailLabel}>Tổng tiền hàng:</Text>
-                    <Text style={styles.detailValue}>{`${getMonney(product.name_Price)}`}</Text>
+                    <Text style={styles.detailValue}>{`${getMonney(item.total_amount)}`}</Text>
                   </View>
                   <View style={styles.paymentDetailItem}>
                     <Text style={styles.detailLabel}>Phí bảo hiểm:</Text>
@@ -175,29 +139,25 @@ const InformationLine = ({ route, navigation }) => {
                   <Icon name="credit-card" size={30} color="#3498db" />
                   <View>
                     <Text style={styles.inputLabel}>Phương Thức Thanh Toán:</Text>
-                    <Text style={{ alignSelf: 'center' }}>Thanh tán khi nhận hàng</Text>
+                    <Text style={{ alignSelf: 'center' }}>Thanh toán khi nhận hàng</Text>
                   </View>
                 </View>
-                <View>
-                  <TouchableOpacity
+
+                <TouchableOpacity
                     style={styles.paymentMethodContainer_chat}
                     onPress={() => {
                       navigation.navigate("ChatScreen");
                     }}
-                  >
-                    <Icon name="comment" size={20} color="green" />
-                    <Text style={styles.textChat}>Liên hệ shop</Text>
-                  </TouchableOpacity>
-                </View>
-
-                {/* <View style={{ width: '100%', backgroundColor: 'black', height: 1 }} /> */}
+                >
+                  <Icon name="comment" size={20} color="green" />
+                  <Text style={styles.textChat}>Liên hệ shop</Text>
+                </TouchableOpacity>
               </View>
-            ))}
-          </View>
-        ))}
+          ))}
+        </View>
       </View>
-    </View>
   );
+
 };
 
 const styles = StyleSheet.create({
@@ -269,6 +229,10 @@ const styles = StyleSheet.create({
     marginTop: 40,
     marginLeft: 15,
     marginBottom: 7,
+  },
+  productScrollView: {
+    maxHeight: 200,
+    marginBottom: 10,
   },
   button2: {
     backgroundColor: '#444444',

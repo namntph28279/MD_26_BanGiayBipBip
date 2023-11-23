@@ -5,7 +5,7 @@ const websever = require('./Controllers/Websever')
 const app = express();
 app.use(express.static(__dirname + "/Images"))
 app.use(express.static(__dirname + "/CSS"))
-var server_port = process.env.YOUR_PORT || process.env.PORT || 80;
+var server_port = 3000;
 var server_host = process.env.YOUR_HOST || '0.0.0.0';
 // Kết nối tới MongoDB
 mongoose.connect('mongodb+srv://namnguyen:Nam280103@cluster0.zyd4ou2.mongodb.net/DB?retryWrites=true&w=majority', {
