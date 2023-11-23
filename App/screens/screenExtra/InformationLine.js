@@ -4,6 +4,7 @@ import {
   View,
   StyleSheet,
   Image,
+  ScrollView,
   TouchableOpacity,
   FlatList,
   ScrollView
@@ -20,33 +21,95 @@ const InformationLine = ({ route, navigation }) => {
   const [loading, setLoading] = useState(true);
   const [orderData, setOrderData] = useState(null);
   const [datalist, setDatalist] = useState(orderProductsList);
-  console.log("datalistddddddddddddddd", datalist);
-
-  // const { productId } = route.params;
-  const { orderId } = route.params;
-  // console.log('Data Listkkkkkkkkkkkkkkkkkkk:', orderId);
+  const { productId } = route.params;
+  // console.log('Data List:', datalist);
   useEffect(() => {
     fetchDataList();
-  }, [orderId]);
-
+  }, []);
   const fetchDataList = async () => {
     const email = await AsyncStorage.getItem('Email');
-    console.log('Email:', email);
-    
+    // console.log('================================', email);
     try {
-      const response = await url.get(`/order/detail/${orderId}`);
-      console.log("response", response);
+      console.log('Fetching data...');
+      const response = await url.get('/order/addOderDetail/All');
       const data = response.data;
-      console.log("API data:", data);
+      const filteredData = data.filter((order) => order.user === email);
 
-      if (!data) {
-        console.error('Invalid data structure:', data);
+      if (productId) {
+        const trimmedProductId = productId.trim();
+        const productOrder = filteredData.find((order) => {
+          return order.products.some((product) => product.product === trimmedProductId);
+        });
+        console.log('Filtered Data:', JSON.stringify(filteredData, null, 2));
+        console.log('Product ID to find:', productId);
+
+        if (productOrder) {
+          const formattedProduct = {
+            id: productOrder.id,
+            user: productOrder.user,
+            status: productOrder.status,
+            customerEmail: productOrder.customer_email,
+            products: productOrder.products.map((product) => ({
+              id: product._id,
+              productId: product.product,
+              img_product: product.img_product,
+              name_Product: product.name_Product,
+              name_Size: product.name_Size,
+              name_Price: product.name_Price,
+              name_Color: product.name_Color,
+              quantityProduct: product.quantityProduct,
+            })),
+            total_amount: productOrder.total_amount,
+            total_insurance_amount: productOrder.total_insurance_amount,
+            total_shipping_fee: productOrder.total_shipping_fee,
+            address: productOrder.address,
+            userName: productOrder.userName,
+            phone: productOrder.phone,
+            orderDate: productOrder.order_date,
+          };
+          setOrderProductsList([formattedProduct]);
+          setDatalist([formattedProduct]);
+          setLoading(false);
+          setTab1DataLoaded(true);
+          setStatus(productOrder.status); // Set the status based on the order status
+        } else {
+          console.log(`Product with ID ${productId} not found`);
+          setLoading(false);
+        }
+      } else {
+        const formattedData = filteredData.map((order) => ({
+          id: order._id,
+          user: order.user,
+          status: order.status,
+          customerEmail: order.customer_email,
+          products: order.products.map((product) => ({
+            id: product._id,
+            productId: product.product,
+            img_product: product.img_product,
+            name_Product: product.name_Product,
+            name_Size: product.name_Size,
+            name_Price: product.name_Price,
+            name_Color: product.name_Color,
+            quantityProduct: product.quantityProduct,
+          })),
+          total_amount: order.total_amount,
+          total_insurance_amount: order.total_insurance_amount,
+          total_shipping_fee: order.total_shipping_fee,
+          address: order.address,
+          userName: order.userName,
+          phone: order.phone,
+          orderDate: order.order_date,
+        }));
+
+        if (formattedData.length > 0) {
+          setStatus(formattedData[0].status); // Set the status based on the first item in the array
+        }
+
+        setOrderProductsList(formattedData);
+        setDatalist(formattedData);
         setLoading(false);
-        return;
+        setTab1DataLoaded(true);
       }
-
-      setOrderData(data);
-      setLoading(false);
     } catch (error) {
       console.error('Error fetching data:', error);
       setLoading(false);
@@ -56,90 +119,90 @@ const InformationLine = ({ route, navigation }) => {
 
   return (
     <View style={styles.container}>
-    {orderData ? (
-      <React.Fragment>
-        <ScrollView>
-          <View>
-            <View style={styles.addressContainer}>
-              <View>
-                <Text style={styles.addressLabel}>Địa chỉ nhận hàng:</Text>
-                <Text style={styles.addressText}>Họ tên: {orderData.userName}</Text>
-                <Text style={styles.addressText}>Phone: {orderData.phone}</Text>
-                <Text style={styles.addressText}>Address: {orderData.address}</Text>
-              </View>
-              <Icon name="globe" size={100} color="#1abc9c" />
-            </View>
-  
-            <View>
-              {orderData.products.map((product, index) => (
-                <View key={index} style={styles.productBox}>
+      <View style={styles.container}>
+        {datalist.map((item) => (
+          <View key={item.id}>
+            {item.products.map((product) => (
+              <View key={product.id}>
+                <View style={styles.addressContainer}>
+
+                  <View>
+                    <Text style={styles.addressLabel}>Địa chỉ nhận hàng:</Text>
+                    <Text style={styles.addressText}>{`Họ tên: ${item.userName}`}</Text>
+                    <Text style={styles.addressText}>{`Số điện thoại: ${item.phone}`}</Text>
+                    <Text style={styles.addressText}>{`Địa chỉ: ${item.address}`}</Text>
+                  </View>
+                  <Icon name="globe" size={100} color="#1abc9c" />
+                </View>
+
+
+                <View style={styles.productBox}>
                   <View style={styles.productItemContainer}>
                     <Image source={{ uri: product.img_product }} style={styles.productImage} />
                     <View style={styles.productInfo}>
-                      <Text style={styles.productName}>{product.name_Product}</Text>
-                      <Text>Ma: {product.name_Color}</Text>
-                      <Text>Size: {product.name_Size}</Text>
+                      {/* <Text style={styles.productName}>{`Product ID: ${product.productId}`}</Text> */}
+                      <Text style={styles.productName}>{`${product.name_Product}`}</Text>
+                      <Text>{`Màu: ${product.name_Color}`}</Text>
                       <Text>{`Size: ${product.name_Size}`}</Text>
                       <View style={styles.quantityAndPriceContainer}>
                         <Text>{`SL: ${product.quantityProduct}`}</Text>
-                        <Text style={{ color: '#FF0000', fontWeight: 'bold' }}>{`Giá: ${getMonney(product.name_Price)}`}</Text>
+                        <Text style={{ color: '#FF0000', fontWeight: 'bold' }}>{`Giá: ${getMonney(item.total_amount)}`}</Text>
                       </View>
                     </View>
                   </View>
                 </View>
-              ))}
-            </View>
-  
-            <View style={styles.paymentDetailsContainer}>
-              <View style={styles.paymentDetailHeader}>
-                <Icon name="dollar" size={20} color="red" style={styles.invoiceIcon} />
-                <Text style={styles.paymentDetailHeaderText}>Chi Tiết Thanh Toán</Text>
-              </View>
-              <View style={styles.paymentDetailItem}>
-                <Text style={styles.detailLabel}>Tổng tiền hàng:</Text>
-                <Text style={styles.detailValue}>{`${getMonney(orderData.total_amount)}`}</Text>
-              </View>
-              <View style={styles.paymentDetailItem}>
-                <Text style={styles.detailLabel}>Phí bảo hiểm:</Text>
-                <Text style={styles.detailValue}>{`${getMonney(orderData.total_insurance_amount)}`}</Text>
-              </View>
-              <View style={styles.paymentDetailItem}>
-                <Text style={styles.detailLabel}>Phí vận chuyển:</Text>
-                <Text style={styles.detailValue}>{`${getMonney(orderData.total_shipping_fee)}`}</Text>
-              </View>
-              <View style={styles.paymentDetailItem}>
-                <Text style={styles.detailLabel1}>Tổng thanh toán:</Text>
-                <Text style={styles.detailValue1}>{`${getMonney(orderData.total_amount)}`}</Text>
-              </View>
-            </View>
-  
-            <View style={styles.paymentMethodContainer}>
-              <Icon name="credit-card" size={30} color="#3498db" />
-              <View>
-                <Text style={styles.inputLabel}>Phương Thức Thanh Toán:</Text>
-                <Text style={{ alignSelf: 'center' }}>Thanh toán khi nhận hàng</Text>
-              </View>
-            </View>
-  
-            <TouchableOpacity
-              style={styles.paymentMethodContainer_chat}
-              onPress={() => {
-                navigation.navigate("ChatScreen");
-              }}
-            >
-              <Icon name="comment" size={20} color="green" />
-              <Text style={styles.textChat}>Liên hệ shop</Text>
-            </TouchableOpacity>
-          </View>
-        </ScrollView>
-      </React.Fragment>
-    ) : (
-      <Text>Loading...</Text>
-    )}
-  </View>
-  
+                <View style={styles.paymentDetailsContainer}>
+                  <View style={styles.paymentDetailHeader}>
+                    <Icon name="dollar" size={20} color="red" style={styles.invoiceIcon} />
 
+                    <Text style={styles.paymentDetailHeaderText}>Chi Tiết Thanh Toán</Text>
+                  </View>
+                  <View style={styles.paymentDetailItem}>
+                    <Text style={styles.detailLabel}>Tổng tiền hàng:</Text>
+                    <Text style={styles.detailValue}>{`${getMonney(product.name_Price)}`}</Text>
+                  </View>
+                  <View style={styles.paymentDetailItem}>
+                    <Text style={styles.detailLabel}>Phí bảo hiểm:</Text>
+                    <Text style={styles.detailValue}>{`${getMonney(item.total_insurance_amount)}`}</Text>
+                  </View>
+                  <View style={styles.paymentDetailItem}>
+                    <Text style={styles.detailLabel}>Phí vận chuyển:</Text>
+                    <Text style={styles.detailValue}>{`${getMonney(item.total_shipping_fee)}`}</Text>
+                  </View>
+                  <View style={styles.paymentDetailItem}>
+                    <Text style={styles.detailLabel1}>Tổng thanh toán:</Text>
+                    <Text style={styles.detailValue1}>{`${getMonney(item.total_amount)}`}</Text>
+                  </View>
+                </View>
+
+                <View style={styles.paymentMethodContainer}>
+                  <Icon name="credit-card" size={30} color="#3498db" />
+                  <View>
+                    <Text style={styles.inputLabel}>Phương Thức Thanh Toán:</Text>
+                    <Text style={{ alignSelf: 'center' }}>Thanh tán khi nhận hàng</Text>
+                  </View>
+                </View>
+                <View>
+                  <TouchableOpacity
+                    style={styles.paymentMethodContainer_chat}
+                    onPress={() => {
+                      navigation.navigate("ChatScreen");
+                    }}
+                  >
+                    <Icon name="comment" size={20} color="green" />
+                    <Text style={styles.textChat}>Liên hệ shop</Text>
+                  </TouchableOpacity>
+                </View>
+
+                {/* <View style={{ width: '100%', backgroundColor: 'black', height: 1 }} /> */}
+              </View>
+            ))}
+          </View>
+        ))}
+      </View>
+    </View>
   );
+
 };
 
 const styles = StyleSheet.create({
@@ -211,6 +274,10 @@ const styles = StyleSheet.create({
     marginTop: 40,
     marginLeft: 15,
     marginBottom: 7,
+  },
+  productScrollView: {
+    maxHeight: 200,
+    marginBottom: 10,
   },
   button2: {
     backgroundColor: '#444444',
