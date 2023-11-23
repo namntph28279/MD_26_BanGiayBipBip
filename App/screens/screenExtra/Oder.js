@@ -48,6 +48,7 @@ const Order = ({ route }) => {
                         quantityProduct: product.quantityProduct,
                     })),
                     address: order.address,
+                    total_amount: order.total_amount,
                     orderDate: order.order_date,
                 }));
 
@@ -86,7 +87,7 @@ const Order = ({ route }) => {
         <TouchableOpacity
             style={styles.frame}
             onPress={() => {
-                console.log('Item:', item);
+                // console.log('Item:', item);
                 navigation.navigate('InformationLine', { productId: item.products[0].productId }); // Truyền product ID vào params
                 console.log('Product ID:', item.products[0].productId);
             }}
@@ -102,12 +103,13 @@ const Order = ({ route }) => {
                             <Text>{`Size: ${product.name_Size}`}</Text>
                             <View style={styles.quantityAndPriceContainer}>
                                 <Text>{`SL: ${product.quantityProduct}`}</Text>
-                                <Text style={{ color: '#FF0000', fontWeight: 'bold' }}>{`Giá: ${getMonney(product.name_Price)}`}</Text>
+                                <Text style={{ color: '#FF0000', fontWeight: 'bold' }}>{`Giá: ${getMonney(item.total_amount)}`}</Text>
                             </View>
                         </View>
                     </View>
                 ))}
                 <View style={styles.orderStatusContainer}>
+                
                     <Text style={styles.orderStatus}>{`Trạng thái: ${item.status}`}</Text>
                 </View>
                 <View style={styles.buttonContainer}>
