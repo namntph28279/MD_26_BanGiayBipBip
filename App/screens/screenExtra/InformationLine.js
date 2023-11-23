@@ -13,7 +13,7 @@ import { getMonney } from '../../util/money';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { Button } from 'react-native-elements';
-const InformationLine = ({ route,navigation }) => {
+const InformationLine = ({ route, navigation }) => {
   const [orderProductsList, setOrderProductsList] = useState([]);
   const [status, setStatus] = useState('Chờ xác nhận');
   const [loading, setLoading] = useState(true);
@@ -179,10 +179,11 @@ const InformationLine = ({ route,navigation }) => {
                   </View>
                 </View>
                 <View>
-                  <TouchableOpacity 
-                  style={styles.paymentMethodContainer_chat}
-                  onPress={() => {
-                    navigation.navigate("ChatScreen", {  userId: item.user});}}
+                  <TouchableOpacity
+                    style={styles.paymentMethodContainer_chat}
+                    onPress={() => {
+                      navigation.navigate("ChatScreen");
+                    }}
                   >
                     <Icon name="comment" size={20} color="green" />
                     <Text style={styles.textChat}>Liên hệ shop</Text>
@@ -454,7 +455,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     borderBottomWidth: 1,
     paddingVertical: 12,
-    borderRadius:55,
+    borderRadius: 55,
   },
   textChat: {
     textAlign: "center",
