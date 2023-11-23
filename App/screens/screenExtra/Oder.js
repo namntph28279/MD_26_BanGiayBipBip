@@ -157,8 +157,8 @@ const Order = ({ route }) => {
             onPress={() => {
                 // console.log('Item:', item);
                 navigation.navigate('InformationLine', { productId: item.products[0].productId , orderId: item.id }); // Truyền product ID vào params
-                console.log('Product ID:', item.products[0].productId);
-                console.log('oder ID:', item.id);
+                // console.log('Product ID:', item.products[0].productId);
+                // console.log('oder ID:', item.id);
             }}
         >
             <View style={styles.productBox}>
@@ -172,7 +172,7 @@ const Order = ({ route }) => {
                             <Text>{`Size: ${product.name_Size}`}</Text>
                             <View style={styles.quantityAndPriceContainer}>
                                 <Text>{`SL: ${product.quantityProduct}`}</Text>
-                                <Text style={{ color: '#FF0000', fontWeight: 'bold' }}>{`Giá: ${getMonney(item.total_amount)}`}</Text>
+                                <Text style={{ color: '#FF0000', fontWeight: 'bold' }}>{`Giá: ${getMonney(product.name_Price)}`}</Text>
                             </View>
                         </View>
                     </View>
