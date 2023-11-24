@@ -562,54 +562,47 @@ app.get('/orders/:userId', async(req, res) => {
 //         res.status(500).json({ message: 'Lỗi máy chủ nội bộ' });
 //     }
 // });
-<<<<<<< HEAD
-app.get('/order/getOne/:orderId', async (req, res) => {
-=======
 
-app.get('/order/getOne/:orderId', async(req, res) => {
->>>>>>> 8b8243ff94faf2d664acecb2c2fa8a0523318ba0
-    const orderId = req.params.orderId;
-
+//thống kê sản phẩm đã bán ra 
+app.get('/statistics/sold-products', async (req, res) => {
     try {
-<<<<<<< HEAD
-      const orderDetails = await Order.aggregate([
-        {
-            $match: { _id: new ObjectId(orderId) }
-        },
-        {
-          $unwind: '$products'
-        },
-        {
-          $lookup: {
-            from: 'products',
-            localField: 'products.product',
-            foreignField: '_id',
-            as: 'productDetails'
-          }
-        },
-        {
-          $unwind: '$productDetails'
-        },
-        {
-          $project: {
-            user: 1,
-            customer_email: 1,
-            order_date: 1,
-            total_amount: 1,
-            'products.product': '$products.product',
-            'products.quantity': '$products.quantity',
-            'products.colorId': '$products.colorId',
-            'products.sizeId': '$products.sizeId',
-            'products.product_title': '$productDetails.product_title',
-            'products.product_price': '$productDetails.product_price',
-            'products.product_image': '$productDetails.product_image',
-            'products.product_quantity': '$productDetails.product_quantity',
-            'products.product_quantityColor': '$productDetails.product_quantityColor',
-            'products.product_category': '$productDetails.product_category',
-          }
-=======
+        const successfulOrders = await Order.find({ status: 5 });
+
+        const soldProducts = successfulOrders.reduce((accumulator, order) => {
+            order.products.forEach(product => {
+                const productId = product.product.toString();
+                const quantity = product.quantity;
+
+                if (accumulator[productId]) {
+                    accumulator[productId] += quantity;
+                } else {
+                    accumulator[productId] = quantity;
+                }
+            });
+
+            return accumulator;
+        }, {});
+
+        const soldProductDetails = await Product.find({ _id: { $in: Object.keys(soldProducts) } });
+
+        const result = soldProductDetails.map(product => ({
+            productId: product._id,
+            productName: product.product_title,
+            totalQuantitySold: soldProducts[product._id.toString()] || 0,
+        }));
+
+        res.json(result);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Lỗi máy chủ nội bộ' });
+    }
+});
+
+app.get('/order/getOne/:orderId', async (req, res) => {
+    const orderId = req.params.orderId;
+    try {
         const orderDetails = await Order.aggregate([{
-                $match: { _id: mongoose.Types.ObjectId(orderId) }
+            $match: { _id: new ObjectId(orderId) }
             },
             {
                 $unwind: '$products'
@@ -649,7 +642,6 @@ app.get('/order/getOne/:orderId', async(req, res) => {
             res.json(orderDetails[0]);
         } else {
             res.status(404).json({ message: 'Không tìm thấy đơn hàng' });
->>>>>>> 8b8243ff94faf2d664acecb2c2fa8a0523318ba0
         }
     } catch (error) {
         console.error(error);
