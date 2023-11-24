@@ -17,6 +17,7 @@ const handlebarshelper = require("../handlebars-helpers");
 const checkClient = require("../Models/CheckClientUser");
 const orderDetail = require("../Models/Oderdetail");
 const mongoose = require("mongoose");
+const ObjectId = mongoose.Types.ObjectId;
 
 app.set('Views', __dirname + '/views');
 
@@ -567,14 +568,13 @@ app.get('/orders/:userId', async (req, res) => {
 //         res.status(500).json({ message: 'Lỗi máy chủ nội bộ' });
 //     }
 // });
-
 app.get('/order/getOne/:orderId', async (req, res) => {
     const orderId = req.params.orderId;
   
     try {
       const orderDetails = await Order.aggregate([
         {
-          $match: { _id: mongoose.Types.ObjectId(orderId) }
+            $match: { _id: new ObjectId(orderId) }
         },
         {
           $unwind: '$products'
