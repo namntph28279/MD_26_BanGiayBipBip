@@ -183,6 +183,8 @@
 
                 </div>
                 <div id="checkData" style="width: 80%">
+                    <div id="name-user" style="font-size: 25px; padding: 14px; font-weight: 700; background: #f2eaea;  margin: 0 12px; border-radius: 10px;text-align: center"></div>
+
                     <div style=" background: #f3f4f6;
   height: 555px;
   margin: 7px;
@@ -243,15 +245,18 @@
         const boxChatDiv = document.querySelector('.contenChat');
         boxChatDiv.innerHTML = '';
         const checkDt = document.getElementById("checkData");
-        if (dataChat !== undefined) {
+        const name_user = document.getElementById("name-user");
+        if (dataChat.content !== undefined) {
             checkDt.style.display = "block"
-            dataChat.forEach(item => {
+            name_user.textContent = dataChat.fullName
+            dataChat.content.forEach(item => {
                 const informationDiv = document.createElement('div');
                 if (item.beLong === "user") {
                     informationDiv.classList.add('user');
                 } else {
                     informationDiv.classList.add('admin');
                 }
+
                 const content = document.createElement('div');
                 content.textContent = item.conTenMain;
                 informationDiv.appendChild(content);
@@ -301,7 +306,7 @@
         })
                 .then(response => response.json())
                 .then(data => {
-                    updateContentChat(data.content)
+                    updateContentChat(data)
                 })
                 .catch(error => {
                     console.error(error);

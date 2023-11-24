@@ -8,6 +8,8 @@ import {
     ScrollView,
     SafeAreaView,
     FlatList,
+    Modal,
+    Alert
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -16,9 +18,12 @@ import { getMonney } from '../../util/money';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 const Order = ({ route }) => {
     const [orderProductsList, setOrderProductsList] = useState([]);
-    const [status, setStatus] = useState('Chờ xác nhận');
+    const [status, setStatus] = useState('Tất cả sản phẩm đã đặt');
     const [loading, setLoading] = useState(true);
     const [tab1DataLoaded, setTab1DataLoaded] = useState(false);
+    const [isCancelModalVisible, setCancelModalVisible] = useState(false);
+    const [isSuccessModalVisible, setSuccessModalVisible] = useState(false);
+
     useEffect(() => {
         fetchDataList();
     }, []);
@@ -47,12 +52,14 @@ const Order = ({ route }) => {
                         quantityProduct: product.quantityProduct,
                     })),
                     address: order.address,
+                    total_amount: order.total_amount,
                     orderDate: order.order_date,
                 }));
 
-            setOrderProductsList(formattedData);
-            setLoading(false);
-
+                setOrderProductsList(formattedData);
+                setDatalist(formattedData);
+                setLoading(false);
+                setTab1DataLoaded(true);
         } catch (error) {
             console.error('Error fetching data:', error);
             setLoading(false);
@@ -61,7 +68,7 @@ const Order = ({ route }) => {
 
     useEffect(() => {
         fetchDataList();
-        setStatusFilter('Chờ xác nhận');
+        setStatusFilter('Tất cả sản phẩm đã đặt');
     }, []);
 
     const navigation = useNavigation();
@@ -73,19 +80,85 @@ const Order = ({ route }) => {
         { status: 'Đã giao' },
         { status: 'Đã hủy' },
         { status: 'Trả hàng' },
+        { status: 'Tất cả sản phẩm đã đặt' },
     ];
+    const handleCancelOrder = async (item) => {
+        try {
+            // Show confirmation dialog
+            Alert.alert(
+                'Xác nhận hủy đơn hàng',
+                'Bạn có chắc muốn hủy đơn hàng?',
+                [
+                    { text: 'Hủy', style: 'cancel' },
+                    { text: 'Đồng ý', onPress: () => confirmCancelOrder(item) },
+                ],
+                { cancelable: false }
+            );
+        } catch (error) {
+            console.error('Lỗi', error);
+        }
+    };
+    const confirmCancelOrder = async (item) => {
+        try {
+            const orderId = item.id;
+            const response = await url.post(`/order/status/${orderId}`, {
+                noiDung: 'Không muốn mua nữa...',
+            }, {
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
 
-    function handleCancelOrder(item) {
-        return undefined;
-    }
+            if (response.status === 200) {
+                setCancelModalVisible(false);
+                setSuccessModalVisible(true);
+                showSuccessModal();
+                fetchDataList();
+            } else {
+                console.error('Lỗi', response.statusText);
+            }
+        } catch (error) {
+            console.error('Lỗi', error);
+        }
+    };
+    const hideSuccessModal = () => {
+        setSuccessModalVisible(false);
+    };
+    const showSuccessModal = () => {
+        setSuccessModalVisible(true);
+        setTimeout(() => {
+            hideSuccessModal();
+        }, 2000);
+    };
+
+    const renderSuccessModal = () => (
+        <Modal
+            animationType="slide"
+            transparent={true}
+            visible={isSuccessModalVisible}
+            onRequestClose={hideSuccessModal}
+        >
+            <TouchableOpacity
+                style={styles.modalBackground}
+                activeOpacity={1}
+                onPress={hideSuccessModal}
+            >
+                <View style={styles.modalContainer}>
+                    <Text>Xóa thành công</Text>
+                </View>
+            </TouchableOpacity>
+        </Modal>
+    );
+
 
     const renderItem = ({ item }) => (
         <TouchableOpacity
             style={styles.frame}
             onPress={() => {
-                console.log('Item:', item);
-                navigation.navigate('InformationLine', { product: item.productId });
-                console.log('Product ID:', item.productId);
+                // console.log('Item:', item);
+                navigation.navigate('InformationLine', { productId: item.products[0].productId , orderId: item.id }); // Truyền product ID vào params
+                // console.log('Product ID:', item.products[0].productId);
+                // console.log('oder ID:', item.id);
             }}
         >
             <View style={styles.productBox}>
@@ -93,16 +166,19 @@ const Order = ({ route }) => {
                     <View key={product.id} style={styles.productItemContainer}>
                         <Image source={{ uri: product.img_product }} style={styles.productImage} />
                         <View style={styles.productInfo}>
+                            <Text style={styles.productName}>{`Tên sản phẩm: ${product.productId}`}</Text>
                             <Text style={styles.productName}>{`Tên sản phẩm: ${product.name_Product}`}</Text>
                             <Text>{`Màu: ${product.name_Color}`}</Text>
+                            <Text>{`Size: ${product.name_Size}`}</Text>
                             <View style={styles.quantityAndPriceContainer}>
                                 <Text>{`SL: ${product.quantityProduct}`}</Text>
-                                <Text style={{ color: '#FF0000' , fontWeight:'bold'}}>{`Giá: ${getMonney(product.name_Price)}`}</Text>
+                                <Text style={{ color: '#FF0000', fontWeight: 'bold' }}>{`Giá: ${getMonney(product.name_Price)}`}</Text>
                             </View>
                         </View>
                     </View>
                 ))}
                 <View style={styles.orderStatusContainer}>
+                
                     <Text style={styles.orderStatus}>{`Trạng thái: ${item.status}`}</Text>
                 </View>
                 <View style={styles.buttonContainer}>
@@ -125,6 +201,8 @@ const Order = ({ route }) => {
 
         if (setStatusFilter === 'Chờ xác nhận') {
             filteredData = orderProductsList.filter((e) => e.status === 0);
+        }else if (setStatusFilter === 'Tất cả sản phẩm đã đặt') {
+            filteredData = orderProductsList;
         } else {
             filteredData = orderProductsList.filter(
                 (e) => e.status === listTab.findIndex((tab) => tab.status === setStatusFilter)
@@ -138,6 +216,7 @@ const Order = ({ route }) => {
 
     return (
         <View style={styles.container}>
+            {renderSuccessModal()}
             <SafeAreaView style={styles.container1}>
                 <FlatList
                     horizontal
@@ -158,17 +237,12 @@ const Order = ({ route }) => {
                         </TouchableOpacity>
                     )}
                 />
-
-                {loading ? (
-                    <Text>Loading...</Text>
-                ) : (
-                    <FlatList
-                        style={styles.list}
-                        data={datalist}
-                        keyExtractor={(item) => item.id.toString()}
-                        renderItem={renderItem}
-                    />
-                )}
+                <FlatList
+                    style={styles.list}
+                    data={datalist}
+                    keyExtractor={(item) => item.id.toString()}
+                    renderItem={renderItem}
+                />
             </SafeAreaView>
             <View style={{ width: '100%', backgroundColor: 'black', height: 1 }} />
         </View>
@@ -245,6 +319,17 @@ const styles = StyleSheet.create({
         marginLeft: 15,
         marginBottom: 7,
     },
+    modalBackground: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    },
+    modalContainer: {
+        backgroundColor: 'white',
+        padding: 20,
+        borderRadius: 10,
+    },
     button2: {
         backgroundColor: '#444444',
         paddingHorizontal: 10,
@@ -269,7 +354,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         padding: 8,
         width: '100%',
-        marginTop:10,
+        marginTop: 10,
         marginBottom: 10,
     },
     productBox1: {
