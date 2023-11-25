@@ -26,6 +26,7 @@ import AllDiaChi from "./screens/screenExtra/AllDiaChi";
 import * as Notifications from "expo-notifications";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import url from "./api/url";
+import TrackOrder from "./screens/screenExtra/TrackOrder";
 
 Notifications.setNotificationHandler({
     handleNotification: async () => {
@@ -98,6 +99,7 @@ export default function App() {
             <Stack.Screen name='ScreenAddresst' component={ScreenAddresst} options={{ title: 'Thêm địa chỉ' }} />
             <Stack.Screen name="AllDiaChi" component={AllDiaChi} options={{ title: 'Địa chỉ' }}/>
             <Stack.Screen name="ThanhToanScreen" component={ThanhToanScreen} options={{ title: 'Thanh Toán' }}/>
+              <Stack.Screen name="TrackOrder" component={TrackOrder} options={{ title: 'Lịch sử đơn hàng' }}/>
           </Stack.Navigator>
 
         </NavigationContainer>

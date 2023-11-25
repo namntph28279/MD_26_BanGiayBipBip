@@ -92,7 +92,14 @@ const InformationLine = ({ route, navigation }) => {
                   </View>
                   <Icon name="globe" size={100} color="#1abc9c" />
                 </View>
-
+                <TouchableOpacity
+                    style={styles.paymentMethodContainer_chat}
+                    onPress={() => {
+                      navigation.navigate("TrackOrder", { orderData: item ,orderProductsList: datalist});
+                    }}
+                >
+                  <Text>Lịch Sử mua hàng</Text>
+                </TouchableOpacity>
                 <ScrollView style={styles.productScrollView}>
                   {item.products.map((product) => (
                       <View key={product.id} style={styles.productBox}>
@@ -402,7 +409,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 16,
+    marginTop:20,
+    marginBottom: 5,
     paddingHorizontal: 16,
     paddingVertical: 12,
     borderBottomWidth: 1,
@@ -412,7 +420,7 @@ const styles = StyleSheet.create({
     padding: 16,
     borderTopWidth: 2,
     borderTopColor: '#d71a1a',
-    marginTop: 15,
+    marginTop: 5,
     borderWidth: 2,
     borderColor: '#da0c0c',
     flexDirection: "row",
@@ -516,7 +524,7 @@ const styles = StyleSheet.create({
     padding: 16,
     borderTopWidth: 2,
     borderTopColor: '#d71a1a',
-    marginTop: 16,
+    marginTop: 25,
     borderWidth: 2,
     borderColor: '#da0c0c',
   },
