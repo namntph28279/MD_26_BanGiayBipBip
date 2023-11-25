@@ -74,6 +74,14 @@ app.get('/home', async (req, res) => {
 
 });
 
+app.get('/statistic', async (req, res) => {
+    try {
+        res.render('../Views/screenStatistics.hbs');
+    } catch (error) {
+        res.status(500).json({message: error.message});
+    }
+
+});
 app.get('/mess', async (req, res) => {
     try {
         res.render('../Views/screenMessger.hbs');
