@@ -68,7 +68,15 @@
         <div class=" bg-indigo-800">
             <div class=" text-xl text-gray-200 uppercase font-bold" style="padding: 33px;">Shop BipBip</div>
         </div>
-
+        <a href="/statistic" class=" cursor-pointer mess ml-3 mt-3 w-10/12"
+           style="text-decoration: none ">
+            <div class="flex" style=" padding: 12px;">
+                <div>
+                    <img class="w-5 h-5" src="analytics.png" alt="">
+                </div>
+                <div class="mx-3 text-sm text-gray-100 ">Thống kê</div>
+            </div>
+        </a>
         <a href="/home" class=" cursor-pointer mess ml-3 mt-3 w-10/12"
            style="border-bottom-width: 1px; text-decoration: none ">
             <div class="flex" style=" padding: 12px;">
@@ -119,10 +127,6 @@
             </div>
         </div>
         <!--Top navbar-->
-        <figure class="highcharts-figure">
-            <div id="container"></div>
-
-        </figure>
         <div class="card-container flex m-7 space-x-6 ">
             <div class="card w-full">
 
@@ -1166,27 +1170,6 @@
                     console.error(error);
                 });
 
-        fetch('/statistics/sold-products', {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-        })
-                .then(response => response.json())
-                .then(data => {
-
-                    let dataAll = [];
-                    for (let i = 0; i < data.length; i++) {
-                        dataAll.push({
-                            name:data[i].name,
-                            y:parseFloat(data[i].totalDetail)
-                        })
-                    }
-                    highChart(dataAll)
-                })
-                .catch(error => {
-                    console.error(error);
-                });
     }
     loadData()
     window.onload = function () {
@@ -1232,54 +1215,6 @@
     }
 
 
-    //vẽ biểu đồ
-    function highChart(dataAll){
-        Highcharts.chart('container', {
-            chart: {
-                type: 'pie'
-            },
-            title: {
-                text: ' Top 5 sản phẩm bán chạy'
-            },
-            tooltip: {
-                valueSuffix: '%'
-            },
-            accessibility: {
-                point: {
-                    valueSuffix: '%'
-                }
-            },
-            plotOptions: {
-                series: {
-                    allowPointSelect: true,
-                    cursor: 'pointer',
-                    dataLabels: [{
-                        enabled: true,
-                        distance: 56
-                    }]
-                },
-                pie: {
-                    allowPointSelect: true,
-                    borderWidth: 2,
-                    cursor: 'pointer',
-                    dataLabels: {
-                        enabled: true,
-                        format: '<span style="color:{point.color}">{point.name}</span>: <b>{point.y:.2f}%</b>',
-                        distance: 20//độ rộng
-                    }
-                }
-            },
-            series: [{
-                enableMouseTracking: true,//di chuột vào sẽ hiển thị nội dung ben trong
-                animation: {
-                    duration: 2000 //thời gian xuất hiện
-                },
-                name: 'Tỉ lệ',
-                colorByPoint: true,
-                data: dataAll
-            }]
-        });
-    }
 
 </script>
 </html>
