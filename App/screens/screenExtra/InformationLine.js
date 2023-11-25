@@ -4,9 +4,8 @@ import {
   View,
   StyleSheet,
   Image,
+  ScrollView,
   TouchableOpacity,
-  FlatList,
-  ScrollView
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -17,129 +16,148 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import { Button } from 'react-native-elements';
 const InformationLine = ({ route, navigation }) => {
   const [orderProductsList, setOrderProductsList] = useState([]);
+  const [status, setStatus] = useState('Chờ xác nhận');
   const [loading, setLoading] = useState(true);
-  const [orderData, setOrderData] = useState(null);
+  const [tab1DataLoaded, setTab1DataLoaded] = useState(false);
   const [datalist, setDatalist] = useState(orderProductsList);
-  console.log("datalistddddddddddddddd", datalist);
+  const { productId } = route.params;
 
-  // const { productId } = route.params;
-  const { orderId } = route.params;
-  // console.log('Data Listkkkkkkkkkkkkkkkkkkk:', orderId);
   useEffect(() => {
     fetchDataList();
-  }, [orderId]);
+  }, []);
 
   const fetchDataList = async () => {
     const email = await AsyncStorage.getItem('Email');
-    console.log('Email:', email);
-    
+    const { orderId } = route.params; // Thay đổi này để lấy orderId từ route params
+
     try {
-      const response = await url.get(`/order/detail/${orderId}`);
-      console.log("response", response);
+      console.log('Fetching data...');
+      const response = await url.get(`/order/detail/${orderId}`); // Sửa đổi này để sử dụng orderId
       const data = response.data;
-      console.log("API data:", data);
 
       if (!data) {
-        console.error('Invalid data structure:', data);
+        console.log('Order not found');
         setLoading(false);
         return;
       }
 
-      setOrderData(data);
+      const formattedProducts = data.products.map((product) => ({
+        id: product._id,
+        productId: product.product,
+        img_product: product.img_product,
+        name_Product: product.name_Product,
+        name_Size: product.name_Size,
+        name_Price: product.name_Price,
+        name_Color: product.name_Color,
+        quantityProduct: product.quantityProduct,
+      }));
+
+      const formattedOrder = {
+        id: data._id,
+        user: data.user,
+        status: data.status,
+        customerEmail: data.customer_email,
+        products: formattedProducts,
+        total_amount: data.total_amount,
+        total_insurance_amount: data.total_insurance_amount,
+        total_shipping_fee: data.total_shipping_fee,
+        address: data.address,
+        userName: data.userName,
+        phone: data.phone,
+        orderDate: data.order_date,
+      };
+
+      setOrderProductsList([formattedOrder]);
+      setDatalist([formattedOrder]);
       setLoading(false);
+      setTab1DataLoaded(true);
+      setStatus(data.status);
+      console.log(formattedOrder)
     } catch (error) {
       console.error('Error fetching data:', error);
       setLoading(false);
     }
   };
-  
-
   return (
-    <View style={styles.container}>
-    {orderData ? (
-      <React.Fragment>
-        <ScrollView>
-          <View>
-            <View style={styles.addressContainer}>
-              <View>
-                <Text style={styles.addressLabel}>Địa chỉ nhận hàng:</Text>
-                <Text style={styles.addressText}>Họ tên: {orderData.userName}</Text>
-                <Text style={styles.addressText}>Số điện thoại: {orderData.phone}</Text>
-                <Text style={styles.addressText}>Địa chỉ: {orderData.address}</Text>
-              </View>
-              <Icon name="globe" size={100} color="#1abc9c" />
-            </View>
-  
-            <View>
-              {orderData.products.map((product, index) => (
-                <View key={index} style={styles.productBox}>
-                  <View style={styles.productItemContainer}>
-                    <Image source={{ uri: product.img_product }} style={styles.productImage} />
-                    <View style={styles.productInfo}>
-                      <Text style={styles.productName}>{product.name_Product}</Text>
-                      <Text>Màu: {product.name_Color}</Text>
-                      <Text>Size: {product.name_Size}</Text>
-                      
-                      <View style={styles.quantityAndPriceContainer}>
-                        <Text>{`SL: ${product.quantityProduct}`}</Text>
-                        <Text style={{ color: '#FF0000', fontWeight: 'bold' }}>{`Giá: ${getMonney(product.name_Price)}`}</Text>
+      <View style={styles.container}>
+        <View style={styles.container}>
+          {datalist.map((item) => (
+              <View key={item.id}>
+                <View style={styles.addressContainer}>
+                  <View>
+                    <Text style={styles.addressLabel}>Địa chỉ nhận hàng:</Text>
+                    <Text style={styles.addressText}>{`Họ tên: ${item.userName}`}</Text>
+                    <Text style={styles.addressText}>{`Số điện thoại: ${item.phone}`}</Text>
+                    <Text style={styles.addressText}>{`Địa chỉ: ${item.address}`}</Text>
+                  </View>
+                  <Icon name="globe" size={100} color="#1abc9c" />
+                </View>
+
+                <ScrollView style={styles.productScrollView}>
+                  {item.products.map((product) => (
+                      <View key={product.id} style={styles.productBox}>
+                        <View style={styles.productItemContainer}>
+                          <Image source={{ uri: product.img_product }} style={styles.productImage} />
+                          <View style={styles.productInfo}>
+                            <Text style={styles.productName}>{`${product.name_Product}`}</Text>
+                            <Text>{`Màu: ${product.name_Color}`}</Text>
+                            <Text>{`Size: ${product.name_Size}`}</Text>
+                            <View style={styles.quantityAndPriceContainer}>
+                              <Text>{`SL: ${product.quantityProduct}`}</Text>
+                              <Text style={{ color: '#FF0000', fontWeight: 'bold' }}>{`Giá: ${getMonney(product.name_Price)}`}</Text>
+                            </View>
+                          </View>
+                        </View>
                       </View>
-                    </View>
+                  ))}
+                </ScrollView>
+
+                <View style={styles.paymentDetailsContainer}>
+                  <View style={styles.paymentDetailHeader}>
+                    <Icon name="dollar" size={20} color="red" style={styles.invoiceIcon} />
+                    <Text style={styles.paymentDetailHeaderText}>Chi Tiết Thanh Toán</Text>
+                  </View>
+                  <View style={styles.paymentDetailItem}>
+                    <Text style={styles.detailLabel}>Tổng tiền hàng:</Text>
+                    <Text style={styles.detailValue}>{`${getMonney(item.total_amount)}`}</Text>
+                  </View>
+                  <View style={styles.paymentDetailItem}>
+                    <Text style={styles.detailLabel}>Phí bảo hiểm:</Text>
+                    <Text style={styles.detailValue}>{`${getMonney(item.total_insurance_amount)}`}</Text>
+                  </View>
+                  <View style={styles.paymentDetailItem}>
+                    <Text style={styles.detailLabel}>Phí vận chuyển:</Text>
+                    <Text style={styles.detailValue}>{`${getMonney(item.total_shipping_fee)}`}</Text>
+                  </View>
+                  <View style={styles.paymentDetailItem}>
+                    <Text style={styles.detailLabel1}>Tổng thanh toán:</Text>
+                    <Text style={styles.detailValue1}>{`${getMonney(item.total_amount)}`}</Text>
                   </View>
                 </View>
-              ))}
-            </View>
-  
-            <View style={styles.paymentDetailsContainer}>
-              <View style={styles.paymentDetailHeader}>
-                <Icon name="dollar" size={20} color="red" style={styles.invoiceIcon} />
-                <Text style={styles.paymentDetailHeaderText}>Chi Tiết Thanh Toán</Text>
-              </View>
-              <View style={styles.paymentDetailItem}>
-                <Text style={styles.detailLabel}>Tổng tiền hàng:</Text>
-                <Text style={styles.detailValue}>{`${getMonney(orderData.total_amount)}`}</Text>
-              </View>
-              <View style={styles.paymentDetailItem}>
-                <Text style={styles.detailLabel}>Phí bảo hiểm:</Text>
-                <Text style={styles.detailValue}>{`${getMonney(orderData.total_insurance_amount)}`}</Text>
-              </View>
-              <View style={styles.paymentDetailItem}>
-                <Text style={styles.detailLabel}>Phí vận chuyển:</Text>
-                <Text style={styles.detailValue}>{`${getMonney(orderData.total_shipping_fee)}`}</Text>
-              </View>
-              <View style={styles.paymentDetailItem}>
-                <Text style={styles.detailLabel1}>Tổng thanh toán:</Text>
-                <Text style={styles.detailValue1}>{`${getMonney(orderData.total_amount)}`}</Text>
-              </View>
-            </View>
-  
-            <View style={styles.paymentMethodContainer}>
-              <Icon name="credit-card" size={30} color="#3498db" />
-              <View>
-                <Text style={styles.inputLabel}>Phương Thức Thanh Toán:</Text>
-                <Text style={{ alignSelf: 'center' }}>Thanh toán khi nhận hàng</Text>
-              </View>
-            </View>
-  
-            <TouchableOpacity
-              style={styles.paymentMethodContainer_chat}
-              onPress={() => {
-                navigation.navigate("ChatScreen");
-              }}
-            >
-              <Icon name="comment" size={20} color="green" />
-              <Text style={styles.textChat}>Liên hệ shop</Text>
-            </TouchableOpacity>
-          </View>
-        </ScrollView>
-      </React.Fragment>
-    ) : (
-      <Text>Loading...</Text>
-    )}
-  </View>
-  
 
+                <View style={styles.paymentMethodContainer}>
+                  <Icon name="credit-card" size={30} color="#3498db" />
+                  <View>
+                    <Text style={styles.inputLabel}>Phương Thức Thanh Toán:</Text>
+                    <Text style={{ alignSelf: 'center' }}>Thanh toán khi nhận hàng</Text>
+                  </View>
+                </View>
+
+                <TouchableOpacity
+                    style={styles.paymentMethodContainer_chat}
+                    onPress={() => {
+                      navigation.navigate("ChatScreen");
+                    }}
+                >
+                  <Icon name="comment" size={20} color="green" />
+                  <Text style={styles.textChat}>Liên hệ shop</Text>
+                </TouchableOpacity>
+              </View>
+          ))}
+        </View>
+      </View>
   );
+
 };
 
 const styles = StyleSheet.create({
@@ -211,6 +229,10 @@ const styles = StyleSheet.create({
     marginTop: 40,
     marginLeft: 15,
     marginBottom: 7,
+  },
+  productScrollView: {
+    maxHeight: 200,
+    marginBottom: 10,
   },
   button2: {
     backgroundColor: '#444444',
