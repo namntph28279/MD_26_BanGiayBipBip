@@ -566,12 +566,12 @@ app.get('/orders/:userId', async(req, res) => {
 //thống kê sản phẩm đã bán ra 
 app.get('/statistics/sold-products', async (req, res) => {
     try {
-        const successfulOrders = await Order.find({ status: 5 });
+        const successfulOrders = await orderDetail.find({ status: 3 });
 
         const soldProducts = successfulOrders.reduce((accumulator, order) => {
             order.products.forEach(product => {
                 const productId = product.product.toString();
-                const quantity = product.quantity;
+                const quantity =parseInt(product.quantityProduct);
 
                 if (accumulator[productId]) {
                     accumulator[productId] += quantity;
@@ -590,8 +590,18 @@ app.get('/statistics/sold-products', async (req, res) => {
             productName: product.product_title,
             totalQuantitySold: soldProducts[product._id.toString()] || 0,
         }));
+        const top5Product = result.sort((a,b) => b.totalQuantitySold - a.totalQuantitySold).slice(0, 5);
+        const total = top5Product.reduce((accumulator, currentValue) => accumulator + currentValue.totalQuantitySold, 0);
 
-        res.json(result);
+        console.log(total)
+        const totalInsight = top5Product.map(product =>({
+            name: product.productName,
+            totalDetail: ((product.totalQuantitySold/total)*100).toFixed(2),
+        }))
+
+        console.log(totalInsight)
+
+         res.json(totalInsight);
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: 'Lỗi máy chủ nội bộ' });
