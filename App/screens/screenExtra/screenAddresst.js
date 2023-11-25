@@ -21,6 +21,7 @@ export default function ScreenAddresst({ route, navigation }) {
     const [tinh, setTinh] = useState('');
     const [huyen, setHuyen] = useState('');
     const [xa, setXa] = useState('');
+    const [editID, setEditID] = useState('');
     const [chiTiet, setChiTiet] = useState('');
     const [oldUserData, setOldUserData] = useState([]);
     const [nameError, setNameError] = useState(false);
@@ -41,6 +42,7 @@ export default function ScreenAddresst({ route, navigation }) {
         const fetchData = async () => {
             try {
                 const response = await url.get(`/address/${dataUserID}`);
+                
                 const data = response.data;
                 setOldUserData(data);
               
@@ -51,10 +53,11 @@ export default function ScreenAddresst({ route, navigation }) {
         fetchData();
     }, [dataUserID]);
     useEffect(() => {
-        if (oldUserData.length > 0) {
-          console.log("Datauser here: "+oldUserData[0].name);
+        if (oldUserData.length > 0) {   
+     
           setName(oldUserData[0].name);
           setPhone(oldUserData[0].phone);
+          setEditID(oldUserData[0]._id);
           const arr = oldUserData[0].address.split(" - ");
           setXa(arr[0]);
           setHuyen(arr[1]);
@@ -91,7 +94,7 @@ export default function ScreenAddresst({ route, navigation }) {
         const data = {
             name,
             phone,
-            address,
+            address,        
             userId: userID,
         };
         const jsonData = JSON.stringify(data);
@@ -130,7 +133,7 @@ export default function ScreenAddresst({ route, navigation }) {
         }
         if (!nameError && !phoneError && !xaError && !huyenError && !tinhError &&isEdit) {
             url.put(
-                `/address/edit/${dataUserID}`,
+                `/address/edit/${editID}`,
                 jsonData,
                 {
                   headers: {
@@ -140,8 +143,9 @@ export default function ScreenAddresst({ route, navigation }) {
               )
                 .then((response) => {
                   console.log("Dữ liệu đã được gửi thành công lên máy chủ:", response.data);
+         
                   navigation.navigate("AllDiaChi", { userID });
-                })
+                })  
                 .catch((error) => {
                   console.error("Lỗi trong quá trình gửi dữ liệu lên máy chủ:", error);
                   navigation.navigate("AllDiaChi", { userID });
