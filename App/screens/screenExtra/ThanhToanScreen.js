@@ -133,6 +133,16 @@ const ThanhToanScreen = ({ route, navigation }) => {
 
     const renderProductItem = (product) => {
         const item = dataSP.find((item) => item._id === product.product);
+
+        const handleRemoveProduct = (productId) => {
+            const updatedProducts = selectedProducts.filter((product) => product.id !== productId);
+            setSelectedProducts(updatedProducts);
+            calculateTotalAmount();
+            if (updatedProducts.length === 0) {
+                navigation.goBack();
+            }
+        };
+
         return(
             <View key={product.sizeId} style={styles.productItem}>
                 <Image source={{ uri: item.product_image }} style={styles.productImage} />
@@ -152,6 +162,11 @@ const ThanhToanScreen = ({ route, navigation }) => {
                         </TouchableOpacity>
                     </View>
                 </View>
+                <TouchableOpacity style={styles.removeButtonContainer} onPress={() => handleRemoveProduct(product.id)}>
+                    <View style={styles.removeButton}>
+                        <Icon name="trash-o" size={20} color="white" />
+                    </View>
+                </TouchableOpacity>
             </View>
         )
     };
@@ -272,7 +287,7 @@ const ThanhToanScreen = ({ route, navigation }) => {
 
     return (
         <View style={styles.container}>
-            <ScrollView>
+
                 <TouchableOpacity style={styles.addressContainer} onPress={handleAddressPress}>
 
                     <View>
@@ -317,7 +332,6 @@ const ThanhToanScreen = ({ route, navigation }) => {
                         <Text style={{alignSelf: 'center'}}>{isMomoSelected ? 'MoMo' : isCODSelected ? 'Thanh Toán Khi Nhận Hàng' : ''}</Text>
                     </View>
                 </TouchableOpacity>
-            </ScrollView>
             <View style={styles.bottomContainer}>
                 <View style={styles.totalAmountContainer}>
                     <Text style={styles.totalAmountText}>Tổng Tiền:</Text>
@@ -450,6 +464,22 @@ const styles = StyleSheet.create({
         backgroundColor: '#cbb9b9',
         borderRadius: 8,
     },
+    productItemContainer: {
+        position: 'relative',
+    },
+    removeButtonContainer: {
+        position: 'absolute',
+        top: 5,
+        right: 5,
+        width: 30,
+        height: 30,
+        borderRadius: 15,
+        backgroundColor: 'rgba(255, 0, 0, 0.8)',
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    removeButton: {
+    },
     centeredView: {
         flex: 1,
         justifyContent: 'center',
@@ -510,7 +540,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
-        marginBottom: 16,
+        marginBottom: 10,
         paddingHorizontal: 16,
         paddingVertical: 12,
         borderBottomWidth: 1,
