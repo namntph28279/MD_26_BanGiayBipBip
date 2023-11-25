@@ -141,10 +141,10 @@ function Search({ navigation }) {
             },
           }
         );
-       
+
         // Assuming the response data is an array of products
         const products = response.data;
-       
+
         setFilteredProducts(products);
         setIsSearching(true);
       }
@@ -166,7 +166,7 @@ function Search({ navigation }) {
             {/* <Text style={styles.searchButtonText}>Tìm</Text> */}
             <Image
               source={require("../../image/search.png")}
-              // style={styles.imageBackground}
+            // style={styles.imageBackground}
             />
           </View>
         </TouchableOpacity>
@@ -175,28 +175,23 @@ function Search({ navigation }) {
       <ScrollView>
         {filteredProducts.length === 0 && (
           <View style={{ display: "flex" }}>
-            <Text style={{ fontSize: 18, fontWeight: "500", marginLeft: 20 }}>
+            <Text style={{ fontSize: 18, fontWeight: "500", marginLeft: 20 , marginTop: 3 , marginBottom: 3 }}>
               Sản phẩm bán chạy
             </Text>
 
-            <ScrollView horizontal={true} contentContainerStyle={{ flex: 1, justifyContent: 'center' }}>
-  <View style={{ flexDirection: 'column', marginTop: 3 }}>
+          
+              
 
-    <FlatList
-      data={chunkedArrays[0]}
-      renderItem={renderTopSellingProductItem}
-      keyExtractor={(item) => item._id}
-      horizontal={true}
-    />
+                <FlatList
+                  data={topSellingInProducts}
+                  renderItem={renderTopSellingProductItem}
+                  keyExtractor={(item) => item._id}
+                  horizontal={true}
+                />
 
-    <FlatList
-      data={chunkedArrays[1]}
-      renderItem={renderTopSellingProductItem}
-      keyExtractor={(item) => item._id}
-      horizontal={true}
-    />
-  </View>
-</ScrollView>
+              
+              
+            
             <TouchableOpacity
               style={styles.showAll}
               onPress={() => {
@@ -210,7 +205,7 @@ function Search({ navigation }) {
           </View>
         )}
         {isSearching && filteredProducts.length === 0 && (
-          <Text style={{ textAlign: "center", fontSize: 18, color: "gray" }}>
+          <Text style={{ textAlign: "center", fontSize: 18, color: "gray" ,paddingBottom:"150%"}}>
             Không có sản phẩm nào
           </Text>
         )}
@@ -218,9 +213,11 @@ function Search({ navigation }) {
           style={[
             styles.prodList,
             {
-              height: filteredProducts.length === 0 ? "42%" : "100%",
+              height: filteredProducts.length === 0 ? "80%" : "100%",
               marginTop: filteredProducts.length === 7 ? -10 : 0,
-            },
+              
+            //s paddingBottom: filteredProducts.length === 0 ? "200%" : 0,
+            }, 
           ]}
           data={isSearching ? filteredProducts : products}
           keyExtractor={(item) => item._id}
@@ -313,7 +310,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     backgroundColor: "white",
     shadowColor: "gray",
-    marginLeft:20
+    marginLeft: 20
   },
   saleImageContainer: {
     width: "100%",
