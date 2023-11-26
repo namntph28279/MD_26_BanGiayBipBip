@@ -173,17 +173,17 @@ function Cart({ route, navigation }) {
 
   const showConfirmDialog = (productId) => {
     return Alert.alert(
-      "Are your sure?",
-      "Are you sure you want to remove this beautiful box?",
+      "Xóa sản phẩm khỏi giỏ hàng",
+      "Bạn muốn xóa sản phẩm khỏi giỏ hàng?",
       [
         {
-          text: "Yes",
+          text: "Xác nhận",
           onPress: () => {
             handleRemoveProduct(productId);
           },
         },
         {
-          text: "No",
+          text: "Hủy",
         },
       ]
     );
@@ -211,8 +211,11 @@ function Cart({ route, navigation }) {
           <View style={styles.productInfo}>
             <Text style={styles.productName}>{item.product_title}</Text>
             <Text style={styles.productType}>Phân loại : {product.color}/{product.size}</Text>
-            <Text style={styles.productPrice}>
+            {/* <Text style={styles.productPrice}>
               Giá: {getMonney(sumProductsPrice(item, product.quantity))}
+            </Text> */}
+            <Text style={styles.productPrice}>
+              Giá: {getMonney(item.product_price)}
             </Text>
 
             <View style={styles.quantityContainer}>
