@@ -22,6 +22,7 @@
                 fetchAddresses();
             }, [userID])
         );
+        
         // const fetchAddresses = async () => {
         //     try {
         //         const response = await fetch(`https://md26bipbip-496b6598561d.herokuapp.com/address/${userID}`);
@@ -48,7 +49,16 @@
                 console.error('Lỗi', error);
             }
         };
-
+        const fetchAddressesLater = async () => {
+            try {
+                const response = await url.get(`/address/${userID}`);
+                const data = response.data;
+                return data;
+                
+            } catch (error) {
+                console.error('Lỗi', error);
+            }
+        };
         const renderAddressItem = ({ item }) => (
             <TouchableOpacity style={[styles.addressItem, item === selectedAddress && styles.selectedAddress]}
             onPress={() => {
@@ -58,7 +68,7 @@
                 } else if (isFromCart) {
                     navigation.navigate('Cart', { selectedAddress: item, userID ,selectedProducts});
                 } else {
-                    navigation.navigate('ScreenAddresst', { userID });
+                    navigation.navigate('ScreenAddresst', { item });
                 }
             }}
             
@@ -76,12 +86,19 @@
 
 
         const removeAddress = (addressToRemove) => {
-            setAddresses([]);
+
+            fetchAddressesLater().then(data => {
+                setAddresses(data);
+             //   console.log(data);
+            }); 
+
+           // setAddresses([]);
         };
 
-        const navigateToScreenAddresst = () => {
-            navigation.navigate('ScreenAddresst', { userID });
-        };
+        const navigateToScreenAddresst = (item) => {
+            item.userID = userID;
+            navigation.navigate('ScreenAddresst', {item: item || {} });
+        };  
         const Delete = (item) => {
             url.delete(
                 `/address/delete/${item._id}`
@@ -112,7 +129,7 @@
                 )}
                 <TouchableOpacity
                     style={styles.addButton}
-                    onPress={navigateToScreenAddresst}
+                    onPress={()=>navigation.navigate('ScreenAddresst', { userID })}
                 >
                     <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "center" }}>
                         <Text style={{ color: "white", fontSize: 20, fontWeight: "bold", textAlign: "center" }}>
