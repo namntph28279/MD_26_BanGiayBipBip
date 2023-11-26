@@ -665,13 +665,17 @@ app.get('/statistics/revenue/:year', async (req, res) => {
             $expr: { $eq: [{ $year: '$order_date' }, year] }
         });
 
-        const totalRevenue = successfulOrders.reduce((accumulator, order) => {
-            return accumulator + order.total_amount;
-        }, 0);
+        // Tạo mảng chứa doanh số và lợi nhuận theo tháng
+        const monthlyData = Array.from({ length: 12 }, (_, monthIndex) => {
+            const month = monthIndex + 1; // Tháng bắt đầu từ 1
+            const ordersInMonth = successfulOrders.filter(order => new Date(order.order_date).getMonth() === monthIndex);
+            const totalRevenue = ordersInMonth.reduce((accumulator, order) => accumulator + order.total_amount, 0);
+            const totalProfit = totalRevenue * 0.25; // Lợi nhuận là 25% doanh số
 
-        const totalProfit = totalRevenue * 0.25; // Lợi nhuận là 25% doanh số
+            return { month, totalRevenue, totalProfit };
+        });
 
-        res.json({ totalRevenue, totalProfit });
+        res.json(monthlyData);
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: 'Lỗi máy chủ nội bộ' });
