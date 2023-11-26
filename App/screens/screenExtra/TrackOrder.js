@@ -1,21 +1,48 @@
-import React, {useEffect} from 'react';
+import React, {useEffect, useState} from 'react';
 import {View, Text, Image, StyleSheet, ScrollView, FlatList} from 'react-native';
 import {getMonney} from "../../util/money";
 import Icon from 'react-native-vector-icons/FontAwesome';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 const TrackOrder = ({ route }) => {
     const { orderData } = route.params;
     const { orderProductsList } = route.params;
+    const [orderDataList, setOrderDataList] = useState(orderProductsList);
+    const [reloadCount, setReloadCount] = useState(0);
+    const [orderData1, setOrderData1] = useState('');
     const orderStatus = [
-        { title: 'Đã Đặt hàng', icon: 'check', color: '#30A768' },
-        { title: 'Đã lấy hàng', icon: 'check', color: '#30A768' },
-        { title: 'Đang vận chuyển', icon: 'check', color: '#30A768' },
-        { title: 'Đang giao hàng', icon: 'check', color: '#30A768' },
-        { title: 'Giao Thành công', icon: 'check', color: '#30A768' },
-        { title: 'Hoàn Thành', icon: 'check', color: '#30A768' },
+        { title: 'Chờ Xác Nhận', icon: 'circle', color: '#f1f109' },
+        { title: 'Đang Chuẩn Bị Hàng', icon: 'circle', color: '#f1f109' },
+        { title: 'Đang Vận Chuyển', icon: 'circle', color: '#f1f109' },
+        { title: 'Đang Giao Hàng', icon: 'circle', color: '#f1f109' },
+        { title: 'Đã Nhận Hàng', icon: 'circle', color: '#f1f109' },
     ];
+
     useEffect(() => {
-        console.log('datalist',orderProductsList)
+        const getStatus = async () => {
+            const storedStatus = await AsyncStorage.getItem('orderData1');
+            if (storedStatus) {
+                const parsedStatus = JSON.parse(storedStatus);
+                setOrderData1(parsedStatus);
+            }
+        };
+        getStatus();
     }, []);
+
+    useEffect(() => {
+        // console.log('datalist', orderProductsList);
+        const intervalId = setInterval(async () => {
+            setReloadCount((prevCount) => prevCount + 1);
+            setOrderDataList((prevOrderDataList) => [...prevOrderDataList]);
+            const storedStatus = await AsyncStorage.getItem('orderData1');
+            if (storedStatus) {
+                const parsedStatus = JSON.parse(storedStatus);
+                setOrderData1(parsedStatus);
+            }
+        }, 1000);
+        return () => clearInterval(intervalId);
+    }, [orderProductsList, reloadCount]);
+
+    const statusIndex = orderData1[0]?.status;
     const renderProduct = ({ item }) => (
         <View style={styles.productItem} key={item.id}>
             <Image source={{ uri: item.img_product }} style={styles.productImage} />
@@ -29,7 +56,7 @@ const TrackOrder = ({ route }) => {
     return (
         <View style={styles.container}>
             <View style={styles.orderDetails}>
-                {orderProductsList.map((order) => (
+                {orderDataList.map((order) => (
                     <FlatList
                         key={order.id}
                         data={order.products}
@@ -40,14 +67,21 @@ const TrackOrder = ({ route }) => {
                 ))}
             </View>
             <View style={styles.orderStatusContainer}>
-                {orderStatus.map((status, index) => (
-                    <View key={index} style={styles.statusBox}>
-                        <View style={[styles.statusIconContainer, { backgroundColor: status.color }]}>
-                            <Icon name={status.icon} size={14} color="white" style={styles.statusIcon} />
+                {orderStatus.map((status, index) => {
+                    const isActive = index === statusIndex;
+                    return (
+                        <View key={index} style={styles.statusBox}>
+                            <View style={[styles.statusIconContainer, { backgroundColor: isActive ? '#55f802' : status.color }]}>
+                                {isActive ? (
+                                    <Icon name="check" size={14} color="white" style={styles.statusIcon} />
+                                ) : (
+                                    <Icon name={status.icon} size={14} color="white" style={styles.statusIcon} />
+                                )}
+                            </View>
+                            <Text style={[styles.statusTitle, { color: isActive ? '#55f802' : 'black', fontWeight: isActive ? '700' : 'normal' }]}>{status.title}</Text>
                         </View>
-                        <Text style={styles.statusTitle}>{status.title}</Text>
-                    </View>
-                ))}
+                    );
+                })}
             </View>
             <View style={styles.deliveryAddressContainer}>
                 <View style={styles.deliveryAddressTextContainer}>
@@ -208,11 +242,10 @@ const styles = StyleSheet.create({
         color: 'white',
     },
     statusTitle: {
+        marginTop: 10,
         marginBottom:15,
         color: 'black',
         fontSize: 14,
-        fontFamily: 'Poppins',
-        fontWeight: '700',
         textAlign: 'center',
         wordWrap: 'break-word',
     },

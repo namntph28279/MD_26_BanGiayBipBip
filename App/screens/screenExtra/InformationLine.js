@@ -21,18 +21,23 @@ const InformationLine = ({ route, navigation }) => {
   const [tab1DataLoaded, setTab1DataLoaded] = useState(false);
   const [datalist, setDatalist] = useState(orderProductsList);
   const { productId } = route.params;
-
+  const [reloadData, setReloadData] = useState(false);
   useEffect(() => {
     fetchDataList();
   }, []);
-
+  useEffect(() => {
+    const fetchDataInterval = setInterval(() => {
+      fetchDataList();
+    }, 1000);
+    return () => clearInterval(fetchDataInterval);
+  }, []);
   const fetchDataList = async () => {
     const email = await AsyncStorage.getItem('Email');
-    const { orderId } = route.params; // Thay đổi này để lấy orderId từ route params
+    const { orderId } = route.params;
 
     try {
-      console.log('Fetching data...');
-      const response = await url.get(`/order/detail/${orderId}`); // Sửa đổi này để sử dụng orderId
+      // console.log('Fetching data...');
+      const response = await url.get(`/order/detail/${orderId}`);
       const data = response.data;
 
       if (!data) {
@@ -72,7 +77,12 @@ const InformationLine = ({ route, navigation }) => {
       setLoading(false);
       setTab1DataLoaded(true);
       setStatus(data.status);
-      console.log(formattedOrder)
+      const statusObject = [formattedOrder]
+      await AsyncStorage.setItem('orderData1', JSON.stringify(statusObject));
+      setTimeout(() => {
+        setOrderProductsList([formattedOrder]);
+      }, 1000);
+      // console.log(formattedOrder)
     } catch (error) {
       console.error('Error fetching data:', error);
       setLoading(false);
@@ -93,12 +103,12 @@ const InformationLine = ({ route, navigation }) => {
                   <Icon name="globe" size={100} color="#1abc9c" />
                 </View>
                 <TouchableOpacity
-                    style={styles.paymentMethodContainer_chat}
+                    style={styles.paymentMethodContainer_chat1}
                     onPress={() => {
                       navigation.navigate("TrackOrder", { orderData: item ,orderProductsList: datalist});
                     }}
                 >
-                  <Text>Lịch Sử mua hàng</Text>
+                  <Text>Lịch Sử Giao Hàng</Text>
                 </TouchableOpacity>
                 <ScrollView style={styles.productScrollView}>
                   {item.products.map((product) => (
@@ -380,7 +390,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 16,
     paddingHorizontal: 16,
     paddingVertical: 12,
     borderBottomWidth: 1,
@@ -409,7 +418,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginTop:20,
+    marginTop:10,
     marginBottom: 5,
     paddingHorizontal: 16,
     paddingVertical: 12,
@@ -420,11 +429,23 @@ const styles = StyleSheet.create({
     padding: 16,
     borderTopWidth: 2,
     borderTopColor: '#d71a1a',
-    marginTop: 5,
     borderWidth: 2,
     borderColor: '#da0c0c',
     flexDirection: "row",
     alignItems: "center",
+    borderBottomWidth: 1,
+    paddingVertical: 12,
+    borderRadius: 55,
+  },
+  paymentMethodContainer_chat1: {
+    padding: 16,
+    borderTopWidth: 2,
+    borderTopColor: '#d71a1a',
+    borderWidth: 2,
+    backgroundColor:'violet',
+    borderColor: '#da0c0c',
+    flexDirection: "row",
+    alignSelf: "center",
     borderBottomWidth: 1,
     paddingVertical: 12,
     borderRadius: 55,
