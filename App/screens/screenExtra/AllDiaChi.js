@@ -3,6 +3,7 @@
     import AsyncStorage from "@react-native-async-storage/async-storage";
     import { useFocusEffect } from '@react-navigation/native';
     import url from "../../api/url";
+    import Icon from 'react-native-vector-icons/FontAwesome';
     const AllDiaChi = ({ route, navigation }) => {
         const userID = route.params?.userID || '';
         const selectedProducts = route.params?.selectedProducts || [];
@@ -78,7 +79,7 @@
             <Text>Số điện thoại: {item.phone}</Text>
             <View style={{ position: 'absolute', right: 0 }}>
                 <TouchableOpacity onPress={() => {Delete(item)}}>
-                    <Text style={{ color: 'red',marginTop: 30,marginRight: 20  }}>Xóa</Text>
+                <Icon name="trash-o" size={20} color="red" style={{ color: 'red',marginTop: 30,marginRight: 20  }}/>
                 </TouchableOpacity>
             </View>
         </TouchableOpacity>

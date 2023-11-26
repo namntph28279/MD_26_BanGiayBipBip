@@ -3,7 +3,7 @@ import { Button, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { TextInput } from 'react-native-paper';
 import axios from 'axios';import {useDispatch, useSelector} from "react-redux";
 import url from "../../api/url";
-
+import Icon from 'react-native-vector-icons/FontAwesome';
 
 export default function ScreenAddresst({ route, navigation }) {
     const userID = route.params?.userID || '';
