@@ -3,7 +3,6 @@
 <head>
   <title>Đơn Hàng</title>
   <link rel="stylesheet" href="styles.css">
-
   <script src="https://code.highcharts.com/highcharts.js"></script>
   <style>
 
@@ -125,44 +124,48 @@
       </div>
     </div>
     <!--Top navbar-->
-    <div style="width: 1179px ;margin-left: 45px;">
-      <figure class="highcharts-figure">
-        <div id="container"></div>
-      </figure>
+    <div class="card-container flex m-7 space-x-6 " style=" height: 832px;  justify-content: center;">
 
-      <div style="display: flex;align-items: center">
-        <div>
-          Thống kê năm:
-        </div>
+      <div id="load" class="spinner-border text-primary"></div>
 
-        <select id="dateYearSelect" name="dateYear" style="outline: none;
+      <div class="card w-full" id="hienThidata" style="display: none">
+        <figure class="highcharts-figure">
+          <div id="container"></div>
+        </figure>
+
+        <div style="display: flex;align-items: center">
+          <div>
+            Thống kê năm:
+          </div>
+
+          <select id="dateYearSelect" name="dateYear" style="outline: none;
     padding: 8px;
     border-radius: 8px;
     cursor: pointer;
     margin-left: 14px;">
-          <option>2020</option>
-          <option>2021</option>
-          <option>2022</option>
-          <option>2023</option>
-          <option>2024</option>
-          <option>2025</option>
-          <option>2026</option>
-          <option>2027</option>
-          <option>2028</option>
-          <option>2029</option>
-        </select>
+            <option>2020</option>
+            <option>2021</option>
+            <option>2022</option>
+            <option>2023</option>
+            <option>2024</option>
+            <option>2025</option>
+            <option>2026</option>
+            <option>2027</option>
+            <option>2028</option>
+            <option>2029</option>
+          </select>
+        </div>
+
+
+        <figure class="highcharts-figure">
+          <div id="container2"></div>
+        </figure>
       </div>
 
 
-      <figure class="highcharts-figure">
-        <div id="container2"></div>
-      </figure>
     </div>
-
-
   </div>
 </div>
-
 </body>
 <script>
 
@@ -171,12 +174,13 @@
     console.log(selectedValue);
     sreach(selectedValue)
   }
+
   var selectElement = document.getElementById("dateYearSelect");
   selectElement.onchange = handleSelectChange;
   selectElement.value = "2023";
 
-  function sreach(year){
-    fetch('/statistics/revenue/'+year, {
+  function sreach(year) {
+    fetch('/statistics/revenue/' + year, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json'
@@ -191,7 +195,7 @@
             dataAllRevenue.push(data[i].totalRevenue)
             dataAllProfit.push(data[i].totalProfit)
           }
-          highChartColum(year,dataAllRevenue, dataAllProfit)
+          highChartColum(year, dataAllRevenue, dataAllProfit)
         })
         .catch(error => {
           console.error(error);
@@ -217,6 +221,11 @@
             })
           }
           highChart(dataAll)
+          var load = document.getElementById("load")
+          var duLieu = document.getElementById("hienThidata")
+
+          load.style.display="none"
+          duLieu.style.display="block"
         })
         .catch(error => {
           console.error(error);
@@ -237,7 +246,8 @@
             dataAllRevenue.push(data[i].totalRevenue)
             dataAllProfit.push(data[i].totalProfit)
           }
-          highChartColum(2023,dataAllRevenue, dataAllProfit)
+
+          highChartColum(2023, dataAllRevenue, dataAllProfit)
         })
         .catch(error => {
           console.error(error);
@@ -245,6 +255,7 @@
   }
 
   loadData()
+
   //vẽ biểu đồ
   function highChart(dataAll) {
     Highcharts.chart('container', {
@@ -298,7 +309,7 @@
     });
   }
 
-  function highChartColum(year,dataAllRevenue, dataAllProfit) {
+  function highChartColum(year, dataAllRevenue, dataAllProfit) {
     Highcharts.chart('container2', {
       credits: {
         enabled: false
@@ -310,7 +321,7 @@
         type: 'column'
       },
       title: {
-        text: ' Doanh số và Lợi nhuận năm ' +year,
+        text: ' Doanh số và Lợi nhuận năm ' + year,
       },
       subtitle: {
         text: ' ',
