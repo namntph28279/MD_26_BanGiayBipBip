@@ -214,7 +214,7 @@
                 <td>\{{item._id}}</td>
                 <td>\{{item.customer_email}}</td>
                 <td>\{{item.total_quantity}}</td>
-                <td>\{{item.total_amount}}</td>
+                <td>\{{formatPrice(item.total_amount)}}</td>
                 <td>
                   <img width="50px" src="detail.png" class="btn btn-primary btn-sm"
                        @click="openModalXemChiTiet(choXacNhan[index])"/>
@@ -250,7 +250,7 @@
                 <td>\{{item._id}}</td>
                 <td>\{{item.customer_email}}</td>
                 <td>\{{item.total_quantity}}</td>
-                <td>\{{item.total_amount}}</td>
+                 <td>\{{formatPrice(item.total_amount)}}</td>
                 <td>
                   <img width="50px" src="detail.png" class="btn btn-primary btn-sm"
                        @click="openModalXemChiTiet(choLayHang[index])"/>
@@ -284,7 +284,7 @@
                 <td>\{{item._id}}</td>
                 <td>\{{item.customer_email}}</td>
                 <td>\{{item.total_quantity}}</td>
-                <td>\{{item.total_amount}}</td>
+                 <td>\{{formatPrice(item.total_amount)}}</td>
                 <td>
                   <img width="50px" src="detail.png" class="btn btn-primary btn-sm"
                        @click="openModalXemChiTiet(donHuy[index])"/>
@@ -313,7 +313,7 @@
                 <td>\{{item._id}}</td>
                 <td>\{{item.customer_email}}</td>
                 <td>\{{item.total_quantity}}</td>
-                <td>\{{item.total_amount}}</td>
+                 <td>\{{formatPrice(item.total_amount)}}</td>
                 <td>
                   <img width="50px" src="detail.png" class="btn btn-primary btn-sm"
                        @click="openModalXemChiTiet(choGiaoHang[index])"/>
@@ -347,7 +347,7 @@
                 <td>\{{item._id}}</td>
                 <td>\{{item.customer_email}}</td>
                 <td>\{{item.total_quantity}}</td>
-                <td>\{{item.total_amount}}</td>
+                 <td>\{{formatPrice(item.total_amount)}}</td>
                 <td>
                   <img width="50px" src="detail.png" class="btn btn-primary btn-sm"
                        @click="openModalXemChiTiet(daGiao[index])"/>
@@ -377,7 +377,7 @@
                 <td>\{{item._id}}</td>
                 <td>\{{item.customer_email}}</td>
                 <td>\{{item.total_quantity}}</td>
-                <td>\{{item.total_amount}}</td>
+                 <td>\{{formatPrice(item.total_amount)}}</td>
                 <td>
                   <img width="50px" src="detail.png" class="btn btn-primary btn-sm"
                        @click="openModalXemChiTiet(traHang[index])"/>
@@ -411,7 +411,7 @@
                 <td>\{{item._id}}</td>
                 <td>\{{item.customer_email}}</td>
                 <td>\{{item.total_quantity}}</td>
-                <td>\{{item.total_amount}}</td>
+                 <td>\{{formatPrice(item.total_amount)}}</td>
                 <td>
                   <img width="50px" src="detail.png" class="btn btn-primary btn-sm"
                        @click="openModalXemChiTiet(donHoan[index])"/>
@@ -467,7 +467,7 @@
                 </div>
               </div>
               <div style="text-align: end;color: red">
-                \{{item.name_Price}}
+                \{{formatPrice(item.name_Price)}}
 
               </div>
             </div>
@@ -475,7 +475,7 @@
 
           <div style="display: flex; text-align: end;justify-content: end;">
             Tổng tiền:
-            <div style="color: red;font-weight: 700;margin-left: 7px;"> \{{dataXemChiTiet.total_All}}</div>
+            <div style="color: red;font-weight: 700;margin-left: 7px;"> \{{formatPrice(dataXemChiTiet.total_All)}}</div>
           </div>
         </div>
 
@@ -487,7 +487,7 @@
     <div class="modal-dialog" role="document">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title" id="exampleModalLabel">Thông tin chi tiết</h5>
+          <h5 class="modal-title" id="exampleModalLabel">Xác nhận đơn</h5>
           <button type="button" class="close" @click="closeModalXacNhanDon" aria-label="Close">
             <span aria-hidden="true">&times;</span>
           </button>
@@ -514,7 +514,7 @@
     <div class="modal-dialog" role="document">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title" id="exampleModalLabel">Thông tin chi tiết</h5>
+          <h5 class="modal-title" id="exampleModalLabel">Hủy đơn</h5>
           <button type="button" class="close" @click="closeModalHuyDon" aria-label="Close">
             <span aria-hidden="true">&times;</span>
           </button>
@@ -613,6 +613,10 @@
 
     },
     methods: {
+      formatPrice(value) {
+        let val = (value / 1).toFixed(0);
+        return val.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + " đ";
+      },
       openModalXemChiTiet(data) {
         this.dataXemChiTiet = data
         $('#xemChiTiet').modal('show');
