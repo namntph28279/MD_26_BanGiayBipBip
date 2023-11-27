@@ -3,16 +3,13 @@ import { Button, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { TextInput } from 'react-native-paper';
 import axios from 'axios';import {useDispatch, useSelector} from "react-redux";
 import url from "../../api/url";
+import Icon from 'react-native-vector-icons/FontAwesome';
 
 export default function ScreenAddresst({ route, navigation }) {
     const userID = route.params?.userID || '';
-    useEffect(() => {
-       // console.log('Giá trị userID từ thêm địa chỉ:', userID);
-        if (!userID) {
-           // console.log('Không có user ID.', userID);
-            return;
-        }
-    }, [userID]);
+    const userOBJ = route.params?.item || '';
+
+    
     const resdt = /(84|0[3|5|7|8|9])+([0-9]{8})\b/g;
     const resnameRegex = /^[AÀẢÃÁẠĂẰẲẴẮẶÂẦẨẪẤẬBCDĐEÈẺẼÉẸÊỀỂỄẾỆFGHIÌỈĨÍỊJKLMNOÒỎÕÓỌÔỒỔỖỐỘƠỜỞỠỚỢPQRSTUÙỦŨÚỤƯỪỬỮỨỰVWXYỲỶỸÝỴZ][aàảãáạăằẳẵắặâầẩẫấậbcdđeèẻẽéẹêềểễếệfghiìỉĩíịjklmnoòỏõóọôồổỗốộơờởỡớợpqrstuùủũúụưừửữứựvwxyỳỷỹýỵz]+ [AÀẢÃÁẠĂẰẲẴẮẶÂẦẨẪẤẬBCDĐEÈẺẼÉẸÊỀỂỄẾỆFGHIÌỈĨÍỊJKLMNOÒỎÕÓỌÔỒỔỖỐỘƠỜỞỠỚỢPQRSTUÙỦŨÚỤƯỪỬỮỨỰVWXYỲỶỸÝỴZ][aàảãáạăằẳẵắặâầẩẫấậbcdđeèẻẽéẹêềểễếệfghiìỉĩíịjklmnoòỏõóọôồổỗốộơờởỡớợpqrstuùủũúụưừửữứựvwxyỳỷỹýỵz]+(?: [AÀẢÃÁẠĂẰẲẴẮẶÂẦẨẪẤẬBCDĐEÈẺẼÉẸÊỀỂỄẾỆFGHIÌỈĨÍỊJKLMNOÒỎÕÓỌÔỒỔỖỐỘƠỜỞỠỚỢPQRSTUÙỦŨÚỤƯỪỬỮỨỰVWXYỲỶỸÝỴZ][aàảãáạăằẳẵắặâầẩẫấậbcdđeèẻẽéẹêềểễếệfghiìỉĩíịjklmnoòỏõóọôồổỗốộơờởỡớợpqrstuùủũúụưừửữứựvwxyỳỷỹýỵz]*)*/;
 
@@ -32,36 +29,31 @@ export default function ScreenAddresst({ route, navigation }) {
     const [isEdit, setIsEdit] = useState(false);
     const [address, setAdddress] = useState('');
     // const [chiTietError, setChiTietError] = useState(false);
-    const dataUserID = useSelector((state) => state.dataAll.dataUserID);
+    const dataObject =userOBJ;
     useEffect(() => {
         const newAddress = xa + " - " + huyen + " - " + tinh;
         setAdddress(newAddress);
     }, [xa, huyen, tinh]);
-    
+
+  
     useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const response = await url.get(`/address/${dataUserID}`);
-                
-                const data = response.data;
-                setOldUserData(data);
-              
-            } catch (error) {
-                console.error('Error:', error);
-            }
-        };
-        fetchData();
-    }, [dataUserID]);
+        if(dataObject!=null){
+            setOldUserData(dataObject);
+        }else{
+            setOldUserData([]);
+        }
+    }, [dataObject]);
+
     useEffect(() => {
-        if (oldUserData.length > 0) {   
-     
-          setName(oldUserData[0].name);
-          setPhone(oldUserData[0].phone);
-          setEditID(oldUserData[0]._id);
-          const arr = oldUserData[0].address.split(" - ");
+        if (oldUserData!='') {   
+          setName(oldUserData.name);
+          setPhone(oldUserData.phone);
+          setEditID(oldUserData._id);
+          if(oldUserData.address){
+          const arr = oldUserData.address.split(" - ");
           setXa(arr[0]);
           setHuyen(arr[1]);
-          setTinh(arr[2]);
+          setTinh(arr[2]);}
           setIsEdit(true);
         }
       }, [oldUserData]);
