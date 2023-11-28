@@ -411,7 +411,7 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   addressText: {
-    fontSize: 15,
+    fontSize: 13,
     marginBottom: 8,
   },
   paymentMethodContainer: {

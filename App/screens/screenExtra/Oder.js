@@ -165,7 +165,7 @@ const Order = ({ route }) => {
                         <Image source={{ uri: product.img_product }} style={styles.productImage} />
                         <View style={styles.productInfo}>
                             {/* <Text style={styles.productName}>{`Tên sản phẩm: ${product.productId}`}</Text> */}
-                            <Text style={styles.productName}>{`Tên sản phẩm: ${product.name_Product}`}</Text>
+                            <Text style={styles.productName}>{`${product.name_Product}`}</Text>
                             <Text>{`Màu: ${product.name_Color}`}</Text>
                             <Text>{`Size: ${product.name_Size}`}</Text>
                             <View style={styles.quantityAndPriceContainer}>
