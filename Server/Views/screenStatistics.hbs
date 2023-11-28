@@ -107,7 +107,7 @@
 
   <!--Main area-->
 
-  <div class="flex-1">
+  <div style="height: 989px">
     <!--Top navbar-->
     <div>
 
@@ -129,37 +129,35 @@
       <div id="load" class="spinner-border text-primary"></div>
 
       <div class="card w-full" id="hienThidata" style="display: none">
-        <figure class="highcharts-figure">
-          <div id="container"></div>
-        </figure>
+        <div style="width: 1179px">
+          <figure class="highcharts-figure">
+            <div id="container"></div>
+          </figure>
 
-        <div style="display: flex;align-items: center">
-          <div>
-            Thống kê năm:
+          <div style="display: flex;align-items: center">
+            <div>
+              Thống kê năm:
+            </div>
+
+            <select id="dateYearSelect" name="dateYear" style="outline: none;padding: 8px;border-radius: 8px;cursor: pointer;margin-left: 14px;">
+              <option>2020</option>
+              <option>2021</option>
+              <option>2022</option>
+              <option>2023</option>
+              <option>2024</option>
+              <option>2025</option>
+              <option>2026</option>
+              <option>2027</option>
+              <option>2028</option>
+              <option>2029</option>
+            </select>
           </div>
 
-          <select id="dateYearSelect" name="dateYear" style="outline: none;
-    padding: 8px;
-    border-radius: 8px;
-    cursor: pointer;
-    margin-left: 14px;">
-            <option>2020</option>
-            <option>2021</option>
-            <option>2022</option>
-            <option>2023</option>
-            <option>2024</option>
-            <option>2025</option>
-            <option>2026</option>
-            <option>2027</option>
-            <option>2028</option>
-            <option>2029</option>
-          </select>
+
+          <figure class="highcharts-figure">
+            <div id="container2"></div>
+          </figure>
         </div>
-
-
-        <figure class="highcharts-figure">
-          <div id="container2"></div>
-        </figure>
       </div>
 
 

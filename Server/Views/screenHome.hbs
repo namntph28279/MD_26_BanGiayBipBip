@@ -477,6 +477,11 @@
             Tổng tiền:
             <div style="color: red;font-weight: 700;margin-left: 7px;"> \{{formatPrice(dataXemChiTiet.total_All)}}</div>
           </div>
+
+          <div style="display: flex;" v-if="dataXemChiTiet.lyDoHuyDon">
+            Lý do hủy đơn:
+            <div style="font-weight: 600;margin-left: 7px;"> \{{dataXemChiTiet.lyDoHuyDon}}</div>
+          </div>
         </div>
 
       </div>
@@ -487,16 +492,53 @@
     <div class="modal-dialog" role="document">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title" id="exampleModalLabel">Xác nhận đơn</h5>
+          <h5 class="modal-title" id="exampleModalLabel">Xác nhận đơn tài khooản: \{{dataXacNhanDon.customer_email}}?</h5>
           <button type="button" class="close" @click="closeModalXacNhanDon" aria-label="Close">
             <span aria-hidden="true">&times;</span>
           </button>
         </div>
+        <div style="margin-bottom: 2px" class="modal-body">
+          <div>
+            Họ và tên: \{{dataXacNhanDon.userName}} <br>
+            Số điện thoại: \{{dataXacNhanDon.phone}}<br>
+            Địa chỉ: \{{dataXacNhanDon.address}}
+          </div>
+          <div v-for="(item,index) in dataXacNhanDon.products" style="display: flex;padding: 12px">
+            <img style="height: 80px; margin-right: 8px;width: 80px;  border-radius: 8px;"
+                 :src=(item.img_product) alt="">
+            <div style="width: 100%">
+              <div style="font-weight: 700;font-size: 16px">
+                \{{item.name_Product}}
+              </div>
+              <div style="display: flex;justify-content: space-between;">
 
-        <div class="modal-body">
-          <p>Bạn có chắc chắn muốn xác nhận đơn hàng của tài
-            khoản: \{{dataXacNhanDon.customer_email}}?</p>
+                <div style="display: flex">
+                  <div style="color:#656769; margin-right: 7px">
+                    \{{item.name_Color}}
+                  </div>
+                  <div style="color:#656769;">
+                    \{{item.name_Size}}
+                  </div>
+                </div>
+
+                <div>
+                  x \{{item.quantityProduct}}
+                </div>
+              </div>
+              <div style="text-align: end;color: red">
+                \{{formatPrice(item.name_Price)}}
+
+              </div>
+            </div>
+          </div>
+
+          <div style="display: flex; text-align: end;justify-content: end;">
+            Tổng tiền:
+            <div style="color: red;font-weight: 700;margin-left: 7px;"> \{{formatPrice(dataXacNhanDon.total_All)}}</div>
+          </div>
         </div>
+
+
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-dismiss="modal">
             Thoát
@@ -514,14 +556,53 @@
     <div class="modal-dialog" role="document">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title" id="exampleModalLabel">Hủy đơn</h5>
+          <h5 class="modal-title" id="exampleModalLabel">Hủy đơn tài khoản: \{{dataHuyDon.customer_email}}?</h5>
           <button type="button" class="close" @click="closeModalHuyDon" aria-label="Close">
             <span aria-hidden="true">&times;</span>
           </button>
         </div>
         <div class="modal-body">
-          <p>Bạn có chắc chắn muốn hủy đơn hàng của tài
-            khoản: \{{dataHuyDon.customer_email}}?</p>
+            <div>
+              Họ và tên: \{{dataHuyDon.userName}} <br>
+              Số điện thoại: \{{dataHuyDon.phone}}<br>
+              Địa chỉ: \{{dataHuyDon.address}}
+            </div>
+            <div v-for="(item,index) in dataHuyDon.products" style="display: flex;padding: 12px">
+              <img style="height: 80px; margin-right: 8px;width: 80px;  border-radius: 8px;"
+                   :src=(item.img_product) alt="">
+              <div style="width: 100%">
+                <div style="font-weight: 700;font-size: 16px">
+                  \{{item.name_Product}}
+                </div>
+                <div style="display: flex;justify-content: space-between;">
+
+                  <div style="display: flex">
+                    <div style="color:#656769; margin-right: 7px">
+                      \{{item.name_Color}}
+                    </div>
+                    <div style="color:#656769;">
+                      \{{item.name_Size}}
+                    </div>
+                  </div>
+
+                  <div>
+                    x \{{item.quantityProduct}}
+                  </div>
+                </div>
+                <div style="text-align: end;color: red">
+                  \{{formatPrice(item.name_Price)}}
+
+                </div>
+              </div>
+            </div>
+
+            <div style="display: flex; text-align: end;justify-content: end;">
+              Tổng tiền:
+              <div style="color: red;font-weight: 700;margin-left: 7px;"> \{{formatPrice(dataHuyDon.total_All)}}</div>
+            </div>
+
+
+
           <form :action="`/order/status/${dataHuyDon._id}`" method="post"
                 class="mb-3">
             <div class="form-group">
