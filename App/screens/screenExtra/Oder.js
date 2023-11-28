@@ -18,7 +18,7 @@ import { getMonney } from '../../util/money';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 const Order = ({ route }) => {
     const [orderProductsList, setOrderProductsList] = useState([]);
-    const [status, setStatus] = useState('Tất cả sản phẩm đã đặt');
+    const [status, setStatus] = useState('Chờ xác nhận');
     const [loading, setLoading] = useState(true);
     const [tab1DataLoaded, setTab1DataLoaded] = useState(false);
     const [isCancelModalVisible, setCancelModalVisible] = useState(false);
@@ -27,6 +27,11 @@ const Order = ({ route }) => {
     useEffect(() => {
         fetchDataList();
     }, []);
+    
+    useEffect(() => {
+        setStatusFilter('Chờ xác nhận');
+    }, [orderProductsList]);
+    
     const fetchDataList = async () => {
         const email = await AsyncStorage.getItem('Email');
         try {
@@ -56,20 +61,15 @@ const Order = ({ route }) => {
                     orderDate: order.order_date,
                 }));
 
-                setOrderProductsList(formattedData);
-                setDatalist(formattedData);
-                setLoading(false);
-                setTab1DataLoaded(true);
+            setOrderProductsList(formattedData);
+            // setDatalist(formattedData);
+            setLoading(false);
+            setTab1DataLoaded(true);
         } catch (error) {
             console.error('Error fetching data:', error);
             setLoading(false);
         }
     };
-
-    useEffect(() => {
-        fetchDataList();
-        setStatusFilter('Tất cả sản phẩm đã đặt');
-    }, []);
 
     const navigation = useNavigation();
 
@@ -156,9 +156,7 @@ const Order = ({ route }) => {
             style={styles.frame}
             onPress={() => {
                 // console.log('Item:', item);
-                navigation.navigate('InformationLine', { productId: item.products[0].productId , orderId: item.id }); // Truyền product ID vào params
-                // console.log('Product ID:', item.products[0].productId);
-                // console.log('oder ID:', item.id);
+                navigation.navigate('InformationLine', { productId: item.products[0].productId, orderId: item.id }); // Truyền product ID vào params
             }}
         >
             <View style={styles.productBox}>
@@ -166,7 +164,7 @@ const Order = ({ route }) => {
                     <View key={product.id} style={styles.productItemContainer}>
                         <Image source={{ uri: product.img_product }} style={styles.productImage} />
                         <View style={styles.productInfo}>
-                            <Text style={styles.productName}>{`Tên sản phẩm: ${product.productId}`}</Text>
+                            {/* <Text style={styles.productName}>{`Tên sản phẩm: ${product.productId}`}</Text> */}
                             <Text style={styles.productName}>{`Tên sản phẩm: ${product.name_Product}`}</Text>
                             <Text>{`Màu: ${product.name_Color}`}</Text>
                             <Text>{`Size: ${product.name_Size}`}</Text>
@@ -178,7 +176,7 @@ const Order = ({ route }) => {
                     </View>
                 ))}
                 <View style={styles.orderStatusContainer}>
-                
+
                     <Text style={styles.orderStatus}>{`Trạng thái: ${item.status}`}</Text>
                 </View>
                 <View style={styles.buttonContainer}>
@@ -201,14 +199,14 @@ const Order = ({ route }) => {
 
         if (setStatusFilter === 'Chờ xác nhận') {
             filteredData = orderProductsList.filter((e) => e.status === 0);
-        }else if (setStatusFilter === 'Tất cả sản phẩm đã đặt') {
+        } else if (setStatusFilter === 'Tất cả sản phẩm đã đặt') {
             filteredData = orderProductsList;
         } else {
             filteredData = orderProductsList.filter(
                 (e) => e.status === listTab.findIndex((tab) => tab.status === setStatusFilter)
             );
         }
-
+        console.log('Filtered Data:', filteredData); // Log filtered data
         setDatalist(filteredData);
         setStatus(setStatusFilter);
 
@@ -377,7 +375,7 @@ const styles = StyleSheet.create({
     productName: {
         fontWeight: 'bold',
         fontSize: 16,
-        marginBottom: 8,
+        // marginBottom: 5,
     },
     productquantity: {
         fontSize: 15,

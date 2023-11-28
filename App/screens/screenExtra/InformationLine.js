@@ -136,7 +136,7 @@ const InformationLine = ({ route, navigation }) => {
                   </View>
                   <View style={styles.paymentDetailItem}>
                     <Text style={styles.detailLabel}>Tổng tiền hàng:</Text>
-                    <Text style={styles.detailValue}>{`${getMonney(item.total_amount)}`}</Text>
+                    <Text style={styles.detailValue}>{`${getMonney(item.products[0].name_Price)}`}</Text>
                   </View>
                   <View style={styles.paymentDetailItem}>
                     <Text style={styles.detailLabel}>Phí bảo hiểm:</Text>
