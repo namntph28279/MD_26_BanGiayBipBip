@@ -5,6 +5,7 @@ import {useDispatch, useSelector} from "react-redux";
 import NoProduct from "../../components/NoProduct";
 import {fetchDataAndSetToRedux} from "../../redux/AllData";
 import url from "../../api/url";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function Favourite({navigation }) {
   const dispatch = useDispatch(); //trả về một đối tượng điều phối
@@ -181,9 +182,11 @@ export default function Favourite({navigation }) {
           <ScrollView style={styles.frame}>
             {dataSP.map((item) => (
               <TouchableOpacity key={item.product}
-                onPress={() => {
-                  navigation.navigate("ProductDetail", { productId: item.product, userId: item.user});
-                }} style={styles.productContainer}>
+                onPress={async () => {
+                    const email = await AsyncStorage.getItem('Email');
+                    navigation.navigate("ProductDetail", {productId: item.product, userId: email});
+                }} 
+                style={styles.productContainer}>
 
                 <View style={styles.productBox}>
                   <Image source={{ uri: item.product_image }} style={styles.productImage} />
