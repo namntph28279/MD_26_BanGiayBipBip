@@ -24,6 +24,22 @@ const InformationLine = ({ route, navigation }) => {
   const [datalist, setDatalist] = useState(orderProductsList);
   const { productId } = route.params;
   const [reloadData, setReloadData] = useState(false);
+  useEffect(() => {
+    navigation.setOptions({
+      headerRight: () => (
+          <TouchableOpacity
+              style={styles.headerButton}
+              onPress={async () => {
+                await fetchDataList();
+                const latestOrderData = orderProductsList[0];
+                navigation.navigate("TrackOrder", { orderData: latestOrderData, orderProductsList: orderProductsList });
+              }}
+          >
+            <Icon name="truck" size={20} color="red" />
+          </TouchableOpacity>
+      ),
+    });
+  }, [navigation, fetchDataList, orderProductsList]);
 
   const handleCopyToClipboard =  (item) => {
     if (item && item.id) {
@@ -117,14 +133,14 @@ const InformationLine = ({ route, navigation }) => {
               </View>
               <Icon name="globe" size={100} color="#1abc9c" />
             </View>
-            <TouchableOpacity
-              style={styles.paymentMethodContainer_chat1}
-              onPress={() => {
-                navigation.navigate("TrackOrder", { orderData: item, orderProductsList: datalist });
-              }}
-            >
-              <Text>Lịch Sử Giao Hàng</Text>
-            </TouchableOpacity>
+            {/*<TouchableOpacity*/}
+            {/*  style={styles.paymentMethodContainer_chat1}*/}
+            {/*  onPress={() => {*/}
+            {/*    navigation.navigate("TrackOrder", { orderData: item, orderProductsList: datalist });*/}
+            {/*  }}*/}
+            {/*>*/}
+            {/*  <Text>Lịch Sử Giao Hàng</Text>*/}
+            {/*</TouchableOpacity>*/}
             <ScrollView style={styles.productScrollView}>
               {item.products.map((product) => (
                 <View key={product.id} style={styles.productBox}>
@@ -204,6 +220,14 @@ const InformationLine = ({ route, navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  headerButton: {
+    marginRight: 16,
+    padding: 8,
+  },
+  headerButtonText: {
+    fontSize: 16,
+    color: '#fff',
   },
   container1: {
     flex: 1,

@@ -29,7 +29,7 @@ const TrackOrder = ({ route }) => {
     }, []);
 
     useEffect(() => {
-        // console.log('datalist', orderProductsList);
+        // console.log('datalist', orderProductsList,orderData);
         const intervalId = setInterval(async () => {
             setReloadCount((prevCount) => prevCount + 1);
             setOrderDataList((prevOrderDataList) => [...prevOrderDataList]);
@@ -161,25 +161,21 @@ const styles = StyleSheet.create({
     productName: {
         color: 'black',
         fontSize: 14,
-        fontFamily: 'Poppins',
         fontWeight: '700',
     },
     expectingDate: {
         color: 'black',
         fontSize: 11,
-        fontFamily: 'Poppins',
         fontWeight: '400',
     },
     orderId: {
         color: 'black',
         fontSize: 11,
-        fontFamily: 'Poppins',
         fontWeight: '400',
     },
     amount: {
         color: 'black',
         fontSize: 14,
-        fontFamily: 'Roboto',
         fontWeight: '700',
     },
     amountPaidContainer: {
@@ -197,7 +193,6 @@ const styles = StyleSheet.create({
         marginLeft: 9,
         color: '#0FA958',
         fontSize: 10,
-        fontFamily: 'Poppins',
         fontWeight: '700',
     },
     productInfo: {
@@ -268,13 +263,11 @@ const styles = StyleSheet.create({
         color: 'black',
         fontSize: 16,
         alignSelf:'center',
-        fontFamily: 'Poppins',
         fontWeight: '700',
     },
     deliveryAddressText: {
         color: 'black',
         fontSize: 12,
-        fontFamily: 'Poppins',
         fontWeight: '400',
     },
     deliveryAddressTextContainer: {
