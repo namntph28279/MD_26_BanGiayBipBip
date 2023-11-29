@@ -66,7 +66,11 @@
       width: 20%;
       border-right-width: 1px;
       border-right-color: black;
-      margin-right: 8px;
+      margin: 7px 7px 0px 8px;
+      height: 552px;
+      border-radius: 8px;
+      padding: 8px;
+      overflow: auto;
     }
 
     .information {
@@ -113,11 +117,26 @@
       margin-bottom: 8px;
     }
 
+    .contenChat {
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+    }
+
+    .name-user {
+      font-size: 25px;
+      padding: 6px;
+      font-weight: 700;
+      background: #f2eaea;
+      margin: 0 12px;
+      border-radius: 10px;
+      text-align: center
+    }
   </style>
 </head>
 
 <body class="bg-gray-200">
-<div class="flex">
+<div class="flex" id="dataALL">
   <!--Side Navbar-->
   <div class="bg-indigo-900 w-1/6 ">
     <div class=" bg-indigo-800">
@@ -185,36 +204,29 @@
 
       <div class="card w-full" id="hienThidata" style="display: none">
         <div class="card w-full" style="display: flex;flex-direction: row;padding: 8px">
-          <div class="box-chat" style=" height: 555px;
-  margin: 7px;
-  border-radius: 8px;
-  padding: 8px;
-  overflow: auto;">
 
+          <div class="box-chat">
+            <div v-for="item in dataTitleChat" :class="{'informationNew':item.status,'information':!item.status}"
+                 @click="OpenChatUser(item.user)">
+              \{{item.fullName}}
+            </div>
           </div>
-          <div id="checkData" style="width: 80%">
-            <div id="name-user"
-                 style="font-size: 25px; padding: 14px; font-weight: 700; background: #f2eaea;  margin: 0 12px; border-radius: 10px;text-align: center"></div>
-
-            <div style=" background: #f3f4f6;
-  height: 555px;
-  margin: 7px;
-  border-radius: 8px;
-  padding: 8px;
-  overflow: auto;">
-              <div id="listConten" class="contenChat"
-                   style="display: flex;
-  flex-direction: column;
-  justify-content: flex-end;">
-
+          <div id="checkData" style="width: 80%" v-if="dataContentChat.length > 0">
+            <div class="name-user">
+              \{{nameUser}}
+            </div>
+            <div
+                style=" background: #f3f4f6; height: 444px; margin: 7px; border-radius: 8px; padding: 8px;  overflow: auto;">
+              <div id="listConten" class="contenChat" v-for="item in dataContentChat"
+                   :class="{'admin': item.beLong === 'admin', 'user': item.beLong !== 'admin'}">
+                \{{item.conTenMain}}
               </div>
             </div>
-            <form id="myForm" class="mb-3" style="margin: 0 14px;">
+            <form @submit.prevent="submitContentChat" class="mb-3" style="margin: 0 14px;">
               <div class="input-group">
                 <label class="form-control">
-                  <input id="myInput" style="width: 100%;outline: unset !important;" type="text"
-                         name="conTenMain"
-                         placeholder="Nhập nội dung">
+                  <input style="width: 100%;outline: unset !important;" type="text"
+                         v-model="formData.conTenMain" required>
                 </label>
                 <div class="input-group-append" style="margin-left: 8px;">
                   <button class="btn btn-primary" type="submit">Gửi</button>
@@ -228,128 +240,110 @@
   </div>
 </div>
 </body>
+<script src="https://cdn.jsdelivr.net/npm/vue@2"></script>
 <script>
-  let idDataChat = '';
-
-  function updateChatBox(dataChat) {
-    const boxChatDiv = document.querySelector('.box-chat');
-    boxChatDiv.innerHTML = '';
-    dataChat.forEach(item => {
-      const informationDiv = document.createElement('div');
-
-      const nameDiv = document.createElement('div');
-      if (item.status === true) {
-        informationDiv.classList.add('informationNew');
-
+  var vm = new Vue({
+    el: "#dataALL",
+    data: {
+      idUser: '',
+      nameUser: '',
+      dataTitleChat: {},
+      dataContentChat: {},
+      checkClick: false,
+      formData: {
+        user: '',
+        conTenMain: '',
+        beLong: "admin",
+        status: false
       }
-      informationDiv.classList.add('information');
-      nameDiv.textContent = item.fullName;
-      informationDiv.addEventListener('click', function () {
-        idDataChat = item.user;
-      });
-      informationDiv.appendChild(nameDiv);
-      boxChatDiv.appendChild(informationDiv);
-    });
-  }
-
-  function updateContentChat(dataChat) {
-    const boxChatDiv = document.querySelector('.contenChat');
-    boxChatDiv.innerHTML = '';
-    const checkDt = document.getElementById("checkData");
-    const name_user = document.getElementById("name-user");
-    if (dataChat.content !== undefined) {
-      checkDt.style.display = "block"
-      name_user.textContent = dataChat.fullName
-      dataChat.content.forEach(item => {
-        const informationDiv = document.createElement('div');
-        if (item.beLong === "user") {
-          informationDiv.classList.add('user');
-        } else {
-          informationDiv.classList.add('admin');
-        }
-
-        const content = document.createElement('div');
-        content.textContent = item.conTenMain;
-        informationDiv.appendChild(content);
-        boxChatDiv.appendChild(informationDiv);
-
-      });
-
-    } else {
-      checkDt.style.display = "none"
-    }
-  }
-
-  function fetchData() {
-    fetch('/chatAllShop', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    })
-        .then(response => response.json())
-        .then(data => {
-          const sortedData = data.sort((a, b) => {
-            if (a.status === b.status) {
-              return 0;
-            }
-            return a.status ? -1 : 1;
-          });
-          updateChatBox(sortedData);
-          var load = document.getElementById("load")
-          var duLieu = document.getElementById("hienThidata")
-
-          load.style.display="none"
-          duLieu.style.display="block"
+    },
+    methods: {
+      GetAllDataChat: function () {
+        var self = this;
+        fetch('/chatAllShop', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          }
         })
-        .catch(error => {
-          console.error(error);
-        });
-  }
+            .then(response => response.json())
+            .then(data => {
+              const sortedData = data.sort((a, b) => {
+                if (a.status === b.status) {
+                  return 0;
+                }
+                return a.status ? -1 : 1;
+              });
+              self.dataTitleChat = sortedData;
 
-  fetchData();
-
-  setInterval(fetchData, 1000);
-  setInterval(openChat, 1000);
-
-  function openChat() {
-    fetch('/chatShop', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
+              var load = document.getElementById("load")
+              var duLieu = document.getElementById("hienThidata")
+              load.style.display = "none"
+              duLieu.style.display = "block"
+            })
+            .catch(error => {
+              console.error(error);
+            });
       },
-      body: JSON.stringify({user: idDataChat})
-    })
-        .then(response => response.json())
-        .then(data => {
-          updateContentChat(data)
+      OpenChatUser: function (id) {
+        var self = this;
+        if (self.checkClick) {
+          return
+        }
+        self.checkClick = true;
+        fetch('/chatShop', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({user: id})
         })
-        .catch(error => {
-          console.error(error);
-        });
-  }
+            .then(response => response.json())
+            .then(data => {
+              self.idUser = id
+              self.nameUser = data.fullName
+              self.dataContentChat = data.content
+              self.checkClick = false;
+            })
+            .catch(error => {
+              console.error(error);
+            });
+      },
 
-  document.getElementById("myForm").addEventListener("submit", function (event) {
-    event.preventDefault(); // Ngăn chặn mặc định của biểu mẫu
-    var formData = new FormData(this); // Tạo đối tượng FormData từ biểu mẫu
-    formData.forEach(function (value, key) {
-      fetch('/home/chatShop', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({user: idDataChat, conTenMain: value, beLong: "admin", status: false})
-      })
-          .then(response => response.json())
-          .then(data => {
-            document.getElementById("myInput").value = ""
-            checkNottifi(idDataChat, value)
-          })
-          .catch(error => {
-            console.error(error);
-          });
-    });
-  });
+      submitContentChat() {
+        var self = this;
+        self.formData.user = self.idUser;
+
+        fetch('/home/chatShop', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(self.formData)
+        })
+            .then(response => response.json())
+            .then(data => {
+              if (data === true) {
+                checkNottifi(self.idUser, self.formData.conTenMain)
+                self.formData.conTenMain = '';
+              }
+            })
+            .catch(error => {
+              console.error(error);
+            });
+
+
+      }
+    }
+  })
+  vm.GetAllDataChat();
+
+  setInterval(() => {
+    vm.GetAllDataChat();
+    if (vm.idUser !== '') {
+      vm.OpenChatUser(vm.idUser)
+    }
+  }, 500)
 
   function checkNottifi(idDataChat, value) {
     fetch('/sendNotificationClient', {
@@ -374,7 +368,6 @@
         });
 
   }
-
   function checkNottifiMess(idDataChat, value) {
     fetch('/sendNotificationMess', {
       method: 'POST',
@@ -399,7 +392,6 @@
         });
 
   }
-
   function NotificaionClient(id, mess) {
     fetch('https://exp.host/--/api/v2/push/send', {
       mode: 'no-cors',
@@ -417,18 +409,5 @@
       })
     });
   }
-
-  function renderDataFromBottomUp() {
-    var container = document.getElementById("listConten");
-    var children = container.children;
-
-    var reversedChildren = Array.from(children).reverse();
-
-    container.innerHTML = "";
-    reversedChildren.forEach(function (child) {
-      container.appendChild(child);
-    });
-  }
-
 </script>
 </html>

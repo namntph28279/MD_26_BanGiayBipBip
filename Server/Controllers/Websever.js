@@ -437,9 +437,9 @@ app.post('/home/chatShop', async (req, res) => {
             check.status = data.status;
             check.content.push(newChat)
             await check.save()
-            return res.json({message: "Thêm chat thành công"});
+            return res.json(true);
         } catch (error) {
-            console.log(error)
+            return res.json(false);
         }
     } else {
         try {
