@@ -610,7 +610,7 @@ const styles = StyleSheet.create({
   },
 
   copy: {
-    marginRight:15,
+    marginRight:'5%',
   },
   detailLabel: {
     fontSize: 13,
@@ -635,7 +635,7 @@ const styles = StyleSheet.create({
   },
   detailValue2: {
     fontSize: 14,
-    marginLeft: 60,
+    marginLeft: '15%',
   },
   invoiceIcon: {
     marginRight: 10,
