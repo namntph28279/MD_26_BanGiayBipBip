@@ -222,7 +222,6 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   headerButton: {
-    marginRight: 16,
     padding: 8,
   },
   headerButtonText: {
