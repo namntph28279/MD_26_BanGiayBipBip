@@ -6,6 +6,7 @@ import {
   Image,
   ScrollView,
   TouchableOpacity,
+  Clipboard
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -14,6 +15,7 @@ import { getMonney } from '../../util/money';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { Button } from 'react-native-elements';
+import Toast from 'react-native-toast-message';
 const InformationLine = ({ route, navigation }) => {
   const [orderProductsList, setOrderProductsList] = useState([]);
   const [status, setStatus] = useState('Chờ xác nhận');
@@ -22,6 +24,19 @@ const InformationLine = ({ route, navigation }) => {
   const [datalist, setDatalist] = useState(orderProductsList);
   const { productId } = route.params;
   const [reloadData, setReloadData] = useState(false);
+
+  const handleCopyToClipboard =  (item) => {
+    if (item && item.id) {
+         Clipboard.setString(item.id.toString());
+         Toast.show({
+          type: 'success', // Loại thông báo: success, error, info, warning
+          position: 'bottom', // Vị trí của thông báo: top, bottom
+          text1: 'Đã sao chép!', // Nội dung chính của thông báo
+          visibilityTime: 2000, // Thời gian hiển thị thông báo (ms)
+          autoHide: true,
+        });
+    }
+  };
   useEffect(() => {
     fetchDataList();
   }, []);
@@ -89,90 +104,99 @@ const InformationLine = ({ route, navigation }) => {
     }
   };
   return (
+    <View style={styles.container}>
       <View style={styles.container}>
-        <View style={styles.container}>
-          {datalist.map((item) => (
-              <View key={item.id}>
-                <View style={styles.addressContainer}>
-                  <View>
-                    <Text style={styles.addressLabel}>Địa chỉ nhận hàng:</Text>
-                    <Text style={styles.addressText}>{`Họ tên: ${item.userName}`}</Text>
-                    <Text style={styles.addressText}>{`Số điện thoại: ${item.phone}`}</Text>
-                    <Text style={styles.addressText}>{`Địa chỉ: ${item.address}`}</Text>
-                  </View>
-                  <Icon name="globe" size={100} color="#1abc9c" />
-                </View>
-                <TouchableOpacity
-                    style={styles.paymentMethodContainer_chat1}
-                    onPress={() => {
-                      navigation.navigate("TrackOrder", { orderData: item ,orderProductsList: datalist});
-                    }}
-                >
-                  <Text>Lịch Sử Giao Hàng</Text>
-                </TouchableOpacity>
-                <ScrollView style={styles.productScrollView}>
-                  {item.products.map((product) => (
-                      <View key={product.id} style={styles.productBox}>
-                        <View style={styles.productItemContainer}>
-                          <Image source={{ uri: product.img_product }} style={styles.productImage} />
-                          <View style={styles.productInfo}>
-                            <Text style={styles.productName}>{`${product.name_Product}`}</Text>
-                            <Text>{`Màu: ${product.name_Color}`}</Text>
-                            <Text>{`Size: ${product.name_Size}`}</Text>
-                            <View style={styles.quantityAndPriceContainer}>
-                              <Text>{`SL: ${product.quantityProduct}`}</Text>
-                              <Text style={{ color: '#FF0000', fontWeight: 'bold' }}>{`Giá: ${getMonney(product.name_Price)}`}</Text>
-                            </View>
-                          </View>
-                        </View>
-                      </View>
-                  ))}
-                </ScrollView>
-
-                <View style={styles.paymentDetailsContainer}>
-                  <View style={styles.paymentDetailHeader}>
-                    <Icon name="dollar" size={20} color="red" style={styles.invoiceIcon} />
-                    <Text style={styles.paymentDetailHeaderText}>Chi Tiết Thanh Toán</Text>
-                  </View>
-                  <View style={styles.paymentDetailItem}>
-                    <Text style={styles.detailLabel}>Tổng tiền hàng:</Text>
-                    <Text style={styles.detailValue}>{`${getMonney(item.products[0].name_Price)}`}</Text>
-                  </View>
-                  <View style={styles.paymentDetailItem}>
-                    <Text style={styles.detailLabel}>Phí bảo hiểm:</Text>
-                    <Text style={styles.detailValue}>{`${getMonney(item.total_insurance_amount)}`}</Text>
-                  </View>
-                  <View style={styles.paymentDetailItem}>
-                    <Text style={styles.detailLabel}>Phí vận chuyển:</Text>
-                    <Text style={styles.detailValue}>{`${getMonney(item.total_shipping_fee)}`}</Text>
-                  </View>
-                  <View style={styles.paymentDetailItem}>
-                    <Text style={styles.detailLabel1}>Tổng thanh toán:</Text>
-                    <Text style={styles.detailValue1}>{`${getMonney(item.total_amount)}`}</Text>
-                  </View>
-                </View>
-
-                <View style={styles.paymentMethodContainer}>
-                  <Icon name="credit-card" size={30} color="#3498db" />
-                  <View>
-                    <Text style={styles.inputLabel}>Phương Thức Thanh Toán:</Text>
-                    <Text style={{ alignSelf: 'center' }}>Thanh toán khi nhận hàng</Text>
-                  </View>
-                </View>
-
-                <TouchableOpacity
-                    style={styles.paymentMethodContainer_chat}
-                    onPress={() => {
-                      navigation.navigate("ChatScreen");
-                    }}
-                >
-                  <Icon name="comment" size={20} color="green" />
-                  <Text style={styles.textChat}>Liên hệ shop</Text>
-                </TouchableOpacity>
+        {datalist.map((item) => (
+          <View key={item.id}>
+            <View style={styles.addressContainer}>
+              <View>
+                <Text style={styles.addressLabel}>Địa chỉ nhận hàng:</Text>
+                <Text style={styles.addressText}>{`Họ tên: ${item.userName}`}</Text>
+                <Text style={styles.addressText}>{`Số điện thoại: ${item.phone}`}</Text>
+                <Text style={styles.addressText}>{`Địa chỉ: ${item.address}`}</Text>
               </View>
-          ))}
-        </View>
+              <Icon name="globe" size={100} color="#1abc9c" />
+            </View>
+            <TouchableOpacity
+              style={styles.paymentMethodContainer_chat1}
+              onPress={() => {
+                navigation.navigate("TrackOrder", { orderData: item, orderProductsList: datalist });
+              }}
+            >
+              <Text>Lịch Sử Giao Hàng</Text>
+            </TouchableOpacity>
+            <ScrollView style={styles.productScrollView}>
+              {item.products.map((product) => (
+                <View key={product.id} style={styles.productBox}>
+                  <View style={styles.productItemContainer}>
+                    <Image source={{ uri: product.img_product }} style={styles.productImage} />
+                    <View style={styles.productInfo}>
+                      <Text style={styles.productName}>{`${product.name_Product}`}</Text>
+                      <Text>{`Màu: ${product.name_Color}`}</Text>
+                      <Text>{`Size: ${product.name_Size}`}</Text>
+                      <View style={styles.quantityAndPriceContainer}>
+                        <Text>{`SL: ${product.quantityProduct}`}</Text>
+                        <Text style={{ color: '#FF0000', fontWeight: 'bold' }}>{`Giá: ${getMonney(product.name_Price)}`}</Text>
+                      </View>
+                    </View>
+                  </View>
+                </View>
+              ))}
+            </ScrollView>
+
+            <View style={styles.paymentDetailsContainer}>
+              <View style={styles.paymentDetailHeader}>
+                <Icon name="dollar" size={20} color="red" style={styles.invoiceIcon} />
+                <Text style={styles.paymentDetailHeaderText}>Chi Tiết Thanh Toán</Text>
+              </View>
+              <View style={styles.paymentDetailItem}>
+                <Text style={styles.detailLabel}>Tổng tiền hàng:</Text>
+                <Text style={styles.detailValue}>{`${getMonney(item.products[0].name_Price)}`}</Text>
+              </View>
+              <View style={styles.paymentDetailItem}>
+                <Text style={styles.detailLabel}>Phí bảo hiểm:</Text>
+                <Text style={styles.detailValue}>{`${getMonney(item.total_insurance_amount)}`}</Text>
+              </View>
+              <View style={styles.paymentDetailItem}>
+                <Text style={styles.detailLabel}>Phí vận chuyển:</Text>
+                <Text style={styles.detailValue}>{`${getMonney(item.total_shipping_fee)}`}</Text>
+              </View>
+              <View style={styles.paymentDetailItem}>
+                <Text style={styles.detailLabel1}>Tổng thanh toán:</Text>
+                <Text style={styles.detailValue1}>{`${getMonney(item.total_amount)}`}</Text>
+              </View>
+            </View>
+
+            <View style={styles.paymentDetailItem1}>
+              <Text style={styles.detailLabel2}>Mã đơn hàng</Text>
+              <Text style={styles.detailValue2}>{`${(item.id)}`}</Text>
+
+              <TouchableOpacity style = {styles.copy} onPress={() => handleCopyToClipboard(item)}>
+                <Text>📋</Text>
+              </TouchableOpacity>
+            </View>
+
+            <View style={styles.paymentMethodContainer}>
+              <Icon name="credit-card" size={30} color="#3498db" />
+              <View>
+                <Text style={styles.inputLabel}>Phương Thức Thanh Toán:</Text>
+                <Text style={{ alignSelf: 'center' }}>Thanh toán khi nhận hàng</Text>
+              </View>
+            </View>
+
+            <TouchableOpacity
+              style={styles.paymentMethodContainer_chat}
+              onPress={() => {
+                navigation.navigate("ChatScreen");
+              }}
+            >
+              <Icon name="comment" size={20} color="green" />
+              <Text style={styles.textChat}>Liên hệ shop</Text>
+            </TouchableOpacity>
+          </View>
+        ))}
       </View>
+    </View>
   );
 
 };
@@ -418,8 +442,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginTop:10,
-    marginBottom: 5,
+    // marginTop: 5,
+    // marginBottom: 5,
     paddingHorizontal: 16,
     paddingVertical: 12,
     borderBottomWidth: 1,
@@ -442,7 +466,7 @@ const styles = StyleSheet.create({
     borderTopWidth: 2,
     borderTopColor: '#d71a1a',
     borderWidth: 2,
-    backgroundColor:'violet',
+    backgroundColor: 'violet',
     borderColor: '#da0c0c',
     flexDirection: "row",
     alignSelf: "center",
@@ -544,16 +568,26 @@ const styles = StyleSheet.create({
   paymentDetailsContainer: {
     padding: 16,
     borderTopWidth: 2,
-    borderTopColor: '#d71a1a',
+    borderTopColor: '#ddd',
     marginTop: 25,
     borderWidth: 2,
-    borderColor: '#da0c0c',
+    borderColor: '#ddd',
   },
 
   paymentDetailItem: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     marginBottom: 8,
+  },
+  paymentDetailItem1: {
+    marginTop: 10,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    // marginBottom: 8,
+  },
+
+  copy: {
+    marginRight:15,
   },
   detailLabel: {
     fontSize: 13,
@@ -563,6 +597,11 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
   },
+  detailLabel2: {
+    fontSize: 16,
+    marginLeft: 20,
+    fontWeight: 'bold',
+  },
   detailValue: {
     fontSize: 13,
   },
@@ -570,6 +609,10 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: 'red',
     fontWeight: 'bold'
+  },
+  detailValue2: {
+    fontSize: 14,
+    marginLeft: 60,
   },
   invoiceIcon: {
     marginRight: 10,

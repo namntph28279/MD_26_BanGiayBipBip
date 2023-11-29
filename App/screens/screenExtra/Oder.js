@@ -27,11 +27,11 @@ const Order = ({ route }) => {
     useEffect(() => {
         fetchDataList();
     }, []);
-    
+
     useEffect(() => {
         setStatusFilter('Chờ xác nhận');
     }, [orderProductsList]);
-    
+
     const fetchDataList = async () => {
         const email = await AsyncStorage.getItem('Email');
         try {
@@ -172,18 +172,32 @@ const Order = ({ route }) => {
                                 <Text>{`SL: ${product.quantityProduct}`}</Text>
                                 <Text style={{ color: '#FF0000', fontWeight: 'bold' }}>{`Giá: ${getMonney(product.name_Price)}`}</Text>
                             </View>
+                            <View><Text style={styles.productItemContainer1}></Text></View>
                         </View>
-                    </View>
+                        </View>
                 ))}
                 <View style={styles.orderStatusContainer}>
 
-                    <Text style={styles.orderStatus}>{`Trạng thái: ${item.status}`}</Text>
+                    {/* <Text style={styles.orderStatus}>{`Trạng thái: ${item.status}`}</Text> */}
                 </View>
                 <View style={styles.buttonContainer}>
                     {status === 'Chờ xác nhận' || status === 'Chờ lấy hàng' ? (
                         <TouchableOpacity style={styles.cancelOrderButton} onPress={() => handleCancelOrder(item)}>
                             <Ionicons name="close-outline" size={20} color="white" />
                             <Text style={styles.cancelOrderButtonText}>Hủy mua</Text>
+                        </TouchableOpacity>
+                    ) : null}
+                </View>
+
+                <View style={styles.buttonContainer}>
+                    {status === 'Đã giao' ? (
+                        <TouchableOpacity style={styles.cancelOrderButton}
+                            onPress={() => {
+                                navigation.navigate("ChatScreen");
+                            }}
+                        >
+                            <Ionicons name="close-outline" size={20} color="white" />
+                            <Text style={styles.cancelOrderButtonText}>Trả hàng</Text>
                         </TouchableOpacity>
                     ) : null}
                 </View>
@@ -206,7 +220,7 @@ const Order = ({ route }) => {
                 (e) => e.status === listTab.findIndex((tab) => tab.status === setStatusFilter)
             );
         }
-        console.log('Filtered Data:', filteredData); // Log filtered data
+        // console.log('Filtered Data:', filteredData); // Log filtered data
         setDatalist(filteredData);
         setStatus(setStatusFilter);
 
@@ -412,7 +426,19 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         marginBottom: 10,
+        borderBottomColor: '#ddd',
+            borderBottomWidth: 1,
+        marginVertical: 5, // Adjust the margin as needed
     },
+    // productItemContainer1: {
+    //     flexDirection: 'row',
+    //     alignItems: 'center',
+    //     marginBottom: 10,
+    //     // marginTop: 10,
+    //     borderBottomColor: 'red',
+    //     borderBottomWidth: 1,
+    //     marginVertical: 5, // Adjust the margin as needed
+    // },
     productInfo: {
         marginLeft: 14,
         flex: 1,
@@ -431,7 +457,7 @@ const styles = StyleSheet.create({
     buttonContainer: {
         flexDirection: 'row',
         justifyContent: 'flex-end',
-        marginTop: 8,
+        // marginTop: 8,
     },
     buyAgainButton: {
         backgroundColor: '#e81d1d',
