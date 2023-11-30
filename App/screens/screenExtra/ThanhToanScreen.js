@@ -189,6 +189,7 @@ const ThanhToanScreen = ({ route, navigation }) => {
             setTimeout(() => {
                 setIsCheckmarkVisible(false);
                 setPaymentSuccessModalVisible(false);
+                deleteCart();
                 navigation.replace('Oder');
             }, 2000);
         }, 2000);
@@ -218,6 +219,22 @@ const ThanhToanScreen = ({ route, navigation }) => {
         setIsCODSelected(true);
         setIsMomoSelected(false);
     };
+
+    const deleteCart=async () =>{
+        const productIds=[];
+        selectedProducts.map(product => {
+            if(product._id !== undefined){
+                productIds.push(product._id);
+            }
+        });
+        if(productIds.length>0){
+            console.log(productIds);
+            for (product of productIds){
+                const response = await url.delete(`/cart/delete/${product}`);
+            }
+        }
+    }
+
     const handleOrder = async () => {
         if (!shippingAddress) {
             Alert.alert('Hãy Thao Tác Lại', 'Vui lòng chọn địa chỉ nhận hàng trước khi thanh toán.');
