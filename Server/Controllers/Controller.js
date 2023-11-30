@@ -233,6 +233,19 @@ app.delete('/cart/delete/:id', async(req, res) => {
     }
 });
 
+// Xoá nhiều sản phẩm khỏi giỏ hàng
+app.delete('/cart/delete-multiple', async (req, res) => {
+    const productIdsToDelete = req.body.productIds;
+
+    try {
+        await CartItem.deleteMany({ _id: { $in: productIdsToDelete } });
+
+        res.sendStatus(200);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
 // Lấy về toàn bộ cartItem dựa trên userId
 app.get('/cart/:userId', async(req, res) => {
     const userId = req.params.userId;
