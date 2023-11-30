@@ -197,6 +197,58 @@ app.post('/order/status/Comfig/:id', async (req, res) => {
     }
 });
 
+app.post('/order/return/:orderId', async (req, res) => {
+    const orderId = req.params.orderId;
+    const data = req.body;
+    console.log(orderId);
+
+    try {
+        const order = await Order.findById(orderId);
+        if (!order) {
+            return res.status(404).json({ message: 'Đơn hàng không tồn tại' });
+        }
+
+        // Check if the order status is eligible for return (assuming status 5 means eligible)
+        if (order.status !== 5) {
+            return res.status(400).json({ message: 'Không thể trả đơn hàng với trạng thái hiện tại' });
+        }
+
+        // Proceed with the return process
+        const idUserOrder = order.user;
+        const IDClient = await checkClient.findOne({ user: idUserOrder });
+        const idClientArray = IDClient.client.map(item => item.IdClient);
+
+        function NotificationClient(id, mess) {
+            fetch('https://exp.host/--/api/v2/push/send', {
+                mode: 'no-cors',
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    to: id,
+                    title: 'ShopBipBip',
+                    body: mess,
+                    data: {
+                        message: mess,
+                    },
+                })
+            });
+        }
+
+        // Send notification to clients
+        NotificationClient(idClientArray, "Yêu cầu trả đơn hàng đã được gửi");
+
+        // Update order status to indicate return
+        order.status = 6; // Assuming status 6 represents a return in progress
+        order.lyDoTraDon = data.noiDung;
+        await order.save();
+
+        res.json({ message: 'Yêu cầu trả đơn hàng thành công' });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
 
 app.post('/home/add', async (req, res) => {
     const {product_title, product_price, product_image, product_quantity, product_category} = req.body;

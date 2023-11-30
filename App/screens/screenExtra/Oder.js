@@ -149,6 +149,48 @@ const Order = ({ route }) => {
             </TouchableOpacity>
         </Modal>
     );
+    const handleReturnOrder = async (item) => {
+        try {
+            // Show confirmation dialog
+            Alert.alert(
+                'Xác nhận trả hàng',
+                'Bạn có chắc muốn trả hàng?',
+                [
+                    { text: 'Hủy', style: 'cancel' },
+                    { text: 'Đồng ý', onPress: () => confirmReturnOrder(item) },
+                ],
+                { cancelable: false }
+            );
+        } catch (error) {
+            console.error('Lỗi', error);
+        }
+    };
+
+    const confirmReturnOrder = async (item) => {
+        try {
+            const orderId = item.id;
+            const response = await url.post(`/order/return/${orderId}`, {
+                noiDung: 'Trả hàng',
+            }, {
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
+            console.log('Server Response:', response); // Log the response
+    
+            if (response.status === 200) {
+                setCancelModalVisible(false);
+                setSuccessModalVisible(true);
+                showSuccessModal();
+                fetchDataList(); // Assuming this function fetches the updated order list
+            } else {
+                console.error('Lỗi', response.statusText);
+            }
+        } catch (error) {
+            console.error('Lỗi', error);
+        }
+    };
+    
 
 
     const renderItem = ({ item }) => (
@@ -192,12 +234,7 @@ const Order = ({ route }) => {
                 <View style={styles.buttonContainer}>
                     {status === 'Đã giao' ? (
                         <TouchableOpacity style={styles.cancelOrderButton}
-                            onPress={() => {
-                                // const orderId = ;
-                                // const cancelMessage = `Tôi muốn hủy đơn hàng ${item.id}`;
-                                navigation.navigate("ChatScreen", { oderId: item.id });
-                                // console.log('fsdfdsfds222222222', oderId)
-                            }}
+                            onPress={() => handleReturnOrder(item)}
                         >
                             <Ionicons name="close-outline" size={20} color="white" />
                             <Text style={styles.cancelOrderButtonText}>Trả hàng</Text>

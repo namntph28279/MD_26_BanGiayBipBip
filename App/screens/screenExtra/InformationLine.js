@@ -621,7 +621,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   detailLabel2: {
-    fontSize: '12%',
+    fontSize: 16,
     marginLeft: 20,
     fontWeight: 'bold',
   },
@@ -634,7 +634,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold'
   },
   detailValue2: {
-    fontSize: '12%',
+    fontSize: 14,
     marginLeft: '10%',
   },
   invoiceIcon: {
