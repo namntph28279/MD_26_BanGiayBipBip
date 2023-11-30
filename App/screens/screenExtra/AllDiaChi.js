@@ -3,6 +3,7 @@
     import AsyncStorage from "@react-native-async-storage/async-storage";
     import { useFocusEffect } from '@react-navigation/native';
     import url from "../../api/url";
+    import Icon from 'react-native-vector-icons/FontAwesome';
     const AllDiaChi = ({ route, navigation }) => {
         const userID = route.params?.userID || '';
         const selectedProducts = route.params?.selectedProducts || [];
@@ -22,6 +23,7 @@
                 fetchAddresses();
             }, [userID])
         );
+        
         // const fetchAddresses = async () => {
         //     try {
         //         const response = await fetch(`https://md26bipbip-496b6598561d.herokuapp.com/address/${userID}`);
@@ -48,7 +50,16 @@
                 console.error('Lỗi', error);
             }
         };
-
+        const fetchAddressesLater = async () => {
+            try {
+                const response = await url.get(`/address/${userID}`);
+                const data = response.data;
+                return data;
+                
+            } catch (error) {
+                console.error('Lỗi', error);
+            }
+        };
         const renderAddressItem = ({ item }) => (
             <TouchableOpacity style={[styles.addressItem, item === selectedAddress && styles.selectedAddress]}
             onPress={() => {
@@ -58,7 +69,7 @@
                 } else if (isFromCart) {
                     navigation.navigate('Cart', { selectedAddress: item, userID ,selectedProducts});
                 } else {
-                    navigation.navigate('ScreenAddresst', { userID });
+                    navigation.navigate('ScreenAddresst', { item });
                 }
             }}
             
@@ -68,7 +79,7 @@
             <Text>Số điện thoại: {item.phone}</Text>
             <View style={{ position: 'absolute', right: 0 }}>
                 <TouchableOpacity onPress={() => {Delete(item)}}>
-                    <Text style={{ color: 'red',marginTop: 30,marginRight: 20  }}>Xóa</Text>
+                <Icon name="trash-o" size={20} color="red" style={{ color: 'red',marginTop: 30,marginRight: 20  }}/>
                 </TouchableOpacity>
             </View>
         </TouchableOpacity>
@@ -76,12 +87,19 @@
 
 
         const removeAddress = (addressToRemove) => {
-            setAddresses([]);
+
+            fetchAddressesLater().then(data => {
+                setAddresses(data);
+             //   console.log(data);
+            }); 
+
+           // setAddresses([]);
         };
 
-        const navigateToScreenAddresst = () => {
-            navigation.navigate('ScreenAddresst', { userID });
-        };
+        const navigateToScreenAddresst = (item) => {
+            item.userID = userID;
+            navigation.navigate('ScreenAddresst', {item: item || {} });
+        };  
         const Delete = (item) => {
             url.delete(
                 `/address/delete/${item._id}`
@@ -112,7 +130,7 @@
                 )}
                 <TouchableOpacity
                     style={styles.addButton}
-                    onPress={navigateToScreenAddresst}
+                    onPress={()=>navigation.navigate('ScreenAddresst', { userID })}
                 >
                     <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "center" }}>
                         <Text style={{ color: "white", fontSize: 20, fontWeight: "bold", textAlign: "center" }}>

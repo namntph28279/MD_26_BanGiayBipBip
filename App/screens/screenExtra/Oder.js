@@ -18,7 +18,7 @@ import { getMonney } from '../../util/money';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 const Order = ({ route }) => {
     const [orderProductsList, setOrderProductsList] = useState([]);
-    const [status, setStatus] = useState('Tất cả sản phẩm đã đặt');
+    const [status, setStatus] = useState('Chờ xác nhận');
     const [loading, setLoading] = useState(true);
     const [tab1DataLoaded, setTab1DataLoaded] = useState(false);
     const [isCancelModalVisible, setCancelModalVisible] = useState(false);
@@ -27,6 +27,11 @@ const Order = ({ route }) => {
     useEffect(() => {
         fetchDataList();
     }, []);
+
+    useEffect(() => {
+        setStatusFilter('Chờ xác nhận');
+    }, [orderProductsList]);
+
     const fetchDataList = async () => {
         const email = await AsyncStorage.getItem('Email');
         try {
@@ -56,20 +61,15 @@ const Order = ({ route }) => {
                     orderDate: order.order_date,
                 }));
 
-                setOrderProductsList(formattedData);
-                setDatalist(formattedData);
-                setLoading(false);
-                setTab1DataLoaded(true);
+            setOrderProductsList(formattedData);
+            // setDatalist(formattedData);
+            setLoading(false);
+            setTab1DataLoaded(true);
         } catch (error) {
             console.error('Error fetching data:', error);
             setLoading(false);
         }
     };
-
-    useEffect(() => {
-        fetchDataList();
-        setStatusFilter('Tất cả sản phẩm đã đặt');
-    }, []);
 
     const navigation = useNavigation();
 
@@ -156,9 +156,7 @@ const Order = ({ route }) => {
             style={styles.frame}
             onPress={() => {
                 // console.log('Item:', item);
-                navigation.navigate('InformationLine', { productId: item.products[0].productId , orderId: item.id }); // Truyền product ID vào params
-                // console.log('Product ID:', item.products[0].productId);
-                // console.log('oder ID:', item.id);
+                navigation.navigate('InformationLine', { productId: item.products[0].productId, orderId: item.id }); // Truyền product ID vào params
             }}
         >
             <View style={styles.productBox}>
@@ -166,26 +164,43 @@ const Order = ({ route }) => {
                     <View key={product.id} style={styles.productItemContainer}>
                         <Image source={{ uri: product.img_product }} style={styles.productImage} />
                         <View style={styles.productInfo}>
-                            <Text style={styles.productName}>{`Tên sản phẩm: ${product.productId}`}</Text>
-                            <Text style={styles.productName}>{`Tên sản phẩm: ${product.name_Product}`}</Text>
+                            {/* <Text style={styles.productName}>{`Tên sản phẩm: ${product.productId}`}</Text> */}
+                            <Text style={styles.productName}>{`${product.name_Product}`}</Text>
                             <Text>{`Màu: ${product.name_Color}`}</Text>
                             <Text>{`Size: ${product.name_Size}`}</Text>
                             <View style={styles.quantityAndPriceContainer}>
                                 <Text>{`SL: ${product.quantityProduct}`}</Text>
                                 <Text style={{ color: '#FF0000', fontWeight: 'bold' }}>{`Giá: ${getMonney(product.name_Price)}`}</Text>
                             </View>
+                            {/* <View><Text style={styles.productItemContainer1}></Text></View> */}
                         </View>
                     </View>
                 ))}
                 <View style={styles.orderStatusContainer}>
-                
-                    <Text style={styles.orderStatus}>{`Trạng thái: ${item.status}`}</Text>
+
+                    <Text style={styles.orderStatus}>{`Tổng sản phẩm thành tiền: ${getMonney(item.total_amount)}`}</Text>
                 </View>
                 <View style={styles.buttonContainer}>
                     {status === 'Chờ xác nhận' || status === 'Chờ lấy hàng' ? (
                         <TouchableOpacity style={styles.cancelOrderButton} onPress={() => handleCancelOrder(item)}>
                             <Ionicons name="close-outline" size={20} color="white" />
                             <Text style={styles.cancelOrderButtonText}>Hủy mua</Text>
+                        </TouchableOpacity>
+                    ) : null}
+                </View>
+
+                <View style={styles.buttonContainer}>
+                    {status === 'Đã giao' ? (
+                        <TouchableOpacity style={styles.cancelOrderButton}
+                            onPress={() => {
+                                // const orderId = ;
+                                // const cancelMessage = `Tôi muốn hủy đơn hàng ${item.id}`;
+                                navigation.navigate("ChatScreen", { oderId: item.id });
+                                // console.log('fsdfdsfds222222222', oderId)
+                            }}
+                        >
+                            <Ionicons name="close-outline" size={20} color="white" />
+                            <Text style={styles.cancelOrderButtonText}>Trả hàng</Text>
                         </TouchableOpacity>
                     ) : null}
                 </View>
@@ -201,14 +216,14 @@ const Order = ({ route }) => {
 
         if (setStatusFilter === 'Chờ xác nhận') {
             filteredData = orderProductsList.filter((e) => e.status === 0);
-        }else if (setStatusFilter === 'Tất cả sản phẩm đã đặt') {
+        } else if (setStatusFilter === 'Tất cả sản phẩm đã đặt') {
             filteredData = orderProductsList;
         } else {
             filteredData = orderProductsList.filter(
                 (e) => e.status === listTab.findIndex((tab) => tab.status === setStatusFilter)
             );
         }
-
+        // console.log('Filtered Data:', filteredData); // Log filtered data
         setDatalist(filteredData);
         setStatus(setStatusFilter);
 
@@ -275,7 +290,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
     },
     btnTabActive: {
-        backgroundColor: '#E6838D',
+        backgroundColor: '#F33B3B',
     },
     textTabActive: {
         color: '#fff',
@@ -348,7 +363,7 @@ const styles = StyleSheet.create({
         marginBottom: 16,
     },
     productBox: {
-        backgroundColor: '#CCC',
+        backgroundColor: '#E1E1E1',
         borderRadius: 20,
         flexDirection: 'column',
         alignItems: 'center',
@@ -368,16 +383,17 @@ const styles = StyleSheet.create({
     },
     productImage: {
         width: 80,
-        height: 80,
+        height: 70,
         marginRight: 16,
-        marginTop: 10,
+        // marginTop: 5,
+        alignItems: 'center',
         marginLeft: 10,
         borderRadius: 8,
     },
     productName: {
         fontWeight: 'bold',
         fontSize: 16,
-        marginBottom: 8,
+        // marginBottom: 5,
     },
     productquantity: {
         fontSize: 15,
@@ -414,7 +430,22 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         marginBottom: 10,
+        // borderWidthColor: '#ddd',
+        borderColor: '#CECDCD',
+        borderRadius: 10,
+        borderWidth: 1,
+        // borderBottomWidth: 1,
+        marginVertical: 5, // Adjust the margin as needed
     },
+    // productItemContainer1: {
+    //     flexDirection: 'row',
+    //     alignItems: 'center',
+    //     marginBottom: 10,
+    //     // marginTop: 10,
+    //     borderBottomColor: 'red',
+    //     borderBottomWidth: 1,
+    //     marginVertical: 5, // Adjust the margin as needed
+    // },
     productInfo: {
         marginLeft: 14,
         flex: 1,
@@ -424,16 +455,17 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
     },
     orderStatusContainer: {
-        marginTop: 10,
+        // marginTop: 5,
     },
     orderStatus: {
-        fontWeight: 'bold',
-        color: 'green',
+        marginLeft: 110,
+        marginBottom: 10,
+
     },
     buttonContainer: {
         flexDirection: 'row',
         justifyContent: 'flex-end',
-        marginTop: 8,
+        // marginTop: 8,
     },
     buyAgainButton: {
         backgroundColor: '#e81d1d',

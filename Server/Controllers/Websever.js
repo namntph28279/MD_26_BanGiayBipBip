@@ -42,35 +42,16 @@ app.get('/loadData', async (req, res) => {
     const choLayHang = await Order.find({status: 1}).sort({order_date: -1});
     const choGiaoHang = await Order.find({status: 2}).sort({order_date: -1});
     const daGiao = await Order.find({status: 3}).sort({order_date: -1});
-    const daHuy = await Order.find({status: 4}).sort({order_date: -1});
+    const donHuy = await Order.find({status: 4}).sort({order_date: -1});
     const traHang = await Order.find({status: 5}).sort({order_date: -1});
-    const arr = [choXacNhan, choLayHang, choGiaoHang, daGiao, daHuy, traHang]
+    const donHoan = await Order.find({status: 6}).sort({order_date: -1});
+
+    const arr = [choXacNhan, choLayHang, choGiaoHang, daGiao, donHuy, traHang,donHoan]
 
     res.json(arr)
 })
 app.get('/home', async (req, res) => {
-
-    try {
-        const choXacNhan = await Order.find({status: 0}).sort({order_date: -1});
-        const choLayHang = await Order.find({status: 1}).sort({order_date: -1});
-        const choGiaoHang = await Order.find({status: 2}).sort({order_date: -1});
-        const daGiao = await Order.find({status: 3}).sort({order_date: -1});
-        const donHuy = await Order.find({status: 4}).sort({order_date: -1});
-        const traHang = await Order.find({status: 5}).sort({order_date: -1});
-        const donHoan = await Order.find({status: 6}).sort({order_date: -1});
-
-        res.render('../Views/screenHome.hbs', {
-            choXacNhan: choXacNhan,
-            choLayHang: choLayHang,
-            choGiaoHang: choGiaoHang,
-            daGiao: daGiao,
-            daHuy: donHuy,
-            traHang: traHang,
-            donHoan: donHoan
-        });
-    } catch (error) {
-        res.json({message: error.message});
-    }
+        res.render('../Views/screenHome.hbs');
 
 });
 
@@ -114,6 +95,7 @@ app.post('/screenWarehouse/search', async (req, res) => {
 });
 app.post('/order/status/:orderId', async (req, res) => {
     const orderId = req.params.orderId;
+    console.log(orderId)
     const data = req.body
     const mess = "Đơn hàng của bạn đã bị hủy vì: " + data.noiDung
     console.log(mess)
@@ -144,7 +126,6 @@ app.post('/order/status/:orderId', async (req, res) => {
                 })
             });
         }
-
         NotificaionClient(idClientArray, mess)
         order.status = 4;
         order.lyDoHuyDon = data.noiDung
@@ -155,9 +136,11 @@ app.post('/order/status/:orderId', async (req, res) => {
     }
 });
 
-
 app.post('/order/status/Comfig/:id', async (req, res) => {
+
     const orderId = req.params.id;
+    console.log(orderId)
+
     try {
         const order = await Order.findById(orderId);
         if (!order) {
@@ -454,9 +437,9 @@ app.post('/home/chatShop', async (req, res) => {
             check.status = data.status;
             check.content.push(newChat)
             await check.save()
-            return res.json({message: "Thêm chat thành công"});
+            return res.json(true);
         } catch (error) {
-            console.log(error)
+            return res.json(false);
         }
     } else {
         try {

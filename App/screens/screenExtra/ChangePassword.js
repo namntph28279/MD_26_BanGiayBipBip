@@ -56,7 +56,7 @@ const ChangePassword = ({ route, navigation }) => {
       alert("Đổi mật khẩu thành công");
       navigation.navigate("TabNavi");
     } catch (error) {
-      if (error.message == "Request failed with status code 401" || error.status == 401) {
+      if (error.message == "Request failed with status code 401" || error.status == "Request failed with status code 404") {
         setErrorOldPassword(true);
         return;
       } else {

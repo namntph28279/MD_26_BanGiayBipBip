@@ -612,7 +612,6 @@ app.get('/statistics/sold-products', async (req, res) => {
             totalDetail: ((product.totalQuantitySold/total)*100).toFixed(2),
         }))
 
-        console.log(totalInsight)
 
          res.json(totalInsight);
     } catch (error) {
@@ -673,8 +672,8 @@ app.get('/statistics/sold-products', async (req, res) => {
 app.get('/statistics/revenue/:year', async (req, res) => {
     try {
         const year = parseInt(req.params.year);
-        const successfulOrders = await Order.find({
-            status: 4,
+        const successfulOrders = await orderDetail.find({
+            status: 3,
             $expr: { $eq: [{ $year: '$order_date' }, year] }
         });
 
@@ -700,8 +699,8 @@ app.get('/statistics/revenue/:year/:month', async (req, res) => {
     try {
         const year = parseInt(req.params.year);
         const month = parseInt(req.params.month);
-        const successfulOrders = await Order.find({
-            status: 4,
+        const successfulOrders = await orderDetail.find({
+            status: 3,
             $expr: {
                 $and: [
                     { $eq: [{ $year: '$order_date' }, year] },
@@ -726,7 +725,7 @@ app.get('/statistics/revenue/:year/:month', async (req, res) => {
 app.get('/order/getOne/:orderId', async (req, res) => {
     const orderId = req.params.orderId;
     try {
-        const orderDetails = await Order.aggregate([{
+        const orderDetails = await orderDetail.aggregate([{
             $match: { _id: new ObjectId(orderId) }
             },
             {

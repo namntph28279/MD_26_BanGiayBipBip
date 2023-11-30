@@ -19,10 +19,10 @@ import url from "../../api/url";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import NoProduct from "../../components/NoProduct";
 
-function Cart({ route, navigation }) {
+function Cart({navigation }) {
   const [cartProducts, setCartProducts] = useState([]);
   const [selectedProducts, setSelectedProducts] = useState([]);
-//   const [shippingAddress, setShippingAddress] = useState("");
+  const [color, setColor] = useState("");
 
   const dispatch = useDispatch(); //trả về một đối tượng điều phối
   const dataProduct = useSelector((state) => state.dataAll.dataSP);
@@ -36,8 +36,8 @@ function Cart({ route, navigation }) {
   }, [navigation]);
 
   useEffect(() => {
-    // fetchShippingAddress();
     fetchData();
+    fetchColor();
     setDataSP(dataProduct);
   }, [dataProduct]);
 
@@ -58,22 +58,19 @@ function Cart({ route, navigation }) {
     }
   };
 
-//   const fetchShippingAddress = async () => {
-//     try {
-//       const email = await AsyncStorage.getItem("Email");
-//       const response = await url.get(`/address/${email}`);
-//       const data = response.data;
+  const fetchColor = async () => {
+    try {
+      const response = await url.get('/colors/getAll');
+      const data = response.data;
 
-//       if (data.length > 0) {
-//         setShippingAddress(data[0].address);
-//       } else {
-//         // console.warn('Không tìm thấy địa chỉ giao hàng.');
-//         setShippingAddress("");
-//       }
-//     } catch (error) {
-//       // console.error('Lỗi khi lấy địa chỉ giao hàng', error);
-//     }
-//   };
+      if (data.length > 0) {
+        setColor(data);
+      } else {
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   const handleToggleSwitch = (productId) => {
     setCartProducts((prevCartProducts) => {
@@ -94,18 +91,6 @@ function Cart({ route, navigation }) {
             return
         }
         if (selectedProducts.length > 0){ 
-           
-                // const productInfo = {
-                //     productId: productId,
-                //     quantity: quantity,
-                //     productPrice: product.product_price,
-                //     selectedColor: selectedColor,
-                //     selectedSize: selectedSize,
-                //     selectedColorId :selectedColorData,
-                //     productImageURL: productImageURL,
-                //     productName: product.product_title,
-                // };
-
                 navigation.navigate('ThanhToanScreen', { userID: email, selectedProducts: selectedProducts });
             
         } else {
@@ -173,17 +158,17 @@ function Cart({ route, navigation }) {
 
   const showConfirmDialog = (productId) => {
     return Alert.alert(
-      "Are your sure?",
-      "Are you sure you want to remove this beautiful box?",
+      "Xóa sản phẩm khỏi giỏ hàng",
+      "Bạn muốn xóa sản phẩm khỏi giỏ hàng?",
       [
         {
-          text: "Yes",
+          text: "Xác nhận",
           onPress: () => {
             handleRemoveProduct(productId);
           },
         },
         {
-          text: "No",
+          text: "Hủy",
         },
       ]
     );
@@ -191,6 +176,7 @@ function Cart({ route, navigation }) {
 
   const renderItems = (product) => {
     const item = dataSP.find((item) => item._id === product.product);
+    const itemColor = color.find((item) => item._id === product.colorId);
     return (
       <View key={product._id} style={styles.productContainer}>
         <View style={styles.productBox}>
@@ -205,14 +191,17 @@ function Cart({ route, navigation }) {
 
           <Image
             //uri product image
-            source={{ uri: item.product_image }}
+            source={{ uri: itemColor.color_image }}
             style={styles.productImage}
           />
           <View style={styles.productInfo}>
             <Text style={styles.productName}>{item.product_title}</Text>
-            <Text style={styles.productType}>Phân loại : {product.color}/{product.size}</Text>
-            <Text style={styles.productPrice}>
+            <Text style={styles.productType}>Phân loại : {itemColor.color_name}/{product.size}</Text>
+            {/* <Text style={styles.productPrice}>
               Giá: {getMonney(sumProductsPrice(item, product.quantity))}
+            </Text> */}
+            <Text style={styles.productPrice}>
+              Giá: {getMonney(item.product_price)}
             </Text>
 
             <View style={styles.quantityContainer}>
