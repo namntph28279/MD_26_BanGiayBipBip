@@ -132,6 +132,15 @@
       border-radius: 10px;
       text-align: center
     }
+
+    .box-content {
+      background: #f3f4f6;
+      height: 444px;
+      margin: 7px;
+      border-radius: 8px;
+      padding: 8px;
+      overflow: auto;
+    }
   </style>
 </head>
 
@@ -150,24 +159,29 @@
         <div class="mx-3 text-sm text-gray-100 ">Thống kê</div>
       </div>
     </a>
-    <a href="/home" class=" cursor-pointer mess ml-3 mt-3 w-10/12" style="text-decoration: none ">
+    <a href="/home" class=" cursor-pointer mess ml-3 mt-3 w-10/12" style="text-decoration: none;display: flex;  ">
       <div class="flex" style=" padding: 12px;">
         <div>
           <img class="w-5 h-5" src="dashboard.png" alt="">
         </div>
         <div class="mx-3 text-sm text-gray-100 ">Đơn Hàng</div>
       </div>
+      <span class="badge" style="color: white;font-size: 14px;">\{{donHangMoi}}</span>
     </a>
 
 
     <a href="/mess" class="cursor-pointer mess ml-3 mt-3 w-10/12"
-       style="border-bottom-width: 1px; text-decoration: none">
+       style="border-bottom-width: 1px; text-decoration: none; display: flex; ">
       <div class="flex" style=" padding: 12px;">
         <div>
           <img class="w-5 h-5 " src="messages.png" alt="">
         </div>
-        <div class="mx-3 text-sm text-gray-100 ">Tin Nhắn</div>
+        <div class="mx-3 text-sm text-gray-100 ">Tin Nhắn
+
+        </div>
+
       </div>
+      <span class="badge" style="color: white;font-size: 14px;">\{{tinNhanMoi}}</span>
     </a>
 
     <a href="/warehouse" class="cursor-pointer mess ml-3 mt-3 w-10/12" style="text-decoration: none">
@@ -215,8 +229,7 @@
             <div class="name-user">
               \{{nameUser}}
             </div>
-            <div
-                style=" background: #f3f4f6; height: 444px; margin: 7px; border-radius: 8px; padding: 8px;  overflow: auto;">
+            <div class="box-content">
               <div id="listConten" class="contenChat" v-for="item in dataContentChat"
                    :class="{'admin': item.beLong === 'admin', 'user': item.beLong !== 'admin'}">
                 \{{item.conTenMain}}
@@ -255,7 +268,9 @@
         conTenMain: '',
         beLong: "admin",
         status: false
-      }
+      },
+      tinNhanMoi: 0,
+      donHangMoi:0
     },
     methods: {
       GetAllDataChat: function () {
@@ -275,6 +290,7 @@
                 return a.status ? -1 : 1;
               });
               self.dataTitleChat = sortedData;
+              self.tinNhanMoi = sortedData.filter(item => item.status === true).length
 
               var load = document.getElementById("load")
               var duLieu = document.getElementById("hienThidata")
@@ -309,7 +325,22 @@
               console.error(error);
             });
       },
-
+      GetDataCart: function () {
+        var self = this;
+        fetch('/loadData', {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+        })
+            .then(response => response.json())
+            .then(data => {
+              self.donHangMoi = data[0].length
+            })
+            .catch(error => {
+              console.error(error);
+            });
+      },
       submitContentChat() {
         var self = this;
         self.formData.user = self.idUser;
@@ -337,9 +368,10 @@
     }
   })
   vm.GetAllDataChat();
-
+  vm.GetDataCart();
   setInterval(() => {
     vm.GetAllDataChat();
+    vm.GetDataCart();
     if (vm.idUser !== '') {
       vm.OpenChatUser(vm.idUser)
     }
@@ -368,6 +400,7 @@
         });
 
   }
+
   function checkNottifiMess(idDataChat, value) {
     fetch('/sendNotificationMess', {
       method: 'POST',
@@ -392,6 +425,7 @@
         });
 
   }
+
   function NotificaionClient(id, mess) {
     fetch('https://exp.host/--/api/v2/push/send', {
       mode: 'no-cors',

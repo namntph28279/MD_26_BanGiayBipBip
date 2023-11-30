@@ -77,23 +77,25 @@
       </div>
     </a>
     <a href="/home" class=" cursor-pointer mess ml-3 mt-3 w-10/12"
-       style="border-bottom-width: 1px; text-decoration: none ">
+       style="display: flex;border-bottom-width: 1px; text-decoration: none ">
       <div class="flex" style=" padding: 12px;">
         <div>
           <img class="w-5 h-5" src="dashboard.png" alt="">
         </div>
         <div class="mx-3 text-sm text-gray-100 ">Đơn Hàng</div>
       </div>
+      <span class="badge" style="color: white;font-size: 14px;">\{{donHangMoi}}</span>
     </a>
 
 
-    <a href="/mess" class="cursor-pointer mess ml-3 mt-3 w-10/12" style="text-decoration: none">
-      <div class="flex" style=" padding: 12px;">
+    <a href="/mess" class="cursor-pointer mess ml-3 mt-3 w-10/12" style="display: flex; text-decoration: none">
+      <div class="flex" style="padding: 12px;">
         <div>
           <img class="w-5 h-5 " src="messages.png" alt="">
         </div>
         <div class="mx-3 text-sm text-gray-100 ">Tin Nhắn</div>
       </div>
+      <span class="badge" style="color: white;font-size: 14px;">\{{tinNhanMoi}}</span>
     </a>
 
     <a href="/warehouse" class="cursor-pointer mess ml-3 mt-3 w-10/12" style="text-decoration: none">
@@ -691,7 +693,8 @@
       dataXemChiTiet: {},
       dataXacNhanDon: {},
       dataHuyDon: {},
-
+      tinNhanMoi: 0,
+      donHangMoi:0
     },
     methods: {
       formatPrice(value) {
@@ -742,7 +745,7 @@
               self.donHuy = data[4]
               self.traHang = data[5]
               self.donHoan = data[6]
-
+              self.donHangMoi = data[0].length
               var load = document.getElementById("load")
               var duLieu = document.getElementById("hienThidata")
 
@@ -753,12 +756,32 @@
               console.error(error);
             });
       },
+      GetAllDataChat: function () {
+        var self = this;
+        fetch('/chatAllShop', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        })
+            .then(response => response.json())
+            .then(data => {
+              self.tinNhanMoi = data.filter(item => item.status === true).length
+            })
+            .catch(error => {
+              console.error(error);
+            });
+      },
 
     }
 
   });
+  vmCart.GetAllDataChat();
   vmCart.GetDataCart();
-  setInterval(vmCart.GetDataCart,3000)
+  setInterval(()=>{
+    vmCart.GetAllDataChat();
+    vmCart.GetDataCart();
+  },2345)
 
 </script>
 </html>

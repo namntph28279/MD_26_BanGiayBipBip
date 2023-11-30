@@ -57,7 +57,7 @@
 </head>
 
 <body class="bg-gray-200">
-<div class="flex ">
+<div class="flex " id="dataAll">
   <!--Side Navbar-->
   <div class="bg-indigo-900 w-1/6">
     <div class=" bg-indigo-800">
@@ -75,23 +75,25 @@
     </a>
 
     <a href="/home" class=" cursor-pointer mess ml-3 mt-3 w-10/12"
-       style=" text-decoration: none ">
+       style=" text-decoration: none;display: flex ">
       <div class="flex" style=" padding: 12px;">
         <div>
           <img class="w-5 h-5" src="dashboard.png" alt="">
         </div>
         <div class="mx-3 text-sm text-gray-100 ">Đơn Hàng</div>
       </div>
+      <span class="badge" style="color: white;font-size: 14px;">\{{donHangMoi}}</span>
     </a>
 
 
-    <a href="/mess" class="cursor-pointer mess ml-3 mt-3 w-10/12" style="text-decoration: none">
+    <a href="/mess" class="cursor-pointer mess ml-3 mt-3 w-10/12" style="text-decoration: none;display: flex">
       <div class="flex" style=" padding: 12px;">
         <div>
           <img class="w-5 h-5 " src="messages.png" alt="">
         </div>
         <div class="mx-3 text-sm text-gray-100 ">Tin Nhắn</div>
       </div>
+      <span class="badge" style="color: white;font-size: 14px;">\{{tinNhanMoi}}</span>
     </a>
 
     <a href="/warehouse" class="cursor-pointer mess ml-3 mt-3 w-10/12" style="text-decoration: none">
@@ -139,7 +141,8 @@
               Thống kê năm:
             </div>
 
-            <select id="dateYearSelect" name="dateYear" style="outline: none;padding: 8px;border-radius: 8px;cursor: pointer;margin-left: 14px;">
+            <select id="dateYearSelect" name="dateYear"
+                    style="outline: none;padding: 8px;border-radius: 8px;cursor: pointer;margin-left: 14px;">
               <option>2020</option>
               <option>2021</option>
               <option>2022</option>
@@ -222,8 +225,8 @@
           var load = document.getElementById("load")
           var duLieu = document.getElementById("hienThidata")
 
-          load.style.display="none"
-          duLieu.style.display="block"
+          load.style.display = "none"
+          duLieu.style.display = "block"
         })
         .catch(error => {
           console.error(error);
@@ -357,5 +360,60 @@
       ]
     });
   }
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/vue@2"></script>
+<script>
+  var vm = new Vue({
+    el: '#dataAll',
+    data: {
+      tinNhanMoi: 0,
+      donHangMoi: 0
+    },
+    methods: {
+
+      GetDataCart: function () {
+        var self = this;
+        fetch('/loadData', {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+        })
+            .then(response => response.json())
+            .then(data => {
+              self.donHangMoi = data[0].length
+            })
+            .catch(error => {
+              console.error(error);
+            });
+      },
+      GetAllDataChat: function () {
+        var self = this;
+        fetch('/chatAllShop', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        })
+            .then(response => response.json())
+            .then(data => {
+              self.tinNhanMoi = data.filter(item => item.status === true).length
+            })
+            .catch(error => {
+              console.error(error);
+            });
+      },
+
+    }
+
+  });
+  vm.GetAllDataChat();
+  vm.GetDataCart();
+  setInterval(() => {
+    vm.GetAllDataChat();
+    vm.GetDataCart();
+  }, 2345)
+
 </script>
 </html>
