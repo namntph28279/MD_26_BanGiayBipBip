@@ -51,6 +51,13 @@ app.get('/loadData', async (req, res) => {
 
     res.json(arr)
 })
+
+app.get('/dataOrderUser/:id', async (req, res) => {
+    const userId = req.params.id;
+    const data = await Order.find({user: userId}).sort({order_date: -1});
+    console.log(data)
+    res.json(data)
+})
 app.get('/home', async (req, res) => {
         res.render('../Views/screenHome.hbs');
 
