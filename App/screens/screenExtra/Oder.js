@@ -9,7 +9,8 @@ import {
     SafeAreaView,
     FlatList,
     Modal,
-    Alert
+    Alert,
+    TextInput
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -23,6 +24,8 @@ const Order = ({ route }) => {
     const [tab1DataLoaded, setTab1DataLoaded] = useState(false);
     const [isCancelModalVisible, setCancelModalVisible] = useState(false);
     const [isSuccessModalVisible, setSuccessModalVisible] = useState(false);
+    const [isReturnReasonVisible, setReturnReasonVisible] = useState(false);
+    const [returnReason, setReturnReason] = useState('');
 
     useEffect(() => {
         fetchDataList();
@@ -151,16 +154,14 @@ const Order = ({ route }) => {
     );
     const handleReturnOrder = async (item) => {
         try {
-            // Show confirmation dialog
-            Alert.alert(
-                'Xác nhận trả hàng',
-                'Bạn có chắc muốn trả hàng?',
-                [
-                    { text: 'Hủy', style: 'cancel' },
-                    { text: 'Đồng ý', onPress: () => confirmReturnOrder(item) },
-                ],
-                { cancelable: false }
-            );
+            // Kiểm tra xem đơn hàng có ở tab "Đã giao" không
+            if (item.status === 3) { // 3 là mã trạng thái của "Đã giao", điều này có thể thay đổi tùy vào mã trạng thái của bạn
+                // Hiển thị TextInput khi ấn vào nút "Trả hàng"
+                setReturnReasonVisible(true);
+            } else {
+                // Nếu đơn hàng không ở tab "Đã giao", có thể hiển thị cảnh báo hoặc không làm gì cả
+                Alert.alert('Lưu ý', 'Bạn chỉ có thể trả hàng cho các đơn hàng ở tab "Đã giao".');
+            }
         } catch (error) {
             console.error('Lỗi', error);
         }
@@ -169,6 +170,11 @@ const Order = ({ route }) => {
     const confirmReturnOrder = async (item) => {
         try {
             const orderId = item.id;
+
+            if (!returnReason) {
+                Alert.alert('Lưu ý', 'Vui lòng nhập lý do trả hàng.');
+                return;
+            }
             const response = await url.post(`/order/return/${orderId}`, {
                 noiDung: 'Trả hàng',
             }, {
@@ -177,12 +183,14 @@ const Order = ({ route }) => {
                 },
             });
             console.log('Server Response:', response); // Log the response
-    
+
             if (response.status === 200) {
                 setCancelModalVisible(false);
                 setSuccessModalVisible(true);
                 showSuccessModal();
-                fetchDataList(); // Assuming this function fetches the updated order list
+                fetchDataList();
+                setReturnReasonVisible(false); // Ẩn TextInput sau khi xác nhận trả hàng
+                setReturnReason('');
             } else {
                 console.error('Lỗi', response.statusText);
             }
@@ -190,7 +198,7 @@ const Order = ({ route }) => {
             console.error('Lỗi', error);
         }
     };
-    
+
 
 
     const renderItem = ({ item }) => (
@@ -221,6 +229,7 @@ const Order = ({ route }) => {
                 <View style={styles.orderStatusContainer}>
 
                     <Text style={styles.orderStatus}>{`Tổng sản phẩm thành tiền: ${getMonney(item.total_amount)}`}</Text>
+                    {/* <Text style={styles.orderStatus}>{`Tổng ${(item.status)}`}</Text> */}
                 </View>
                 <View style={styles.buttonContainer}>
                     {status === 'Chờ xác nhận' || status === 'Chờ lấy hàng' ? (
@@ -238,6 +247,33 @@ const Order = ({ route }) => {
                         >
                             <Ionicons name="close-outline" size={20} color="white" />
                             <Text style={styles.cancelOrderButtonText}>Trả hàng</Text>
+                        </TouchableOpacity>
+                    ) : null}
+
+
+                    {isReturnReasonVisible && status === 'Đã giao' && (
+                        <View style={{ padding: 10 }}>
+                            <TextInput
+                                placeholder="Nhập lý do trả hàng"
+                                value={returnReason}
+                                onChangeText={(text) => setReturnReason(text)}
+                                style={{ borderWidth: 1, borderColor: 'gray', borderRadius: 5, padding: 8 }}
+                            />
+                            <TouchableOpacity onPress={() => confirmReturnOrder(item)}>
+                                <Text style={styles.xacnhan}>Xác nhận trả hàng</Text>
+                            </TouchableOpacity>
+                        </View>
+                    )}
+                </View>
+
+                <View>
+                    {status === 'Trả hàng' ? (
+                        <TouchableOpacity
+                            onPress={() => {
+                                navigation.navigate("ChatScreen");
+                            }}
+                        >
+                            <Text style={styles.cancelOrderButtonText1}>Mọi thắc mắc về đơn hàng hãy liên hệ đến shop ngay !</Text>
                         </TouchableOpacity>
                     ) : null}
                 </View>
@@ -268,7 +304,7 @@ const Order = ({ route }) => {
 
     return (
         <View style={styles.container}>
-            {renderSuccessModal()}
+            {/* {renderSuccessModal()} */}
             <SafeAreaView style={styles.container1}>
                 <FlatList
                     horizontal
@@ -304,6 +340,9 @@ const Order = ({ route }) => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
+    },
+    xacnhan: {
+        alignContent: 'center',
     },
     container1: {
         flex: 1,
