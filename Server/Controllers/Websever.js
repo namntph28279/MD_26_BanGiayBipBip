@@ -137,6 +137,17 @@ app.post('/order/status/:orderId', async (req, res) => {
     }
 });
 
+app.post('/order/statusAPP/:orderId', async (req, res) => {
+    const orderId = req.params.orderId;
+    try {
+        const order = await Order.findById(orderId);
+        order.status = 4;
+        await order.save();
+    } catch (error) {
+        res.status(500).json({message: error.message});
+    }
+});
+
 app.post('/order/status/Comfig/:id', async (req, res) => {
 
     const orderId = req.params.id;
