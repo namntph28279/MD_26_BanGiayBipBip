@@ -694,6 +694,7 @@ app.get('/loadData/donHuy/:id', async (req, res) => {
 app.post('/order/return/:orderId', async (req, res) => {
     const orderId = req.params.orderId;
     const { noiDung } = req.body;
+    console.log(noiDung);
 
     try {
         const order = await Order.findById(orderId);

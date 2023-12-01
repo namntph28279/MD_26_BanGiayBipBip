@@ -101,11 +101,33 @@ const Order = ({ route }) => {
             console.error('Lỗi', error);
         }
     };
+    // const confirmCancelOrder = async (item) => {
+    //     try {
+    //         const orderId = item.id;
+    //         const response = await url.post(`/order/status/${orderId}`, {
+    //             noiDung: 'Không muốn mua nữa...',
+    //         }, {
+    //             headers: {
+    //                 'Content-Type': 'application/json',
+    //             },
+    //         });
+    //
+    //         if (response.status === 200) {
+    //             setCancelModalVisible(false);
+    //             setSuccessModalVisible(true);
+    //             showSuccessModal();
+    //             fetchDataList();
+    //         } else {
+    //             console.error('Lỗi', response.statusText);
+    //         }
+    //     } catch (error) {
+    //         console.error('Lỗi', error);
+    //     }
+    // };
     const confirmCancelOrder = async (item) => {
         try {
             const orderId = item.id;
-            const response = await url.post(`/order/status/${orderId}`, {
-                noiDung: 'Không muốn mua nữa...',
+            const response = await url.post(`/order/statusAPP/${orderId}`, {
             }, {
                 headers: {
                     'Content-Type': 'application/json',
@@ -176,12 +198,14 @@ const Order = ({ route }) => {
                 return;
             }
             const response = await url.post(`/order/return/${orderId}`, {
-                noiDung: 'Trả hàng',
+                noiDung: returnReason,
+                
             }, {
                 headers: {
                     'Content-Type': 'application/json',
                 },
             });
+            console.log('returnReason:', returnReason);
             console.log('Server Response:', response); // Log the response
 
             if (response.status === 200) {
