@@ -42,8 +42,8 @@ app.get('/loadData', async (req, res) => {
     const choLayHang = await Order.find({status: 1}).sort({order_date: -1});
     const choGiaoHang = await Order.find({status: 2}).sort({order_date: -1});
     const daGiao = await Order.find({status: 3}).sort({order_date: -1});
-    const donHuy = await Order.find({status: 4}).sort({order_date: -1});
-    // const donHuy = await Order.find({status: 8}).sort({order_date: -1});
+    // const donHuy = await Order.find({status: 4}).sort({order_date: -1});
+     const donHuy = await Order.find({status: 8}).sort({order_date: -1});
     const traHang = await Order.find({status: 5}).sort({order_date: -1});
     const donHoan = await Order.find({status: 6}).sort({order_date: -1});
 
@@ -698,5 +698,33 @@ app.post("/web/register", async (req, res) => {
         return res.status(500).json({message: error.message});
     }
 });
+app.get('/loadData/traHang/:id', async (req, res) => {
+    try {
+        const id = req.params.id;
+        const traHang =  Order.find({status: 5, user:id}).sort({order_date: -1});
+        const donHoan =  Order.find({status: 6, user:id}).sort({order_date: -1})
+        const arr = traHang.concat(donHoan)
+
+        res.json(arr);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Đã xảy ra lỗi' });
+    }
+});
+
+app.get('/loadData/donHuy/:id', async (req, res) => {
+    try {
+        const id = req.params.id;
+        const donHuyClient = await  Order.find({status: 4, user:id}).sort({order_date: -1});
+        const donHuyServer = await  Order.find({status: 8, user:id}).sort({order_date: -1});
+        const arr = donHuyClient.concat(donHuyServer);
+
+        res.json(arr);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Đã xảy ra lỗi' });
+    }
+});
+
 
 module.exports = app;
