@@ -27,6 +27,7 @@ import * as Notifications from "expo-notifications";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import url from "./api/url";
 import TrackOrder from "./screens/screenExtra/TrackOrder";
+import OrderMain from "./screens/screenExtra/OrderMain";
 
 Notifications.setNotificationHandler({
     handleNotification: async () => {
@@ -96,7 +97,7 @@ export default function App() {
             />
             <Stack.Screen name='ChatScreen' component={ChatScreen}  options={{ headerShown: false }} />
             <Stack.Screen name='ChangePassword' component={ChangePassword} options={{ title: 'Đổi Mật Khẩu' }} />
-            <Stack.Screen name='Oder' component={Oder} options={{ title: 'Đơn mua' }} />
+            <Stack.Screen name='Oder' component={OrderMain} options={{ title: 'Đơn mua' }} />
             <Stack.Screen name='InformationLine' component={InformationLine} options={{ title: 'Thông tin đơn hàng' }} />
             <Stack.Screen name='EditProfile' component={EditProfile} options={{ title: 'Chỉnh sửa hồ sơ' }} />
             <Stack.Screen name='ScreenAddresst' component={ScreenAddresst} options={{ title: 'Thêm địa chỉ' }} />

@@ -65,8 +65,6 @@ const getDataCart = async () => {
                 ...cartData[key],
                 selected: false,
             }));
-
-
             return  products;
         } else {
             return  [];
@@ -75,6 +73,22 @@ const getDataCart = async () => {
         return [];
     }
 };
+
+const getDataDonHang = async () => {
+    try {
+        const email = await AsyncStorage.getItem("Email");
+        const orderRef = await url.get(`/dataOrderUser/${email}`);
+        const orderData = orderRef.data;
+        if (orderData) {
+            return  orderData;
+        } else {
+            return  [];
+        }
+    } catch (error) {
+        return [];
+    }
+};
+
 
 const getTokenApp = async () => {
     try {
@@ -96,7 +110,8 @@ const dataAll = createSlice({
         dataUserID:[],
         dataUser:[] ,
         dataTokenApp:[],
-        dataCart:[]
+        dataCart:[],
+        dataDonHang:[],
     },
     reducers: {
         setDataSP: (state, action) => {
@@ -119,11 +134,23 @@ const dataAll = createSlice({
         },
         setDataCart: (state, action) => {
             state.dataCart = action.payload;
+        },
+        setDataDonHang: (state, action) => {
+            state.dataDonHang = action.payload;
         }
     }
 })
 
-export const { setDataSP,setDataSPBestSale,setDataSPFav,setAsyncStorage,setUser ,setTokenApp,setDataCart} = dataAll.actions;
+export const {
+    setDataSP,
+    setDataSPBestSale,
+    setDataSPFav,
+    setAsyncStorage,
+    setUser ,
+    setTokenApp,
+    setDataCart,
+    setDataDonHang
+} = dataAll.actions;
 
 
 export const fetchDataAndSetToRedux = () => async (dispatch) => {
@@ -147,6 +174,9 @@ export const fetchDataAndSetToRedux = () => async (dispatch) => {
 
     const dataCart = await  getDataCart();
     dispatch(setDataCart(dataCart))
+
+    const dataDonHang = await  getDataDonHang();
+    dispatch(setDataDonHang(dataDonHang))
 };
 
 export const fetchDataAndFav = () => async (dispatch) => {
@@ -158,9 +188,11 @@ export const fetchDataCart = () => async (dispatch) => {
     const dataCart = await  getDataCart();
     dispatch(setTokenApp(dataCart))
 };
-export const fetchDataUser = () => async (dispatch) => {
-    const dataUser = await  getDataUser();
-    dispatch(setUser(dataUser))
+
+export const fetchDataOrder = () => async (dispatch) => {
+    const dataDonHang = await  getDataDonHang();
+    dispatch(setDataDonHang(dataDonHang))
 };
+
 
 export default dataAll.reducer;
