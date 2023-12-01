@@ -198,12 +198,14 @@ const Order = ({ route }) => {
                 return;
             }
             const response = await url.post(`/order/return/${orderId}`, {
-                noiDung: 'Trả hàng',
+                noiDung: returnReason,
+                
             }, {
                 headers: {
                     'Content-Type': 'application/json',
                 },
             });
+            console.log('returnReason:', returnReason);
             console.log('Server Response:', response); // Log the response
 
             if (response.status === 200) {
