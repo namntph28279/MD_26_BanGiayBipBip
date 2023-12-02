@@ -1,5 +1,15 @@
 import * as React from 'react';
-import { View, useWindowDimensions, Text, FlatList, TouchableOpacity, Image, TextInput, StyleSheet } from 'react-native';
+import {
+    View,
+    useWindowDimensions,
+    Text,
+    FlatList,
+    TouchableOpacity,
+    Image,
+    TextInput,
+    StyleSheet,
+    Alert
+} from 'react-native';
 import { TabView, SceneMap, TabBar } from 'react-native-tab-view';
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect, useState } from "react";
@@ -70,9 +80,42 @@ export default function OrderMain({ navigation }) {
     ]);
 
 
-    const handleCancelOrder = (item) => {
-        // Thực hiện logic hủy đơn hàng ở đây
-        console.log('Hủy đơn hàng:', item.id);
+        const handleCancelOrder = async (item) => {
+            try {
+                Alert.alert(
+                    'Xác nhận hủy đơn hàng',
+                    'Bạn có chắc muốn hủy đơn hàng?',
+                    [
+                        { text: 'Hủy', style: 'cancel' },
+                        { text: 'Đồng ý', onPress: () => confirmCancelOrder(item) },
+                    ],
+                    { cancelable: false }
+                );
+            } catch (error) {
+                console.error('Lỗi', error);
+            }
+        };
+    const confirmCancelOrder = async (item) => {
+        try {
+            const orderId = item._id;
+            const response = await url.post(`/order/statusAPP/${orderId}`, {
+            }, {
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
+
+            if (response.status === 200) {
+                setCancelModalVisible(false);
+                setSuccessModalVisible(true);
+                showSuccessModal();
+                fetchDataList();
+            } else {
+                console.error('Lỗi', response.statusText);
+            }
+        } catch (error) {
+            console.error('Lỗi', error);
+        }
     };
     const handleReturnOrder = async (item) => {
         try {
@@ -136,7 +179,7 @@ export default function OrderMain({ navigation }) {
                             navigation.navigate('InformationLine',
                                 {
                                     productId: product.product,
-                                    orderId: item.id,
+                                    orderId: item._id,
                                 });
                         }}
                     >

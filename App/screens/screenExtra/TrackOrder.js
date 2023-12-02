@@ -66,23 +66,33 @@ const TrackOrder = ({ route }) => {
 
                 ))}
             </View>
-            <View style={styles.orderStatusContainer}>
-                {orderStatus.map((status, index) => {
-                    const isActive = index === statusIndex;
-                    return (
-                        <View key={index} style={styles.statusBox}>
-                            <View style={[styles.statusIconContainer, { backgroundColor: isActive ? '#55f802' : status.color }]}>
-                                {isActive ? (
-                                    <Icon name="check" size={14} color="white" style={styles.statusIcon} />
-                                ) : (
-                                    <Icon name={status.icon} size={14} color="white" style={styles.statusIcon} />
-                                )}
+            {statusIndex === 4 || statusIndex === 8 ? (
+                <View style={styles.orderStatusContainerCancelled}>
+                    <Text style={styles.cancelledText}>Đơn hàng đã bị hủy</Text>
+                </View>
+            ) : statusIndex === 5 ? (
+                <View style={styles.orderStatusContainerRefunded}>
+                    <Text style={styles.refundedText}>Đơn hàng đã được hoàn</Text>
+                </View>
+            ) : (
+                <View style={styles.orderStatusContainer}>
+                    {orderStatus.map((status, index) => {
+                        const isActive = index === statusIndex;
+                        return (
+                            <View key={index} style={styles.statusBox}>
+                                <View style={[styles.statusIconContainer, { backgroundColor: isActive ? '#55f802' : status.color }]}>
+                                    {isActive ? (
+                                        <Icon name="check" size={14} color="white" style={styles.statusIcon} />
+                                    ) : (
+                                        <Icon name={status.icon} size={14} color="white" style={styles.statusIcon} />
+                                    )}
+                                </View>
+                                <Text style={[styles.statusTitle, { color: isActive ? '#55f802' : 'black', fontWeight: isActive ? '700' : 'normal' }]}>{status.title}</Text>
                             </View>
-                            <Text style={[styles.statusTitle, { color: isActive ? '#55f802' : 'black', fontWeight: isActive ? '700' : 'normal' }]}>{status.title}</Text>
-                        </View>
-                    );
-                })}
-            </View>
+                        );
+                    })}
+                </View>
+            )}
             <View style={styles.deliveryAddressContainer}>
                 <View style={styles.deliveryAddressTextContainer}>
                     <Text style={styles.deliveryAddressTitle}>Địa chỉ giao hàng</Text>
@@ -284,6 +294,45 @@ const styles = StyleSheet.create({
         flex: 1,
         marginLeft: 5,
     },
+    orderStatusContainerCancelled: {
+        width: 325,
+        alignItems: 'center',
+        justifyContent: 'center',
+        height: 150,
+        backgroundColor: '#f10e09',
+        borderRadius: 12,
+        shadowColor: 'rgba(0, 0, 0, 0.25)',
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.25,
+        shadowRadius: 5,
+        marginTop: 10,
+    },
+    cancelledText: {
+        color: 'white',
+        fontSize: 16,
+        fontWeight: '700',
+        textAlign: 'center',
+    },
+    orderStatusContainerRefunded: {
+        width: 325,
+        alignItems: 'center',
+        justifyContent: 'center',
+        height: 150,
+        backgroundColor: '#f1f109',
+        borderRadius: 12,
+        shadowColor: 'rgba(0, 0, 0, 0.25)',
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.25,
+        shadowRadius: 5,
+        marginTop: 10,
+    },
+    refundedText: {
+        color: 'black',
+        fontSize: 16,
+        fontWeight: '700',
+        textAlign: 'center',
+    },
+
 
 });
 
