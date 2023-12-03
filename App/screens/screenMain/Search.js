@@ -172,7 +172,7 @@ function Search({ navigation }) {
         </TouchableOpacity>
       </View>
 
-      <ScrollView>
+      {/* <ScrollView> */}
         {filteredProducts.length === 0 && (
           <View style={{ display: "flex" }}>
             <Text style={{ fontSize: 18, fontWeight: "500", marginLeft: 20 , marginTop: 3 , marginBottom: 3 }}>
@@ -223,7 +223,7 @@ function Search({ navigation }) {
           keyExtractor={(item) => item._id}
           renderItem={renderProductItem}
         />
-      </ScrollView>
+      {/* </ScrollView> */}
     </SafeAreaView>
   );
 }

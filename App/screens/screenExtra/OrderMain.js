@@ -39,8 +39,8 @@ export default function OrderMain({ navigation }) {
         const fetchData = async () => {
             dispatch(fetchDataOrder())
         };
-        // const intervalId = setInterval(fetchData, 3000);
-        // return () => clearInterval(intervalId);
+        const intervalId = setInterval(fetchData, 3000);
+        return () => clearInterval(intervalId);
     }, []);
 
     useEffect(() => {
