@@ -11,7 +11,7 @@
         const [selectedAddress, setSelectedAddress] = useState(null);
         const isFromThanhToan = route.params?.fromThanhToan || false;
         const isFromCart = route.params?.fromCart || false;
-        console.log(userID);
+    
         useEffect(() => {
             if (!userID) {
                 console.log('Không có user ID.', userID);
