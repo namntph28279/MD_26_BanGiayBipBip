@@ -3,13 +3,14 @@ import { Button, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { TextInput } from 'react-native-paper';
 import axios from 'axios';import {useDispatch, useSelector} from "react-redux";
 import url from "../../api/url";
-import Icon from 'react-native-vector-icons/FontAwesome';
+
 
 export default function ScreenAddresst({ route, navigation }) {
     const userID = route.params?.userID || '';
     const userOBJ = route.params?.item || '';
-
-    
+    const fromThanhToan = route.params?.isFromThanhToan || false;
+    const fromCart = route.params?.isFromCart || false;
+   
     const resdt = /(84|0[3|5|7|8|9])+([0-9]{8})\b/g;
     const resnameRegex = /^[AÀẢÃÁẠĂẰẲẴẮẶÂẦẨẪẤẬBCDĐEÈẺẼÉẸÊỀỂỄẾỆFGHIÌỈĨÍỊJKLMNOÒỎÕÓỌÔỒỔỖỐỘƠỜỞỠỚỢPQRSTUÙỦŨÚỤƯỪỬỮỨỰVWXYỲỶỸÝỴZ][aàảãáạăằẳẵắặâầẩẫấậbcdđeèẻẽéẹêềểễếệfghiìỉĩíịjklmnoòỏõóọôồổỗốộơờởỡớợpqrstuùủũúụưừửữứựvwxyỳỷỹýỵz]+ [AÀẢÃÁẠĂẰẲẴẮẶÂẦẨẪẤẬBCDĐEÈẺẼÉẸÊỀỂỄẾỆFGHIÌỈĨÍỊJKLMNOÒỎÕÓỌÔỒỔỖỐỘƠỜỞỠỚỢPQRSTUÙỦŨÚỤƯỪỬỮỨỰVWXYỲỶỸÝỴZ][aàảãáạăằẳẵắặâầẩẫấậbcdđeèẻẽéẹêềểễếệfghiìỉĩíịjklmnoòỏõóọôồổỗốộơờởỡớợpqrstuùủũúụưừửữứựvwxyỳỷỹýỵz]+(?: [AÀẢÃÁẠĂẰẲẴẮẶÂẦẨẪẤẬBCDĐEÈẺẼÉẸÊỀỂỄẾỆFGHIÌỈĨÍỊJKLMNOÒỎÕÓỌÔỒỔỖỐỘƠỜỞỠỚỢPQRSTUÙỦŨÚỤƯỪỬỮỨỰVWXYỲỶỸÝỴZ][aàảãáạăằẳẵắặâầẩẫấậbcdđeèẻẽéẹêềểễếệfghiìỉĩíịjklmnoòỏõóọôồổỗốộơờởỡớợpqrstuùủũúụưừửữứựvwxyỳỷỹýỵz]*)*/;
 
@@ -116,11 +117,11 @@ export default function ScreenAddresst({ route, navigation }) {
               )
                 .then((response) => {
                   console.log("Dữ liệu đã được gửi thành công lên máy chủ:", response.data);
-                  navigation.navigate("AllDiaChi", { userID });
+                  navigation.navigate("AllDiaChi", { userID,fromCart,fromThanhToan });
                 })
                 .catch((error) => {
                   console.error("Lỗi trong quá trình gửi dữ liệu lên máy chủ:", error);
-                  navigation.navigate("AllDiaChi", { userID });
+                  navigation.navigate("AllDiaChi", { userID,fromCart,fromThanhToan });
                 });
         }
         if (!nameError && !phoneError && !xaError && !huyenError && !tinhError &&isEdit) {
@@ -136,11 +137,11 @@ export default function ScreenAddresst({ route, navigation }) {
                 .then((response) => {
                   console.log("Dữ liệu đã được gửi thành công lên máy chủ:", response.data);
          
-                  navigation.navigate("AllDiaChi", { userID });
+                  navigation.navigate("AllDiaChi", { userID,fromCart,fromThanhToan });
                 })  
                 .catch((error) => {
                   console.error("Lỗi trong quá trình gửi dữ liệu lên máy chủ:", error);
-                  navigation.navigate("AllDiaChi", { userID });
+                  navigation.navigate("AllDiaChi", { userID,fromCart,fromThanhToan });
                 });
         }
 

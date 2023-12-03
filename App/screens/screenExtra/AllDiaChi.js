@@ -130,7 +130,7 @@
                 )}
                 <TouchableOpacity
                     style={styles.addButton}
-                    onPress={()=>navigation.navigate('ScreenAddresst', { userID })}
+                    onPress={()=>navigation.navigate('ScreenAddresst', { userID,isFromThanhToan,isFromCart })}
                 >
                     <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "center" }}>
                         <Text style={{ color: "white", fontSize: 20, fontWeight: "bold", textAlign: "center" }}>
