@@ -168,13 +168,11 @@ export default function OrderMain({ navigation }) {
 
     const renderItem = ({ item }) => (
         <TouchableOpacity
-            key={product._id}
             style={styles.frame}
             onPress={() => {
                 // console.log('Item:', productId);
                 navigation.navigate('InformationLine',
                     {
-                        productId: product.product,
                         orderId: item._id,
                     });
             }}
