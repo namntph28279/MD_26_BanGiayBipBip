@@ -39,7 +39,7 @@ export default function OrderMain({ navigation }) {
         const fetchData = async () => {
             dispatch(fetchDataOrder())
         };
-        const intervalId = setInterval(fetchData, 3000);
+        const intervalId = setInterval(fetchData, 2000);
         return () => clearInterval(intervalId);
     }, []);
 
@@ -168,13 +168,12 @@ export default function OrderMain({ navigation }) {
 
     const renderItem = ({ item }) => (
         <TouchableOpacity
-            key={product._id}
             style={styles.frame}
             onPress={() => {
                 // console.log('Item:', productId);
                 navigation.navigate('InformationLine',
                     {
-                        productId: product.product,
+
                         orderId: item._id,
                     });
             }}
@@ -270,9 +269,7 @@ export default function OrderMain({ navigation }) {
                 style={styles.list}
                 data={cholayHangDon}
                 keyExtractor={(item) => item._id.toString()}
-                renderItem={({ item }) => {
-                    return renderItem({ item });
-                }}
+                renderItem={renderItem}
             />
         </View>
     );
@@ -283,9 +280,7 @@ export default function OrderMain({ navigation }) {
                 style={styles.list}
                 data={chogiaoHang}
                 keyExtractor={(item) => item._id.toString()}
-                renderItem={({ item }) => {
-                    return renderItem({ item });
-                }}
+                renderItem={renderItem}
             />
         </View>
     );
@@ -295,9 +290,7 @@ export default function OrderMain({ navigation }) {
                 style={styles.list}
                 data={daGiaoHang}
                 keyExtractor={(item) => item._id.toString()}
-                renderItem={({ item }) => {
-                    return renderItem({ item });
-                }}
+                renderItem={renderItem}
             />
         </View>
     );
@@ -308,9 +301,7 @@ export default function OrderMain({ navigation }) {
                 style={styles.list}
                 data={huyDonHang}
                 keyExtractor={(item) => item._id.toString()}
-                renderItem={({ item }) => {
-                    return renderItem({ item });
-                }}
+                renderItem={renderItem}
             />
         </View>
     );
@@ -321,9 +312,7 @@ export default function OrderMain({ navigation }) {
                 style={styles.list}
                 data={traDonHang}
                 keyExtractor={(item) => item._id.toString()}
-                renderItem={({ item }) => {
-                    return renderItem({ item });
-                }}
+                renderItem={renderItem}
             />
         </View>
     );
@@ -334,10 +323,7 @@ export default function OrderMain({ navigation }) {
                 style={styles.list}
                 data={tatCaDon}
                 keyExtractor={(item) => item._id.toString()}
-                renderItem={({ item }) => {
-                    // console.log('Item:', item); // Add this line to log the item
-                    return renderItem({ item });
-                }}
+                renderItem={renderItem}
             />
         </View>
     );
