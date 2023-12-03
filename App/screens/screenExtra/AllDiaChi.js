@@ -11,6 +11,7 @@
         const [selectedAddress, setSelectedAddress] = useState(null);
         const isFromThanhToan = route.params?.fromThanhToan || false;
         const isFromCart = route.params?.fromCart || false;
+    
         useEffect(() => {
             if (!userID) {
                 console.log('Không có user ID.', userID);
@@ -69,7 +70,7 @@
                 } else if (isFromCart) {
                     navigation.navigate('Cart', { selectedAddress: item, userID ,selectedProducts});
                 } else {
-                    navigation.navigate('ScreenAddresst', { item });
+                    navigation.navigate('ScreenAddresst', {userID, item });
                 }
             }}
             
@@ -98,7 +99,7 @@
 
         const navigateToScreenAddresst = (item) => {
             item.userID = userID;
-            navigation.navigate('ScreenAddresst', {item: item || {} });
+            navigation.navigate('ScreenAddresst', {userID,item: item || {} });
         };  
         const Delete = (item) => {
             url.delete(
