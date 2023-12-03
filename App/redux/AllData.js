@@ -36,7 +36,7 @@ const getAsyncStorage = async () => {
     try {
         const email = await AsyncStorage.getItem('Email');
         console.log(email)
-             return email;
+        return email;
 
     } catch (error) {
         return [];

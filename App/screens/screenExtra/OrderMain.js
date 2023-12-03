@@ -39,6 +39,7 @@ export default function OrderMain({ navigation }) {
         const fetchData = async () => {
             dispatch(fetchDataOrder())
         };
+        fetchData()
         const intervalId = setInterval(fetchData, 2000);
         return () => clearInterval(intervalId);
     }, []);
@@ -106,10 +107,7 @@ export default function OrderMain({ navigation }) {
             });
 
             if (response.status === 200) {
-                setCancelModalVisible(false);
-                setSuccessModalVisible(true);
-                showSuccessModal();
-                fetchDataList();
+                dispatch(fetchDataOrder())
             } else {
                 console.error('Lỗi', response.statusText);
             }
