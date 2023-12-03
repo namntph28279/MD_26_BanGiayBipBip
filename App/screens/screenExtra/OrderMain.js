@@ -108,6 +108,7 @@ export default function OrderMain({ navigation }) {
 
             if (response.status === 200) {
                 dispatch(fetchDataOrder())
+                Alert.alert("Hủy Thành Công")
             } else {
                 console.error('Lỗi', response.statusText);
             }
