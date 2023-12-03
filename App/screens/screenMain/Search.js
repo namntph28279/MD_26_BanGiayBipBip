@@ -315,7 +315,7 @@ const styles = StyleSheet.create({
   saleImageContainer: {
     width: "100%",
     height: 160,
-    paddingBottom: 3,
+    paddingBottom: 10,
     borderRadius: 10,
   },
   saleProductImage: {
