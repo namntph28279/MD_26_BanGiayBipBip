@@ -193,6 +193,9 @@ export const fetchDataOrder = () => async (dispatch) => {
     const dataDonHang = await  getDataDonHang();
     dispatch(setDataDonHang(dataDonHang))
 };
-
+export const fetchDataUser = () => async (dispatch) => {
+    const dataUser = await  getDataUser();
+    dispatch(setUser(dataUser))
+};
 
 export default dataAll.reducer;

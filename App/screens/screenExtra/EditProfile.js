@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from "react";
 import {
-  View,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  StyleSheet,
-  Image,
+    View,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    StyleSheet,
+    Image,
 } from "react-native";
 import RNPickerSelect from "react-native-picker-select";
 import DatePicker from "react-native-datepicker";
@@ -16,12 +16,12 @@ import {useDispatch} from "react-redux";
 const EditProfile = ({ navigation }) => {
     const dispatch = useDispatch();
     const [fullname, setFullname] = useState("");
-  const [gender, setGender] = useState("");
-  const [avatar, setAvatar] = useState("");
-  const [birthday, setBirthday] = useState("");
-  useEffect(() => {
-    fetchData();
-  }, []);
+    const [gender, setGender] = useState("");
+    const [avatar, setAvatar] = useState("");
+    const [birthday, setBirthday] = useState("");
+    useEffect(() => {
+        fetchData();
+    }, []);
     const fetchData = async () => {
         const email = await AsyncStorage.getItem("Email");
 
