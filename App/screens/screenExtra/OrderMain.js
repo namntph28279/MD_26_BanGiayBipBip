@@ -80,21 +80,21 @@ export default function OrderMain({ navigation }) {
     ]);
 
 
-        const handleCancelOrder = async (item) => {
-            try {
-                Alert.alert(
-                    'Xác nhận hủy đơn hàng',
-                    'Bạn có chắc muốn hủy đơn hàng?',
-                    [
-                        { text: 'Hủy', style: 'cancel' },
-                        { text: 'Đồng ý', onPress: () => confirmCancelOrder(item) },
-                    ],
-                    { cancelable: false }
-                );
-            } catch (error) {
-                console.error('Lỗi', error);
-            }
-        };
+    const handleCancelOrder = async (item) => {
+        try {
+            Alert.alert(
+                'Xác nhận hủy đơn hàng',
+                'Bạn có chắc muốn hủy đơn hàng?',
+                [
+                    { text: 'Hủy', style: 'cancel' },
+                    { text: 'Đồng ý', onPress: () => confirmCancelOrder(item) },
+                ],
+                { cancelable: false }
+            );
+        } catch (error) {
+            console.error('Lỗi', error);
+        }
+    };
     const confirmCancelOrder = async (item) => {
         try {
             const orderId = item._id;
@@ -167,97 +167,90 @@ export default function OrderMain({ navigation }) {
     };
 
     const renderItem = ({ item }) => (
-        <View>
-            {item.products.map((product) => {
-                const productId = product.product;
-                return (
-                    <TouchableOpacity
-                    key={product._id}
-                        style={styles.frame}
-                        onPress={() => {
-                            // console.log('Item:', productId);
-                            navigation.navigate('InformationLine',
-                                {
-                                    productId: product.product,
-                                    orderId: item._id,
-                                });
-                        }}
-                    >
-                        <View style={styles.productBox}>
-                            {item.products.map((product) => (
+        <TouchableOpacity
+            key={product._id}
+            style={styles.frame}
+            onPress={() => {
+                // console.log('Item:', productId);
+                navigation.navigate('InformationLine',
+                    {
+                        productId: product.product,
+                        orderId: item._id,
+                    });
+            }}
+        >
+            <View style={styles.productBox}>
+                {item.products.map((product) => (
 
-                                <View key={product._id} style={styles.productItemContainer}>
-                                    <Image source={{ uri: product.img_product }} style={styles.productImage} />
-                                    <View style={styles.productInfo}>
-                                        <Text style={styles.productName}>{`ID sản phẩm: ${product.product}`}</Text>
-                                        <Text style={styles.productName}>{`${product.name_Product}`}</Text>
-                                        <Text>{`Màu: ${product.name_Color}`}</Text>
-                                        <Text>{`Size: ${product.name_Size}`}</Text>
-                                        <View style={styles.quantityAndPriceContainer}>
-                                            <Text>{`SL: ${product.quantityProduct}`}</Text>
-                                            <Text style={{ color: '#FF0000', fontWeight: 'bold' }}>{`Giá: ${getMonney(product.name_Price)}`}</Text>
-                                        </View>
-                                        {/* <View><Text style={styles.productItemContainer1}></Text></View> */}
-                                    </View>
-                                </View>
-                            ))}
-
-                            <View style={styles.orderStatusContainer}>
-
-                                <Text style={styles.orderStatus}>{`Tổng sản phẩm thành tiền: ${getMonney(item.total_amount)}`}</Text>
-                                <Text style={styles.orderStatus}>{`status ${(item.status)}`}</Text>
+                    <View key={product._id} style={styles.productItemContainer}>
+                        <Image source={{ uri: product.img_product }} style={styles.productImage} />
+                        <View style={styles.productInfo}>
+                            {/* <Text style={styles.productName}>{`ID sản phẩm: ${product.product}`}</Text> */}
+                            <Text style={styles.productName}>{`${product.name_Product}`}</Text>
+                            <Text>{`Màu: ${product.name_Color}`}</Text>
+                            <Text>{`Size: ${product.name_Size}`}</Text>
+                            <View style={styles.quantityAndPriceContainer}>
+                                <Text>{`SL: ${product.quantityProduct}`}</Text>
+                                <Text style={{ color: '#FF0000', fontWeight: 'bold' }}>{`Giá: ${getMonney(product.name_Price)}`}</Text>
                             </View>
-                            <View style={styles.buttonContainer}>
-                                {item.status === 0 || item.status === 1 ? (
-                                    <TouchableOpacity style={styles.cancelOrderButton} onPress={() => handleCancelOrder(item)}>
-                                        <Ionicons name="close-outline" size={20} color="white" />
-                                        <Text style={styles.cancelOrderButtonText}>Hủy mua</Text>
-                                    </TouchableOpacity>
-                                ) : null}
-                            </View>
-                            <View style={styles.buttonContainer}>
-                                {item.status === 3 ? (
-                                    <TouchableOpacity style={styles.cancelOrderButton}
-                                        onPress={() => handleReturnOrder(item)}
-                                    >
-                                        <Ionicons name="close-outline" size={20} color="white" />
-                                        <Text style={styles.cancelOrderButtonText}>Trả hàng</Text>
-                                    </TouchableOpacity>
-                                ) : null}
-
-
-                                {isReturnReasonVisible && item.status === 3 && (
-                                    <View style={{ padding: 10 }}>
-                                        <TextInput
-                                            placeholder="Nhập lý do trả hàng"
-                                            value={returnReason}
-                                            onChangeText={(text) => setReturnReason(text)}
-                                            style={{ borderWidth: 1, borderColor: 'gray', borderRadius: 5, padding: 8 }}
-                                        />
-                                        <TouchableOpacity onPress={() => confirmReturnOrder(item)}>
-                                            <Text style={styles.xacnhan}>Xác nhận trả hàng</Text>
-                                        </TouchableOpacity>
-                                    </View>
-                                )}
-                            </View>
-
-                            <View>
-                                {item.status === 5 ? (
-                                    <TouchableOpacity
-                                        onPress={() => {
-                                            navigation.navigate("ChatScreen");
-                                        }}
-                                    >
-                                        <Text style={styles.cancelOrderButtonText1}>Mọi thắc mắc về đơn hàng hãy liên hệ đến shop ngay !</Text>
-                                    </TouchableOpacity>
-                                ) : null}
-                            </View>
+                            {/* <View><Text style={styles.productItemContainer1}></Text></View> */}
                         </View>
-                    </TouchableOpacity>
-                )
-            })}
-        </View>
-    );
+                    </View>
+                ))}
+
+                <View style={styles.orderStatusContainer}>
+
+                    <Text style={styles.orderStatus}>{`Tổng sản phẩm thành tiền: ${getMonney(item.total_amount)}`}</Text>
+                    {/* <Text style={styles.orderStatus}>{`status ${(item.status)}`}</Text> */}
+                </View>
+                <View style={styles.buttonContainer}>
+                    {item.status === 0 || item.status === 1 ? (
+                        <TouchableOpacity style={styles.cancelOrderButton} onPress={() => handleCancelOrder(item)}>
+                            <Ionicons name="close-outline" size={20} color="white" />
+                            <Text style={styles.cancelOrderButtonText}>Hủy mua</Text>
+                        </TouchableOpacity>
+                    ) : null}
+                </View>
+                <View style={styles.buttonContainer}>
+                    {item.status === 3 ? (
+                        <TouchableOpacity style={styles.cancelOrderButton}
+                            onPress={() => handleReturnOrder(item)}
+                        >
+                            <Ionicons name="close-outline" size={20} color="white" />
+                            <Text style={styles.cancelOrderButtonText}>Trả hàng</Text>
+                        </TouchableOpacity>
+                    ) : null}
+
+
+                    {isReturnReasonVisible && item.status === 3 && (
+                        <View style={{ padding: 10 }}>
+                            <TextInput
+                                placeholder="Nhập lý do trả hàng"
+                                value={returnReason}
+                                onChangeText={(text) => setReturnReason(text)}
+                                style={{ borderWidth: 1, borderColor: 'gray', borderRadius: 5, padding: 8 }}
+                            />
+                            <TouchableOpacity onPress={() => confirmReturnOrder(item)}>
+                                <Text style={styles.xacnhan}>Xác nhận trả hàng</Text>
+                            </TouchableOpacity>
+                        </View>
+                    )}
+                </View>
+
+                <View>
+                    {item.status === 5 ? (
+                        <TouchableOpacity
+                            onPress={() => {
+                                navigation.navigate("ChatScreen");
+                            }}
+                        >
+                            <Text style={styles.cancelOrderButtonText1}>Mọi thắc mắc về đơn hàng hãy liên hệ đến shop ngay !</Text>
+                        </TouchableOpacity>
+                    ) : null}
+                </View>
+            </View>
+        </TouchableOpacity>
+    )
 
     const choXacNhan = () => (
 
