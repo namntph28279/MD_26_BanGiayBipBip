@@ -132,7 +132,7 @@ export default function OrderMain({ navigation }) {
 
     const confirmReturnOrder = async (item) => {
         try {
-            const orderId = item.id;
+            const orderId = item._id;
 
             if (!returnReason) {
                 Alert.alert('Lưu ý', 'Vui lòng nhập lý do trả hàng.');
@@ -150,10 +150,10 @@ export default function OrderMain({ navigation }) {
             console.log('Server Response:', response); // Log the response
 
             if (response.status === 200) {
-                setCancelModalVisible(false);
-                setSuccessModalVisible(true);
-                showSuccessModal();
-                fetchDataList();
+                // setCancelModalVisible(false);
+                // setSuccessModalVisible(true);
+                // showSuccessModal();
+                // fetchDataList();
                 setReturnReasonVisible(false); // Ẩn TextInput sau khi xác nhận trả hàng
                 setReturnReason('');
             } else {
