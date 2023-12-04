@@ -19,7 +19,7 @@ import url from "../../api/url";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import NoProduct from "../../components/NoProduct";
 
-function Cart({navigation }) {
+function Cart({ navigation }) {
   const [cartProducts, setCartProducts] = useState([]);
   const [selectedProducts, setSelectedProducts] = useState([]);
   const [color, setColor] = useState("");
@@ -37,9 +37,11 @@ function Cart({navigation }) {
 
   useEffect(() => {
     fetchData();
-    fetchColor();
     setDataSP(dataProduct);
   }, [dataProduct]);
+  useEffect(() => {
+    fetchColor();
+  }, [color]);
 
   const fetchData = async () => {
     const email = await AsyncStorage.getItem("Email");
@@ -60,7 +62,7 @@ function Cart({navigation }) {
 
   const fetchColor = async () => {
     try {
-      const response = await url.get('/colors/getAll');
+      const response = await url.get("/colors/getAll");
       const data = response.data;
 
       if (data.length > 0) {
@@ -84,18 +86,20 @@ function Cart({navigation }) {
     });
   };
   const handleCheckOut = async () => {
-    const email = await AsyncStorage.getItem('Email');
-        if (!email){
-            alert("Vui lòng đăng nhập");
-            navigation.navigate('Login');
-            return
-        }
-        if (selectedProducts.length > 0){ 
-                navigation.navigate('ThanhToanScreen', { userID: email, selectedProducts: selectedProducts });
-            
-        } else {
-            alert('Vui lòng chọn sản phẩm trong giỏ hàng');
-        }
+    const email = await AsyncStorage.getItem("Email");
+    if (!email) {
+      alert("Vui lòng đăng nhập");
+      navigation.navigate("Login");
+      return;
+    }
+    if (selectedProducts.length > 0) {
+      navigation.navigate("ThanhToanScreen", {
+        userID: email,
+        selectedProducts: selectedProducts,
+      });
+    } else {
+      alert("Vui lòng chọn sản phẩm trong giỏ hàng");
+    }
   };
 
   const handleRemoveProduct = async (cartId) => {
@@ -106,7 +110,6 @@ function Cart({navigation }) {
       console.error("Lỗi khi xóa khỏi giỏ hàng", error);
     }
   };
-
 
   const sumSelectedProductsPrice = () => {
     let sum = 0;
@@ -135,7 +138,7 @@ function Cart({navigation }) {
       return updatedProducts;
     });
   };
-  
+
   const decreaseQuantity = (productId) => {
     setCartProducts((prevCartProducts) => {
       const updatedProducts = prevCartProducts.map((product) => {
@@ -175,61 +178,66 @@ function Cart({navigation }) {
   };
 
   const renderItems = (product) => {
-    const item = dataSP.find((item) => item._id === product.product);
-    const itemColor = color.find((item) => item._id === product.colorId);
-    return (
-      <View key={product._id} style={styles.productContainer}>
-        <View style={styles.productBox}>
-          <View style={{ width: 45 }}>
-            <CheckBox
-              checked={product.selected}
-              checkedColor="gray"
-              style={styles.buttonCheckbox}
-              onPress={() => handleToggleSwitch(product.id)}
-            />
-          </View>
+    if (color.length == 0) {
+    } else {
+      const item = dataSP.find((item) => item._id === product.product);
+      const itemColor = color.find((item) => item._id === product.colorId);
+      return (
+        <View key={product._id} style={styles.productContainer}>
+          <View style={styles.productBox}>
+            <View style={{ width: 45 }}>
+              <CheckBox
+                checked={product.selected}
+                checkedColor="gray"
+                style={styles.buttonCheckbox}
+                onPress={() => handleToggleSwitch(product.id)}
+              />
+            </View>
 
-          <Image
-            //uri product image
-            source={{ uri: itemColor.color_image }}
-            style={styles.productImage}
-          />
-          <View style={styles.productInfo}>
-            <Text style={styles.productName}>{item.product_title}</Text>
-            <Text style={styles.productType}>Phân loại : {itemColor.color_name}/{product.size}</Text>
-            {/* <Text style={styles.productPrice}>
+            <Image
+              //uri product image
+              source={{ uri: itemColor.color_image }}
+              style={styles.productImage}
+            />
+            <View style={styles.productInfo}>
+              <Text style={styles.productName}>{item.product_title}</Text>
+              <Text style={styles.productType}>
+                Phân loại : {itemColor.color_name}/{product.size}
+              </Text>
+              {/* <Text style={styles.productPrice}>
               Giá: {getMonney(sumProductsPrice(item, product.quantity))}
             </Text> */}
-            <Text style={styles.productPrice}>
-              Giá: {getMonney(item.product_price)}
-            </Text>
+              <Text style={styles.productPrice}>
+                Giá: {getMonney(item.product_price)}
+              </Text>
 
-            <View style={styles.quantityContainer}>
-              <TouchableOpacity
-                style={styles.quantityButton}
-                onPress={() => decreaseQuantity(product.id)}
-              >
-                <Text style={styles.quantityButtonText}>-</Text>
-              </TouchableOpacity>
-              <Text style={styles.quantityText}>{product.quantity}</Text>
-              <TouchableOpacity
-                style={styles.quantityButton}
-                onPress={() => increaseQuantity(product.id)}
-              >
-                <Text style={styles.quantityButtonText}>+</Text>
-              </TouchableOpacity>
+              <View style={styles.quantityContainer}>
+                <TouchableOpacity
+                  style={styles.quantityButton}
+                  onPress={() => decreaseQuantity(product.id)}
+                >
+                  <Text style={styles.quantityButtonText}>-</Text>
+                </TouchableOpacity>
+                <Text style={styles.quantityText}>{product.quantity}</Text>
+                <TouchableOpacity
+                  style={styles.quantityButton}
+                  onPress={() => increaseQuantity(product.id)}
+                >
+                  <Text style={styles.quantityButtonText}>+</Text>
+                </TouchableOpacity>
 
-              <TouchableOpacity
-                style={styles.buttonDel}
-                onPress={() => showConfirmDialog(product._id)}
-              >
-                <Ionicons name="trash-outline" size={20} color="red" />
-              </TouchableOpacity>
+                <TouchableOpacity
+                  style={styles.buttonDel}
+                  onPress={() => showConfirmDialog(product._id)}
+                >
+                  <Ionicons name="trash-outline" size={20} color="red" />
+                </TouchableOpacity>
+              </View>
             </View>
           </View>
         </View>
-      </View>
-    );
+      );
+    }
   };
 
   return (
