@@ -74,19 +74,39 @@ const getDataCart = async () => {
     }
 };
 
+// const getDataDonHang = async () => {
+//     try {
+//         const email = await AsyncStorage.getItem("Email");
+//         const orderRef = await url.get(`/dataOrderUser/${email}`);
+//         const orderData = orderRef.data;
+//         if (orderData) {
+//             return  orderData;
+//         } else {
+//             return  [];
+//         }
+//     } catch (error) {
+//         return [];
+//     }
+// };
 const getDataDonHang = async () => {
-    try {
-        const email = await AsyncStorage.getItem("Email");
-        const orderRef = await url.get(`/dataOrderUser/${email}`);
-        const orderData = orderRef.data;
-        if (orderData) {
-            return orderData;
-        } else {
-            return [];
-        }
-    } catch (error) {
-        return [];
-    }
+
+    return new Promise((resolve) => {
+        setTimeout(async () => {
+            try {
+                const email = await AsyncStorage.getItem("Email");
+                const orderRef = await url.get(`/dataOrderUser/${email}`);
+                const orderData = orderRef.data;
+                if (orderData) {
+                    resolve(orderData);
+                } else {
+                    resolve([]);
+                }
+            } catch (error) {
+                resolve([]);
+            }
+        }, 1000);
+    });
+
 };
 
 
@@ -193,6 +213,9 @@ export const fetchDataOrder = () => async (dispatch) => {
     const dataDonHang = await getDataDonHang();
     dispatch(setDataDonHang(dataDonHang))
 };
-
+export const fetchDataUser = () => async (dispatch) => {
+    const dataUser = await  getDataUser();
+    dispatch(setUser(dataUser))
+};
 
 export default dataAll.reducer;

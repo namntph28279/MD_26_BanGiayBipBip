@@ -40,6 +40,7 @@ export default function OrderMain({ navigation }) {
             console.log("start")
             dispatch(fetchDataOrder())
         };
+        fetchData()
         const intervalId = setInterval(fetchData, 2000);
         return () => clearInterval(intervalId);
     }, []);
@@ -107,10 +108,8 @@ export default function OrderMain({ navigation }) {
             });
 
             if (response.status === 200) {
-                setCancelModalVisible(false);
-                setSuccessModalVisible(true);
-                showSuccessModal();
-                fetchDataList();
+                dispatch(fetchDataOrder())
+                Alert.alert("Hủy Thành Công")
             } else {
                 console.error('Lỗi', response.statusText);
             }
@@ -135,7 +134,7 @@ export default function OrderMain({ navigation }) {
 
     const confirmReturnOrder = async (item) => {
         try {
-            const orderId = item.id;
+            const orderId = item._id;
 
             if (!returnReason) {
                 Alert.alert('Lưu ý', 'Vui lòng nhập lý do trả hàng.');
@@ -153,10 +152,10 @@ export default function OrderMain({ navigation }) {
             console.log('Server Response:', response); // Log the response
 
             if (response.status === 200) {
-                setCancelModalVisible(false);
-                setSuccessModalVisible(true);
-                showSuccessModal();
-                fetchDataList();
+                // setCancelModalVisible(false);
+                // setSuccessModalVisible(true);
+                // showSuccessModal();
+                // fetchDataList();
                 setReturnReasonVisible(false); // Ẩn TextInput sau khi xác nhận trả hàng
                 setReturnReason('');
             } else {
