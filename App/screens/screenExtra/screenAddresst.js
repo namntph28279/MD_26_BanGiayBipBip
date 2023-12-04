@@ -12,7 +12,7 @@ export default function ScreenAddresst({ route, navigation }) {
     const fromCart = route.params?.isFromCart || false;
     const resdt = /(84|0[3|5|7|8|9])+([0-9]{8})\b/g;
     const resnameRegex = /^[AÀẢÃÁẠĂẰẲẴẮẶÂẦẨẪẤẬBCDĐEÈẺẼÉẸÊỀỂỄẾỆFGHIÌỈĨÍỊJKLMNOÒỎÕÓỌÔỒỔỖỐỘƠỜỞỠỚỢPQRSTUÙỦŨÚỤƯỪỬỮỨỰVWXYỲỶỸÝỴZ][aàảãáạăằẳẵắặâầẩẫấậbcdđeèẻẽéẹêềểễếệfghiìỉĩíịjklmnoòỏõóọôồổỗốộơờởỡớợpqrstuùủũúụưừửữứựvwxyỳỷỹýỵz]+ [AÀẢÃÁẠĂẰẲẴẮẶÂẦẨẪẤẬBCDĐEÈẺẼÉẸÊỀỂỄẾỆFGHIÌỈĨÍỊJKLMNOÒỎÕÓỌÔỒỔỖỐỘƠỜỞỠỚỢPQRSTUÙỦŨÚỤƯỪỬỮỨỰVWXYỲỶỸÝỴZ][aàảãáạăằẳẵắặâầẩẫấậbcdđeèẻẽéẹêềểễếệfghiìỉĩíịjklmnoòỏõóọôồổỗốộơờởỡớợpqrstuùủũúụưừửữứựvwxyỳỷỹýỵz]+(?: [AÀẢÃÁẠĂẰẲẴẮẶÂẦẨẪẤẬBCDĐEÈẺẼÉẸÊỀỂỄẾỆFGHIÌỈĨÍỊJKLMNOÒỎÕÓỌÔỒỔỖỐỘƠỜỞỠỚỢPQRSTUÙỦŨÚỤƯỪỬỮỨỰVWXYỲỶỸÝỴZ][aàảãáạăằẳẵắặâầẩẫấậbcdđeèẻẽéẹêềểễếệfghiìỉĩíịjklmnoòỏõóọôồổỗốộơờởỡớợpqrstuùủũúụưừửữứựvwxyỳỷỹýỵz]*)*/;
-
+    const selectedProducts = route.params?.selectedProducts || [];
     const [name, setName] = useState('');
     const [phone, setPhone] = useState('');
     const [tinh, setTinh] = useState('');
@@ -116,11 +116,11 @@ export default function ScreenAddresst({ route, navigation }) {
               )
                 .then((response) => {
                   console.log("Dữ liệu đã được gửi thành công lên máy chủ:", response.data);
-                  navigation.navigate("AllDiaChi", { userID,fromCart,fromThanhToan });
+                  navigation.navigate("AllDiaChi", { userID,fromCart,fromThanhToan,selectedProducts });
                 })
                 .catch((error) => {
                   console.error("Lỗi trong quá trình gửi dữ liệu lên máy chủ:", error);
-                  navigation.navigate("AllDiaChi", { userID,fromCart,fromThanhToan });
+                  navigation.navigate("AllDiaChi", { userID,fromCart,fromThanhToan,selectedProducts });
                 });
         }
         if (!nameError && !phoneError && !xaError && !huyenError && !tinhError &&isEdit) {
@@ -136,11 +136,11 @@ export default function ScreenAddresst({ route, navigation }) {
                 .then((response) => {
                   console.log("Dữ liệu đã được gửi thành công lên máy chủ:", response.data);
          
-                  navigation.navigate("AllDiaChi", { userID,fromCart,fromThanhToan });
+                  navigation.navigate("AllDiaChi", { userID,fromCart,fromThanhToan,selectedProducts });
                 })  
                 .catch((error) => {
                   console.error("Lỗi trong quá trình gửi dữ liệu lên máy chủ:", error);
-                  navigation.navigate("AllDiaChi", { userID,fromCart,fromThanhToan });
+                  navigation.navigate("AllDiaChi", { userID,fromCart,fromThanhToan,selectedProducts });
                 });
         }
 
