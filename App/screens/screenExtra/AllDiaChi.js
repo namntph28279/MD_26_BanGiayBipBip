@@ -14,7 +14,7 @@
     
         useEffect(() => {
             if (!userID) {
-                console.log('Không có user ID.', userID);
+               
                 return;
             }
             fetchAddresses();
@@ -24,7 +24,8 @@
                 fetchAddresses();
             }, [userID])
         );
-        
+
+
         // const fetchAddresses = async () => {
         //     try {
         //         const response = await fetch(`https://md26bipbip-496b6598561d.herokuapp.com/address/${userID}`);
@@ -67,10 +68,11 @@
                 setSelectedAddress(item);
                 if (isFromThanhToan) {
                     navigation.navigate('ThanhToanScreen', { selectedAddress: item, userID, selectedProducts });
+                    
                 } else if (isFromCart) {
                     navigation.navigate('Cart', { selectedAddress: item, userID ,selectedProducts});
                 } else {
-                    navigation.navigate('ScreenAddresst', {userID, item });
+                    navigation.navigate('ScreenAddresst', {userID, item ,selectedProducts});
                 }
             }}
             
@@ -131,7 +133,7 @@
                 )}
                 <TouchableOpacity
                     style={styles.addButton}
-                    onPress={()=>navigation.navigate('ScreenAddresst', { userID,isFromThanhToan,isFromCart })}
+                    onPress={()=>navigation.navigate('ScreenAddresst', { userID,isFromThanhToan,isFromCart,selectedProducts })}
                 >
                     <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "center" }}>
                         <Text style={{ color: "white", fontSize: 20, fontWeight: "bold", textAlign: "center" }}>

@@ -34,6 +34,7 @@ export default function ScreenAddresst({ route, navigation }) {
         const newAddress = xa + " - " + huyen + " - " + tinh;
         setAdddress(newAddress);
     }, [xa, huyen, tinh]);
+  
 
   
     useEffect(() => {
