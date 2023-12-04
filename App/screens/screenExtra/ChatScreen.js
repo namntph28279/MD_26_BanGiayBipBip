@@ -4,6 +4,7 @@ import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import url from "../../api/url";
 import {useSelector} from "react-redux";
+import {io} from "socket.io-client";
 
 const ChatScreen = ({ navigation }) => {
     const [message, setMessage] = useState('');
@@ -13,36 +14,54 @@ const ChatScreen = ({ navigation }) => {
     const dataUserID = useSelector((state) => state.dataAll.dataUserID);
     const tokenApp = useSelector((state) => state.dataAll.dataTokenApp);
 
-    useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const name = await AsyncStorage.getItem('Name');
-                setDataName(name);
+    const [socket, setSocket] = useState(null);
 
-                const response = await url.post("/chatShop", { user: dataUserID });
-                const newData = response.data.content;
-                if (newData !== undefined) {
-                    newData.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
-                    setDataALL(newData)
-                    return
-                }
-                setDataALL([])
+    const fetchData = async () => {
+        try {
+            console.log('load')
+            const name = await AsyncStorage.getItem('Name');
+            setDataName(name);
 
-            } catch (error) {
-                console.error("Error fetching data:", error);
+            const response = await url.post("/chatShop", { user: dataUserID });
+            const newData = response.data.content;
+            if (newData !== undefined) {
+                newData.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+                setDataALL(newData)
+                return
             }
-        };
-        fetchData();
-        const intervalId = setInterval(fetchData, 1100);
-        return () => clearInterval(intervalId);
+            setDataALL([])
 
+        } catch (error) {
+            console.error("Error fetching data:", error);
+        }
+    };
+
+    useEffect(() => {
+        fetchData();
+        const socketInstance = io('http://172.20.10.2');
+        setSocket(socketInstance);
+        return () => {
+            socketInstance.disconnect();
+        };
     }, []);
+
+    useEffect(() => {
+        if (socket) {
+            socket.on('server-send', function (data) {
+                fetchData()
+            });
+        }
+    }, [socket]);
+
 
 
     const handleSendMessage = async () => {
         if (message.length > 0) {
             await url.post("/home/chatShop", { user: dataUserID, fullName: dataName, beLong: "user", conTenMain: message, status: "true" });
             setMessage('')
+            if (socket) {
+                socket.emit('client-send');
+            }
         }
     };
 
@@ -87,7 +106,6 @@ const ChatScreen = ({ navigation }) => {
                     inverted
                     keyExtractor={(item) => item._id.toString()}
                 />
-
 
                 <View style={styles.inputContainer}>
                     <TextInput
