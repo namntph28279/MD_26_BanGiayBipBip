@@ -1,8 +1,13 @@
 import axios from "axios";
 
 const instance = axios.create({
+
+    // baseURL: "https://shoe-bip-bip-2229beceb537.herokuapp.com/",
+    //baseURL: "http://172.20.10.2",
+ 
      baseURL: "https://shoe-bip-bip-2229beceb537.herokuapp.com/",
    // baseURL: "http://192.168.2.22:3000/",
+
 });
 
 instance.interceptors.request.use(//thêm yêu cầu trước mỗi lần gọi 

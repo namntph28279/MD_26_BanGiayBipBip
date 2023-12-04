@@ -37,6 +37,7 @@ export default function OrderMain({ navigation }) {
 
     useEffect(() => {
         const fetchData = async () => {
+            console.log("start")
             dispatch(fetchDataOrder())
         };
         fetchData()

@@ -253,6 +253,8 @@
   </div>
 </div>
 </body>
+
+<script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/vue@2"></script>
 <script>
   var vm = new Vue({
@@ -270,10 +272,33 @@
         status: false
       },
       tinNhanMoi: 0,
-      donHangMoi:0
+      donHangMoi: 0
     },
+    mounted() {
+      const socket = io();
+      const self = this;
+      socket.on('server-send', () => {
+        self.GetAllDataChat();
+        self.GetDataCart();
+        if (self.idUser.length > 0){
+          self.OpenChatUser(self.idUser);
+        }
+      });
+
+      this.socket = socket;
+
+    },
+    beforeDestroy() {
+      const socket = io();
+      if (socket) {
+        this.socket.disconnect();
+      }
+    },
+
     methods: {
+
       GetAllDataChat: function () {
+        console.log("Start")
         var self = this;
         fetch('/chatAllShop', {
           method: 'POST',
@@ -343,6 +368,7 @@
       },
       submitContentChat() {
         var self = this;
+        const socket = io();
         self.formData.user = self.idUser;
 
         fetch('/home/chatShop', {
@@ -355,6 +381,7 @@
             .then(response => response.json())
             .then(data => {
               if (data === true) {
+                socket.emit('client-send');
                 checkNottifi(self.idUser, self.formData.conTenMain)
                 self.formData.conTenMain = '';
               }
@@ -367,15 +394,9 @@
       }
     }
   })
+
   vm.GetAllDataChat();
   vm.GetDataCart();
-  setInterval(() => {
-    vm.GetAllDataChat();
-    vm.GetDataCart();
-    if (vm.idUser !== '') {
-      vm.OpenChatUser(vm.idUser)
-    }
-  }, 1234)
 
   function checkNottifi(idDataChat, value) {
     fetch('/sendNotificationClient', {

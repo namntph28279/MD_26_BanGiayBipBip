@@ -606,7 +606,7 @@ app.get('/statistics/sold-products', async (req, res) => {
         const top5Product = result.sort((a,b) => b.totalQuantitySold - a.totalQuantitySold).slice(0, 5);
         const total = top5Product.reduce((accumulator, currentValue) => accumulator + currentValue.totalQuantitySold, 0);
 
-        console.log(total)
+
         const totalInsight = top5Product.map(product =>({
             name: product.productName,
             totalDetail: ((product.totalQuantitySold/total)*100).toFixed(2),
@@ -1277,7 +1277,7 @@ app.post('/order/addOderDetail/:id', async(req, res) => {
 app.post('/order/addOderDetail', async(req, res) => {
     try {
         const data = req.body;
-        console.log(data.products.length)
+
         let dataProductOrder = []
 
         for (let i = 0; i < data.products.length; i++) {
@@ -1310,7 +1310,7 @@ app.post('/order/addOderDetail', async(req, res) => {
         const savedOrder = await newOder.save();
 
         res.status(201).json(savedOrder);
-        console.log(data)
+
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: 'Lỗi máy chủ nội bộ' });

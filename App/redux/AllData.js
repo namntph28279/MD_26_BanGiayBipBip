@@ -6,7 +6,7 @@ import * as Notifications from "expo-notifications";
 const getDataProduct = async () => {
     try {
         const response = await url.get("/");
-        return response.data ;
+        return response.data;
     } catch (error) {
         return [];
     }
@@ -15,7 +15,7 @@ const getDataProduct = async () => {
 const getDataSPBestSale = async () => {
     try {
         const response = await url.get("/top-selling");
-        return response.data ;
+        return response.data;
     } catch (error) {
         return [];
     }
@@ -26,7 +26,7 @@ const getDataFavourite = async () => {
         const email = await AsyncStorage.getItem('Email');
         const response = await url.get(`/favourite/${email}`);
         console.log(email)
-        return response.data ;
+        return response.data;
     } catch (error) {
         return [];
     }
@@ -65,9 +65,9 @@ const getDataCart = async () => {
                 ...cartData[key],
                 selected: false,
             }));
-            return  products;
+            return products;
         } else {
-            return  [];
+            return [];
         }
     } catch (error) {
         return [];
@@ -89,6 +89,7 @@ const getDataCart = async () => {
 //     }
 // };
 const getDataDonHang = async () => {
+
     return new Promise((resolve) => {
         setTimeout(async () => {
             try {
@@ -105,6 +106,7 @@ const getDataDonHang = async () => {
             }
         }, 1000);
     });
+
 };
 
 
@@ -123,13 +125,13 @@ const dataAll = createSlice({
 
     initialState: {
         dataSP: [],
-        dataSPBestSale:[],
-        dataSPFav:[],
-        dataUserID:[],
-        dataUser:[] ,
-        dataTokenApp:[],
-        dataCart:[],
-        dataDonHang:[],
+        dataSPBestSale: [],
+        dataSPFav: [],
+        dataUserID: [],
+        dataUser: [],
+        dataTokenApp: [],
+        dataCart: [],
+        dataDonHang: [],
     },
     reducers: {
         setDataSP: (state, action) => {
@@ -164,7 +166,7 @@ export const {
     setDataSPBestSale,
     setDataSPFav,
     setAsyncStorage,
-    setUser ,
+    setUser,
     setTokenApp,
     setDataCart,
     setDataDonHang
@@ -181,19 +183,19 @@ export const fetchDataAndSetToRedux = () => async (dispatch) => {
     const dataSPFav = await getDataFavourite();
     dispatch(setDataSPFav(dataSPFav));
 
-    const dataUserID = await  getAsyncStorage();
+    const dataUserID = await getAsyncStorage();
     dispatch(setAsyncStorage(dataUserID))
 
-    const dataUser = await  getDataUser();
+    const dataUser = await getDataUser();
     dispatch(setUser(dataUser))
 
-    const dataTokenApp = await  getTokenApp();
+    const dataTokenApp = await getTokenApp();
     dispatch(setTokenApp(dataTokenApp))
 
-    const dataCart = await  getDataCart();
+    const dataCart = await getDataCart();
     dispatch(setDataCart(dataCart))
 
-    const dataDonHang = await  getDataDonHang();
+    const dataDonHang = await getDataDonHang();
     dispatch(setDataDonHang(dataDonHang))
 };
 
@@ -203,12 +205,12 @@ export const fetchDataAndFav = () => async (dispatch) => {
 };
 
 export const fetchDataCart = () => async (dispatch) => {
-    const dataCart = await  getDataCart();
+    const dataCart = await getDataCart();
     dispatch(setTokenApp(dataCart))
 };
 
 export const fetchDataOrder = () => async (dispatch) => {
-    const dataDonHang = await  getDataDonHang();
+    const dataDonHang = await getDataDonHang();
     dispatch(setDataDonHang(dataDonHang))
 };
 export const fetchDataUser = () => async (dispatch) => {
