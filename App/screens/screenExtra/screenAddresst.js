@@ -44,7 +44,13 @@ export default function ScreenAddresst({ route, navigation }) {
             setOldUserData([]);
         }
     }, [dataObject]);
-
+    const isValidName = (name) => {
+        return resnameRegex.test(name);
+      };
+    const isValidPhoneNumber = (phone) => {
+        const phoneRegex = /(84|0[3|5|7|8|9])+([0-9]{8})\b/g;
+        return phoneRegex.test(phone);
+      };
     useEffect(() => {
         if (oldUserData!='') {   
           setName(oldUserData.name);
@@ -66,18 +72,21 @@ export default function ScreenAddresst({ route, navigation }) {
         const xaError = !xa;
         // const chiTietError = !chiTiet;
 
-        if (!resdt.test(phone)) {
-
-            setPhoneError(true);
+        if (!isValidPhoneNumber(phone)) {
+             setPhoneError(true); 
+             console.log(phone);
+             console.log(isValidPhoneNumber(phone));
+          
         } else {
             setPhoneError(false);
+            console.log(phone);
+            console.log(isValidPhoneNumber(phone));
         }
         if (!resnameRegex.test(name)) {
-
-            setNameError(true);
+           setNameError(true); 
         } else {
             setNameError(false);
-
+           
         }
 
         setTinhError(tinhError);
@@ -92,20 +101,7 @@ export default function ScreenAddresst({ route, navigation }) {
         };
         const jsonData = JSON.stringify(data);
 
-        if (!nameError && !phoneError && !xaError && !huyenError && !tinhError &&!isEdit) {
-            // axios.post('https://md26bipbip-496b6598561d.herokuapp.com/address/add', jsonData, {
-            //     headers: {
-            //         'Content-Type': 'application/json',
-            //     }
-            // })
-            //     .then(response => {
-            //         console.log('Dữ liệu đã được gửi thành công lên máy chủ:', response.data);
-            //         navigation.navigate('AllDiaChi', {userID});
-            //     })
-            //     .catch(error => {
-            //         console.error('Lỗi trong quá trình gửi dữ liệu lên máy chủ:', error);
-            //         navigation.navigate('AllDiaChi', {userID});
-            //     });
+        if (isValidName(name) && isValidPhoneNumber(phone) && !xaError && !huyenError && !tinhError &&!isEdit) {
             url.post(
                 "/address/add",
                 jsonData,
@@ -124,7 +120,9 @@ export default function ScreenAddresst({ route, navigation }) {
                   navigation.navigate("AllDiaChi", { userID,fromCart,fromThanhToan,selectedProducts });
                 });
         }
-        if (!nameError && !phoneError && !xaError && !huyenError && !tinhError &&isEdit) {
+        if(isEdit){
+        if (isValidName(name) && isValidPhoneNumber(phone) && !xaError && !huyenError && !tinhError ) {
+            console.log(isValidName(name));
             url.put(
                 `/address/edit/${editID}`,
                 jsonData,
@@ -133,8 +131,7 @@ export default function ScreenAddresst({ route, navigation }) {
                     "Content-Type": "application/json",
                   },
                 }
-              )
-                .then((response) => {
+              ).then((response) => {
                   console.log("Dữ liệu đã được gửi thành công lên máy chủ:", response.data);
          
                   navigation.navigate("AllDiaChi", { userID,fromCart,fromThanhToan,selectedProducts });
@@ -142,13 +139,7 @@ export default function ScreenAddresst({ route, navigation }) {
                 .catch((error) => {
                   console.error("Lỗi trong quá trình gửi dữ liệu lên máy chủ:", error);
                   navigation.navigate("AllDiaChi", { userID,fromCart,fromThanhToan,selectedProducts });
-                });
-        }
-
-
-    }
-
-
+                });}}}
     return (
         <View style={styles.container}>
             <View>
