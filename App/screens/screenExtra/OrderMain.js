@@ -181,7 +181,26 @@ export default function OrderMain({ navigation }) {
             console.error('Lỗi', error);
         }
     };
-
+    const getStatusText = (status) => {
+        switch (status) {
+            case 0:
+                return 'Chờ xác nhận';
+            case 1:
+                return 'Chờ lấy hàng';
+            case 2:
+                return 'Chờ giao hàng';
+            case 3:
+                return 'Đã giao';
+            case 4:
+            case 8:
+                return 'Đã hủy';
+            case 5:
+            case 6:
+                return 'Trả hàng';
+            default:
+                return 'không';
+        }
+    };
     const renderItem = ({ item }) => (
         <TouchableOpacity
             style={styles.frame}
@@ -215,7 +234,19 @@ export default function OrderMain({ navigation }) {
                 <View style={styles.orderStatusContainer}>
 
                     <Text style={styles.orderStatus}>{`Tổng sản phẩm thành tiền: ${getMonney(item.total_amount)}`}</Text>
-                    {/* <Text style={styles.orderStatus}>{`status ${(item.status)}`}</Text> */}
+                    <TouchableOpacity
+                        style={{
+                            ...styles.orderStatusContainer,
+                            borderRadius: 10,
+                            overflow: 'hidden',
+                        }}
+                        onPress={() => {
+                            Alert.alert(getStatusText(item.status));
+                        }}
+                    >
+                        <Text style={styles.orderStatus1}>{`Trạng Thái: ${getStatusText(item.status)}`}</Text>
+                    </TouchableOpacity>
+
                 </View>
                 <View style={styles.buttonContainer}>
                     {item.status === 0 || item.status === 1 ? (
@@ -399,6 +430,18 @@ const styles = StyleSheet.create({
     textTab: {
         fontSize: 16,
         textAlign: 'center',
+    },
+    orderStatus1: {
+        marginLeft: 110,
+        marginRight:12,
+        marginBottom: 10,
+        color: 'blue',
+        backgroundColor:'#ffff',
+        borderWidth: 1,
+        alignSelf:'center',
+        borderColor: 'black',
+        borderRadius: 5,
+        overflow: 'hidden',
     },
     listTab: {
         flexDirection: 'row',
