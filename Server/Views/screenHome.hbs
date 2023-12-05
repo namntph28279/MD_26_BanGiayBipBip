@@ -804,9 +804,9 @@
             .then(response => response.json())
             .then(data => {
               if (data === true) {
+                socket.emit('client-send');
                 self.dataXacNhanDon = {};
                 $('#xacNhanDon').modal('hide');
-                socket.emit('client-send');
               }
             })
             .catch(error => {
@@ -828,10 +828,10 @@
             .then(response => response.json())
             .then(data => {
               if (data === true) {
+                socket.emit('client-send');
                 self.dataHuyDon = {};
                 self.formData.noiDung = '';
                 $('#huyDon').modal('hide');
-                socket.emit('client-send');
               }
             })
             .catch(error => {
