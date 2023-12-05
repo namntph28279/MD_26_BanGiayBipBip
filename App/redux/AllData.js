@@ -185,7 +185,7 @@ export const fetchDataAndFav = () => async (dispatch) => {
 
 export const fetchDataCart = () => async (dispatch) => {
     const dataCart = await getDataCart();
-    dispatch(setTokenApp(dataCart))
+    dispatch(setDataCart(dataCart))
 };
 
 export const fetchDataOrder = () => async (dispatch) => {
