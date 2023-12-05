@@ -18,8 +18,8 @@ import { getMonney } from "../../util/money";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import url from "../../api/url";
-import {io} from "socket.io-client";
-import {getUrl} from "../../api/socketio";
+import { io } from "socket.io-client";
+import { getUrl } from "../../api/socketio";
 
 
 export default function OrderMain({ navigation }) {
@@ -37,6 +37,7 @@ export default function OrderMain({ navigation }) {
     const [isReturnReasonVisible, setReturnReasonVisible] = useState(false);
     const [returnReason, setReturnReason] = useState('');
     const [socket, setSocket] = useState(null);
+    const [selectedOrderForReturn, setSelectedOrderForReturn] = useState(null);
 
     const fetchData = async () => {
         console.log("start")
@@ -96,15 +97,15 @@ export default function OrderMain({ navigation }) {
 
 
     const handleCancelOrder = async (item) => {
-            Alert.alert(
-                'Xác nhận hủy đơn hàng',
-                'Bạn có chắc muốn hủy đơn hàng?',
-                [
-                    { text: 'Hủy', style: 'cancel' },
-                    { text: 'Đồng ý', onPress: () => confirmCancelOrder(item) },
-                ],
-                { cancelable: false }
-            );
+        Alert.alert(
+            'Xác nhận hủy đơn hàng',
+            'Bạn có chắc muốn hủy đơn hàng?',
+            [
+                { text: 'Hủy', style: 'cancel' },
+                { text: 'Đồng ý', onPress: () => confirmCancelOrder(item) },
+            ],
+            { cancelable: false }
+        );
     };
     const confirmCancelOrder = async (item) => {
         try {
@@ -134,6 +135,7 @@ export default function OrderMain({ navigation }) {
             // Kiểm tra xem đơn hàng có ở tab "Đã giao" không
             if (item.status === 3) { // 3 là mã trạng thái của "Đã giao", điều này có thể thay đổi tùy vào mã trạng thái của bạn
                 // Hiển thị TextInput khi ấn vào nút "Trả hàng"
+                setSelectedOrderForReturn(item);
                 setReturnReasonVisible(true);
             } else {
                 // Nếu đơn hàng không ở tab "Đã giao", có thể hiển thị cảnh báo hoặc không làm gì cả
@@ -155,23 +157,26 @@ export default function OrderMain({ navigation }) {
             const response = await url.post(`/order/return/${orderId}`, {
                 noiDung: returnReason,
 
-            }, {
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-            });
+            },
+                {
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                });
             if (response.status === 200) {
-                // setCancelModalVisible(false);
-                // setSuccessModalVisible(true);
-                // showSuccessModal();
-                // fetchData();
 
-                setReturnReasonVisible(false); // Ẩn TextInput sau khi xác nhận trả hàng
-                setReturnReason('');
+                if (socket) {
+
+                    socket.emit('client-send');
+                } else {
+
+                    setReturnReasonVisible(false); // Ẩn TextInput sau khi xác nhận trả hàng
+                    setReturnReason('');
+                    fetchData();
+                }
                 Alert.alert("Đang chờ xét duyệt")
-            } else {
-                console.error('Lỗi', response.statusText);
-            }
+            } 
+            
         } catch (error) {
             console.error('Lỗi', error);
         }
@@ -221,22 +226,21 @@ export default function OrderMain({ navigation }) {
                     ) : null}
                 </View>
                 <View style={styles.buttonContainer}>
-                    {item.status === 3 ? (
+                    {item.status === 3 && !isReturnReasonVisible && (
                         <TouchableOpacity style={styles.cancelOrderButton}
                             onPress={() => handleReturnOrder(item)}
                         >
                             <Ionicons name="close-outline" size={20} color="white" />
                             <Text style={styles.cancelOrderButtonText}>Trả hàng</Text>
                         </TouchableOpacity>
-                    ) : null}
+                    )}
 
-
-                    {isReturnReasonVisible && item.status === 3 && (
+                    {isReturnReasonVisible && item === selectedOrderForReturn && (
                         <View style={{ padding: 10 }}>
                             <TextInput
                                 placeholder="Nhập lý do trả hàng"
                                 value={returnReason}
-                                onChangeText={(text) => setReturnReason(text)}
+                                onChangeText={setReturnReason}
                                 style={{ borderWidth: 1, borderColor: 'gray', borderRadius: 5, padding: 8 }}
                             />
                             <TouchableOpacity style={styles.cancelOrderButton1} onPress={() => confirmReturnOrder(item)}>
@@ -525,7 +529,8 @@ const styles = StyleSheet.create({
         borderRadius: 8,
         flexDirection: 'row',
         alignItems: 'center',
-        marginLeft: 8,
+        // marginLeft: 2,
+
     },
     cancelOrderButtonText: {
         color: '#fff',
