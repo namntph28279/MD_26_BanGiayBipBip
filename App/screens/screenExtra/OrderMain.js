@@ -8,7 +8,10 @@ import {
     Image,
     TextInput,
     StyleSheet,
-    Alert
+    Alert,
+    KeyboardAvoidingView,
+    Platform,
+    Modal,
 } from 'react-native';
 import { TabView, SceneMap, TabBar } from 'react-native-tab-view';
 import { useDispatch, useSelector } from "react-redux";
@@ -18,8 +21,6 @@ import { getMonney } from "../../util/money";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import url from "../../api/url";
-import { io } from "socket.io-client";
-import { getUrl } from "../../api/socketio";
 
 
 export default function OrderMain({ navigation }) {
@@ -36,28 +37,15 @@ export default function OrderMain({ navigation }) {
     const [isSuccessModalVisible, setSuccessModalVisible] = useState(false);
     const [isReturnReasonVisible, setReturnReasonVisible] = useState(false);
     const [returnReason, setReturnReason] = useState('');
-    const [socket, setSocket] = useState(null);
-    const [selectedOrderForReturn, setSelectedOrderForReturn] = useState(null);
 
-    const fetchData = async () => {
-        console.log("start")
-        dispatch(fetchDataOrder())
-    };
     useEffect(() => {
-        const socketInstance = io(getUrl());
-        setSocket(socketInstance);
-        return () => {
-            socketInstance.disconnect();
+        const fetchData = async () => {
+            dispatch(fetchDataOrder())
         };
+        fetchData()
+        const intervalId = setInterval(fetchData, 2000);
+        return () => clearInterval(intervalId);
     }, []);
-
-    useEffect(() => {
-        if (socket) {
-            socket.on('server-send', function (data) {
-                fetchData()
-            });
-        }
-    }, [socket]);
 
     useEffect(() => {
         const filterchoXacNhanDon = dataOrder.filter(item => item.status === 0);
@@ -97,31 +85,32 @@ export default function OrderMain({ navigation }) {
 
 
     const handleCancelOrder = async (item) => {
-        Alert.alert(
-            'Xác nhận hủy đơn hàng',
-            'Bạn có chắc muốn hủy đơn hàng?',
-            [
-                { text: 'Hủy', style: 'cancel' },
-                { text: 'Đồng ý', onPress: () => confirmCancelOrder(item) },
-            ],
-            { cancelable: false }
-        );
+        try {
+            Alert.alert(
+                'Xác nhận hủy đơn hàng',
+                'Bạn có chắc muốn hủy đơn hàng?',
+                [
+                    { text: 'Hủy', style: 'cancel' },
+                    { text: 'Đồng ý', onPress: () => confirmCancelOrder(item) },
+                ],
+                { cancelable: false }
+            );
+        } catch (error) {
+            console.error('Lỗi', error);
+        }
     };
     const confirmCancelOrder = async (item) => {
         try {
-
             const orderId = item._id;
-
-            const response = await url.post(`/order/statusAPP/${orderId}`);
+            const response = await url.post(`/order/statusAPP/${orderId}`, {
+            }, {
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
 
             if (response.status === 200) {
-
-                if (socket) {
-
-                    socket.emit('client-send');
-                } else {
-                    fetchData();
-                }
+                dispatch(fetchDataOrder())
                 Alert.alert("Hủy Thành Công")
             } else {
                 console.error('Lỗi', response.statusText);
@@ -135,7 +124,6 @@ export default function OrderMain({ navigation }) {
             // Kiểm tra xem đơn hàng có ở tab "Đã giao" không
             if (item.status === 3) { // 3 là mã trạng thái của "Đã giao", điều này có thể thay đổi tùy vào mã trạng thái của bạn
                 // Hiển thị TextInput khi ấn vào nút "Trả hàng"
-                setSelectedOrderForReturn(item);
                 setReturnReasonVisible(true);
             } else {
                 // Nếu đơn hàng không ở tab "Đã giao", có thể hiển thị cảnh báo hoặc không làm gì cả
@@ -144,6 +132,9 @@ export default function OrderMain({ navigation }) {
         } catch (error) {
             console.error('Lỗi', error);
         }
+    };
+    const closeModal = () => {
+        setReturnReasonVisible(false);
     };
 
     const confirmReturnOrder = async (item) => {
@@ -157,113 +148,124 @@ export default function OrderMain({ navigation }) {
             const response = await url.post(`/order/return/${orderId}`, {
                 noiDung: returnReason,
 
-            },
-                {
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                });
+            }, {
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
             if (response.status === 200) {
+                dispatch(fetchDataOrder());
+                setReturnReasonVisible(false); // Ẩn TextInput sau khi xác nhận trả hàng
+                setReturnReason('');
 
-                if (socket) {
-
-                    socket.emit('client-send');
-                } else {
-
-                    setReturnReasonVisible(false); // Ẩn TextInput sau khi xác nhận trả hàng
-                    setReturnReason('');
-                    fetchData();
-                }
-                Alert.alert("Đang chờ xét duyệt")
-            } 
-            
+                Alert.alert("Đang yêu cầu trả hàng");
+            } else {
+                console.error('Lỗi', response.statusText);
+            }
         } catch (error) {
             console.error('Lỗi', error);
         }
     };
 
     const renderItem = ({ item }) => (
-        <TouchableOpacity
-            style={styles.frame}
-            onPress={() => {
-                // console.log('Item:', productId);
-                navigation.navigate('InformationLine',
-                    {
-                        orderId: item._id,
-                    });
-            }}
+        <KeyboardAvoidingView
+            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+            style={styles.keyboardAvoidingContainer}
         >
-            <View style={styles.productBox}>
-                {item.products.map((product) => (
+            <TouchableOpacity
+                style={styles.frame}
+                onPress={() => {
+                    // console.log('Item:', productId);
+                    navigation.navigate('InformationLine',
+                        {
 
-                    <View key={product._id} style={styles.productItemContainer}>
-                        <Image source={{ uri: product.img_product }} style={styles.productImage} />
-                        <View style={styles.productInfo}>
-                            {/* <Text style={styles.productName}>{`ID sản phẩm: ${product.product}`}</Text> */}
-                            <Text style={styles.productName}>{`${product.name_Product}`}</Text>
-                            <Text>{`Màu: ${product.name_Color}`}</Text>
-                            <Text>{`Size: ${product.name_Size}`}</Text>
-                            <View style={styles.quantityAndPriceContainer}>
-                                <Text>{`SL: ${product.quantityProduct}`}</Text>
-                                <Text style={{ color: '#FF0000', fontWeight: 'bold' }}>{`Giá: ${getMonney(product.name_Price)}`}</Text>
+                            orderId: item._id,
+                        });
+                }}
+            >
+                <View style={styles.productBox}>
+                    {item.products.map((product) => (
+
+                        <View key={product._id} style={styles.productItemContainer}>
+                            <Image source={{ uri: product.img_product }} style={styles.productImage} />
+                            <View style={styles.productInfo}>
+                                {/* <Text style={styles.productName}>{`ID sản phẩm: ${product.product}`}</Text> */}
+                                <Text style={styles.productName}>{`${product.name_Product}`}</Text>
+                                <Text>{`Màu: ${product.name_Color}`}</Text>
+                                <Text>{`Size: ${product.name_Size}`}</Text>
+                                <View style={styles.quantityAndPriceContainer}>
+                                    <Text>{`SL: ${product.quantityProduct}`}</Text>
+                                    <Text style={{ color: '#FF0000', fontWeight: 'bold' }}>{`Giá: ${getMonney(product.name_Price)}`}</Text>
+                                </View>
+                                {/* <View><Text style={styles.productItemContainer1}></Text></View> */}
                             </View>
-                            {/* <View><Text style={styles.productItemContainer1}></Text></View> */}
                         </View>
+                    ))}
+
+                    <View style={styles.orderStatusContainer}>
+
+                        <Text style={styles.orderStatus}>{`Tổng sản phẩm thành tiền: ${getMonney(item.total_amount)}`}</Text>
+                        {/* <Text style={styles.orderStatus}>{`status ${(item.status)}`}</Text> */}
                     </View>
-                ))}
-
-                <View style={styles.orderStatusContainer}>
-
-                    <Text style={styles.orderStatus}>{`Tổng sản phẩm thành tiền: ${getMonney(item.total_amount)}`}</Text>
-                    {/* <Text style={styles.orderStatus}>{`status ${(item.status)}`}</Text> */}
-                </View>
-                <View style={styles.buttonContainer}>
-                    {item.status === 0 || item.status === 1 ? (
-                        <TouchableOpacity style={styles.cancelOrderButton} onPress={() => handleCancelOrder(item)}>
-                            <Ionicons name="close-outline" size={20} color="white" />
-                            <Text style={styles.cancelOrderButtonText}>Hủy mua</Text>
-                        </TouchableOpacity>
-                    ) : null}
-                </View>
-                <View style={styles.buttonContainer}>
-                    {item.status === 3 && !isReturnReasonVisible && (
-                        <TouchableOpacity style={styles.cancelOrderButton}
-                            onPress={() => handleReturnOrder(item)}
-                        >
-                            <Ionicons name="close-outline" size={20} color="white" />
-                            <Text style={styles.cancelOrderButtonText}>Trả hàng</Text>
-                        </TouchableOpacity>
-                    )}
-
-                    {isReturnReasonVisible && item === selectedOrderForReturn && (
-                        <View style={{ padding: 10 }}>
-                            <TextInput
-                                placeholder="Nhập lý do trả hàng"
-                                value={returnReason}
-                                onChangeText={setReturnReason}
-                                style={{ borderWidth: 1, borderColor: 'gray', borderRadius: 5, padding: 8 }}
-                            />
-                            <TouchableOpacity style={styles.cancelOrderButton1} onPress={() => confirmReturnOrder(item)}>
-                                <Text style={styles.cancelOrderButtonText}>Xác nhận trả hàng</Text>
+                    <View style={styles.buttonContainer}>
+                        {item.status === 0 || item.status === 1 ? (
+                            <TouchableOpacity style={styles.cancelOrderButton} onPress={() => handleCancelOrder(item)}>
+                                <Ionicons name="close-outline" size={20} color="white" />
+                                <Text style={styles.cancelOrderButtonText}>Hủy mua</Text>
                             </TouchableOpacity>
-                        </View>
-                    )}
-                </View>
+                        ) : null}
+                    </View>
+                    <View style={styles.buttonContainer}>
+                        {item.status === 3 ? (
+                            <TouchableOpacity style={styles.cancelOrderButton}
+                                onPress={() => handleReturnOrder(item)}
+                            >
+                                <Ionicons name="close-outline" size={20} color="white" />
+                                <Text style={styles.cancelOrderButtonText}>Trả hàng</Text>
+                            </TouchableOpacity>
+                        ) : null}
 
-                <View>
-                    {item.status === 5 ? (
-                        <TouchableOpacity
-                            onPress={() => {
-                                navigation.navigate("ChatScreen");
-                            }}
+                        <Modal
+                            visible={isReturnReasonVisible}
+                            transparent={true}
+                            animationType="slide"
+                            onRequestClose={closeModal}
                         >
-                            <Text style={styles.cancelOrderButtonText1}>Mọi thắc mắc về đơn hàng hãy liên hệ đến shop ngay !</Text>
-                        </TouchableOpacity>
-                    ) : null}
+                            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                                <View style={{ padding: 10, backgroundColor: 'white', borderRadius: 10 }}>
+                                    <TextInput
+                                        placeholder="Nhập lý do trả hàng"
+                                        value={returnReason}
+                                        onChangeText={(text) => setReturnReason(text)}
+                                        style={{ borderWidth: 1, borderColor: 'gray', borderRadius: 5, padding: 8 }}
+                                    />
+                                    <TouchableOpacity onPress={() => confirmReturnOrder(item)}>
+                                        <Text style={styles.xacnhan}>Xác nhận trả hàng</Text>
+                                    </TouchableOpacity>
+                                    <TouchableOpacity onPress={closeModal}>
+                                        <Text style={styles.xacnhan}>Hủy</Text>
+                                    </TouchableOpacity>
+                                </View>
+                            </View>
+                        </Modal>
+
+                    </View>
+
+                    <View>
+                        {item.status === 5 ? (
+                            <TouchableOpacity
+                                onPress={() => {
+                                    navigation.navigate("ChatScreen");
+                                }}
+                            >
+                                <Text>Mọi thắc mắc về đơn hàng hãy liên hệ đến shop ngay !</Text>
+                            </TouchableOpacity>
+                        ) : null}
+                    </View>
                 </View>
-            </View>
-        </TouchableOpacity>
-    )
+            </TouchableOpacity>
+        </KeyboardAvoidingView>
+    );
 
     const choXacNhan = () => (
 
@@ -522,19 +524,9 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         marginLeft: 8,
     },
-    cancelOrderButton1: {
-        backgroundColor: 'red',
-        paddingHorizontal: 16,
-        paddingVertical: 8,
-        borderRadius: 8,
-        flexDirection: 'row',
-        alignItems: 'center',
-        // marginLeft: 2,
-
-    },
     cancelOrderButtonText: {
         color: '#fff',
-        fontSize: 14,
+        fontSize: 16,
         fontWeight: 'bold',
         marginLeft: 4,
     },
