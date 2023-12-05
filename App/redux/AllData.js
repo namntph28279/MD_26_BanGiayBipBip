@@ -24,9 +24,11 @@ const getDataSPBestSale = async () => {
 const getDataFavourite = async () => {
     try {
         const email = await AsyncStorage.getItem('Email');
-        const response = await url.get(`/favourite/${email}`);
-
-        return response.data;
+        if (email !== null) {
+            const response = await url.get(`/favourite/${email}`);
+            return response.data;
+        }
+        return [];
     } catch (error) {
         return [];
     }
@@ -35,7 +37,6 @@ const getDataFavourite = async () => {
 const getAsyncStorage = async () => {
     try {
         const email = await AsyncStorage.getItem('Email');
-
         return email;
 
     } catch (error) {
@@ -46,9 +47,11 @@ const getAsyncStorage = async () => {
 const getDataUser = async () => {
     try {
         const email = await AsyncStorage.getItem('Email');
-        const response = await url.get(`/profile/${email}`);
-
-        return response.data;
+        if (email !== null) {
+            const response = await url.get(`/profile/${email}`);
+            return response.data;
+        }
+        return []
     } catch (error) {
         return [];
     }
@@ -57,18 +60,21 @@ const getDataUser = async () => {
 const getDataCart = async () => {
     try {
         const email = await AsyncStorage.getItem("Email");
-        const cartRef = await url.get(`/cart/${email}`);
-        const cartData = cartRef.data;
-        if (cartData) {
-            const products = Object.keys(cartData).map((key) => ({
-                id: key,
-                ...cartData[key],
-                selected: false,
-            }));
-            return products;
-        } else {
-            return [];
+        if (email !== null) {
+            const cartRef = await url.get(`/cart/${email}`);
+            const cartData = cartRef.data;
+            if (cartData) {
+                const products = Object.keys(cartData).map((key) => ({
+                    id: key,
+                    ...cartData[key],
+                    selected: false,
+                }));
+                return products;
+            } else {
+                return [];
+            }
         }
+        return [];
     } catch (error) {
         return [];
     }
@@ -77,13 +83,16 @@ const getDataCart = async () => {
 const getDataDonHang = async () => {
     try {
         const email = await AsyncStorage.getItem("Email");
-        const orderRef = await url.get(`/dataOrderUser/${email}`);
-        const orderData = orderRef.data;
-        if (orderData) {
-            return  orderData;
-        } else {
-            return  [];
+        if (email !== null) {
+            const orderRef = await url.get(`/dataOrderUser/${email}`);
+            const orderData = orderRef.data;
+            if (orderData) {
+                return orderData;
+            } else {
+                return [];
+            }
         }
+        return [];
     } catch (error) {
         return [];
     }
@@ -193,7 +202,7 @@ export const fetchDataOrder = () => async (dispatch) => {
     dispatch(setDataDonHang(dataDonHang))
 };
 export const fetchDataUser = () => async (dispatch) => {
-    const dataUser = await  getDataUser();
+    const dataUser = await getDataUser();
     dispatch(setUser(dataUser))
 };
 
