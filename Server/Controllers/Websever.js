@@ -710,7 +710,7 @@ app.post('/order/return/:orderId', async (req, res) => {
 
         // Update order status to indicate return (assuming status 6 represents "Trả hàng")
         order.status = 5;
-        order.lyDoTraDon = noiDung;
+        order.lyDoHuyDon = noiDung;
 
         // Save the updated order
         await order.save();
