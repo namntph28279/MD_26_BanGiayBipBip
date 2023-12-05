@@ -62,6 +62,8 @@ const ChatScreen = ({ navigation }) => {
             setMessage('')
             if (socket) {
                 socket.emit('client-send');
+            }else{
+                fetchData();
             }
         }
     };

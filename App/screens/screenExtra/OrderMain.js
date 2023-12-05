@@ -118,6 +118,8 @@ export default function OrderMain({ navigation }) {
                 if (socket) {
 
                     socket.emit('client-send');
+                } else {
+                    fetchData();
                 }
                 Alert.alert("Hủy Thành Công")
             } else {
@@ -158,16 +160,15 @@ export default function OrderMain({ navigation }) {
                     'Content-Type': 'application/json',
                 },
             });
-            console.log('returnReason:', returnReason);
-            console.log('Server Response:', response); // Log the response
-
             if (response.status === 200) {
                 // setCancelModalVisible(false);
                 // setSuccessModalVisible(true);
                 // showSuccessModal();
-                // fetchDataList();
+                // fetchData();
+
                 setReturnReasonVisible(false); // Ẩn TextInput sau khi xác nhận trả hàng
                 setReturnReason('');
+                Alert.alert("Đang chờ xét duyệt")
             } else {
                 console.error('Lỗi', response.statusText);
             }
@@ -183,7 +184,6 @@ export default function OrderMain({ navigation }) {
                 // console.log('Item:', productId);
                 navigation.navigate('InformationLine',
                     {
-
                         orderId: item._id,
                     });
             }}
@@ -239,8 +239,8 @@ export default function OrderMain({ navigation }) {
                                 onChangeText={(text) => setReturnReason(text)}
                                 style={{ borderWidth: 1, borderColor: 'gray', borderRadius: 5, padding: 8 }}
                             />
-                            <TouchableOpacity onPress={() => confirmReturnOrder(item)}>
-                                <Text style={styles.xacnhan}>Xác nhận trả hàng</Text>
+                            <TouchableOpacity style={styles.cancelOrderButton1} onPress={() => confirmReturnOrder(item)}>
+                                <Text style={styles.cancelOrderButtonText}>Xác nhận trả hàng</Text>
                             </TouchableOpacity>
                         </View>
                     )}
@@ -518,9 +518,18 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         marginLeft: 8,
     },
+    cancelOrderButton1: {
+        backgroundColor: 'red',
+        paddingHorizontal: 16,
+        paddingVertical: 8,
+        borderRadius: 8,
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginLeft: 8,
+    },
     cancelOrderButtonText: {
         color: '#fff',
-        fontSize: 16,
+        fontSize: 14,
         fontWeight: 'bold',
         marginLeft: 4,
     },
