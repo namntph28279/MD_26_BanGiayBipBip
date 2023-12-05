@@ -18,6 +18,8 @@ import { getMonney } from "../../util/money";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import url from "../../api/url";
+import {io} from "socket.io-client";
+import {getUrl} from "../../api/socketio";
 
 
 export default function OrderMain({ navigation }) {
@@ -34,16 +36,27 @@ export default function OrderMain({ navigation }) {
     const [isSuccessModalVisible, setSuccessModalVisible] = useState(false);
     const [isReturnReasonVisible, setReturnReasonVisible] = useState(false);
     const [returnReason, setReturnReason] = useState('');
+    const [socket, setSocket] = useState(null);
+
+    const fetchData = async () => {
+        console.log("start")
+        dispatch(fetchDataOrder())
+    };
+    useEffect(() => {
+        const socketInstance = io(getUrl());
+        setSocket(socketInstance);
+        return () => {
+            socketInstance.disconnect();
+        };
+    }, []);
 
     useEffect(() => {
-        const fetchData = async () => {
-            console.log("start")
-            dispatch(fetchDataOrder())
-        };
-        fetchData()
-        const intervalId = setInterval(fetchData, 2000);
-        return () => clearInterval(intervalId);
-    }, []);
+        if (socket) {
+            socket.on('server-send', function (data) {
+                fetchData()
+            });
+        }
+    }, [socket]);
 
     useEffect(() => {
         const filterchoXacNhanDon = dataOrder.filter(item => item.status === 0);
@@ -83,7 +96,6 @@ export default function OrderMain({ navigation }) {
 
 
     const handleCancelOrder = async (item) => {
-        try {
             Alert.alert(
                 'Xác nhận hủy đơn hàng',
                 'Bạn có chắc muốn hủy đơn hàng?',
@@ -93,22 +105,20 @@ export default function OrderMain({ navigation }) {
                 ],
                 { cancelable: false }
             );
-        } catch (error) {
-            console.error('Lỗi', error);
-        }
     };
     const confirmCancelOrder = async (item) => {
         try {
+
             const orderId = item._id;
-            const response = await url.post(`/order/statusAPP/${orderId}`, {
-            }, {
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-            });
+
+            const response = await url.post(`/order/statusAPP/${orderId}`);
 
             if (response.status === 200) {
-                dispatch(fetchDataOrder())
+
+                if (socket) {
+
+                    socket.emit('client-send');
+                }
                 Alert.alert("Hủy Thành Công")
             } else {
                 console.error('Lỗi', response.statusText);

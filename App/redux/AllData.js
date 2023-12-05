@@ -25,7 +25,7 @@ const getDataFavourite = async () => {
     try {
         const email = await AsyncStorage.getItem('Email');
         const response = await url.get(`/favourite/${email}`);
-        console.log(email)
+
         return response.data;
     } catch (error) {
         return [];
@@ -35,7 +35,7 @@ const getDataFavourite = async () => {
 const getAsyncStorage = async () => {
     try {
         const email = await AsyncStorage.getItem('Email');
-        console.log(email)
+
         return email;
 
     } catch (error) {
@@ -74,41 +74,20 @@ const getDataCart = async () => {
     }
 };
 
-// const getDataDonHang = async () => {
-//     try {
-//         const email = await AsyncStorage.getItem("Email");
-//         const orderRef = await url.get(`/dataOrderUser/${email}`);
-//         const orderData = orderRef.data;
-//         if (orderData) {
-//             return  orderData;
-//         } else {
-//             return  [];
-//         }
-//     } catch (error) {
-//         return [];
-//     }
-// };
 const getDataDonHang = async () => {
-
-    return new Promise((resolve) => {
-        setTimeout(async () => {
-            try {
-                const email = await AsyncStorage.getItem("Email");
-                const orderRef = await url.get(`/dataOrderUser/${email}`);
-                const orderData = orderRef.data;
-                if (orderData) {
-                    resolve(orderData);
-                } else {
-                    resolve([]);
-                }
-            } catch (error) {
-                resolve([]);
-            }
-        }, 1000);
-    });
-
+    try {
+        const email = await AsyncStorage.getItem("Email");
+        const orderRef = await url.get(`/dataOrderUser/${email}`);
+        const orderData = orderRef.data;
+        if (orderData) {
+            return  orderData;
+        } else {
+            return  [];
+        }
+    } catch (error) {
+        return [];
+    }
 };
-
 
 const getTokenApp = async () => {
     try {

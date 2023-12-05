@@ -28,12 +28,6 @@ function Cart({ navigation }) {
   const dataProduct = useSelector((state) => state.dataAll.dataSP);
   const [dataSP, setDataSP] = useState([]);
 
-  React.useEffect(() => {
-    const unsubscribe = navigation.addListener("focus", () => {
-      dispatch(fetchDataAndSetToRedux());
-    });
-    return unsubscribe;
-  }, [navigation]);
 
   useEffect(() => {
     fetchData();

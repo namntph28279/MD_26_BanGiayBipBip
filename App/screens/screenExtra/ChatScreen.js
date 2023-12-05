@@ -5,6 +5,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import url from "../../api/url";
 import {useSelector} from "react-redux";
 import {io} from "socket.io-client";
+import {getUrl} from "../../api/socketio";
 
 const ChatScreen = ({ navigation }) => {
     const [message, setMessage] = useState('');
@@ -18,7 +19,7 @@ const ChatScreen = ({ navigation }) => {
 
     const fetchData = async () => {
         try {
-            console.log('load')
+
             const name = await AsyncStorage.getItem('Name');
             setDataName(name);
 
@@ -38,7 +39,7 @@ const ChatScreen = ({ navigation }) => {
 
     useEffect(() => {
         fetchData();
-        const socketInstance = io('http://172.20.10.2');
+        const socketInstance = io(getUrl());
         setSocket(socketInstance);
         return () => {
             socketInstance.disconnect();

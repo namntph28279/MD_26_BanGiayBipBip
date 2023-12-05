@@ -19,6 +19,8 @@ import { getMonney } from '../../util/money';
 
 import { useDispatch, useSelector } from "react-redux";
 import { fetchDataAndSetToRedux } from "../../redux/AllData";
+import {io} from "socket.io-client";
+import {getUrl} from "../../api/socketio";
 
 const ThanhToanScreen = ({ route, navigation }) => {
     const [selectedProducts, setSelectedProducts] = useState([]);
@@ -41,9 +43,22 @@ const ThanhToanScreen = ({ route, navigation }) => {
     const [isCheckmarkVisible, setIsCheckmarkVisible] = useState(true);
     //
 
+    //socket.io
+    const [socket, setSocket] = useState(null);
+
     const dispatch = useDispatch(); //trả về một đối tượng điều phối
     const dataProduct = useSelector((state) => state.dataAll.dataSP);
     const [dataSP, setDataSP] = useState([]);
+
+
+    useEffect(() => {
+        const socketInstance = io(getUrl());
+        console.log(socketInstance)
+        setSocket(socketInstance);
+        return () => {
+            socketInstance.disconnect();
+        };
+    }, []);
 
     React.useEffect(() => {
         const unsubscribe = navigation.addListener("focus", () => {
@@ -279,6 +294,9 @@ const ThanhToanScreen = ({ route, navigation }) => {
             const response = await url.post('/order/addOderDetail', orderData);
 
             if (response.status === 201) {
+                if (socket) {
+                    socket.emit('client-send');
+                }
                 const result = response.data;
                 console.log('Đặt hàng thành công:', result);
                 handlePaymentSuccess();

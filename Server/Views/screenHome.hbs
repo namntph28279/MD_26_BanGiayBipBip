@@ -545,7 +545,7 @@
           <button type="button" class="btn btn-secondary" data-dismiss="modal">
             Thoát
           </button>
-          <form :action="`/order/status/Comfig/${dataXacNhanDon._id}`" method="post">
+          <form @submit.prevent="submitXacNhanDon">
             <button type="submit" class="btn btn-primary">Xác nhận</button>
           </form>
         </div>
@@ -605,13 +605,11 @@
 
 
 
-          <form :action="`/order/status/${dataHuyDon._id}`" method="post"
-                class="mb-3">
+          <form @submit.prevent="submitHuyDon" class="mb-3">
             <div class="form-group">
               <label for="product_title">Lý do hủy đơn</label>
-              <input type="text" class="form-control" id="product_title"
-                     name="noiDung"
-                     value="{{product_title}}" required
+              <input type="text" class="form-control"
+                     v-model="formData.noiDung" required
                      placeholder="Vui lòng nhập lý do hủy đơn">
             </div>
             <button type="button" class="btn btn-secondary"
@@ -675,6 +673,7 @@
 
 
 </script>
+<script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/vue@2"></script>
 
 <script>
@@ -694,7 +693,26 @@
       dataXacNhanDon: {},
       dataHuyDon: {},
       tinNhanMoi: 0,
-      donHangMoi:0
+      donHangMoi:0,
+      formData:{
+          noiDung: ''
+      }
+    },
+    mounted() {
+      const socket = io();
+      const self = this;
+      socket.on('server-send', () => {
+        self.GetAllDataChat();
+        self.GetDataCart();
+      });
+      this.socket = socket;
+
+    },
+    beforeDestroy() {
+      const socket = io();
+      if (socket) {
+        this.socket.disconnect();
+      }
     },
     methods: {
       formatPrice(value) {
@@ -773,15 +791,58 @@
             });
       },
 
+      submitXacNhanDon() {
+        const self = this;
+        const socket = io();
+
+        fetch(`/order/status/Comfig/${self.dataXacNhanDon._id}`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+        })
+            .then(response => response.json())
+            .then(data => {
+              if (data === true) {
+                self.dataXacNhanDon = {};
+                $('#xacNhanDon').modal('hide');
+                socket.emit('client-send');
+              }
+            })
+            .catch(error => {
+              console.error(error);
+            });
+      },
+
+      submitHuyDon() {
+        const self = this;
+        const socket = io();
+
+        fetch(`/order/status/${self.dataHuyDon._id}`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(self.formData)
+        })
+            .then(response => response.json())
+            .then(data => {
+              if (data === true) {
+                self.dataHuyDon = {};
+                self.formData.noiDung = '';
+                $('#huyDon').modal('hide');
+                socket.emit('client-send');
+              }
+            })
+            .catch(error => {
+              console.error(error);
+            });
+      }
     }
 
   });
   vmCart.GetAllDataChat();
   vmCart.GetDataCart();
-  setInterval(()=>{
-    vmCart.GetAllDataChat();
-    vmCart.GetDataCart();
-  },2345)
 
 </script>
 </html>
