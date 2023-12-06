@@ -103,12 +103,16 @@ app.post('/screenWarehouse/search', async (req, res) => {
 });
 app.post('/order/status/:orderId', async (req, res) => {
     const orderId = req.params.orderId;
-
     const data = req.body
-    const mess = "Đơn hàng của bạn đã bị hủy vì: " + data.noiDung
+    const order = await Order.findById(orderId);
+    let mess;
+    if (order.status === 5){
+         mess = "Shop từ chối trả hàng vì: " + data.noiDung
+    }else {
+         mess = "Đơn hàng của bạn đã bị hủy vì: " + data.noiDung
+    }
     console.log(mess)
     try {
-        const order = await Order.findById(orderId);
         if (!order) {
             return res.status(404).json({message: 'Đơn hàng không tồn tại'});
         }
@@ -135,10 +139,18 @@ app.post('/order/status/:orderId', async (req, res) => {
             });
         }
         NotificaionClient(idClientArray, mess)
-        order.status = 8;
-        order.lyDoHuyDon = data.noiDung
-        await order.save();
-        res.json(true)
+        console.log(order.status)
+        if (order.status === 5){
+            order.status = 3;
+            order.lyDoHuyDon = data.noiDung
+            await order.save();
+            res.json(true)
+        }else {
+            order.status = 8;
+            order.lyDoHuyDon = data.noiDung
+            await order.save();
+            res.json(true)
+        }
     } catch (error) {
         res.status(500).json({message: error.message});
     }
@@ -207,7 +219,7 @@ app.post('/order/status/Comfig/:id', async (req, res) => {
         }else if (order.status === 5) {
             order.status = 6;
             await order.save();
-            NotificaionClient(idClientArray, "Bạn vui lòng liên hệ với shop thông qua phần tin nhắn hoặc hotline: 0987654321 để được hỗ trợ ")
+            NotificaionClient(idClientArray, "Bạn vui lòng liên hệ với shop thông qua phần tin nhắn hoặc hotline: 0987654321 để được hỗ trợ trả hàng ")
            res.json(true)
         }
 
