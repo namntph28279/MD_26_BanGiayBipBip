@@ -23,7 +23,6 @@ import {io} from "socket.io-client";
 import {getUrl} from "../../api/socketio";
 import { Clipboard } from 'react-native';
 import FlashMessage, { showMessage } from 'react-native-flash-message';
-
 const ThanhToanScreen = ({ route, navigation }) => {
     const [selectedProducts, setSelectedProducts] = useState([]);
     const userID = route.params?.userID || '';
@@ -332,6 +331,7 @@ const ThanhToanScreen = ({ route, navigation }) => {
                 if (socket) {
                     socket.emit('client-send');
                 }
+                dispatch(fetchDataOrder());
                 const result = response.data;
                 console.log('Đặt hàng thành công:', result);
                 handlePaymentSuccess();
@@ -359,14 +359,21 @@ const ThanhToanScreen = ({ route, navigation }) => {
     const copyAccountNumberToClipboard = async () => {
         Clipboard.setString(accountNumber);
         showMessage({
-            message: 'Số tài khoản đã được sao chép!',
+            message: 'Số Tài Khoản Đã Được Sao Chép!',
             type: 'success',
         });
     };
     const copyOrderIdToClipboard = async () => {
         Clipboard.setString(orderId);
         showMessage({
-            message: 'Nội dung đã được sao chép!',
+            message: 'Nội Dung Đã Được Sao Chép!',
+            type: 'success',
+        });
+    };
+    const copyOrdertotalPaymentClipboard = async () => {
+        Clipboard.setString(getMonney(totalPayment));
+        showMessage({
+            message: 'Tổng Tiền Đã Được Sao Chép!',
             type: 'success',
         });
     };
@@ -412,6 +419,10 @@ const ThanhToanScreen = ({ route, navigation }) => {
             const response = await url.post('/order/addOderDetail', orderData);
 
             if (response.status === 201) {
+                if (socket) {
+                    socket.emit('client-send');
+                }
+                dispatch(fetchDataOrder());
                 console.log('Đặt hàng thành công:', response.data);
                 setQRCodeModalVisible(false);
                 setPaymentSuccessModalVisible(false);
@@ -438,6 +449,7 @@ const ThanhToanScreen = ({ route, navigation }) => {
             }, 2000);
         }
     };
+
 
 
     return (
@@ -587,7 +599,10 @@ const ThanhToanScreen = ({ route, navigation }) => {
             >
                 <View style={styles.centeredView}>
                     <View style={styles.modalContent}>
-                        <Image source={require('../../image/qrmomo.png')} style={{ width: 300, height: 350 }} />
+                        <TouchableOpacity>
+                            <Image source={require('../../image/qrmomo.png')} style={{ width: 300, height: 350 }} />
+                        </TouchableOpacity>
+
                         <Text style={styles.modalTitle}>Thông tin thanh toán</Text>
                         <View style={styles.infoContainer}>
                             <Text style={styles.labelText}>Số Tài Khoản:</Text>
@@ -599,6 +614,12 @@ const ThanhToanScreen = ({ route, navigation }) => {
                             <Text style={styles.labelText}>ND:</Text>
                             <Text style={styles.orderIdText} onPress={copyOrderIdToClipboard}>
                                 {orderId}
+                            </Text>
+                        </View>
+                        <View style={styles.infoContainer}>
+                            <Text style={styles.labelText}>Tổng tiền:</Text>
+                            <Text style={styles.orderIdText} onPress={copyOrdertotalPaymentClipboard}>
+                                {totalPayment}
                             </Text>
                         </View>
 
@@ -698,6 +719,7 @@ const styles = StyleSheet.create({
     removeButton: {
     },
     centeredView: {
+        backgroundColor:'#eed7d7',
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
