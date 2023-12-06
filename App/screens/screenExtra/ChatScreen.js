@@ -3,19 +3,53 @@ import { View, FlatList, TextInput, TouchableOpacity, StyleSheet, Text, Image, S
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import url from "../../api/url";
-import {useSelector} from "react-redux";
-import {io} from "socket.io-client";
-import {getUrl} from "../../api/socketio";
+import { useSelector } from "react-redux";
+import { io } from "socket.io-client";
+import { getUrl } from "../../api/socketio";
 
-const ChatScreen = ({ navigation }) => {
+
+const ChatScreen = ({ navigation, route }) => {
     const [message, setMessage] = useState('');
     const [dataAll, setDataALL] = useState();
     const [dataName, setDataName] = useState();
-    
+
     const dataUserID = useSelector((state) => state.dataAll.dataUserID);
     const tokenApp = useSelector((state) => state.dataAll.dataTokenApp);
 
     const [socket, setSocket] = useState(null);
+    const { orderId, initialMessage } = route.params || {};
+
+    useEffect(() => {
+        fetchData();
+        const socketInstance = io(getUrl());
+        setSocket(socketInstance);
+
+        // Check if there's an initial message to send
+        if (initialMessage) {
+            handleInitialMessage(initialMessage);
+        }
+
+        return () => {
+            socketInstance.disconnect();
+        };
+    }, []);
+
+    const handleInitialMessage = async (initialMessage) => {
+        // Send the initial message when the component mounts
+        await url.post("/home/chatShop", {
+            user: dataUserID,
+            fullName: dataName,
+            beLong: "user",
+            conTenMain: initialMessage,
+            status: "true",
+        });
+
+        if (socket) {
+            socket.emit('client-send');
+        } else {
+            fetchData();
+        }
+    };
 
     const fetchData = async () => {
         try {
@@ -58,11 +92,13 @@ const ChatScreen = ({ navigation }) => {
 
     const handleSendMessage = async () => {
         if (message.length > 0) {
+            const isReturnOrder = true;
+            const content = isReturnOrder ? `Bạn muốn trả đơn hàng hay không? orderId: ${orderId}` : message;
             await url.post("/home/chatShop", { user: dataUserID, fullName: dataName, beLong: "user", conTenMain: message, status: "true" });
             setMessage('')
             if (socket) {
                 socket.emit('client-send');
-            }else{
+            } else {
                 fetchData();
             }
         }
@@ -93,8 +129,8 @@ const ChatScreen = ({ navigation }) => {
             enableOnAndroid={true}
             keyboardShouldPersistTaps="handled"
         >
-        <View style={styles.container}>
-                <View style={{ display: "flex", flexDirection: "row", alignItems: "center", padding: 14,marginTop:17, borderBottomWidth: 1 }}>
+            <View style={styles.container}>
+                <View style={{ display: "flex", flexDirection: "row", alignItems: "center", padding: 14, marginTop: 17, borderBottomWidth: 1 }}>
                     <TouchableOpacity onPress={backScreen}>
                         <Image source={require('../../image/back.png')} style={{ width: 28, height: 28 }} />
                     </TouchableOpacity>
@@ -121,7 +157,7 @@ const ChatScreen = ({ navigation }) => {
                         <Text style={styles.sendButtonText}>Gửi</Text>
                     </TouchableOpacity>
                 </View>
-        </View>
+            </View>
         </KeyboardAwareScrollView>
 
     );

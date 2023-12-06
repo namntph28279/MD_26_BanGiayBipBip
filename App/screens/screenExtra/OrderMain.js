@@ -130,30 +130,30 @@ export default function OrderMain({ navigation }) {
             console.error('Lỗi', error);
         }
     };
-    const handleReturnOrder = async (item) => {
-        try {
-            // Kiểm tra xem đơn hàng có ở tab "Đã giao" không
-            if (item.status === 3) { // 3 là mã trạng thái của "Đã giao", điều này có thể thay đổi tùy vào mã trạng thái của bạn
-                // Hiển thị TextInput khi ấn vào nút "Trả hàng"
-                setSelectedOrderForReturn(item);
-                setReturnReasonVisible(true);
-            } else {
-                // Nếu đơn hàng không ở tab "Đã giao", có thể hiển thị cảnh báo hoặc không làm gì cả
-                Alert.alert('Lưu ý', 'Bạn chỉ có thể trả hàng cho các đơn hàng ở tab "Đã giao".');
-            }
-        } catch (error) {
-            console.error('Lỗi', error);
-        }
-    };
+    // const handleReturnOrder = async (item) => {
+    //     try {
+    //         // Kiểm tra xem đơn hàng có ở tab "Đã giao" không
+    //         if (item.status === 3) { // 3 là mã trạng thái của "Đã giao", điều này có thể thay đổi tùy vào mã trạng thái của bạn
+    //             // Hiển thị TextInput khi ấn vào nút "Trả hàng"
+    //             setSelectedOrderForReturn(item);
+    //             setReturnReasonVisible(true);
+    //         } else {
+    //             // Nếu đơn hàng không ở tab "Đã giao", có thể hiển thị cảnh báo hoặc không làm gì cả
+    //             Alert.alert('Lưu ý', 'Bạn chỉ có thể trả hàng cho các đơn hàng ở tab "Đã giao".');
+    //         }
+    //     } catch (error) {
+    //         console.error('Lỗi', error);
+    //     }
+    // };
 
     const confirmReturnOrder = async (item) => {
         try {
             const orderId = item._id;
 
-            if (!returnReason) {
-                Alert.alert('Lưu ý', 'Vui lòng nhập lý do trả hàng.');
-                return;
-            }
+            // if (!returnReason) {
+            //     Alert.alert('Lưu ý', 'Vui lòng nhập lý do trả hàng.');
+            //     return;
+            // }
             const response = await url.post(`/order/return/${orderId}`, {
                 noiDung: returnReason,
 
@@ -170,17 +170,37 @@ export default function OrderMain({ navigation }) {
                     socket.emit('client-send');
                 } else {
 
-                    setReturnReasonVisible(false); // Ẩn TextInput sau khi xác nhận trả hàng
-                    setReturnReason('');
+                    // setReturnReasonVisible(false); // Ẩn TextInput sau khi xác nhận trả hàng
+                    // setReturnReason('');
                     fetchData();
                 }
                 Alert.alert("Đang chờ xét duyệt")
-            } 
-            
+            }
+
         } catch (error) {
             console.error('Lỗi', error);
         }
     };
+
+    const handleReturnOrderAndNavigate = (item,returnReason) => {
+        // Thực hiện xử lý trả hàng
+        confirmReturnOrder(item);
+
+        // Chuẩn bị nội dung tin nhắn
+        let returnMessage = `Tôi muốn trả hàng với mã đơn hàng: ${item._id}. Lý do: `;
+
+    switch (returnReason) {
+        case 'wrong_description':
+            returnMessage += 'Sản phẩm không đúng mô tả.';
+            break;
+    }
+        // Chuyển màn hình InformationLine và gửi tin nhắn
+        navigation.navigate("ChatScreen", {
+            orderId: item._id,
+            initialMessage: returnMessage,
+        });
+    };
+
     const getStatusText = (status) => {
         switch (status) {
             case 0:
@@ -244,7 +264,7 @@ export default function OrderMain({ navigation }) {
                             Alert.alert(getStatusText(item.status));
                         }}
                     >
-                        <Text style={styles.orderStatus1}>{`Trạng Thái: ${getStatusText(item.status)}`}</Text>
+                        {/* <Text style={styles.orderStatus1}>{`Trạng Thái: ${getStatusText(item.status)}`}</Text> */}
                     </TouchableOpacity>
 
                 </View>
@@ -259,14 +279,14 @@ export default function OrderMain({ navigation }) {
                 <View style={styles.buttonContainer}>
                     {item.status === 3 && !isReturnReasonVisible && (
                         <TouchableOpacity style={styles.cancelOrderButton}
-                            onPress={() => handleReturnOrder(item)}
+                            onPress={() => handleReturnOrderAndNavigate(item, 'wrong_description')}
                         >
                             <Ionicons name="close-outline" size={20} color="white" />
                             <Text style={styles.cancelOrderButtonText}>Trả hàng</Text>
                         </TouchableOpacity>
                     )}
 
-                    {isReturnReasonVisible && item === selectedOrderForReturn && (
+                    {/* {isReturnReasonVisible && item === selectedOrderForReturn && (
                         <View style={{ padding: 10 }}>
                             <TextInput
                                 placeholder="Nhập lý do trả hàng"
@@ -278,7 +298,7 @@ export default function OrderMain({ navigation }) {
                                 <Text style={styles.cancelOrderButtonText}>Xác nhận trả hàng</Text>
                             </TouchableOpacity>
                         </View>
-                    )}
+                    )} */}
                 </View>
 
                 <View>
@@ -433,12 +453,12 @@ const styles = StyleSheet.create({
     },
     orderStatus1: {
         marginLeft: 110,
-        marginRight:12,
+        marginRight: 12,
         marginBottom: 10,
         color: 'blue',
-        backgroundColor:'#ffff',
+        backgroundColor: '#ffff',
         borderWidth: 1,
-        alignSelf:'center',
+        alignSelf: 'center',
         borderColor: 'black',
         borderRadius: 5,
         overflow: 'hidden',
