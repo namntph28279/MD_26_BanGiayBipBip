@@ -331,7 +331,6 @@ const ThanhToanScreen = ({ route, navigation }) => {
                 if (socket) {
                     socket.emit('client-send');
                 }
-                dispatch(fetchDataOrder());
                 const result = response.data;
                 console.log('Đặt hàng thành công:', result);
                 handlePaymentSuccess();
@@ -422,7 +421,6 @@ const ThanhToanScreen = ({ route, navigation }) => {
                 if (socket) {
                     socket.emit('client-send');
                 }
-                dispatch(fetchDataOrder());
                 console.log('Đặt hàng thành công:', response.data);
                 setQRCodeModalVisible(false);
                 setPaymentSuccessModalVisible(false);
@@ -719,7 +717,7 @@ const styles = StyleSheet.create({
     removeButton: {
     },
     centeredView: {
-        backgroundColor:'#eed7d7',
+        // backgroundColor:'#eed7d7',
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
