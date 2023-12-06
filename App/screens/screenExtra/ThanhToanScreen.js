@@ -21,6 +21,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { fetchDataAndSetToRedux } from "../../redux/AllData";
 import {io} from "socket.io-client";
 import {getUrl} from "../../api/socketio";
+import { Clipboard } from 'react-native';
+import FlashMessage, { showMessage } from 'react-native-flash-message';
 
 const ThanhToanScreen = ({ route, navigation }) => {
     const [selectedProducts, setSelectedProducts] = useState([]);
@@ -42,6 +44,8 @@ const ThanhToanScreen = ({ route, navigation }) => {
     const [isPaymentSuccess, setIsPaymentSuccess] = useState(false);
     const [isCheckmarkVisible, setIsCheckmarkVisible] = useState(true);
     //
+    const [isMomoModalVisible, setIsMomoModalVisible] = useState(false);
+    const [isQRCodeModalVisible, setQRCodeModalVisible] = useState(false);
 
     //socket.io
     const [socket, setSocket] = useState(null);
@@ -50,7 +54,19 @@ const ThanhToanScreen = ({ route, navigation }) => {
     const dataProduct = useSelector((state) => state.dataAll.dataSP);
     const [dataSP, setDataSP] = useState([]);
 
-
+    const [accountNumber, setAccountNumber] = useState('0923657778');
+    const [orderId, setOrderId] = useState('');
+    useEffect(() => {
+        const fetchEmail = async () => {
+            try {
+                const email = await AsyncStorage.getItem("Email");
+                setOrderId(email);
+            } catch (error) {
+                console.error('Lỗi :', error);
+            }
+        };
+        fetchEmail();
+    }, []);
     useEffect(() => {
         const socketInstance = io(getUrl());
         console.log(socketInstance)
@@ -80,6 +96,7 @@ const ThanhToanScreen = ({ route, navigation }) => {
         if (!isMomoSelected && !isCODSelected) {
             setIsCODSelected(true);
         }
+
     }, [userID]);
     useEffect(() => {
         setSelectedProducts(route.params?.selectedProducts || []);
@@ -198,6 +215,13 @@ const ThanhToanScreen = ({ route, navigation }) => {
         setPaymentSuccessModalVisible(false);
     };
     const handlePaymentSuccess = () => {
+        if (isMomoSelected) {
+            setQRCodeModalVisible(true);
+            setTimeout(() => {
+                setQRCodeModalVisible(false);
+            }, 30000);
+
+        }else {
         setPaymentSuccessModalVisible(true);
         setTimeout(() => {
             setIsCheckmarkVisible(true);
@@ -208,6 +232,10 @@ const ThanhToanScreen = ({ route, navigation }) => {
                 navigation.replace('Oder');
             }, 2000);
         }, 2000);
+        }
+    };
+    const handleQRCodeModalClose = () => {
+        setQRCodeModalVisible(false);
     };
 
 
@@ -255,6 +283,13 @@ const ThanhToanScreen = ({ route, navigation }) => {
             Alert.alert('Hãy Thao Tác Lại', 'Vui lòng chọn địa chỉ nhận hàng trước khi thanh toán.');
             return;
         }
+        if (isMomoSelected) {
+            setQRCodeModalVisible(true);
+            setTimeout(() => {
+                setQRCodeModalVisible(false);
+            }, 30000);
+
+        }else if (isCODSelected){
         const name = await AsyncStorage.getItem('Name1');
         try {
             const products = selectedProducts.map(product => {
@@ -318,11 +353,98 @@ const ThanhToanScreen = ({ route, navigation }) => {
                 setPaymentSuccessModalVisible(true);
             }, 2000);
         }
+        }
     };
+
+    const copyAccountNumberToClipboard = async () => {
+        Clipboard.setString(accountNumber);
+        showMessage({
+            message: 'Số tài khoản đã được sao chép!',
+            type: 'success',
+        });
+    };
+    const copyOrderIdToClipboard = async () => {
+        Clipboard.setString(orderId);
+        showMessage({
+            message: 'Nội dung đã được sao chép!',
+            type: 'success',
+        });
+    };
+
+    const handlePaymentSuccessButton = async () => {
+        if (!shippingAddress) {
+            Alert.alert('Hãy Thao Tác Lại', 'Vui lòng chọn địa chỉ nhận hàng trước khi thanh toán.');
+            return;
+        }
+        try {
+            const name = await AsyncStorage.getItem('Name1');
+            const products = selectedProducts.map(product => {
+                    const item = dataSP.find((item) => item._id === product.product);
+                    return{
+                        product: product.product,
+
+                        img_product:item.product_image,
+                        name_Product:item.product_title,
+                        name_Price:item.product_price * product.quantity,
+
+                        name_Size:product.size,
+                        name_Color:product.color,
+                        quantityProduct:product.quantity,
+                    }
+                }
+            );
+            console.log(products)
+
+            const orderData = {
+                user: userID || '',
+                customer_email: name || '',
+                products: products || [],
+                total_amount:totalPayment ,
+                userName:shippingAddress.name,
+                phone:shippingAddress.phone,
+                address: shippingAddress.address,
+                total_product:productTotal,
+                total_insurance_amount:insuranceFee,
+                total_shipping_fee:shippingFee,
+                total_All:totalPayment,
+                total_quantity:soLuong
+            };
+            const response = await url.post('/order/addOderDetail', orderData);
+
+            if (response.status === 201) {
+                console.log('Đặt hàng thành công:', response.data);
+                setQRCodeModalVisible(false);
+                setPaymentSuccessModalVisible(false);
+                setTimeout(() => {
+                    navigation.replace('Oder');
+                }, 3000);
+                showMessage({
+                    message: 'Chờ Xác Nhận Thanh Toán Của Chủ Shop',
+                    type: 'success',
+                });
+            } else {
+                console.error('Lỗi đặt hàng:', response.status, response.statusText);
+                console.error('Server response:', response.data);
+                setTimeout(() => {
+                    setIsCheckmarkVisible(false);
+                    setPaymentSuccessModalVisible(true);
+                }, 2000);
+            }
+        } catch (error) {
+            console.error('Lỗi đặt hàng:', error);
+            setTimeout(() => {
+                setIsCheckmarkVisible(false);
+                setPaymentSuccessModalVisible(true);
+            }, 2000);
+        }
+    };
+
 
     return (
         <View style={styles.container}>
-
+            <FlashMessage position="bottom"
+                          titleStyle={styles.flashMessageTitle}
+                          textStyle={styles.flashMessageText}/>
                 <TouchableOpacity style={styles.addressContainer} onPress={handleAddressPress}>
 
                     <View>
@@ -457,6 +579,43 @@ const ThanhToanScreen = ({ route, navigation }) => {
                     </View>
                 </TouchableWithoutFeedback>
             </Modal>
+            <Modal
+                animationType="slide"
+                transparent={true}
+                visible={isQRCodeModalVisible}
+                onRequestClose={handleQRCodeModalClose}
+            >
+                <View style={styles.centeredView}>
+                    <View style={styles.modalContent}>
+                        <Image source={require('../../image/qrmomo.png')} style={{ width: 300, height: 350 }} />
+                        <Text style={styles.modalTitle}>Thông tin thanh toán</Text>
+                        <View style={styles.infoContainer}>
+                            <Text style={styles.labelText}>Số Tài Khoản:</Text>
+                            <Text style={styles.accountNumberText} onPress={copyAccountNumberToClipboard}>
+                                {accountNumber}
+                            </Text>
+                        </View>
+                        <View style={styles.infoContainer}>
+                            <Text style={styles.labelText}>ND:</Text>
+                            <Text style={styles.orderIdText} onPress={copyOrderIdToClipboard}>
+                                {orderId}
+                            </Text>
+                        </View>
+
+                        <View style={styles.buttonContainer}>
+                            <TouchableOpacity onPress={handleQRCodeModalClose} style={styles.modalCloseButton1}>
+                                <Text style={styles.modalCloseText}>Đóng</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity style={styles.paymentSuccessButton}
+                                              onPress={handlePaymentSuccessButton}>
+                                <Text style={styles.paymentSuccessText}>Đã thanh toán</Text>
+                            </TouchableOpacity>
+                        </View>
+                    </View>
+                </View>
+            </Modal>
+
+
         </View>
     );
 };
@@ -488,7 +647,15 @@ const styles = StyleSheet.create({
     quantity: {
         fontSize: 16,
     },
-
+    flashMessageTitle: {
+        fontSize: 16,
+        fontWeight: 'bold',
+        textAlign: 'center',
+    },
+    flashMessageText: {
+        fontSize: 14,
+        textAlign: 'center',
+    },
     productItem: {
         flexDirection: 'row',
         alignItems: 'center',
@@ -501,6 +668,21 @@ const styles = StyleSheet.create({
     },
     productItemContainer: {
         position: 'relative',
+    },
+
+    infoContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginBottom: 10,
+    },
+    labelText: {
+        fontSize: 14,
+        fontWeight: 'bold',
+        marginRight: 10,
+    },
+    accountNumberText: {
+        fontSize: 10,
+        marginVertical: 5,
     },
     removeButtonContainer: {
         position: 'absolute',
@@ -708,9 +890,34 @@ const styles = StyleSheet.create({
         fontSize: 18,
         fontWeight: 'bold',
     },
-
-
-
+    orderIdText: {
+        fontSize: 10,
+        marginVertical: 5,
+    },
+    buttonContainer: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        marginTop: 20,
+    },
+    modalCloseButton1: {
+        flex: 1,
+        padding: 10,
+        backgroundColor: '#3498db',
+        borderRadius: 5,
+        marginRight: 5,
+    },
+    paymentSuccessButton: {
+        flex: 1,
+        padding: 10,
+        backgroundColor: '#2ecc71',
+        borderRadius: 5,
+        marginLeft: 5,
+    },
+    paymentSuccessText: {
+        color: '#fff',
+        fontSize: 16,
+        textAlign: 'center',
+    },
 });
 
 export default ThanhToanScreen;
