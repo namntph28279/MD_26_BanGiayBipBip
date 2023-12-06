@@ -18,6 +18,7 @@ import { fetchDataAndSetToRedux } from "../../redux/AllData";
 import url from "../../api/url";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import NoProduct from "../../components/NoProduct";
+import { useIsFocused } from "@react-navigation/native";
 
 function Cart({ navigation }) {
   const [cartProducts, setCartProducts] = useState([]);
@@ -31,11 +32,9 @@ function Cart({ navigation }) {
 
   useEffect(() => {
     fetchData();
-    setDataSP(dataProduct);
-  }, [dataProduct]);
-  useEffect(() => {
     fetchColor();
-  }, [color]);
+    setDataSP(dataProduct);
+  }, [dataProduct, useIsFocused()]);
 
   const fetchData = async () => {
     const email = await AsyncStorage.getItem("Email");
