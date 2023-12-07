@@ -241,7 +241,7 @@ export default function OrderMain({ navigation }) {
                             Alert.alert(getStatusText(item.status));
                         }}
                     >
-                        <Text style={styles.orderStatus1}>{`Trạng Thái: ${getStatusText(item.status)}`}</Text>
+                        {/* <Text style={styles.orderStatus1}>{`Trạng Thái: ${getStatusText(item.status)}`}</Text> */}
                     </TouchableOpacity>
 
                 </View>
