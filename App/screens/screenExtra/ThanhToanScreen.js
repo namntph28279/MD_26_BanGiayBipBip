@@ -418,7 +418,7 @@ const ThanhToanScreen = ({ route, navigation }) => {
                 total_product:productTotal,
                 total_insurance_amount:insuranceFee,
                 // total_shipping_fee:shippingFee,
-                total_shipping_fee: isMomoSelected ? 'free ship' : getMonney(shippingFee),
+                total_shipping_fee: isMomoSelected ? 'Miễn phí vận chuyển' : getMonney(shippingFee),
                 // total_All:totalPayment,
                 total_All:productTotal + insuranceFee,
                 total_quantity:soLuong
@@ -493,7 +493,7 @@ const ThanhToanScreen = ({ route, navigation }) => {
                     </View>
                     <View style={styles.paymentDetailItem}>
                         <Text style={styles.detailLabel}>Phí vận chuyển:</Text>
-                        <Text style={styles.detailValue}>{isMomoSelected ? 'Free ship' : getMonney(shippingFee)}</Text>
+                        <Text style={styles.detailValue}>{isMomoSelected ? 'Miễn phí vận chuyển' : getMonney(shippingFee)}</Text>
                     </View>
 
                     <View style={styles.paymentDetailItem}>

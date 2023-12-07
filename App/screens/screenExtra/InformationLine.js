@@ -119,6 +119,16 @@ const InformationLine = ({ route, navigation }) => {
       setLoading(false);
     }
   };
+  const formatShippingFee = (shippingFee) => {
+    if (shippingFee === "free ship" || shippingFee === "Miễn phí vận chuyển") {
+      return "Miễn phí vận chuyển";
+    } else {
+      const numericShippingFee = !isNaN(parseFloat(shippingFee)) ? parseFloat(shippingFee) : 0;
+      return `${getMonney(numericShippingFee)}`;
+    }
+  };
+
+
   return (
     <View style={styles.container}>
       <View style={styles.container}>
@@ -175,8 +185,9 @@ const InformationLine = ({ route, navigation }) => {
               </View>
               <View style={styles.paymentDetailItem}>
                 <Text style={styles.detailLabel}>Phí vận chuyển:</Text>
-                <Text style={styles.detailValue}>{`${getMonney(item.total_shipping_fee)}`}</Text>
+                <Text style={styles.detailValue}>{formatShippingFee(item.total_shipping_fee)}</Text>
               </View>
+
               <View style={styles.paymentDetailItem}>
                 <Text style={styles.detailLabel1}>Tổng thanh toán:</Text>
                 <Text style={styles.detailValue1}>{`${getMonney(item.total_amount)}`}</Text>
