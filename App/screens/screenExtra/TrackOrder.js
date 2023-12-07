@@ -252,7 +252,6 @@ const styles = StyleSheet.create({
         color: 'black',
         fontSize: 14,
         textAlign: 'center',
-        wordWrap: 'break-word',
     },
     deliveryAddressContainer: {
         width: 325,

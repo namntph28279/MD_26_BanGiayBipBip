@@ -140,6 +140,10 @@ const ThanhToanScreen = ({ route, navigation }) => {
         const insurance = productTotal * 0.01;
         setInsuranceFee(insurance > 3000 ? insurance : 3000);
         setInsuranceFee(insurance);
+        //
+        const shippingFee = isMomoSelected ? 0 : 30000;
+        setShippingFee(shippingFee);
+//
         const total = productTotal + insuranceFee + shippingFee;
         setTotalPayment(total);
     };
@@ -406,14 +410,17 @@ const ThanhToanScreen = ({ route, navigation }) => {
                 user: userID || '',
                 customer_email: name || '',
                 products: products || [],
-                total_amount:totalPayment ,
+                // total_amount:totalPayment ,
+                total_amount:0 ,
                 userName:shippingAddress.name,
                 phone:shippingAddress.phone,
                 address: shippingAddress.address,
                 total_product:productTotal,
                 total_insurance_amount:insuranceFee,
-                total_shipping_fee:shippingFee,
-                total_All:totalPayment,
+                // total_shipping_fee:shippingFee,
+                total_shipping_fee: isMomoSelected ? 'free ship' : getMonney(shippingFee),
+                // total_All:totalPayment,
+                total_All:productTotal + insuranceFee,
                 total_quantity:soLuong
             };
             const response = await url.post('/order/addOderDetail', orderData);
@@ -486,12 +493,16 @@ const ThanhToanScreen = ({ route, navigation }) => {
                     </View>
                     <View style={styles.paymentDetailItem}>
                         <Text style={styles.detailLabel}>Phí vận chuyển:</Text>
-                        <Text style={styles.detailValue}>{getMonney(shippingFee)}</Text>
+                        <Text style={styles.detailValue}>{isMomoSelected ? 'Free ship' : getMonney(shippingFee)}</Text>
                     </View>
+
                     <View style={styles.paymentDetailItem}>
                         <Text style={styles.detailLabel1}>Tổng thanh toán:</Text>
-                        <Text style={styles.detailValue1}>{getMonney(totalPayment)}</Text>
+                        <Text style={styles.detailValue1}>
+                            {isMomoSelected ? getMonney(productTotal + insuranceFee) : getMonney(totalPayment)}
+                        </Text>
                     </View>
+
                 </View>
 
                 <TouchableOpacity style={styles.paymentMethodContainer} onPress={handlePaymentMethodPress}>
@@ -504,7 +515,9 @@ const ThanhToanScreen = ({ route, navigation }) => {
             <View style={styles.bottomContainer}>
                 <View style={styles.totalAmountContainer}>
                     <Text style={styles.totalAmountText}>Tổng Tiền:</Text>
-                    <Text style={styles.detailValue1}>{getMonney(totalPayment)}</Text>
+                    <Text style={styles.detailValue1}>
+                        {isMomoSelected ? getMonney(productTotal + insuranceFee) : getMonney(totalPayment)}
+                    </Text>
                 </View>
                 <TouchableOpacity
                     style={{
@@ -619,7 +632,7 @@ const ThanhToanScreen = ({ route, navigation }) => {
                         <View style={styles.infoContainer}>
                             <Text style={styles.labelText}>Tổng tiền:</Text>
                             <Text style={styles.orderIdText} onPress={copyOrdertotalPaymentClipboard}>
-                                {totalPayment}
+                                {getMonney(productTotal + insuranceFee)}
                             </Text>
                         </View>
 
