@@ -18,7 +18,7 @@ import { Alert } from 'react-native';
 import { getMonney } from '../../util/money';
 
 import { useDispatch, useSelector } from "react-redux";
-import { fetchDataAndSetToRedux } from "../../redux/AllData";
+import {fetchDataAndSetToRedux, fetchDataOrder} from "../../redux/AllData";
 import {io} from "socket.io-client";
 import {getUrl} from "../../api/socketio";
 import { Clipboard } from 'react-native';
@@ -334,6 +334,7 @@ const ThanhToanScreen = ({ route, navigation }) => {
                 const result = response.data;
                 console.log('Đặt hàng thành công:', result);
                 handlePaymentSuccess();
+                dispatch(fetchDataOrder());
             } else {
                 console.error('Lỗi đặt hàng:', response.status, response.statusText);
                 console.error('Server response:', response.data);
@@ -425,6 +426,7 @@ const ThanhToanScreen = ({ route, navigation }) => {
                 setQRCodeModalVisible(false);
                 setPaymentSuccessModalVisible(false);
                 setTimeout(() => {
+                    dispatch(fetchDataOrder());
                     navigation.replace('Oder');
                 }, 3000);
                 showMessage({
