@@ -705,33 +705,28 @@ app.get('/loadData/donHuy/:id', async (req, res) => {
 //trả hàng
 app.post('/order/return/:orderId', async (req, res) => {
     const orderId = req.params.orderId;
-    const { noiDung } = req.body;
-
-
+    const data = req.body;
+    
     try {
         const order = await Order.findById(orderId);
-
+        
         if (!order) {
             return res.status(404).json({ message: 'Đơn hàng không tồn tại' });
         }
 
-        // Check if the order status is eligible for return (assuming status 4 means "Đã giao")
         if (order.status !== 3) {
-            return res.status(400).json({ message: 'Không thể trả đơn hàng với trạng thái hiện tại' });
+            return res.status(400).json({ message: 'Không thể trả hàng với đơn hàng này' });
         }
 
-        // Update order status to indicate return (assuming status 6 represents "Trả hàng")
-        order.status = 5;
-        order.lyDoHuyDon = noiDung;
-
-        // Save the updated order
+        order.status = 5;  // Chuyển đơn hàng sang trạng thái trả hàng
+        order.lyDoTraHang = data.noiDung;
         await order.save();
 
-        res.json({ message: 'Chuyển trạng thái đơn hàng sang "Trả hàng" thành công' });
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
 });
+
 
 
 module.exports = app;
