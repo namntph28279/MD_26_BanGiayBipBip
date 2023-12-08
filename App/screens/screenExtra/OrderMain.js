@@ -66,10 +66,10 @@ export default function OrderMain({ navigation }) {
         const filterGiaoHang = dataOrder.filter(item => item.status === 2);
         setGiaoHang(filterGiaoHang)
 
-        const filterDaGiaoHang = dataOrder.filter(item => item.status === 3);
+        const filterDaGiaoHang = dataOrder.filter(item => item.status === 3 || item.status === 7 || item.status === 9);
         setDaGiaoHang(filterDaGiaoHang)
 
-        const filterchoHuyDonHang = dataOrder.filter(item => item.status === 4 || item.status === 8);
+        const filterchoHuyDonHang = dataOrder.filter(item => item.status === 4 || item.status === 8 );
         setHuyDonHang(filterchoHuyDonHang)
 
         const filterchoTraDonHang = dataOrder.filter(item => item.status === 5 || item.status === 6);
@@ -131,30 +131,30 @@ export default function OrderMain({ navigation }) {
         try {
             const orderId = item._id;
 
+            // Thay đổi trạng thái và lý do trả hàng
             const response = await url.post(`/order/return/${orderId}`, {
-                noiDung: returnReason,
+                status: 'waiting_approval',  // Trạng thái chờ xét duyệt trả hàng
+            }, {
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
 
-            },
-                {
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                });
             if (response.status === 200) {
+                // Nếu thành công, cập nhật lại danh sách đơn hàng
+                fetchData();
 
                 if (socket) {
-
                     socket.emit('client-send');
-                } else {
-                    fetchData();
                 }
+
                 Alert.alert("Đang chờ xét duyệt")
             }
-
         } catch (error) {
             console.error('Lỗi', error);
         }
     };
+
 
     const handleReturnOrderAndNavigate = (item, returnReason) => {
         // Thực hiện xử lý trả hàng
@@ -261,6 +261,16 @@ export default function OrderMain({ navigation }) {
                             <Ionicons name="close-outline" size={20} color="white" />
                             <Text style={styles.cancelOrderButtonText}>Trả hàng</Text>
                         </TouchableOpacity>
+                    )}
+                </View>
+                <View style={styles.buttonContainer}>
+                    {item.status === 7 && (  
+                            <Text style={styles.cancelOrderButtonText1}>Đang yêu cầu trả hàng</Text>
+                    )}
+                </View>
+                <View style={styles.buttonContainer}>
+                    {item.status === 9 && (  
+                            <Text style={styles.cancelOrderButtonText1}>Từ chối trả hàng</Text>
                     )}
                 </View>
 
@@ -560,6 +570,12 @@ const styles = StyleSheet.create({
     },
     cancelOrderButtonText: {
         color: '#fff',
+        fontSize: 14,
+        fontWeight: 'bold',
+        marginLeft: 4,
+    },
+    cancelOrderButtonText1: {
+        color: 'black',
         fontSize: 14,
         fontWeight: 'bold',
         marginLeft: 4,
