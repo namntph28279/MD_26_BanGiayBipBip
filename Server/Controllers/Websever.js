@@ -717,16 +717,7 @@ app.post('/order/return/:orderId', async (req, res) => {
         if (order.status !== 3) {
             return res.status(400).json({ message: 'Không thể trả đơn hàng với trạng thái hiện tại' });
         }
-
-        // Assuming status 7 means "Chờ xét duyệt trả đơn"
-        // Assuming status 9 means "Từ chối trả đơn"
-        // Assuming status 5 means "Xác nhận trả đơn"
-        // Update order status based on the request
         if (req.body.status === 'waiting_approval') {
-            order.status = 7;
-            console.log('dfsfdsfsdfs', order.status = 7);
-            
-            // Introduce a delay (e.g., 1 second) before transitioning to status 5
             setTimeout(() => {
                 order.status = 5;
                 console.log('dfsfdsfsdfs', order.status = 5);

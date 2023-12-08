@@ -66,13 +66,13 @@ export default function OrderMain({ navigation }) {
         const filterGiaoHang = dataOrder.filter(item => item.status === 2);
         setGiaoHang(filterGiaoHang)
 
-        const filterDaGiaoHang = dataOrder.filter(item => item.status === 3 || item.status === 7 || item.status === 9);
+        const filterDaGiaoHang = dataOrder.filter(item => item.status === 3 || item.status === 5 || item.status === 9);
         setDaGiaoHang(filterDaGiaoHang)
 
         const filterchoHuyDonHang = dataOrder.filter(item => item.status === 4 || item.status === 8 );
         setHuyDonHang(filterchoHuyDonHang)
 
-        const filterchoTraDonHang = dataOrder.filter(item => item.status === 5 || item.status === 6);
+        const filterchoTraDonHang = dataOrder.filter(item => item.status === 6);
         setTraDonHang(filterchoTraDonHang)
 
         setTatCaDon(dataOrder)
@@ -264,18 +264,18 @@ export default function OrderMain({ navigation }) {
                     )}
                 </View>
                 <View style={styles.buttonContainer}>
-                    {item.status === 7 && (  
-                            <Text style={styles.cancelOrderButtonText1}>Đang yêu cầu trả hàng</Text>
+                    {item.status === 5 && (  
+                            <Text style={styles.cancelOrderButtonText2}>Đang yêu cầu trả hàng</Text>
                     )}
                 </View>
                 <View style={styles.buttonContainer}>
                     {item.status === 9 && (  
-                            <Text style={styles.cancelOrderButtonText1}>Từ chối trả hàng</Text>
+                            <Text style={styles.cancelOrderButtonText2}>Từ chối trả hàng</Text>
                     )}
                 </View>
 
                 <View>
-                    {item.status === 5 ? (
+                    {item.status === 6 ? (
                         <TouchableOpacity
                             onPress={() => {
                                 navigation.navigate("ChatScreen");
@@ -576,7 +576,13 @@ const styles = StyleSheet.create({
     },
     cancelOrderButtonText1: {
         color: 'black',
-        fontSize: 14,
+        fontSize: 12,
+        fontWeight: 'bold',
+        marginLeft: 4,
+    },
+    cancelOrderButtonText2: {
+        color: 'black',
+        fontSize: 12,
         fontWeight: 'bold',
         marginLeft: 4,
     },
