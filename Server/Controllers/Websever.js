@@ -41,7 +41,7 @@ app.get('/loadData', async (req, res) => {
     const choXacNhan = await Order.find({ status: 0 }).sort({ order_date: -1 });
     const choLayHang = await Order.find({ status: 1 }).sort({ order_date: -1 });
     const choGiaoHang = await Order.find({ status: 2 }).sort({ order_date: -1 });
-    const daGiao = await Order.find({ status: 3 }).sort({ order_date: -1 });
+    const daGiao = await Order.find({ status: { $in: [3, 9] } }).sort({ order_date: -1 });
     // const donHuy = await Order.find({status: 4}).sort({order_date: -1});
     const donHuy = await Order.find({ status: 8 }).sort({ order_date: -1 });
     const traHang = await Order.find({ status: 5 }).sort({ order_date: -1 });
@@ -141,7 +141,7 @@ app.post('/order/status/:orderId', async (req, res) => {
         NotificaionClient(idClientArray, mess)
         console.log(order.status)
         if (order.status === 5) {
-            order.status = 3;
+            order.status = 9;
             order.lyDoHuyDon = data.noiDung
             await order.save();
             res.json(true)
