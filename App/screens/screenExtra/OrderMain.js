@@ -35,6 +35,7 @@ export default function OrderMain({ navigation }) {
     const [tatCaDon, setTatCaDon] = useState([]);
     const [returnReason, setReturnReason] = useState('');
     const [socket, setSocket] = useState(null);
+    const [receivedOrders, setReceivedOrders] = useState([]);
 
     const fetchData = async () => {
         console.log("start")
@@ -66,10 +67,10 @@ export default function OrderMain({ navigation }) {
         const filterGiaoHang = dataOrder.filter(item => item.status === 2);
         setGiaoHang(filterGiaoHang)
 
-        const filterDaGiaoHang = dataOrder.filter(item => item.status === 3 || item.status === 5 || item.status === 9);
+        const filterDaGiaoHang = dataOrder.filter(item => item.status === 3 || item.status === 5 || item.status === 9 || item.status === 7);
         setDaGiaoHang(filterDaGiaoHang)
 
-        const filterchoHuyDonHang = dataOrder.filter(item => item.status === 4 || item.status === 8 );
+        const filterchoHuyDonHang = dataOrder.filter(item => item.status === 4 || item.status === 8);
         setHuyDonHang(filterchoHuyDonHang)
 
         const filterchoTraDonHang = dataOrder.filter(item => item.status === 6);
@@ -127,6 +128,7 @@ export default function OrderMain({ navigation }) {
             console.error('Lỗi', error);
         }
     };
+
     const confirmReturnOrder = async (item) => {
         try {
             const orderId = item._id;
@@ -153,6 +155,52 @@ export default function OrderMain({ navigation }) {
         } catch (error) {
             console.error('Lỗi', error);
         }
+    };
+    
+    const confirmOutOrder = async (item) => {
+        try {
+            const orderId = item._id;
+
+            // Thay đổi trạng thái và lý do trả hàng
+            const response = await url.post(`/order/out/${orderId}`, {
+                status: 'hh',  // Trạng thái chờ xét duyệt trả hàng
+            }, {
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
+
+            if (response.status === 200) {
+                // Nếu thành công, cập nhật lại danh sách đơn hàng
+                fetchData();
+
+                if (socket) {
+                    socket.emit('client-send');
+                }
+                const updatedOrders = receivedOrders.map((order) => {
+                    if (order._id === item._id) {
+                        return { ...order, status: 7 }; // Assuming 7 means "Đã nhận"
+                    }
+                    return order;
+                });
+    
+                setReceivedOrders(updatedOrders);
+            }
+        } catch (error) {
+            console.error('Lỗi', error);
+        }
+    };
+
+    const handleOutOrder = async (item) => {
+        Alert.alert(
+            'Xác nhận đã nhận đơn hàng',
+            'Bạn có chắc chắn đã nhận đơn hàng?',
+            [
+                { text: 'Hủy', style: 'cancel' },
+                { text: 'Đồng ý', onPress: () => confirmOutOrder(item) },
+            ],
+            { cancelable: false }
+        );
     };
 
 
@@ -253,24 +301,39 @@ export default function OrderMain({ navigation }) {
                         </TouchableOpacity>
                     ) : null}
                 </View>
+
                 <View style={styles.buttonContainer}>
                     {item.status === 3 && (
                         <TouchableOpacity style={styles.cancelOrderButton}
                             onPress={() => handleReturnOrderAndNavigate(item, 'wrong_description')}
                         >
-                            <Ionicons name="close-outline" size={20} color="white" />
                             <Text style={styles.cancelOrderButtonText}>Trả hàng</Text>
                         </TouchableOpacity>
                     )}
+
+                    {item.status === 3 && (
+                        <TouchableOpacity style={styles.cancelOrderButton}
+                            onPress={() => handleOutOrder(item)}
+                        >
+                            <Text style={styles.cancelOrderButtonText}>Đã nhận</Text>
+                        </TouchableOpacity>
+                    )}
                 </View>
+
+
                 <View style={styles.buttonContainer}>
-                    {item.status === 5 && (  
-                            <Text style={styles.cancelOrderButtonText2}>Đang yêu cầu trả hàng</Text>
+                    {item.status === 5 && (
+                        <Text style={styles.cancelOrderButtonText2}>Đang yêu cầu trả hàng</Text>
                     )}
                 </View>
                 <View style={styles.buttonContainer}>
-                    {item.status === 9 && (  
-                            <Text style={styles.cancelOrderButtonText2}>Từ chối trả hàng</Text>
+                    {item.status === 7 && (
+                        <Text style={styles.cancelOrderButtonText2}>Đã giao hàng thành công</Text>
+                    )}
+                </View>
+                <View style={styles.buttonContainer}>
+                    {item.status === 9 && (
+                        <Text style={styles.cancelOrderButtonText2}>Từ chối trả hàng</Text>
                     )}
                 </View>
 

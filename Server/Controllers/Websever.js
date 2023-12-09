@@ -721,7 +721,7 @@ app.post('/order/return/:orderId', async (req, res) => {
             setTimeout(() => {
                 order.status = 5;
                 console.log('dfsfdsfsdfs', order.status = 5);
-                
+
                 // Save the updated order
                 order.save();
             }, 1000); // 1000 milliseconds (1 second)
@@ -738,6 +738,38 @@ app.post('/order/return/:orderId', async (req, res) => {
     }
 });
 
+
+app.post('/order/out/:orderId', async (req, res) => {
+    const orderId = req.params.orderId;
+
+    try {
+        const order = await Order.findById(orderId);
+
+        if (!order) {
+            return res.status(404).json({ message: 'Đơn hàng không tồn tại' });
+        }
+
+        // Check if the order status is eligible for return (assuming status 4 means "Đã giao")
+        if (order.status !== 3) {
+            return res.status(400).json({ message: 'Không thể trả đơn hàng với trạng thái hiện tại' });
+        }
+        if (req.body.status === 'hh') {
+            setTimeout(() => {
+                order.status = 7;
+                console.log('dfsfdsfsdfs', order.status = 7);
+
+                // Save the updated order
+                order.save();
+            }, 1000); // 1000 milliseconds (1 second)
+        } else {
+            return res.status(400).json({ message: 'Trạng thái không hợp lệ' });
+        }
+
+        res.json({ message: 'Cập nhật trạng thái đơn hàng thành công' });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
 
 
 
