@@ -12,6 +12,18 @@ const getDataProduct = async () => {
     }
 };
 
+const getDataTop3SP = async () => {
+    try {
+        const response = await url.get("/");
+        const data = response.data;
+        const top3Data = data.slice(0, 3);
+        console.log(top3Data)
+        return top3Data;
+    } catch (error) {
+        return [];
+    }
+};
+
 const getDataSPBestSale = async () => {
     try {
         const response = await url.get("/top-selling");
@@ -120,6 +132,7 @@ const dataAll = createSlice({
         dataTokenApp: [],
         dataCart: [],
         dataDonHang: [],
+        dataTop3SP:[]
     },
     reducers: {
         setDataSP: (state, action) => {
@@ -145,6 +158,9 @@ const dataAll = createSlice({
         },
         setDataDonHang: (state, action) => {
             state.dataDonHang = action.payload;
+        },
+        setDataTop3SP: (state, action) => {
+            state.dataTop3SP = action.payload;
         }
     }
 })
@@ -157,7 +173,8 @@ export const {
     setUser,
     setTokenApp,
     setDataCart,
-    setDataDonHang
+    setDataDonHang,
+    setDataTop3SP
 } = dataAll.actions;
 
 
@@ -185,6 +202,9 @@ export const fetchDataAndSetToRedux = () => async (dispatch) => {
 
     const dataDonHang = await getDataDonHang();
     dispatch(setDataDonHang(dataDonHang))
+
+    const dataTop3SP = await getDataTop3SP();
+    dispatch(setDataTop3SP(dataTop3SP))
 };
 
 export const fetchDataAndFav = () => async (dispatch) => {

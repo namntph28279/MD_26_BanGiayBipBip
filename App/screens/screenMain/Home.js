@@ -13,6 +13,7 @@ function Home({ route,navigation }) {
     const dispatch = useDispatch(); //trả về một đối tượng điều phối
     const dataSP1 = useSelector((state) => state.dataAll.dataSP); //lấy toàn bộ mảng dữ liệu
     const dataSPFav = useSelector((state) => state.dataAll.dataSPFav); //lấy toàn bộ mảng dữ liệu Fav
+    const dataTop3SP = useSelector((state) => state.dataAll.dataTop3SP);
 //lấy id sp Fav
     const [isProcessing, setIsProcessing] = useState(false);
     const [checkColorFav,setCheckColorFav] = useState([]);
@@ -23,18 +24,15 @@ function Home({ route,navigation }) {
     const swiperRef = useRef(null);
 
     const [dataSP, setDataSP] = useState([]);
-    const [dataSwiper, setDataSwiper] = useState([]);
 
     React.useEffect(() => {
         return navigation.addListener("focus", () => {
             dispatch(fetchDataAndSetToRedux());
-
         });
     }, [navigation]);
 
     useEffect(() => {
         setDataSP(dataSP1);
-        setDataSwiper(dataSP1);
     }, [dataSP1]);
     useEffect(() => {
         setCheckColorFav(dataSPFav.map((item) => item.product))
@@ -213,17 +211,15 @@ function Home({ route,navigation }) {
 
     //swiper layout
     const setSwiper = () => {
-        if (dataSwiper.length !== 0) {
-            const arrLength = dataSwiper.length;
-            const arrSwiper = dataSwiper.slice(arrLength - 3, arrLength);
+        if (dataTop3SP.length !== 0) {
             return (
                 <Swiper
                     ref={swiperRef}
                     autoplay={false} // Tắt chế độ autoplay của Swiper
                     showsPagination={true}
                 >
-                    {arrSwiper.map((item) => (
-                        <View key={item._id}>
+                    {dataTop3SP.map((item) => (
+                        <View key={item._id} style={styles.slide2}>
                             <TouchableOpacity onPress={async () => {
                                 const email = await AsyncStorage.getItem('Email');
                                 navigation.navigate("ProductDetail", {productId: item._id, userId: email});
@@ -342,10 +338,15 @@ const styles = StyleSheet.create({
         height: 200,
         width: "95%",
         backgroundColor: "white",
-        borderRadius: 30,
+        borderRadius: 15,
         marginTop: 8,
     },
-
+    slide2: {
+        height: 200,
+        width: "95%",
+        backgroundColor: "white",
+        borderRadius: 15,
+    },
     productContainer: {
         width: "100%",
         borderRadius: 10,
