@@ -98,7 +98,7 @@ const Login = ({ navigation }) => {
     };
 
     const handleForgotPassword = () => {
-        Alert.alert('Reset mật khẩu', 'Vui lòng liên hệ quản trị viên để reset mật khẩu');
+        Alert.alert('Reset mật khẩu', 'Vui lòng liên hệ vào shopbipbip888@gmail.com để reset mật khẩu');
     };
 
     return (
