@@ -39,13 +39,6 @@ const Login = ({ navigation }) => {
     const handleLogin = async () => {
         if (validate()) {
             try {
-                // const response = await fetch('https://md26bipbip-496b6598561d.herokuapp.com/login', {
-                //     method: 'POST',
-                //     headers: {
-                //         'Content-Type': 'application/json',
-                //     },
-                //     body: JSON.stringify({ username: userName, password }),
-                // });
                 const response = await url.post(
                     "/login",
                     {
@@ -85,8 +78,21 @@ const Login = ({ navigation }) => {
                     Alert.alert('Thông báo', 'Đã xảy ra lỗi');
                 }
             } catch (error) {
-                console.error('Lỗi:', error);
+                const errorString = error.toString();
+                const match = errorString.match(/\b(\d{3})\b/);
+
+                if (match) {
+                    const foundNumber = match[1];
+                    if (foundNumber == 401) {
+                        Alert.alert('Thông báo', 'Sai mật khẩu');
+                    } else if (foundNumber == 404) {
+                        Alert.alert('Thông báo', 'Tài khoản không tồn tại');
+                    }
+                } else {
+                    console.error('Lỗi:', error);
                 Alert.alert('Lỗi', 'Đã xảy ra lỗi trong quá trình gửi yêu cầu');
+                }
+                
             }
         }
     };
@@ -114,7 +120,7 @@ const Login = ({ navigation }) => {
             />
 
             <View style={{ flexDirection: 'row', alignSelf: 'flex-start', marginLeft: 23 }}>
-                <Text style={{ fontSize: 13, color: 'red' }}>{checkUserName ? '' : 'Vui lòng nhập tên người dùng'}</Text>
+                <Text style={{ fontSize: 13, color: 'red' }}>{checkUserName ? '' : 'Vui lòng đúng định dạng email'}</Text>
             </View>
 
             <TextInput
