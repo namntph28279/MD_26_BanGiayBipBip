@@ -8,8 +8,10 @@ import {useDispatch, useSelector} from "react-redux";
 import {fetchDataAndFav, fetchDataAndSetToRedux} from "../../redux/AllData";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import url from "../../api/url";
+import {useNavigation} from "@react-navigation/native";
 
-function Home({ route,navigation }) {
+function Home() {
+    const navigation = useNavigation();
     const dispatch = useDispatch(); //trả về một đối tượng điều phối
     const dataSP1 = useSelector((state) => state.dataAll.dataSP); //lấy toàn bộ mảng dữ liệu
     const dataSPFav = useSelector((state) => state.dataAll.dataSPFav); //lấy toàn bộ mảng dữ liệu Fav

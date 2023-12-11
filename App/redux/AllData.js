@@ -17,7 +17,6 @@ const getDataTop3SP = async () => {
         const response = await url.get("/");
         const data = response.data;
         const top3Data = data.slice(0, 3);
-        console.log(top3Data)
         return top3Data;
     } catch (error) {
         return [];
