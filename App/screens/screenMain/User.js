@@ -38,10 +38,10 @@ function User() {
         navigation.navigate('ChatScreen');
 
     }
-  const openFacebookPage = () => {
-    const url = "https://www.facebook.com/profile.php?id=100067198388586";
-    Linking.openURL(url);
-  };
+    const openFacebookPage = () => {
+      const url = "mailto:shopbipbip888@gmail.com";
+      Linking.openURL(url);
+    };
 
   const handleaddress = async () => {
     navigation.navigate("AllDiaChi", { userID: dataUserID, fromThanhToan: false });
