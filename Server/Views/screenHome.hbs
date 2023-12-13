@@ -121,6 +121,7 @@
           <span class="block p-2">Admin</span>
         </div>
         <div class="right md:w-1/4 sm:w-2/3 flex  justify-content-end ">
+          <a href="/login" style=" text-decoration: none; color: black; line-height: 58px; margin-right: 24px; ">Đăng xuất</a>
         </div>
       </div>
     </div>
@@ -252,7 +253,7 @@
                 <td>\{{item._id}}</td>
                 <td>\{{item.customer_email}}</td>
                 <td>\{{item.total_quantity}}</td>
-                 <td>\{{formatPrice(item.total_amount)}}</td>
+                <td>\{{formatPrice(item.total_amount)}}</td>
                 <td>
                   <img width="50px" src="detail.png" class="btn btn-primary btn-sm"
                        @click="openModalXemChiTiet(choLayHang[index])"/>
@@ -286,7 +287,7 @@
                 <td>\{{item._id}}</td>
                 <td>\{{item.customer_email}}</td>
                 <td>\{{item.total_quantity}}</td>
-                 <td>\{{formatPrice(item.total_amount)}}</td>
+                <td>\{{formatPrice(item.total_amount)}}</td>
                 <td>
                   <img width="50px" src="detail.png" class="btn btn-primary btn-sm"
                        @click="openModalXemChiTiet(donHuy[index])"/>
@@ -315,7 +316,7 @@
                 <td>\{{item._id}}</td>
                 <td>\{{item.customer_email}}</td>
                 <td>\{{item.total_quantity}}</td>
-                 <td>\{{formatPrice(item.total_amount)}}</td>
+                <td>\{{formatPrice(item.total_amount)}}</td>
                 <td>
                   <img width="50px" src="detail.png" class="btn btn-primary btn-sm"
                        @click="openModalXemChiTiet(choGiaoHang[index])"/>
@@ -349,7 +350,7 @@
                 <td>\{{item._id}}</td>
                 <td>\{{item.customer_email}}</td>
                 <td>\{{item.total_quantity}}</td>
-                 <td>\{{formatPrice(item.total_amount)}}</td>
+                <td>\{{formatPrice(item.total_amount)}}</td>
                 <td>
                   <img width="50px" src="detail.png" class="btn btn-primary btn-sm"
                        @click="openModalXemChiTiet(daGiao[index])"/>
@@ -379,7 +380,7 @@
                 <td>\{{item._id}}</td>
                 <td>\{{item.customer_email}}</td>
                 <td>\{{item.total_quantity}}</td>
-                 <td>\{{formatPrice(item.total_amount)}}</td>
+                <td>\{{formatPrice(item.total_amount)}}</td>
                 <td>
                   <img width="50px" src="detail.png" class="btn btn-primary btn-sm"
                        @click="openModalXemChiTiet(traHang[index])"/>
@@ -413,7 +414,7 @@
                 <td>\{{item._id}}</td>
                 <td>\{{item.customer_email}}</td>
                 <td>\{{item.total_quantity}}</td>
-                 <td>\{{formatPrice(item.total_amount)}}</td>
+                <td>\{{formatPrice(item.total_amount)}}</td>
                 <td>
                   <img width="50px" src="detail.png" class="btn btn-primary btn-sm"
                        @click="openModalXemChiTiet(donHoan[index])"/>
@@ -494,8 +495,10 @@
     <div class="modal-dialog" role="document">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title" id="exampleModalLabel" v-if="dataXacNhanDon.status === 5">Đồng ý trả hàng tài khooản: \{{dataXacNhanDon.customer_email}}?</h5>
-          <h5 class="modal-title" id="exampleModalLabel" v-else>Xác nhận đơn tài khooản: \{{dataXacNhanDon.customer_email}}?</h5>
+          <h5 class="modal-title" id="exampleModalLabel" v-if="dataXacNhanDon.status === 5">Đồng ý trả hàng tài
+            khooản: \{{dataXacNhanDon.customer_email}}?</h5>
+          <h5 class="modal-title" id="exampleModalLabel" v-else>Xác nhận đơn tài khooản: \
+            {{dataXacNhanDon.customer_email}}?</h5>
           <button type="button" class="close" @click="closeModalXacNhanDon" aria-label="Close">
             <span aria-hidden="true">&times;</span>
           </button>
@@ -563,52 +566,53 @@
     <div class="modal-dialog" role="document">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title" id="exampleModalLabel"  v-if="dataHuyDon.status === 5">Từ chối trả hàng tài khoản: \{{dataHuyDon.customer_email}}?</h5>
+          <h5 class="modal-title" id="exampleModalLabel" v-if="dataHuyDon.status === 5">Từ chối trả hàng tài khoản: \
+            {{dataHuyDon.customer_email}}?</h5>
           <h5 class="modal-title" id="exampleModalLabel" v-else>Hủy đơn tài khoản: \{{dataHuyDon.customer_email}}?</h5>
           <button type="button" class="close" @click="closeModalHuyDon" aria-label="Close">
             <span aria-hidden="true">&times;</span>
           </button>
         </div>
         <div class="modal-body">
-            <div>
-              Họ và tên: \{{dataHuyDon.userName}} <br>
-              Số điện thoại: \{{dataHuyDon.phone}}<br>
-              Địa chỉ: \{{dataHuyDon.address}}
-            </div>
-            <div v-for="(item,index) in dataHuyDon.products" style="display: flex;padding: 12px">
-              <img style="height: 80px; margin-right: 8px;width: 80px;  border-radius: 8px;"
-                   :src=(item.img_product) alt="">
-              <div style="width: 100%">
-                <div style="font-weight: 700;font-size: 16px">
-                  \{{item.name_Product}}
-                </div>
-                <div style="display: flex;justify-content: space-between;">
+          <div>
+            Họ và tên: \{{dataHuyDon.userName}} <br>
+            Số điện thoại: \{{dataHuyDon.phone}}<br>
+            Địa chỉ: \{{dataHuyDon.address}}
+          </div>
+          <div v-for="(item,index) in dataHuyDon.products" style="display: flex;padding: 12px">
+            <img style="height: 80px; margin-right: 8px;width: 80px;  border-radius: 8px;"
+                 :src=(item.img_product) alt="">
+            <div style="width: 100%">
+              <div style="font-weight: 700;font-size: 16px">
+                \{{item.name_Product}}
+              </div>
+              <div style="display: flex;justify-content: space-between;">
 
-                  <div style="display: flex">
-                    <div style="color:#656769; margin-right: 7px">
-                      \{{item.name_Color}}
-                    </div>
-                    <div style="color:#656769;">
-                      \{{item.name_Size}}
-                    </div>
+                <div style="display: flex">
+                  <div style="color:#656769; margin-right: 7px">
+                    \{{item.name_Color}}
                   </div>
-
-                  <div>
-                    x \{{item.quantityProduct}}
+                  <div style="color:#656769;">
+                    \{{item.name_Size}}
                   </div>
                 </div>
-                <div style="text-align: end;color: red">
-                  \{{formatPrice(item.name_Price)}}
 
+                <div>
+                  x \{{item.quantityProduct}}
                 </div>
               </div>
-            </div>
+              <div style="text-align: end;color: red">
+                \{{formatPrice(item.name_Price)}}
 
-            <div style="display: flex; text-align: end;justify-content: end;">
-              Tổng tiền:
-              <div style="color: red;font-weight: 700;margin-left: 7px;"> \{{formatPrice(dataHuyDon.total_All)}}</div>
+              </div>
             </div>
-          
+          </div>
+
+          <div style="display: flex; text-align: end;justify-content: end;">
+            Tổng tiền:
+            <div style="color: red;font-weight: 700;margin-left: 7px;"> \{{formatPrice(dataHuyDon.total_All)}}</div>
+          </div>
+
           <div style="display: flex;" v-if="dataHuyDon.lyDoHuyDon">
             Lý do hủy:
             <div style="font-weight: 600;margin-left: 7px;"> \{{dataHuyDon.lyDoHuyDon}}</div>
@@ -660,6 +664,7 @@
       })
     });
   }
+
   function openOrder(orderName) {
     let i;
     const x = document.getElementsByClassName("status");
@@ -703,9 +708,9 @@
       dataXacNhanDon: {},
       dataHuyDon: {},
       tinNhanMoi: 0,
-      donHangMoi:0,
-      formData:{
-          noiDung: ''
+      donHangMoi: 0,
+      formData: {
+        noiDung: ''
       }
     },
     mounted() {
@@ -777,8 +782,8 @@
               var load = document.getElementById("load")
               var duLieu = document.getElementById("hienThidata")
 
-              load.style.display="none"
-              duLieu.style.display="block"
+              load.style.display = "none"
+              duLieu.style.display = "block"
             })
             .catch(error => {
               console.error(error);
