@@ -497,8 +497,7 @@
         <div class="modal-header">
           <h5 class="modal-title" id="exampleModalLabel" v-if="dataXacNhanDon.status === 5">Đồng ý trả hàng tài
             khooản: \{{dataXacNhanDon.customer_email}}?</h5>
-          <h5 class="modal-title" id="exampleModalLabel" v-else>Xác nhận đơn tài khooản: \
-            {{dataXacNhanDon.customer_email}}?</h5>
+          <h5 class="modal-title" id="exampleModalLabel" v-else>Xác nhận đơn tài khooản: \{{dataXacNhanDon.customer_email}}?</h5>
           <button type="button" class="close" @click="closeModalXacNhanDon" aria-label="Close">
             <span aria-hidden="true">&times;</span>
           </button>
