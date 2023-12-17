@@ -38,7 +38,7 @@ export default function OrderMain({ navigation }) {
     const [receivedOrders, setReceivedOrders] = useState([]);
 
     const fetchData = async () => {
-        console.log("start")
+        console.log("start")//Khi component được tạo, gọi fetchData để lấy dữ liệu đơn hàng từ Redux store thông qua useSelector và dispatch.
         dispatch(fetchDataOrder())
     };
     useEffect(() => {
@@ -52,12 +52,13 @@ export default function OrderMain({ navigation }) {
     useEffect(() => {
         if (socket) {
             socket.on('server-send', function (data) {
-                fetchData()
+                fetchData() // mỗi khi có sự kiện từ máy chủ sẽ gọi lại fechData
             });
         }
     }, [socket]);
 
     useEffect(() => {
+        //Sử dụng useEffect để lọc và cập nhật các danh sách đơn hàng theo trạng thái khác nhau 
         const filterchoXacNhanDon = dataOrder.filter(item => item.status === 0);
         setChoXacNhan(filterchoXacNhanDon)
 
@@ -209,11 +210,12 @@ export default function OrderMain({ navigation }) {
         confirmReturnOrder(item);
 
         // Chuẩn bị nội dung tin nhắn
+        //Tạo một biến returnMessage chứa nội dung tin nhắn.
         let returnMessage = `Đã yêu cầu trả hàng với mã đơn hàng: ${item._id}. Lý do: `;
-
+// Thêm mã đơn hàng và lý do trả hàng vào tin nhắn. Trong trường hợp này, chỉ có một lý do cụ thể là "Sản phẩm không đúng mô tả."
         switch (returnReason) {
             case 'wrong_description':
-                returnMessage += 'Sản phẩm không đúng mô tả.';
+                returnMessage += 'Tôi muốn trả đơn hàng.';
                 break;
         }
         // Chuyển màn hình InformationLine và gửi tin nhắn
