@@ -311,13 +311,13 @@ export default function OrderMain({ navigation }) {
                         </TouchableOpacity>
                     )}
 
-                    {item.status === 3 && (
+                    {/* {item.status === 3 && (
                         <TouchableOpacity style={styles.cancelOrderButton}
                             onPress={() => handleOutOrder(item)}
                         >
                             <Text style={styles.cancelOrderButtonText}>Đã nhận</Text>
                         </TouchableOpacity>
-                    )}
+                    )} */}
                 </View>
 
 
