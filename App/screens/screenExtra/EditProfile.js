@@ -81,13 +81,13 @@ const EditProfile = ({ navigation }) => {
                 ]}
             />
 
-            <Text style={styles.label}>Ảnh Đại Diện:</Text>
+            {/* <Text style={styles.label}>Ảnh Đại Diện:</Text>
             <TextInput
                 style={styles.input}
                 placeholder="Nhập Vào Link Ảnh"
                 value={avatar}
                 onChangeText={(text) => setAvatar(text)}
-            />
+            /> */}
 
             <Text style={styles.label}>Ngày Tháng Năm Sinh:</Text>
             <DatePicker

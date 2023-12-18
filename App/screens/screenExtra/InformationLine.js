@@ -24,33 +24,34 @@ const InformationLine = ({ route, navigation }) => {
   const [datalist, setDatalist] = useState(orderProductsList);
   const { productId } = route.params;
   const [reloadData, setReloadData] = useState(false);
+
   useEffect(() => {
     navigation.setOptions({
       headerRight: () => (
-          <TouchableOpacity
-              style={styles.headerButton}
-              onPress={async () => {
-                await fetchDataList();
-                const latestOrderData = orderProductsList[0];
-                navigation.navigate("TrackOrder", { orderData: latestOrderData, orderProductsList: orderProductsList });
-              }}
-          >
-            <Icon name="truck" size={20} color="red" />
-          </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.headerButton}
+          onPress={async () => {
+            await fetchDataList();
+            const latestOrderData = orderProductsList[0];
+            navigation.navigate("TrackOrder", { orderData: latestOrderData, orderProductsList: orderProductsList });
+          }}
+        >
+          <Icon name="truck" size={20} color="red" />
+        </TouchableOpacity>
       ),
     });
   }, [navigation, fetchDataList, orderProductsList]);
 
-  const handleCopyToClipboard =  (item) => {
+  const handleCopyToClipboard = (item) => {
     if (item && item.id) {
-         Clipboard.setString(item.id.toString());
-         Toast.show({
-          type: 'success', // Loại thông báo: success, error, info, warning
-          position: 'bottom', // Vị trí của thông báo: top, bottom
-          text1: 'Đã sao chép!', // Nội dung chính của thông báo
-          visibilityTime: 2000, // Thời gian hiển thị thông báo (ms)
-          autoHide: true,
-        });
+      Clipboard.setString(item.id.toString());
+      Toast.show({
+        type: 'success', // Loại thông báo: success, error, info, warning
+        position: 'bottom', // Vị trí của thông báo: top, bottom
+        text1: 'Đã sao chép!', // Nội dung chính của thông báo
+        visibilityTime: 2000, // Thời gian hiển thị thông báo (ms)
+        autoHide: true,
+      });
     }
   };
   useEffect(() => {
@@ -192,13 +193,28 @@ const InformationLine = ({ route, navigation }) => {
                 <Text style={styles.detailLabel1}>Tổng thanh toán:</Text>
                 <Text style={styles.detailValue1}>{`${getMonney(item.total_amount)}`}</Text>
               </View>
+
+              <View style={styles.paymentDetailItem}>
+                {item.status === 3 ? (
+                  <>
+                    <Text style={styles.detailLabel1}>Ngày nhận:</Text>
+                    <Text style={styles.detailValue2}>{`${item.orderDate}`}</Text>
+                  </>
+                ) : (
+                  <>
+                    <Text style={styles.detailLabel1}>Ngày đặt:</Text>
+                    <Text style={styles.detailValue2}>{`${item.orderDate}`}</Text>
+                  </>
+                )}
+              </View>
+
             </View>
 
             <View style={styles.paymentDetailItem1}>
               <Text style={styles.detailLabel2}>Mã đơn hàng</Text>
               <Text style={styles.detailValue2}>{`${(item.id)}`}</Text>
 
-              <TouchableOpacity style = {styles.copy} onPress={() => handleCopyToClipboard(item)}>
+              <TouchableOpacity style={styles.copy} onPress={() => handleCopyToClipboard(item)}>
                 <Text>📋</Text>
               </TouchableOpacity>
             </View>
@@ -621,7 +637,7 @@ const styles = StyleSheet.create({
   },
 
   copy: {
-    marginRight:'5%',
+    marginRight: '5%',
   },
   detailLabel: {
     fontSize: 13,

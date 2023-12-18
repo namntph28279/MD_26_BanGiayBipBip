@@ -221,6 +221,7 @@ const ThanhToanScreen = ({ route, navigation }) => {
         if (isMomoSelected) {
             setQRCodeModalVisible(true);
             setTimeout(() => {
+                
                 setQRCodeModalVisible(false);
             }, 30000);
 
@@ -430,6 +431,7 @@ const ThanhToanScreen = ({ route, navigation }) => {
                     socket.emit('client-send');
                 }
                 console.log('Đặt hàng thành công:', response.data);
+                deleteCart();
                 setQRCodeModalVisible(false);
                 setPaymentSuccessModalVisible(false);
                 setTimeout(() => {
@@ -509,7 +511,7 @@ const ThanhToanScreen = ({ route, navigation }) => {
                     <Icon name="credit-card" size={30} color="#3498db" />
                     <View>
                         <Text style={styles.inputLabel}>Phương Thức Thanh Toán:</Text>
-                        <Text style={{alignSelf: 'center'}}>{isMomoSelected ? 'MoMo' : isCODSelected ? 'Thanh Toán Khi Nhận Hàng' : ''}</Text>
+                        <Text style={{alignSelf: 'center'}}>{isMomoSelected ? 'Thanh toán trực tuyến' : isCODSelected ? 'Thanh Toán Khi Nhận Hàng' : ''}</Text>
                     </View>
                 </TouchableOpacity>
             <View style={styles.bottomContainer}>
@@ -591,7 +593,7 @@ const ThanhToanScreen = ({ route, navigation }) => {
                             <Text style={styles.modalTitle}>Chọn phương thức thanh toán</Text>
                             <TouchableOpacity onPress={handleMomoCheckboxChange} style={styles.paymentIcon}>
                                 <Icon name={isMomoSelected ? 'check-circle' : 'circle'} size={30} color="#000" width={40} />
-                                <Text style={styles.paymentText}>Ví MoMo</Text>
+                                <Text style={styles.paymentText}>Thanh toán trực tuyến</Text>
                             </TouchableOpacity>
                             <TouchableOpacity onPress={handleCODCheckboxChange} style={styles.paymentIcon}>
                                 <Icon name={isCODSelected ? 'check-circle' : 'circle'} size={30} color="#000" width={40}/>

@@ -157,7 +157,7 @@ export default function OrderMain({ navigation }) {
             console.error('Lỗi', error);
         }
     };
-    
+
     const confirmOutOrder = async (item) => {
         try {
             const orderId = item._id;
@@ -184,7 +184,7 @@ export default function OrderMain({ navigation }) {
                     }
                     return order;
                 });
-    
+
                 setReceivedOrders(updatedOrders);
             }
         } catch (error) {
@@ -212,7 +212,7 @@ export default function OrderMain({ navigation }) {
         // Chuẩn bị nội dung tin nhắn
         //Tạo một biến returnMessage chứa nội dung tin nhắn.
         let returnMessage = `Đã yêu cầu trả hàng với mã đơn hàng: ${item._id}. Lý do: `;
-// Thêm mã đơn hàng và lý do trả hàng vào tin nhắn. Trong trường hợp này, chỉ có một lý do cụ thể là "Sản phẩm không đúng mô tả."
+        // Thêm mã đơn hàng và lý do trả hàng vào tin nhắn. Trong trường hợp này, chỉ có một lý do cụ thể là "Sản phẩm không đúng mô tả."
         switch (returnReason) {
             case 'wrong_description':
                 returnMessage += 'Tôi muốn trả đơn hàng.';
@@ -273,6 +273,7 @@ export default function OrderMain({ navigation }) {
                                 <Text>{`SL: ${product.quantityProduct}`}</Text>
                                 <Text style={{ color: '#FF0000', fontWeight: 'bold' }}>{`Giá: ${getMonney(product.name_Price)}`}</Text>
                             </View>
+
                             {/* <View><Text style={styles.productItemContainer1}></Text></View> */}
                         </View>
                     </View>
@@ -281,6 +282,7 @@ export default function OrderMain({ navigation }) {
                 <View style={styles.orderStatusContainer}>
 
                     <Text style={styles.orderStatus}>{`Tổng sản phẩm thành tiền: ${getMonney(item.total_amount)}`}</Text>
+
                     <TouchableOpacity
                         style={{
                             ...styles.orderStatusContainer,
@@ -304,6 +306,14 @@ export default function OrderMain({ navigation }) {
                     ) : null}
                 </View>
 
+                <View style={styles.buttonContainer22}>
+                    {item.status === 3  && (
+                        
+                         <Text>Lưu ý: Đơn hàng chỉ được hoàn trả trong 7 ngày! </Text>
+                        
+                    )}
+                </View>
+
                 <View style={styles.buttonContainer}>
                     {item.status === 3 && (
                         <TouchableOpacity style={styles.cancelOrderButton}
@@ -322,12 +332,23 @@ export default function OrderMain({ navigation }) {
                     )} */}
                 </View>
 
+               
+                <View style={styles.buttonContainer}>
+                    {item.status === 5  && (
+                        
+                         <Text>Lưu ý: Đơn hàng chỉ được hoàn trả trong 7 ngày! </Text>
+                        
+                    )}
+                </View>
+
 
                 <View style={styles.buttonContainer}>
                     {item.status === 5 && (
                         <Text style={styles.cancelOrderButtonText2}>Đang yêu cầu trả hàng</Text>
                     )}
                 </View>
+                
+
                 <View style={styles.buttonContainer}>
                     {item.status === 7 && (
                         <Text style={styles.cancelOrderButtonText2}>Đã giao hàng thành công</Text>
@@ -703,6 +724,12 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'flex-end',
         // marginTop: 8,
+    },
+    buttonContainer22: {
+        flexDirection: 'row',
+        justifyContent: 'flex-end',
+        // marginTop: 8,
+        marginBottom:8,
     },
     buyAgainButton: {
         backgroundColor: '#e81d1d',

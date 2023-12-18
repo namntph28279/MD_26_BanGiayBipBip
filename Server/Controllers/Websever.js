@@ -209,12 +209,14 @@ app.post('/order/status/Comfig/:id', async (req, res) => {
         } else if (order.status === 1) {
             order.status = 2;
             await order.save();
-            NotificaionClient(idClientArray, "Đơn hàng của bạn đã được chuẩn bị xong và đang đợi đơn vị vận chuyển")
+            NotificaionClient(idClientArray, "Đơn hàng của bạn đã được giao cho đơn vị vận chuyển")
             res.json(true)
         } else if (order.status === 2) {
             order.status = 3;
+            order.order_date =Date.now();
+            console.log(order.order_date);
             await order.save();
-            NotificaionClient(idClientArray, "Đơn hàng của bạn đã được giao cho đơn vị vận chuyển")
+            NotificaionClient(idClientArray, "Đơn vị vận đã giao thành công cho bạn")
             res.json(true)
         } else if (order.status === 5) {
             order.status = 6;
