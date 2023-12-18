@@ -203,13 +203,13 @@ const InformationLine = ({ route, navigation }) => {
               </TouchableOpacity>
             </View>
 
-            <View style={styles.paymentMethodContainer}>
+            {/* <View style={styles.paymentMethodContainer}>
               <Icon name="credit-card" size={30} color="#3498db" />
               <View>
                 <Text style={styles.inputLabel}>Phương Thức Thanh Toán:</Text>
                 <Text style={{ alignSelf: 'center' }}>Thanh toán khi nhận hàng</Text>
               </View>
-            </View>
+            </View> */}
 
             <TouchableOpacity
               style={styles.paymentMethodContainer_chat}
@@ -617,7 +617,7 @@ const styles = StyleSheet.create({
     marginTop: 10,
     flexDirection: 'row',
     justifyContent: 'space-between',
-    // marginBottom: 8,
+    marginBottom: 8,
   },
 
   copy: {
