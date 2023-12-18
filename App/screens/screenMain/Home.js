@@ -247,7 +247,7 @@ function Home() {
     return (
         <View style={styles.container}>
             <ScrollView>
-                <View style={{ alignItems: "center" }}>
+                <View style={{ alignItems: "center"}}>
                     <View style={styles.slide}>{setSwiper()}</View>
                 </View>
 
@@ -338,14 +338,12 @@ const styles = StyleSheet.create({
     },
     slide: {
         height: 200,
-        width: "95%",
         backgroundColor: "white",
         borderRadius: 15,
         marginTop: 8,
     },
     slide2: {
         height: 200,
-        width: "95%",
         backgroundColor: "white",
         borderRadius: 15,
     },
@@ -360,8 +358,7 @@ const styles = StyleSheet.create({
         shadowRadius: 5, // Độ mờ của đổ bóng
     },
     container: {
-        paddingTop: 15,
-        backgroundColor: "#DDD",
+        paddingTop: 15
     },
     textArrange: {
         fontSize: 15,
@@ -381,7 +378,6 @@ const styles = StyleSheet.create({
         margin: 7,
     },
     imageBackground: {
-        width: "100%",
         height: 200,
         borderRadius: 10,
         resizeMode: "contain",
@@ -417,6 +413,7 @@ const styles = StyleSheet.create({
 
     loadingContainer: {
         flex: 1,
+        width:250,
         justifyContent: "center",
         alignItems: "center",
     },
