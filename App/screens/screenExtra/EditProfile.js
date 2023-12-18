@@ -154,7 +154,7 @@ const EditProfile = ({navigation}) => {
                 <DateTimePicker
                     value={birthday}
                     mode="date"
-                    display="default"
+                    display="spinner"
                     onChange={onChange}
                 />
             )}
