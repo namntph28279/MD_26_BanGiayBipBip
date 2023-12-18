@@ -103,7 +103,7 @@ const ChatScreen = ({ navigation, route }) => {
             const isReturnOrder = true;
             let content = isReturnOrder ? `Bạn muốn trả đơn hàng vào lúc ${getCurrentFormattedDateTime()}? orderId: ${orderId}` : message;
             await url.post("/home/chatShop", { user: dataUserID, fullName: dataName, beLong: "user", conTenMain: message, status: "true" });
-            // setMessage('')
+            setMessage('')
             if (socket) {
                 socket.emit('client-send');
             } else {
@@ -134,7 +134,7 @@ const ChatScreen = ({ navigation, route }) => {
         <KeyboardAwareScrollView
             contentContainerStyle={{ flex: 1 }}
             extraScrollHeight={10}
-            enableOnAndroid={true}
+            enableOnAndroid={false}
             keyboardShouldPersistTaps="handled"
         >
             <View style={styles.container}>
