@@ -15,6 +15,8 @@ import { getMonney } from '../../util/money';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { Button } from 'react-native-elements';
+import moment from 'moment';
+
 import Toast from 'react-native-toast-message';
 const InformationLine = ({ route, navigation }) => {
   const [orderProductsList, setOrderProductsList] = useState([]);
@@ -101,7 +103,7 @@ const InformationLine = ({ route, navigation }) => {
         address: data.address,
         userName: data.userName,
         phone: data.phone,
-        orderDate: data.order_date,
+        orderDate: moment(data.order_date).format('YYYY-MM-DD'),
       };
 
       setOrderProductsList([formattedOrder]);
@@ -195,15 +197,15 @@ const InformationLine = ({ route, navigation }) => {
               </View>
 
               <View style={styles.paymentDetailItem}>
-                {item.status === 3 ? (
+                {item.status === 5 || item.status === 3 ? (
                   <>
-                    <Text style={styles.detailLabel1}>Ngày nhận:</Text>
-                    <Text style={styles.detailValue2}>{`${item.orderDate}`}</Text>
+                    <Text style={styles.detailLabel}>Ngày nhận:</Text>
+                    <Text style={styles.detailValue2}>{moment(item.orderDate).format('DD-MM-YYYY')}</Text>
                   </>
                 ) : (
                   <>
-                    <Text style={styles.detailLabel1}>Ngày đặt:</Text>
-                    <Text style={styles.detailValue2}>{`${item.orderDate}`}</Text>
+                    <Text style={styles.detailLabel}>Ngày đặt:</Text>
+                    <Text style={styles.detailValue2}>{moment(item.orderDate).format('DD-MM-YYYY')}</Text>
                   </>
                 )}
               </View>

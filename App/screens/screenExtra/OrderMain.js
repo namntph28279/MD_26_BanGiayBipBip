@@ -312,9 +312,7 @@ export default function OrderMain({ navigation }) {
 
                 <View style={styles.buttonContainer22}>
                     {item.status === 3  && (
-                        
                          <Text>Lưu ý: Đơn hàng chỉ được hoàn trả trong 7 ngày! </Text>
-                        
                     )}
                 </View>
 
@@ -337,7 +335,7 @@ export default function OrderMain({ navigation }) {
                 </View>
 
                
-                <View style={styles.buttonContainer}>
+                <View style={styles.buttonContainer22}>
                     {item.status === 5  && (
                         
                          <Text>Lưu ý: Đơn hàng chỉ được hoàn trả trong 7 ngày! </Text>
@@ -647,6 +645,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         marginLeft: 8,
+        marginTop: 8,
     },
     cancelOrderButton1: {
         backgroundColor: 'red',
@@ -675,6 +674,7 @@ const styles = StyleSheet.create({
         fontSize: 12,
         fontWeight: 'bold',
         marginLeft: 4,
+        marginTop: 4,
     },
     productPrice: {
         fontSize: 16,
@@ -721,7 +721,7 @@ const styles = StyleSheet.create({
     },
     orderStatus: {
         marginLeft: 110,
-        marginBottom: 10,
+        marginBottom: 5,
 
     },
     buttonContainer: {
@@ -732,8 +732,7 @@ const styles = StyleSheet.create({
     buttonContainer22: {
         flexDirection: 'row',
         justifyContent: 'flex-end',
-        // marginTop: 8,
-        marginBottom:8,
+        fontSize: 10,
     },
     buyAgainButton: {
         backgroundColor: '#e81d1d',
