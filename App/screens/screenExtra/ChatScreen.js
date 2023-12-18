@@ -88,6 +88,12 @@ const ChatScreen = ({ navigation, route }) => {
         }
     }, [socket]);
 
+    // Hàm để lấy ngày giờ hiện tại dưới dạng chuỗi định dạng
+    const getCurrentFormattedDateTime = () => {
+        const currentDate = new Date();
+        return `${currentDate.toLocaleDateString()} ${currentDate.toLocaleTimeString()}`;
+    };
+
 
 
     const handleSendMessage = async () => {
@@ -95,7 +101,7 @@ const ChatScreen = ({ navigation, route }) => {
             // Tạo biến isReturnOrder và gán giá trị true. Có vẻ như biến này được sử dụng để xác định xem người dùng đang gửi tin nhắn về việc trả đơn hàng hay không.
             // Tạo biến content chứa nội dung thực sự của tin nhắn dựa trên giá trị của isReturnOrder
             const isReturnOrder = true;
-            const content = isReturnOrder ? `Bạn muốn trả đơn hàng hay không? orderId: ${orderId}` : message;
+            let content = isReturnOrder ? `Bạn muốn trả đơn hàng vào lúc ${getCurrentFormattedDateTime()}? orderId: ${orderId}` : message;
             await url.post("/home/chatShop", { user: dataUserID, fullName: dataName, beLong: "user", conTenMain: message, status: "true" });
             // setMessage('')
             if (socket) {
