@@ -210,8 +210,12 @@ export default function OrderMain({ navigation }) {
         confirmReturnOrder(item);
 
         // Chuẩn bị nội dung tin nhắn
+        let currentDate = new Date();
+        let formattedDate = `${currentDate.toLocaleDateString()} ${currentDate.toLocaleTimeString()}`;    
         //Tạo một biến returnMessage chứa nội dung tin nhắn.
-        let returnMessage = `Đã yêu cầu trả hàng với mã đơn hàng: ${item._id}. Lý do: `;
+
+        let returnMessage = `Đã yêu cầu trả hàng với mã đơn hàng: ${item._id},${formattedDate} . Lý do: `;
+
         // Thêm mã đơn hàng và lý do trả hàng vào tin nhắn. Trong trường hợp này, chỉ có một lý do cụ thể là "Sản phẩm không đúng mô tả."
         switch (returnReason) {
             case 'wrong_description':
