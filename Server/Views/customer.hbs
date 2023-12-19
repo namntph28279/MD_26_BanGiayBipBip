@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản lí người dùng</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        th, td {
+            text-align: left;
+            border: 1px solid #ddd;
+            width: 14.28vw;
+            max-width: 100px;
+            word-wrap: break-word;
+        }
+
+        thead {
+            position: sticky;
+            top: 0;
+            background-color: #fff;
+            z-index: 1;
+        }
+
+        tbody tr:nth-child(even) {
+            background-color: #c2bca3;
+        }
+
+        tbody tr:hover {
+            background-color: #c1a31c;
+        }
+
+        th:nth-child(1), td:nth-child(1) { width: 15%; }
+        th:nth-child(2), td:nth-child(2) { width: 15%; }
+        th:nth-child(3), td:nth-child(3) { width: 10%; }
+        th:nth-child(4), td:nth-child(4) { width: 15%; }
+        th:nth-child(5), td:nth-child(5) { width: 25%; }
+        th:nth-child(6), td:nth-child(6) { width: 15%; }
+        th:nth-child(7), td:nth-child(7) { width: 30%; }
+
+        .action-buttons {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .ban-button {
+            width: 100px;
+            height: 100px;
+            padding: 5px 10px;
+            cursor: pointer;
+            background-color: #ff0000;
+            color: #fff;
+        }
+
+        .unban-button {
+            width: 100px;
+            height: 100px;
+            padding: 5px 10px;
+            cursor: pointer;
+            background-color: #00ff00;
+            color: #fff;
+        }
+
+        .search-container {
+            margin-bottom: 20px;
+        }
+
+        .search-input {
+            padding: 5px;
+            width: 200px;
+        }
+         .filter-container {
+            margin-bottom: 20px;
+        }
+
+        .filter-label {
+            margin-right: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Danh sách khách hàng</h2>
+        
+        <div class="search-container">
+            <input type="text" class="search-input" id="searchInput" placeholder="Tìm kiếm...">
+        </div>
+         <div class="filter-container">
+            <label class="filter-label">Hiển thị:</label>
+            <input type="radio" name="statusFilter" id="allUsers" checked>
+            <label for="allUsers">Tất cả</label>
+            <input type="radio" name="statusFilter" id="bannedUsers">
+            <label for="bannedUsers">Đã chặn</label>
+            <input type="radio" name="statusFilter" id="unbannedUsers">
+            <label for="unbannedUsers">Chưa chặn</label>
+        </div>
+        <div class="table-container">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th scope="col">Ảnh đại diện</th>
+                        <th scope="col">Tên</th>
+                        <th scope="col">Giới tính</th>
+                        <th scope="col">Ngày sinh</th>
+                        <th scope="col">Email</th>
+                        <th scope="col">Số điện thoại</th>
+                        <th scope="col">Địa chỉ</th>
+                        <th scope="col">Trạng Thái</th>
+                        <th scope="col">Hành động</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{#each data}}
+                        <tr>
+                            <td><img src="{{profile.avatar}}" alt="Avatar" width="100"></td>
+                            <td>{{profile.fullname}}</td>
+                            <td>{{profile.gender}}</td>
+                            <td>{{profile.birthday}}</td>
+                            <td>{{profile.username}}</td>
+                            <td>{{address.phone}}</td>
+                            <td>{{address.address}}</td>
+                            <td>{{profile.status}}</td>
+                            <td class="action-buttons">
+                                {{#if profile.status}}
+                                    <button class="ban-button">Chặn</button>
+                                {{else}}
+                                    <button class="unban-button">Mở chặn</button>
+                                {{/if}}
+                            </td>
+                        </tr>
+                    {{/each}}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('searchInput').addEventListener('input', function() {
+            var filter = this.value.toLowerCase();
+            var rows = document.querySelectorAll('tbody tr');
+            
+            rows.forEach(function(row) {
+                var text = row.innerText.toLowerCase();
+                row.style.display = text.includes(filter) ? '' : 'none';
+            });
+        });
+    </script>
+     <script>
+        var statusFilterRadios = document.getElementsByName('statusFilter');
+        var searchInput = document.getElementById('searchInput');
+
+        function filterRows() {
+            var filter = searchInput.value.toLowerCase();
+            var statusFilter = Array.from(statusFilterRadios).find(radio => radio.checked).id;
+
+            var rows = document.querySelectorAll('tbody tr');
+
+            rows.forEach(function(row) {
+                var text = row.innerText.toLowerCase();
+                var status = row.querySelector('.action-buttons button').innerText.toLowerCase();
+                var shouldDisplay = text.includes(filter) && (
+                    (statusFilter === 'allUsers') ||
+                    (statusFilter === 'bannedUsers' && status.includes('mở chặn')) ||
+                    (statusFilter === 'unbannedUsers' && status.includes('chặn'))
+                );
+
+                row.style.display = shouldDisplay ? '' : 'none';
+            });
+        }
+
+        statusFilterRadios.forEach(function(radio) {
+            radio.addEventListener('change', filterRows);
+        });
+
+        searchInput.addEventListener('input', filterRows);
+    </script>
+</body>
+</html>
