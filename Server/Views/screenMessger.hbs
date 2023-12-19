@@ -145,20 +145,21 @@
 </head>
 
 <body class="bg-gray-200">
-<div class="flex" id="dataALL">
+<div class="flex" id="dataALL" style="height: 100%;">
   <!--Side Navbar-->
   <div class="bg-indigo-900 w-1/6 ">
     <div class=" bg-indigo-800">
       <div class=" text-xl text-gray-200 uppercase font-bold" style="padding: 33px;">Shop BipBip</div>
     </div>
+  <div>
     <a href="/statistic" class="cursor-pointer mess ml-3 mt-3 w-10/12" style="text-decoration: none">
-      <div class="flex" style=" padding: 12px;">
-        <div>
-          <img class="w-5 h-5" src="analytics.png" alt="">
-        </div>
-        <div class="mx-3 text-sm text-gray-100 ">Thống kê</div>
+    <div class="flex" style=" padding: 12px;">
+      <div>
+        <img class="w-5 h-5" src="analytics.png" alt="">
       </div>
-    </a>
+      <div class="mx-3 text-sm text-gray-100 ">Thống kê</div>
+    </div>
+  </a>
     <a href="/home" class=" cursor-pointer mess ml-3 mt-3 w-10/12" style="text-decoration: none;display: flex;  ">
       <div class="flex" style=" padding: 12px;">
         <div>
@@ -168,8 +169,6 @@
       </div>
       <span class="badge" style="color: white;font-size: 14px;">\{{donHangMoi}}</span>
     </a>
-
-
     <a href="/mess" class="cursor-pointer mess ml-3 mt-3 w-10/12"
        style="border-bottom-width: 1px; text-decoration: none; display: flex; ">
       <div class="flex" style=" padding: 12px;">
@@ -183,7 +182,6 @@
       </div>
       <span class="badge" style="color: white;font-size: 14px;">\{{tinNhanMoi}}</span>
     </a>
-
     <a href="/warehouse" class="cursor-pointer mess ml-3 mt-3 w-10/12" style="text-decoration: none">
       <div class="flex" style=" padding: 12px;">
         <div>
@@ -192,6 +190,7 @@
         <div class="mx-3 text-sm text-gray-100">Kho Hàng</div>
       </div>
     </a>
+  </div>
   </div>
   <!--Side Navbar-->
 

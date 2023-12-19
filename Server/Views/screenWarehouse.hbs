@@ -1,344 +1,344 @@
 <html lang="en">
 
-    <head>
-        <title>Kho Hàng</title>
-        <link rel="stylesheet" href="styles.css">
+<head>
+  <title>Kho Hàng</title>
+  <link rel="stylesheet" href="styles.css">
 
-        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-        <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
-        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-        <style>
-            .modal-title {
-                font-weight: bold;
-            }
-
-
-            body {
-                margin: 7px auto auto;
-            }
-
-            .card-header {
-                font-weight: bold;
-                font-size: 20px;
-            }
-
-            .card-body {
-                padding: 20px;
-            }
-
-            /* Style cho các button */
-            .btn {
-                font-size: 14px;
-                font-weight: bold;
-            }
-
-            /* Style cho bảng sản phẩm */
-            .table td {
-                vertical-align: middle;
-            }
-
-            .table .table-actions a {
-                margin-right: 5px;
-            }
-
-            .mess {
-                position: relative;
-                display: inline-block;
-            }
-
-            .mess::after {
-                content: "";
-                position: absolute;
-                left: 0;
-                bottom: 0;
-                width: 0;
-                height: 1px;
-                background-color: white;
-                transition: width 0.5s ease-in-out;
-            }
-
-            .mess:hover::after {
-                width: 100%;
-            }
-        </style>
-    </head>
-
-    <body class="bg-gray-200">
-    <div class="flex ">
-        <!--Side Navbar-->
-        <div class="bg-indigo-900 w-1/6 ">
-            <div class=" bg-indigo-800">
-                <div class=" text-xl text-gray-200 uppercase font-bold" style="padding: 33px;">Shop BipBip</div>
-            </div>
-            <a href="/statistic" class=" cursor-pointer mess ml-3 mt-3 w-10/12"
-               style="text-decoration: none ">
-                <div class="flex" style=" padding: 12px;">
-                    <div>
-                        <img class="w-5 h-5" src="analytics.png" alt="">
-                    </div>
-                    <div class="mx-3 text-sm text-gray-100 ">Thống kê</div>
-                </div>
-            </a>
-            <a href="/home" class=" cursor-pointer mess ml-3 mt-3 w-10/12" style="text-decoration: none ">
-                <div class="flex" style=" padding: 12px;">
-                    <div>
-                        <img class="w-5 h-5" src="dashboard.png" alt="">
-                    </div>
-                    <div class="mx-3 text-sm text-gray-100 ">Đơn Hàng</div>
-                </div>
-            </a>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  <style>
+    .modal-title {
+      font-weight: bold;
+    }
 
 
-            <a href="/mess" class="cursor-pointer mess ml-3 mt-3 w-10/12" style="text-decoration: none">
-                <div class="flex" style=" padding: 12px;">
-                    <div>
-                        <img class="w-5 h-5 " src="messages.png" alt="">
-                    </div>
-                    <div class="mx-3 text-sm text-gray-100 ">Tin Nhắn</div>
-                </div>
-            </a>
+    body {
+      margin: 7px auto auto;
+    }
 
-            <a href="/warehouse" class="cursor-pointer mess ml-3 mt-3 w-10/12" style="border-bottom-width: 1px; text-decoration: none">
-                <div class="flex" style=" padding: 12px;">
-                    <div>
-                        <img class="w-5 h-5" src="kho.svg" alt="">
-                    </div>
-                    <div class="mx-3 text-sm text-gray-100">Kho Hàng</div>
-                </div>
-            </a>
-        </div>
-        <!--Side Navbar-->
+    .card-header {
+      font-weight: bold;
+      font-size: 20px;
+    }
 
-        <!--Main area-->
+    .card-body {
+      padding: 20px;
+    }
 
-        <div class="flex-1">
-            <!--Top navbar-->
-            <div>
+    /* Style cho các button */
+    .btn {
+      font-size: 14px;
+      font-weight: bold;
+    }
 
-                <div class="bg-white px-2 py-0.5 h-18 flex">
-                    <div class="left md:w-3/4 sm:w-1/3 flex p-3">
-                        <img src="person.png" class="w-10 h-10" alt="">
-                        <span class="block p-2">Admin</span>
-                    </div>
-                    <div class="right md:w-1/4 sm:w-2/3 flex  justify-content-end ">
-                      <a href="/login" style=" text-decoration: none; color: black; line-height: 58px; margin-right: 24px; ">Đăng xuất</a>
-                    </div>
-                </div>
-            </div>
-        <!--Top navbar-->
+    /* Style cho bảng sản phẩm */
+    .table td {
+      vertical-align: middle;
+    }
 
-        <div class="card-container flex m-7 space-x-6 ">
-            <div class="card w-full">
-                <div class="card-header" >
-                    <button class="btn btn-primary" data-toggle="modal" data-target="#addProductModal">Thêm sản phẩm
-                    </button>
+    .table .table-actions a {
+      margin-right: 5px;
+    }
 
-                </div>
+    .mess {
+      position: relative;
+      display: inline-block;
+    }
 
+    .mess::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      bottom: 0;
+      width: 0;
+      height: 1px;
+      background-color: white;
+      transition: width 0.5s ease-in-out;
+    }
 
+    .mess:hover::after {
+      width: 100%;
+    }
+  </style>
+</head>
 
-               <div style="height: 555px;border-radius: 8px;overflow: auto;">
-                   <div class="card-body">
-
-                       <table class="table table-bordered ">
-
-                           <thead>
-                           <tr>
-                               <th style="text-align: center;width: 110px">Ảnh</th>
-                               <th style="text-align: center;">Tên sản phẩm</th>
-                               <th style="text-align: center;width: 110px">Giá</th>
-                               <th style="text-align: center;width: 130px">Số màu</th>
-                               <th style="text-align: center;width: 130px">Số lượng</th>
-                               <th style="text-align: center;width: 100px;">Loại</th>
-                               <th style="text-align: center;width: 140px;">Thao tác</th>
-                           </tr>
-                           </thead>
-                           <tbody>
-                           {{#each products}}
-                               <tr>
-                                   <td><img src={{this.product_image}} alt={{this.product_title}}
-                                            style="height: 80px;width: 80px;border-radius: 8px;">
-                                   </td>
-                                   <td>{{this.product_title}}</td>
-                                   <td>{{formatCurrency this.product_price}}</td>
-                                   <td>{{this.product_quantityColor}}</td>
-                                   <td>{{this.product_quantity}}</td>
-                                   <td>
-                                       {{#ifCond this.product_category '===' 'men'}}
-                                           nam
-                                       {{else ifCond this.product_category '===' 'women'}}
-                                           nữ
-                                       {{else}}
-                                           trẻ em
-                                       {{/ifCond}}
-                                   </td>
-
-                                   <td>
-                                       <!-- Các nút "Sửa" và "Xóa" -->
-                                       <a href="#" class="btn btn-primary btn-sm" data-toggle="modal"
-                                          data-target="#edit{{this._id}}"
-                                          data-product-title="Tiêu đề sản phẩm"
-                                          data-product-price="Giá sản phẩm">Sửa</a>
-                                       <a href="#" class="btn btn-danger btn-sm" data-toggle="modal"
-                                          data-target="#delete{{this._id}}"
-                                          data-product-name="Tên sản phẩm">Xóa</a>
-                                       <a href="/home/detail/{{this._id}}" class="btn btn-info btn-sm mt-1.5">Xem chi tiết</a>
-                                   </td>
-
-                               </tr>
-                               <!-- Modal cho việc xóa sản phẩm -->
-                               <div class="modal fade" id="delete{{this._id}}" tabindex="-1" role="dialog"
-                                    aria-labelledby="deleteProductModalLabel">
-                                   <div class="modal-dialog" role="document">
-                                       <div class="modal-content">
-                                           <div class="modal-header">
-                                               <h5 class="modal-title" id="deleteProductModalLabel">Xóa sản phẩm</h5>
-                                               <button type="button" class="close" data-dismiss="modal"
-                                                       aria-label="Close">
-                                                   <span aria-hidden="true">&times;</span>
-                                               </button>
-                                           </div>
-                                           <div class="modal-body">
-                                               <p>Bạn có chắc chắn muốn xóa sản phẩm {{this.product_title}} ?</p>
-                                           </div>
-                                           <div class="modal-footer">
-                                               <button type="button" class="btn btn-secondary" data-dismiss="modal">Huỷ
-                                               </button>
-                                               <form action="/home/delete/{{this._id}}" method="POST">
-                                                   <button type="submit" class="btn btn-danger">Xóa</button>
-                                               </form>
-                                           </div>
-                                       </div>
-                                   </div>
-                               </div>
-
-                               <!-- Modal sửa sản phẩm -->
-                               <div class="modal fade" id="edit{{this._id}}" tabindex="-1" role="dialog"
-                                    aria-labelledby="addProductModalLabel" aria-hidden="true">
-                                   <div class="modal-dialog" role="document">
-                                       <div class="modal-content">
-                                           <div class="modal-header">
-                                               <h5 class="modal-title" id="addProductModalLabel">Sửa sản phẩm</h5>
-                                               <button type="button" class="close" data-dismiss="modal"
-                                                       aria-label="Close">
-                                                   <span aria-hidden="true">&times;</span>
-                                               </button>
-                                           </div>
-                                           <div class="modal-body">
-                                               <form action="/home/edit/{{this._id}}" method="POST" class="mb-3"
-                                                     id="addProductForm">
-                                                   <div style="display: flex;">
-                                                       <div>
-                                                           <img src="{{product_image}}"
-                                                                style="height: 95px; width: 95px; border-radius: 5px;" alt="">
-                                                       </div>
-                                                       <div class="form-group" style=" margin-left: 8px; width: 80%; ">
-                                                           <label for="product_image">Ảnh</label>
-                                                           <input type="text" class="form-control" id="product_image"
-                                                                  name="product_image"
-                                                                  value="{{product_image}}" required>
-                                                       </div>
-                                                   </div>
-                                                   <div class="form-group">
-                                                       <label for="product_title">Tiêu đề</label>
-                                                       <input type="text" class="form-control" id="product_title"
-                                                              name="product_title"
-                                                              value="{{product_title}}" required>
-                                                   </div>
-                                                   <div class="form-group">
-                                                       <label for="product_price">Giá</label>
-                                                       <input type="number" class="form-control" id="product_price"
-                                                              min="0"
-                                                              value="{{product_price}}" name="product_price" required>
-                                                   </div>
-                                                   <div class="form-group">
-
-                                                       <div class="form-group">
-                                                           <label for="product_category">Thể loại</label>
-                                                           <select class="form-control" id="product_category"
-                                                                   name="product_category"
-                                                                   required>
-                                                               <option value="men"
-                                                                       {{#ifCond product_category "===" "men"
-                                                                       }}selected{{/ifCond}}>Nam
-                                                               </option>
-                                                               <option value="women"
-                                                                       {{#ifCond product_category "===" "women"
-                                                                       }}selected{{/ifCond}}>Nữ
-                                                               </option>
-                                                               <option value="children"
-                                                                       {{#ifCond product_category "===" "children"
-                                                                       }}selected{{/ifCond}}>Trẻ em
-                                                               </option>
-                                                           </select>
-                                                       </div>
-
-                                                       <button type="button" class="btn btn-secondary"
-                                                               data-dismiss="modal">Huỷ
-                                                       </button>
-                                                       <button type="submit" class="btn btn-primary">Sửa</button>
-                                                   </div>
-                                               </form>
-                                           </div>
-                                       </div>
-                                   </div>
-                               </div>
-                           {{/each}}
-                           </tbody>
-                       </table>
-
-                   </div>
-                   <div class="modal fade" id="addProductModal" tabindex="-1" role="dialog"
-                        aria-labelledby="addProductModalLabel"
-                        aria-hidden="true">
-                       <div class="modal-dialog" role="document">
-                           <div class="modal-content">
-                               <div class="modal-header">
-                                   <h5 class="modal-title" id="addProductModalLabel">Thêm sản phẩm</h5>
-                                   <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                       <span aria-hidden="true">&times;</span>
-                                   </button>
-                               </div>
-                               <div class="modal-body">
-                                   <form action="/home/add" method="POST" class="mb-3" id="addProductForm">
-                                       <div class="form-group">
-                                           <label for="product_image">Ảnh</label>
-                                           <input type="text" class="form-control" id="product_image" name="product_image"
-                                                  required>
-                                       </div>
-                                       <div class="form-group">
-                                           <label for="product_title">Tiêu đề</label>
-                                           <input type="text" class="form-control" id="product_title" name="product_title"
-                                                  required>
-                                       </div>
-                                       <div class="form-group">
-                                           <label for="product_price">Giá</label>
-                                           <input type="number" class="form-control" id="product_price"
-                                                  name="product_price"
-                                                  required>
-                                       </div>
-                                       <div class=" form-group">
-                                           <label for="product_category">Thể loại</label>
-                                           <select class="form-control" id="product_category" name="product_category"
-                                                   required>
-                                               <option value="men">Nam</option>
-                                               <option value="women">Nữ</option>
-                                               <option value="children">Trẻ em</option>
-                                           </select>
-                                       </div>
-                                       <button type="submit" class="btn btn-primary">Thêm</button>
-
-                                   </form>
-                               </div>
-                           </div>
-                       </div>
-                   </div>
-               </div>
-
-            </div>
-        </div>
+<body class="bg-gray-200">
+<div class="flex " style="height: 100%">
+  <!--Side Navbar-->
+  <div class="bg-indigo-900 w-1/6 ">
+    <div class=" bg-indigo-800">
+      <div class=" text-xl text-gray-200 uppercase font-bold" style="padding: 33px;">Shop BipBip</div>
     </div>
+    <div>
+      <a href="/statistic" class=" cursor-pointer mess ml-3 mt-3 w-10/12"
+         style="text-decoration: none ">
+        <div class="flex" style=" padding: 12px;">
+          <div>
+            <img class="w-5 h-5" src="analytics.png" alt="">
+          </div>
+          <div class="mx-3 text-sm text-gray-100 ">Thống kê</div>
+        </div>
+      </a>
+      <a href="/home" class=" cursor-pointer mess ml-3 mt-3 w-10/12" style="text-decoration: none ">
+        <div class="flex" style=" padding: 12px;">
+          <div>
+            <img class="w-5 h-5" src="dashboard.png" alt="">
+          </div>
+          <div class="mx-3 text-sm text-gray-100 ">Đơn Hàng</div>
+        </div>
+      </a>
+      <a href="/mess" class="cursor-pointer mess ml-3 mt-3 w-10/12" style="text-decoration: none">
+        <div class="flex" style=" padding: 12px;">
+          <div>
+            <img class="w-5 h-5 " src="messages.png" alt="">
+          </div>
+          <div class="mx-3 text-sm text-gray-100 ">Tin Nhắn</div>
+        </div>
+      </a>
+      <a href="/warehouse" class="cursor-pointer mess ml-3 mt-3 w-10/12"
+         style="border-bottom-width: 1px; text-decoration: none">
+        <div class="flex" style=" padding: 12px;">
+          <div>
+            <img class="w-5 h-5" src="kho.svg" alt="">
+          </div>
+          <div class="mx-3 text-sm text-gray-100">Kho Hàng</div>
+        </div>
+      </a>
+    </div>
+  </div>
+  <!--Side Navbar-->
+
+  <!--Main area-->
+
+  <div class="flex-1">
+    <!--Top navbar-->
+    <div>
+
+      <div class="bg-white px-2 py-0.5 h-18 flex">
+        <div class="left md:w-3/4 sm:w-1/3 flex p-3">
+          <img src="person.png" class="w-10 h-10" alt="">
+          <span class="block p-2">Admin</span>
+        </div>
+        <div class="right md:w-1/4 sm:w-2/3 flex  justify-content-end ">
+          <a href="/login" style=" text-decoration: none; color: black; line-height: 58px; margin-right: 24px; ">Đăng
+            xuất</a>
+        </div>
+      </div>
+    </div>
+    <!--Top navbar-->
+
+    <div class="card-container flex m-7 space-x-6 ">
+      <div class="card w-full">
+        <div class="card-header">
+          <button class="btn btn-primary" data-toggle="modal" data-target="#addProductModal">Thêm sản phẩm
+          </button>
+
+        </div>
+
+
+        <div style="height: 555px;border-radius: 8px;overflow: auto;">
+          <div class="card-body">
+
+            <table class="table table-bordered ">
+
+              <thead>
+              <tr>
+                <th style="text-align: center;width: 110px">Ảnh</th>
+                <th style="text-align: center;">Tên sản phẩm</th>
+                <th style="text-align: center;width: 110px">Giá</th>
+                <th style="text-align: center;width: 130px">Số màu</th>
+                <th style="text-align: center;width: 130px">Số lượng</th>
+                <th style="text-align: center;width: 100px;">Loại</th>
+                <th style="text-align: center;width: 140px;">Thao tác</th>
+              </tr>
+              </thead>
+              <tbody>
+              {{#each products}}
+                <tr>
+                  <td><img src={{this.product_image}} alt={{this.product_title}}
+                           style="height: 80px;width: 80px;border-radius: 8px;">
+                  </td>
+                  <td>{{this.product_title}}</td>
+                  <td>{{formatCurrency this.product_price}}</td>
+                  <td>{{this.product_quantityColor}}</td>
+                  <td>{{this.product_quantity}}</td>
+                  <td>
+                    {{#ifCond this.product_category '===' 'men'}}
+                      nam
+                    {{else ifCond this.product_category '===' 'women'}}
+                      nữ
+                    {{else}}
+                      trẻ em
+                    {{/ifCond}}
+                  </td>
+
+                  <td>
+                    <!-- Các nút "Sửa" và "Xóa" -->
+                    <a href="#" class="btn btn-primary btn-sm" data-toggle="modal"
+                       data-target="#edit{{this._id}}"
+                       data-product-title="Tiêu đề sản phẩm"
+                       data-product-price="Giá sản phẩm">Sửa</a>
+                    <a href="#" class="btn btn-danger btn-sm" data-toggle="modal"
+                       data-target="#delete{{this._id}}"
+                       data-product-name="Tên sản phẩm">Xóa</a>
+                    <a href="/home/detail/{{this._id}}" class="btn btn-info btn-sm mt-1.5">Xem chi tiết</a>
+                  </td>
+
+                </tr>
+                <!-- Modal cho việc xóa sản phẩm -->
+                <div class="modal fade" id="delete{{this._id}}" tabindex="-1" role="dialog"
+                     aria-labelledby="deleteProductModalLabel">
+                  <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h5 class="modal-title" id="deleteProductModalLabel">Xóa sản phẩm</h5>
+                        <button type="button" class="close" data-dismiss="modal"
+                                aria-label="Close">
+                          <span aria-hidden="true">&times;</span>
+                        </button>
+                      </div>
+                      <div class="modal-body">
+                        <p>Bạn có chắc chắn muốn xóa sản phẩm {{this.product_title}} ?</p>
+                      </div>
+                      <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Huỷ
+                        </button>
+                        <form action="/home/delete/{{this._id}}" method="POST">
+                          <button type="submit" class="btn btn-danger">Xóa</button>
+                        </form>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Modal sửa sản phẩm -->
+                <div class="modal fade" id="edit{{this._id}}" tabindex="-1" role="dialog"
+                     aria-labelledby="addProductModalLabel" aria-hidden="true">
+                  <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h5 class="modal-title" id="addProductModalLabel">Sửa sản phẩm</h5>
+                        <button type="button" class="close" data-dismiss="modal"
+                                aria-label="Close">
+                          <span aria-hidden="true">&times;</span>
+                        </button>
+                      </div>
+                      <div class="modal-body">
+                        <form action="/home/edit/{{this._id}}" method="POST" class="mb-3"
+                              id="addProductForm">
+                          <div style="display: flex;">
+                            <div>
+                              <img src="{{product_image}}"
+                                   style="height: 95px; width: 95px; border-radius: 5px;" alt="">
+                            </div>
+                            <div class="form-group" style=" margin-left: 8px; width: 80%; ">
+                              <label for="product_image">Ảnh</label>
+                              <input type="text" class="form-control" id="product_image"
+                                     name="product_image"
+                                     value="{{product_image}}" required>
+                            </div>
+                          </div>
+                          <div class="form-group">
+                            <label for="product_title">Tiêu đề</label>
+                            <input type="text" class="form-control" id="product_title"
+                                   name="product_title"
+                                   value="{{product_title}}" required>
+                          </div>
+                          <div class="form-group">
+                            <label for="product_price">Giá</label>
+                            <input type="number" class="form-control" id="product_price"
+                                   min="0"
+                                   value="{{product_price}}" name="product_price" required>
+                          </div>
+                          <div class="form-group">
+
+                            <div class="form-group">
+                              <label for="product_category">Thể loại</label>
+                              <select class="form-control" id="product_category"
+                                      name="product_category"
+                                      required>
+                                <option value="men"
+                                        {{#ifCond product_category "===" "men"
+                                        }}selected{{/ifCond}}>Nam
+                                </option>
+                                <option value="women"
+                                        {{#ifCond product_category "===" "women"
+                                        }}selected{{/ifCond}}>Nữ
+                                </option>
+                                <option value="children"
+                                        {{#ifCond product_category "===" "children"
+                                        }}selected{{/ifCond}}>Trẻ em
+                                </option>
+                              </select>
+                            </div>
+
+                            <button type="button" class="btn btn-secondary"
+                                    data-dismiss="modal">Huỷ
+                            </button>
+                            <button type="submit" class="btn btn-primary">Sửa</button>
+                          </div>
+                        </form>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              {{/each}}
+              </tbody>
+            </table>
+
+          </div>
+          <div class="modal fade" id="addProductModal" tabindex="-1" role="dialog"
+               aria-labelledby="addProductModalLabel"
+               aria-hidden="true">
+            <div class="modal-dialog" role="document">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="addProductModalLabel">Thêm sản phẩm</h5>
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+                <div class="modal-body">
+                  <form action="/home/add" method="POST" class="mb-3" id="addProductForm">
+                    <div class="form-group">
+                      <label for="product_image">Ảnh</label>
+                      <input type="text" class="form-control" id="product_image" name="product_image"
+                             required>
+                    </div>
+                    <div class="form-group">
+                      <label for="product_title">Tiêu đề</label>
+                      <input type="text" class="form-control" id="product_title" name="product_title"
+                             required>
+                    </div>
+                    <div class="form-group">
+                      <label for="product_price">Giá</label>
+                      <input type="number" class="form-control" id="product_price"
+                             name="product_price"
+                             required>
+                    </div>
+                    <div class=" form-group">
+                      <label for="product_category">Thể loại</label>
+                      <select class="form-control" id="product_category" name="product_category"
+                              required>
+                        <option value="men">Nam</option>
+                        <option value="women">Nữ</option>
+                        <option value="children">Trẻ em</option>
+                      </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Thêm</button>
+
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
 </div>
 
 </body>
