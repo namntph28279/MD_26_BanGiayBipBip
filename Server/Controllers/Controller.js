@@ -870,7 +870,7 @@ app.post('/register', async(req, res) => {
             fullname: username.split('@')[0],
             gender: 'Nam',
             avatar: 'https://st.quantrimang.com/photos/image/072015/22/avatar.jpg',
-            birthday: '01-01-2000'
+            birthday: "11/11/2000",
         });
 
         await newProfile.save();
