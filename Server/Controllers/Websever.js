@@ -62,7 +62,12 @@ app.get('/home', async (req, res) => {
     res.render('../Views/screenHome.hbs');
 
 });
-
+app.get('/notifications', async (req, res) => {
+    res.render('../Views/screenNotifications.hbs');
+});
+app.get('/accountManagement', async (req, res) => {
+    res.render('../Views/screenAccountManagement.hbs');
+});
 app.get('/statistic', async (req, res) => {
     try {
         res.render('../Views/screenStatistics.hbs');
