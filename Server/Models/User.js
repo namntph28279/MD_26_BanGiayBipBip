@@ -10,13 +10,20 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true
   },
+  role: {
+    type: Number,
+    default: 1,
+  },
   status: {
     type: Boolean,
     default: false,
   },
-  role:{
-    type: Number,
-    default: 1,
+  date: {
+    type: Date,
+    default: Date.now
+  }, 
+  block_reason:{
+    type: String
   }
 });
 

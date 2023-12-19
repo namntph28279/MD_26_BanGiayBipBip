@@ -721,6 +721,72 @@ app.get('/statistics/revenue/:year/:month', async (req, res) => {
         res.status(500).json({ message: 'Lỗi máy chủ nội bộ' });
     }
 });
+
+//Thống kê theo ngày 
+app.get('/statistics/revenue/:year/:month/:startDay/:endDay', async (req, res) => {
+    try {
+        const year = parseInt(req.params.year);
+        const month = parseInt(req.params.month);
+        const startDay = parseInt(req.params.startDay);
+        const endDay = parseInt(req.params.endDay);
+
+        const successfulOrders = await orderDetail.find({
+            status: 3,
+            $expr: {
+                $and: [
+                    { $eq: [{ $year: '$order_date' }, year] },
+                    { $eq: [{ $month: '$order_date' }, month] },
+                    { $gte: [{ $dayOfMonth: '$order_date' }, startDay] },
+                    { $lte: [{ $dayOfMonth: '$order_date' }, endDay] }
+                ]
+            }
+        });
+
+        const totalRevenue = successfulOrders.reduce((accumulator, order) => {
+            return accumulator + order.total_amount;
+        }, 0);
+
+        const totalProfit = totalRevenue * 0.25; // Lợi nhuận là 25% doanh số
+
+        res.json({ totalRevenue, totalProfit });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Lỗi máy chủ nội bộ' });
+    }
+});
+
+//Thống kê 1 ngày
+app.get('/statistics/revenue/:year/:month/:day', async (req, res) => {
+    try {
+        const year = parseInt(req.params.year);
+        const month = parseInt(req.params.month);
+        const day = parseInt(req.params.day);
+
+        const successfulOrders = await orderDetail.find({
+            status: 3,
+            $expr: {
+                $and: [
+                    { $eq: [{ $year: '$order_date' }, year] },
+                    { $eq: [{ $month: '$order_date' }, month] },
+                    { $eq: [{ $dayOfMonth: '$order_date' }, day] }
+                ]
+            }
+        });
+
+        const totalRevenue = successfulOrders.reduce((accumulator, order) => {
+            return accumulator + order.total_amount;
+        }, 0);
+
+        const totalProfit = totalRevenue * 0.25; // Lợi nhuận là 25% doanh số
+
+        res.json({ totalRevenue, totalProfit });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Lỗi máy chủ nội bộ' });
+    }
+});
+
+
 //chi tiết đơn hàng
 app.get('/order/getOne/:orderId', async (req, res) => {
     const orderId = req.params.orderId;
@@ -870,7 +936,7 @@ app.post('/register', async(req, res) => {
             fullname: username.split('@')[0],
             gender: 'Nam',
             avatar: 'https://st.quantrimang.com/photos/image/072015/22/avatar.jpg',
-            birthday: '01-01-2000'
+            birthday: '10/10/2000'
         });
 
         await newProfile.save();
