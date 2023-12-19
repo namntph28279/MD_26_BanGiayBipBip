@@ -112,6 +112,8 @@ const getDataDonHang = async () => {
 const getTokenApp = async () => {
     try {
         const pushTokenData = await Notifications.getExpoPushTokenAsync();
+        const idApp= pushTokenData.data
+     await url.post(`/addIdClient`,{idClient:idApp})
         console.log(pushTokenData.data)
         return pushTokenData.data;
     } catch (error) {
@@ -128,10 +130,10 @@ const dataAll = createSlice({
         dataSPFav: [],
         dataUserID: [],
         dataUser: [],
-        dataTokenApp: [],
         dataCart: [],
         dataDonHang: [],
-        dataTop3SP:[]
+        dataTop3SP:[],
+        dataTokenApp: []
     },
     reducers: {
         setDataSP: (state, action) => {
@@ -149,9 +151,6 @@ const dataAll = createSlice({
         setUser: (state, action) => {
             state.dataUser = action.payload;
         },
-        setTokenApp: (state, action) => {
-            state.dataTokenApp = action.payload;
-        },
         setDataCart: (state, action) => {
             state.dataCart = action.payload;
         },
@@ -160,6 +159,9 @@ const dataAll = createSlice({
         },
         setDataTop3SP: (state, action) => {
             state.dataTop3SP = action.payload;
+        },
+        setTokenApp: (state, action) => {
+            state.dataTokenApp = action.payload;
         }
     }
 })
@@ -170,10 +172,10 @@ export const {
     setDataSPFav,
     setAsyncStorage,
     setUser,
-    setTokenApp,
     setDataCart,
     setDataDonHang,
-    setDataTop3SP
+    setDataTop3SP,
+    setTokenApp
 } = dataAll.actions;
 
 
@@ -193,9 +195,6 @@ export const fetchDataAndSetToRedux = () => async (dispatch) => {
     const dataUser = await getDataUser();
     dispatch(setUser(dataUser))
 
-    const dataTokenApp = await getTokenApp();
-    dispatch(setTokenApp(dataTokenApp))
-
     const dataCart = await getDataCart();
     dispatch(setDataCart(dataCart))
 
@@ -204,6 +203,9 @@ export const fetchDataAndSetToRedux = () => async (dispatch) => {
 
     const dataTop3SP = await getDataTop3SP();
     dispatch(setDataTop3SP(dataTop3SP))
+
+    const dataTokenApp = await getTokenApp();
+    dispatch(setTokenApp(dataTokenApp))
 };
 
 export const fetchDataAndFav = () => async (dispatch) => {
