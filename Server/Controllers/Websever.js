@@ -48,7 +48,7 @@ const handlebars = expressHbs.create({
     },
     helpers: {
 
-        formatCurrency: function (amount) {
+        formatCurrency: function(amount) {
             return currencyFormatter.format(amount, { code: 'VND' });
         }
     },
@@ -60,7 +60,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(express.json());
 //màn hình home
-app.get('/loadData', async (req, res) => {
+app.get('/loadData', async(req, res) => {
     const choXacNhan = await Order.find({ status: 0 }).sort({ order_date: -1 });
     const choLayHang = await Order.find({ status: 1 }).sort({ order_date: -1 });
     const choGiaoHang = await Order.find({ status: 2 }).sort({ order_date: -1 });
@@ -75,18 +75,23 @@ app.get('/loadData', async (req, res) => {
     res.json(arr)
 })
 
-app.get('/dataOrderUser/:id', async (req, res) => {
+app.get('/dataOrderUser/:id', async(req, res) => {
     const userId = req.params.id;
     const data = await Order.find({ user: userId }).sort({ order_date: -1 });
 
     res.json(data)
 })
-app.get('/home', async (req, res) => {
+app.get('/home', async(req, res) => {
     res.render('../Views/screenHome.hbs');
 
 });
-
-app.get('/statistic', async (req, res) => {
+app.get('/notifications', async(req, res) => {
+    res.render('../Views/screenNotifications.hbs');
+});
+app.get('/accountManagement', async(req, res) => {
+    res.render('../Views/screenAccountManagement.hbs');
+});
+app.get('/statistic', async(req, res) => {
     try {
         res.render('../Views/screenStatistics.hbs');
     } catch (error) {
@@ -94,14 +99,118 @@ app.get('/statistic', async (req, res) => {
     }
 
 });
-app.get('/mess', async (req, res) => {
+app.get('/customer', async(req, res) => {
+    try {
+        const data = await User.aggregate([{
+                $lookup: {
+                    from: "profiles",
+                    localField: "_id",
+                    foreignField: "user",
+                    as: "profile"
+                }
+            },
+            {
+                $unwind: {
+                    path: "$profile",
+                    preserveNullAndEmptyArrays: true
+                }
+            },
+            {
+                $lookup: {
+                    from: "addresses",
+                    localField: "_id",
+                    foreignField: "user",
+                    as: "address"
+                }
+            },
+            {
+                $unwind: {
+                    path: "$address",
+                    preserveNullAndEmptyArrays: true
+                }
+            },
+            {
+                $project: {
+                    _id: 1,
+                    username: 1,
+                    password: 1,
+                    role: 1,
+                    status: 1,
+                    date: 1,
+                    block_reason: 1,
+                    "profile.fullname": 1,
+                    "profile.gender": 1,
+                    "profile.avatar": 1,
+                    "profile.birthday": 1,
+                    "profile.email": 1,
+                    "profile.phone": 1,
+                    "profile.address": 1,
+                    "profile.username": "$username",
+                    "address.address": 1,
+                    "address.phone": 1,
+                    "profile.status": "$status",
+                }
+            }
+        ]);
+        res.render('../Views/customer.hbs', { data });
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Lỗi rồi');
+    }
+});
+app.get('/customer/:userId', async(req, res) => {
+    const userId = req.params.userId;
+
+    try {
+        const user = await User.findById(userId);
+
+        if (!user) {
+            return res.status(404).json({ message: 'Không tồn tại tài khoản' });
+        }
+
+        res.render('../Views/customer.hbs', { data: [user] });
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ message: 'lỗi rồi' });
+    }
+});
+
+app.post('/block', async(req, res) => {
+    let userId = req.body.userId;
+    const blockReason = req.body.blockReason;
+    if (!mongoose.Types.ObjectId.isValid(userId)) {
+        return res.status(400).json({ message: 'UserId không hợp lệ', userId, blockReason });
+
+    }
+
+    try {
+        const user = await User.findById(userId);
+
+        if (!user) {
+            return res.status(404).json({ message: 'Không tồn tại tài khoản' });
+        }
+
+        user.status = true;
+        user.block_reason = blockReason;
+        await user.save();
+
+        res.redirect('/customer');
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ message: 'Lỗi rồi' });
+    }
+});
+
+
+
+app.get('/mess', async(req, res) => {
     try {
         res.render('../Views/screenMessger.hbs');
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
 });
-app.get('/warehouse', async (req, res) => {
+app.get('/warehouse', async(req, res) => {
     try {
         const products = await Product.find().lean();
         res.render('../Views/screenWarehouse.hbs', { products });
@@ -111,7 +220,7 @@ app.get('/warehouse', async (req, res) => {
 });
 
 
-app.post('/screenWarehouse/search', async (req, res) => {
+app.post('/screenWarehouse/search', async(req, res) => {
     const { title } = req.body;
     try {
         const searchString = String(title);
@@ -124,7 +233,7 @@ app.post('/screenWarehouse/search', async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 });
-app.post('/order/status/:orderId', async (req, res) => {
+app.post('/order/status/:orderId', async(req, res) => {
     const orderId = req.params.orderId;
     const data = req.body
     const order = await Order.findById(orderId);
@@ -179,7 +288,7 @@ app.post('/order/status/:orderId', async (req, res) => {
     }
 });
 
-app.post('/order/statusAPP/:orderId', async (req, res) => {
+app.post('/order/statusAPP/:orderId', async(req, res) => {
     const orderId = req.params.orderId;
     try {
         const order = await Order.findById(orderId);
@@ -191,7 +300,7 @@ app.post('/order/statusAPP/:orderId', async (req, res) => {
     }
 });
 
-app.post('/order/status/Comfig/:id', async (req, res) => {
+app.post('/order/status/Comfig/:id', async(req, res) => {
 
     const orderId = req.params.id;
     console.log(orderId)
@@ -253,6 +362,7 @@ app.post('/order/status/Comfig/:id', async (req, res) => {
     }
 });
 
+
 app.post('/home/add', upload.single('product_image'), async (req, res) => {
     try {
         const { product_title, product_price, product_category } = req.body;
@@ -291,6 +401,7 @@ app.post('/home/add', upload.single('product_image'), async (req, res) => {
 
 
 
+
 app.post('/home/edit/:id', async (req, res) => {
     const id = req.params.id;
     const { product_title, product_price, product_image, product_quantity, product_category } = req.body;
@@ -310,7 +421,7 @@ app.post('/home/edit/:id', async (req, res) => {
     }
 });
 
-app.post('/home/delete/:id', async (req, res) => {
+app.post('/home/delete/:id', async(req, res) => {
     const id = req.params.id;
 
     try {
@@ -322,7 +433,7 @@ app.post('/home/delete/:id', async (req, res) => {
     }
 });
 
-app.get('/home/detail/:id', async (req, res) => {
+app.get('/home/detail/:id', async(req, res) => {
     try {
         const productId = req.params.id;
 
@@ -385,7 +496,7 @@ app.get('/home/detail/:id', async (req, res) => {
     }
 });
 
-app.post('/home/detail/color/add/:productId', async (req, res) => {
+app.post('/home/detail/color/add/:productId', async(req, res) => {
     try {
         const productId = req.params.productId;
         const product = await Product.findById(productId).lean();
@@ -412,7 +523,7 @@ app.post('/home/detail/color/add/:productId', async (req, res) => {
     }
 })
 
-app.post('/home/detail/colors/edit/:colorId/:productId', async (req, res) => {
+app.post('/home/detail/colors/edit/:colorId/:productId', async(req, res) => {
     try {
         const colorId = req.params.colorId;
         const productId = req.params.productId;
@@ -447,7 +558,7 @@ app.post('/home/detail/colors/edit/:colorId/:productId', async (req, res) => {
     }
 });
 
-app.post('/home/detail/colors/delete/:colorId/:productId', async (req, res) => {
+app.post('/home/detail/colors/delete/:colorId/:productId', async(req, res) => {
     try {
         const colorId = req.params.colorId;
         const productId = req.params.productId;
@@ -469,7 +580,7 @@ app.post('/home/detail/colors/delete/:colorId/:productId', async (req, res) => {
     }
 });
 
-app.post('/chatShop', async (req, res) => {
+app.post('/chatShop', async(req, res) => {
     try {
         const data = req.body;
         const products = await ChatShop.findOne({ user: data.user }).lean();
@@ -482,7 +593,7 @@ app.post('/chatShop', async (req, res) => {
     }
 });
 
-app.post('/chatAllShop', async (req, res) => {
+app.post('/chatAllShop', async(req, res) => {
     try {
         const dataChat = await ChatShop.find().lean();
         return res.send(dataChat)
@@ -490,7 +601,7 @@ app.post('/chatAllShop', async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 });
-app.post('/delete', async (req, res) => {
+app.post('/delete', async(req, res) => {
     try {
         const id = req.body;
         await ChatShop.findByIdAndDelete(id._id);
@@ -498,7 +609,7 @@ app.post('/delete', async (req, res) => {
         console.log(err)
     }
 })
-app.post('/home/chatShop', async (req, res) => {
+app.post('/home/chatShop', async(req, res) => {
     const data = req.body;
     const check = await ChatShop.findOne({ user: data.user })
     if (check) {
@@ -534,7 +645,7 @@ app.post('/home/chatShop', async (req, res) => {
     }
 })
 
-app.get("/AllId", async (req, res) => {
+app.get("/AllId", async(req, res) => {
     try {
         const dataChat = await checkClient.find().lean();
         return res.send(dataChat)
@@ -542,7 +653,7 @@ app.get("/AllId", async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 })
-app.get("/AllIdMess", async (req, res) => {
+app.get("/AllIdMess", async(req, res) => {
     try {
         const dataChat = await checkClientMess.find().lean();
         return res.send(dataChat)
@@ -551,7 +662,7 @@ app.get("/AllIdMess", async (req, res) => {
     }
 })
 
-app.post('/sendNotificationClient', async (req, res) => {
+app.post('/sendNotificationClient', async(req, res) => {
     const data = req.body;
     try {
         const check = await checkClient.findOne({ user: data.user });
@@ -561,7 +672,7 @@ app.post('/sendNotificationClient', async (req, res) => {
     }
 })
 
-app.post('/sendNotificationMess', async (req, res) => {
+app.post('/sendNotificationMess', async(req, res) => {
     const data = req.body;
     try {
         const check = await checkClientMess.findOne({ user: data.user });
@@ -571,7 +682,7 @@ app.post('/sendNotificationMess', async (req, res) => {
     }
 })
 
-app.post('/checkClientUser', async (req, res) => {
+app.post('/checkClientUser', async(req, res) => {
     const data = req.body;
 
     if (data.user === null) {
@@ -588,11 +699,7 @@ app.post('/checkClientUser', async (req, res) => {
                 await check.save();
                 return res.json({ message: "Cập nhật client thành công" });
             } else {
-                const updatedCheckClient = await checkClient.findOneAndUpdate(
-                    { user: data.user },
-                    { $push: { client: { IdClient: data.IdClient, status: data.status } } },
-                    { new: true, upsert: true }
-                );
+                const updatedCheckClient = await checkClient.findOneAndUpdate({ user: data.user }, { $push: { client: { IdClient: data.IdClient, status: data.status } } }, { new: true, upsert: true });
                 return res.json({ message: "Tạo client thành công", data: updatedCheckClient });
             }
         } else {
@@ -612,7 +719,7 @@ app.post('/checkClientUser', async (req, res) => {
     }
 });
 
-app.post('/checkClientMess', async (req, res) => {
+app.post('/checkClientMess', async(req, res) => {
     const data = req.body;
     console.log("start")
     if (data.user === null) {
@@ -631,11 +738,7 @@ app.post('/checkClientMess', async (req, res) => {
                 await check.save();
                 return res.json({ message: "Cập nhật trạng thái thành công" });
             } else {
-                const updatedCheckClient = await checkClientMess.findOneAndUpdate(
-                    { user: data.user },
-                    { $push: { client: { IdClient: data.IdClient, status: data.status } } },
-                    { new: true, upsert: true }
-                );
+                const updatedCheckClient = await checkClientMess.findOneAndUpdate({ user: data.user }, { $push: { client: { IdClient: data.IdClient, status: data.status } } }, { new: true, upsert: true });
                 return res.json({ message: "Tạo trạng thái thành công", data: updatedCheckClient });
             }
         } else {
@@ -654,14 +757,14 @@ app.post('/checkClientMess', async (req, res) => {
         return res.status(500).json({ error: "Lỗi xử lý yêu cầu" });
     }
 });
-app.get('/login', async (req, res) => {
+app.get('/login', async(req, res) => {
     try {
         res.render('../Views/login.hbs', {});
     } catch (error) {
         console.log(error);
     }
 });
-app.post("/web/login", async (req, res) => {
+app.post("/web/login", async(req, res) => {
     try {
         const { username, password } = req.body;
         const user = await User.findOne({ username });
@@ -682,7 +785,7 @@ app.post("/web/login", async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 });
-app.post("/web/register", async (req, res) => {
+app.post("/web/register", async(req, res) => {
     const { username, password, repassword, fullname } = req.body;
 
     try {
@@ -718,7 +821,7 @@ app.post("/web/register", async (req, res) => {
         return res.status(500).json({ message: error.message });
     }
 });
-app.get('/loadData/traHang/:id', async (req, res) => {
+app.get('/loadData/traHang/:id', async(req, res) => {
     try {
         const id = req.params.id;
         const traHang = Order.find({ status: 5, user: id }).sort({ order_date: -1 });
@@ -732,7 +835,7 @@ app.get('/loadData/traHang/:id', async (req, res) => {
     }
 });
 
-app.get('/loadData/donHuy/:id', async (req, res) => {
+app.get('/loadData/donHuy/:id', async(req, res) => {
     try {
         const id = req.params.id;
         const donHuyClient = await Order.find({ status: 4, user: id }).sort({ order_date: -1 });
@@ -746,7 +849,7 @@ app.get('/loadData/donHuy/:id', async (req, res) => {
     }
 });
 //trả hàng
-app.post('/order/return/:orderId', async (req, res) => {
+app.post('/order/return/:orderId', async(req, res) => {
     const orderId = req.params.orderId;
 
     try {
@@ -782,7 +885,7 @@ app.post('/order/return/:orderId', async (req, res) => {
 });
 
 
-app.post('/order/out/:orderId', async (req, res) => {
+app.post('/order/out/:orderId', async(req, res) => {
     const orderId = req.params.orderId;
 
     try {

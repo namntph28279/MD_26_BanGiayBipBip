@@ -8,6 +8,7 @@ const Profile = require('../Models/Profile');
 const Color = require('../Models/Color');
 const Size = require('../Models/Size');
 const OrderStatus = require('../Models/OrderStatus');
+const dataClient = require('../Models/dataClient')
 
 const express = require('express');
 const app = express();
@@ -31,7 +32,7 @@ app.engine('.hbs', Handlebars.engine({
 }))
 app.set('view engine', '.hbs');
 
-app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.urlencoded({extended: false}));
 app.use(bodyParser.json());
 
 //git add
@@ -55,8 +56,8 @@ app.use(bodyParser.json());
 app.use(express.json());
 
 // Thêm sản phẩm
-app.post('/add', async(req, res) => {
-    const { product_title, product_price, product_image, product_quantity, product_category } = req.body;
+app.post('/add', async (req, res) => {
+    const {product_title, product_price, product_image, product_quantity, product_category} = req.body;
 
     const product = new Product({
         product_title,
@@ -70,28 +71,28 @@ app.post('/add', async(req, res) => {
         await product.save();
         res.json(product);
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        res.status(500).json({message: error.message});
     }
 });
 
 // getAll
-app.get('/', async(req, res) => {
+app.get('/', async (req, res) => {
     try {
         const produt = await Product.find();
         res.json(produt);
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        res.status(500).json({message: error.message});
     }
 });
 
 
 // Định nghĩa endpoint để sửa dữ liệu
-app.put('/edit/:id', async(req, res) => {
+app.put('/edit/:id', async (req, res) => {
     const id = req.params.id;
-    const { product_title, product_price, product_image, product_quantity, product_category } = req.body;
+    const {product_title, product_price, product_image, product_quantity, product_category} = req.body;
 
     try {
-        const result = await Product.updateOne({ _id: id }, {
+        const result = await Product.updateOne({_id: id}, {
             product_title,
             product_price,
             product_image,
@@ -106,11 +107,11 @@ app.put('/edit/:id', async(req, res) => {
 });
 
 // Định nghĩa endpoint để xoá dữ liệu
-app.delete('/delete/:id', async(req, res) => {
+app.delete('/delete/:id', async (req, res) => {
     const id = req.params.id;
 
     try {
-        await Product.deleteOne({ _id: id });
+        await Product.deleteOne({_id: id});
         res.sendStatus(200);
     } catch (err) {
         console.error('Lỗi khi xoá dữ liệu:', err);
@@ -119,7 +120,7 @@ app.delete('/delete/:id', async(req, res) => {
 });
 
 //getOneProduct
-app.get('/product/:id', async(req, res) => {
+app.get('/product/:id', async (req, res) => {
     try {
         const productId = req.params.id;
 
@@ -127,11 +128,11 @@ app.get('/product/:id', async(req, res) => {
         const product = await Product.findById(productId);
 
         if (!product) {
-            return res.status(404).json({ error: 'Không tìm thấy sản phẩm' });
+            return res.status(404).json({error: 'Không tìm thấy sản phẩm'});
         }
 
         // Lấy thông tin màu sắc của sản phẩm
-        const colors = await Color.find({ product: productId });
+        const colors = await Color.find({product: productId});
 
         // Tạo mảng chứa thông tin kích thước của sản phẩm
         const sizes = [];
@@ -139,7 +140,7 @@ app.get('/product/:id', async(req, res) => {
         // Lấy thông tin kích thước của từng màu sắc
         for (const color of colors) {
             const colorId = color._id;
-            const colorSizes = await Size.find({ colorId });
+            const colorSizes = await Size.find({colorId});
             sizes.push(...colorSizes);
         }
 
@@ -166,32 +167,32 @@ app.get('/product/:id', async(req, res) => {
         res.json(productWithDetails);
     } catch (error) {
         console.error(error);
-        res.status(500).json({ error: 'Lỗi server' });
+        res.status(500).json({error: 'Lỗi server'});
     }
 });
 
 //lọc product theo loại
-app.get('/products/:category', async(req, res) => {
+app.get('/products/:category', async (req, res) => {
     try {
         const category = req.params.category;
 
         // Lấy danh sách sản phẩm theo danh mục
-        const products = await Product.find({ product_category: category });
+        const products = await Product.find({product_category: category});
 
         res.json(products);
     } catch (error) {
         console.error(error);
-        res.status(500).json({ error: 'Lỗi server' });
+        res.status(500).json({error: 'Lỗi server'});
     }
 });
 
 // Thêm sản phẩm vào giỏ hàng
-app.post('/cart/add', async(req, res) => {
-    const { product_id, quantity, user_id, size_id, color_id } = req.body;
+app.post('/cart/add', async (req, res) => {
+    const {product_id, quantity, user_id, size_id, color_id} = req.body;
 
     try {
         // Kiểm tra xem sản phẩm đã tồn tại trong giỏ hàng của người dùng chưa
-        let cartItem = await CartItem.findOne({ sizeId: size_id, user: user_id });
+        let cartItem = await CartItem.findOne({sizeId: size_id, user: user_id});
         if (cartItem) {
             // Nếu sản phẩm đã tồn tại, cập nhật số lượng
             cartItem.quantity += quantity;
@@ -199,7 +200,7 @@ app.post('/cart/add', async(req, res) => {
             // Nếu sản phẩm chưa tồn tại, thêm vào giỏ hàng
             const product = await Product.findById(product_id);
             if (!product) {
-                res.status(404).json({ message: 'Sản phẩm không tồn tại' });
+                res.status(404).json({message: 'Sản phẩm không tồn tại'});
                 return;
             }
             const size = await Size.findById(size_id);
@@ -218,18 +219,18 @@ app.post('/cart/add', async(req, res) => {
         await cartItem.save();
         res.json(cartItem);
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        res.status(500).json({message: error.message});
     }
 });
 // Xoá sản phẩm khỏi giỏ hàng
-app.delete('/cart/delete/:id', async(req, res) => {
+app.delete('/cart/delete/:id', async (req, res) => {
     const id = req.params.id;
 
     try {
         await CartItem.findByIdAndDelete(id);
         res.sendStatus(200);
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        res.status(500).json({message: error.message});
     }
 });
 
@@ -238,20 +239,20 @@ app.delete('/cart/delete-multiple', async (req, res) => {
     const productIdsToDelete = req.body.productIds;
 
     try {
-        await CartItem.deleteMany({ _id: { $in: productIdsToDelete } });
+        await CartItem.deleteMany({_id: {$in: productIdsToDelete}});
 
         res.sendStatus(200);
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        res.status(500).json({message: error.message});
     }
 });
 
 // Lấy về toàn bộ cartItem dựa trên userId
-app.get('/cart/:userId', async(req, res) => {
+app.get('/cart/:userId', async (req, res) => {
     const userId = req.params.userId;
 
     try {
-        const cartItems = await CartItem.find({ user: userId });
+        const cartItems = await CartItem.find({user: userId});
         res.send(cartItems);
     } catch (error) {
         res.send([]);
@@ -259,22 +260,22 @@ app.get('/cart/:userId', async(req, res) => {
 });
 
 // Thêm sản phẩm vào bảng yêu thích
-app.post('/favourite/add', async(req, res) => {
-    const { product_id, user_id } = req.body;
+app.post('/favourite/add', async (req, res) => {
+    const {product_id, user_id} = req.body;
 
     try {
         // Kiểm tra xem sản phẩm đã tồn tại trong bảng yêu thích của người dùng chưa
-        let favouriteItem = await FavouriteItem.findOne({ product: product_id, user: user_id });
+        let favouriteItem = await FavouriteItem.findOne({product: product_id, user: user_id});
 
         if (favouriteItem) {
             // Nếu sản phẩm đã tồn tại trong bảng yêu thích, không thêm lại
-            res.status(400).json({ message: 'Sản phẩm đã tồn tại trong bảng yêu thích' });
+            res.status(400).json({message: 'Sản phẩm đã tồn tại trong bảng yêu thích'});
         } else {
             // Nếu sản phẩm chưa tồn tại, thêm vào bảng yêu thích
             const product = await Product.findById(product_id);
 
             if (!product) {
-                res.status(404).json({ message: 'Sản phẩm không tồn tại' });
+                res.status(404).json({message: 'Sản phẩm không tồn tại'});
             } else {
                 favouriteItem = new FavouriteItem({
                     product: product_id,
@@ -289,37 +290,37 @@ app.post('/favourite/add', async(req, res) => {
             }
         }
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        res.status(500).json({message: error.message});
     }
 });
 // Xoá sản phẩm khỏi yêu thích
-app.delete('/favourite/delete/:id', async(req, res) => {
+app.delete('/favourite/delete/:id', async (req, res) => {
     const id = req.params.id;
 
     try {
         await FavouriteItem.findByIdAndDelete(id);
         res.sendStatus(200);
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        res.status(500).json({message: error.message});
     }
 });
 
-app.post('/favourite/addFav', async(req, res) => {
-    const { product_id, user_id } = req.body;
+app.post('/favourite/addFav', async (req, res) => {
+    const {product_id, user_id} = req.body;
     try {
         // Kiểm tra xem sản phẩm đã tồn tại trong bảng yêu thích của người dùng chưa
-        let favouriteItem = await FavouriteItem.findOne({ product: product_id, user: user_id });
+        let favouriteItem = await FavouriteItem.findOne({product: product_id, user: user_id});
 
         if (favouriteItem) {
             await FavouriteItem.findByIdAndDelete(favouriteItem._id);
-            res.status(200).json({ message: 'Xóa thành công' });
+            res.status(200).json({message: 'Xóa thành công'});
             console.log("Xóa thành công")
         } else {
             // Nếu sản phẩm chưa tồn tại, thêm vào bảng yêu thích
             const product = await Product.findById(product_id);
 
             if (!product) {
-                res.status(404).json({ message: 'Sản phẩm không tồn tại' });
+                res.status(404).json({message: 'Sản phẩm không tồn tại'});
             } else {
                 favouriteItem = new FavouriteItem({
                     product: product_id,
@@ -334,26 +335,26 @@ app.post('/favourite/addFav', async(req, res) => {
             }
         }
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        res.status(500).json({message: error.message});
     }
 });
 // Lấy về toàn bộ favouriteItem dựa trên userId
-app.get('/favourite/:userId', async(req, res) => {
+app.get('/favourite/:userId', async (req, res) => {
     const userId = req.params.userId;
 
     try {
-        const favouriteItems = await FavouriteItem.find({ user: userId });
+        const favouriteItems = await FavouriteItem.find({user: userId});
         res.send(favouriteItems);
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        res.status(500).json({message: error.message});
     }
 });
 
 // Đặt hàng
-app.post('/order/addd', async(req, res) => {
+app.post('/order/addd', async (req, res) => {
     try {
         // Trích xuất dữ liệu từ phần thân của yêu cầu
-        const { user, customer_email, products, address, total_amount } = req.body;
+        const {user, customer_email, products, address, total_amount} = req.body;
 
         // Kiểm tra và giảm số lượng kích thước
         for (const product of products) {
@@ -361,7 +362,7 @@ app.post('/order/addd', async(req, res) => {
             const quantityToReduce = product.quantity;
 
             await Size.findByIdAndUpdate(
-                sizeId, { $inc: { size_quantity: -quantityToReduce } }, { new: true }
+                sizeId, {$inc: {size_quantity: -quantityToReduce}}, {new: true}
             );
         }
 
@@ -380,14 +381,14 @@ app.post('/order/addd', async(req, res) => {
         res.status(201).json(savedOrder);
     } catch (error) {
         console.error(error);
-        res.status(500).json({ message: 'Lỗi máy chủ nội bộ' });
+        res.status(500).json({message: 'Lỗi máy chủ nội bộ'});
     }
 });
 
 //sửa đơn hàng
-app.put('/order/edit/:orderId', async(req, res) => {
+app.put('/order/edit/:orderId', async (req, res) => {
     const orderId = req.params.orderId;
-    const { user, customer_email, products, address, total_amount } = req.body;
+    const {user, customer_email, products, address, total_amount} = req.body;
 
     try {
         // Kiểm tra và giảm số lượng kích thước
@@ -396,7 +397,7 @@ app.put('/order/edit/:orderId', async(req, res) => {
             const quantityToReduce = product.quantity;
 
             await Size.findByIdAndUpdate(
-                sizeId, { $inc: { size_quantity: -quantityToReduce } }, { new: true }
+                sizeId, {$inc: {size_quantity: -quantityToReduce}}, {new: true}
             );
         }
 
@@ -407,29 +408,28 @@ app.put('/order/edit/:orderId', async(req, res) => {
             products,
             address,
             total_amount
-        }, { new: true });
+        }, {new: true});
 
         if (!updatedOrder) {
-            return res.status(404).json({ message: 'Không tìm thấy đơn hàng' });
+            return res.status(404).json({message: 'Không tìm thấy đơn hàng'});
         }
 
         res.json(updatedOrder);
     } catch (error) {
         console.error(error);
-        res.status(500).json({ message: 'Lỗi máy chủ nội bộ' });
+        res.status(500).json({message: 'Lỗi máy chủ nội bộ'});
     }
 });
 
 
-
 //lấy về đơn hàng theo trạng thái server
-app.get('/orders/:condition', async(req, res) => {
+app.get('/orders/:condition', async (req, res) => {
     const condition = parseInt(req.params.condition);
 
     try {
         const orders = await OrderStatus.aggregate([{
-                $match: { condition: condition }
-            },
+            $match: {condition: condition}
+        },
             {
                 $lookup: {
                     from: 'orders',
@@ -459,19 +459,19 @@ app.get('/orders/:condition', async(req, res) => {
         res.json(orders);
     } catch (error) {
         console.error(error);
-        res.status(500).json({ message: 'Lỗi máy chủ nội bộ' });
+        res.status(500).json({message: 'Lỗi máy chủ nội bộ'});
     }
 });
 
 //lấy về đơn hàng theo trạng thái client
-app.get('/orders/:userId/:condition', async(req, res) => {
+app.get('/orders/:userId/:condition', async (req, res) => {
     const userId = req.params.userId;
     const condition = parseInt(req.params.condition);
 
     try {
         const orders = await OrderStatus.aggregate([{
-                $match: { condition: condition }
-            },
+            $match: {condition: condition}
+        },
             {
                 $lookup: {
                     from: 'orders',
@@ -484,7 +484,7 @@ app.get('/orders/:userId/:condition', async(req, res) => {
                 $unwind: '$orderDetails'
             },
             {
-                $match: { 'orderDetails.user': mongoose.Types.ObjectId(userId) }
+                $match: {'orderDetails.user': mongoose.Types.ObjectId(userId)}
             },
             {
                 $project: {
@@ -504,56 +504,56 @@ app.get('/orders/:userId/:condition', async(req, res) => {
         res.json(orders);
     } catch (error) {
         console.error(error);
-        res.status(500).json({ message: 'Lỗi máy chủ nội bộ' });
+        res.status(500).json({message: 'Lỗi máy chủ nội bộ'});
     }
 });
 
 
 // chuyển đổi trạng thái đơn hàng
-app.put('/order/edit-status/:orderId', async(req, res) => {
+app.put('/order/edit-status/:orderId', async (req, res) => {
     const orderId = req.params.orderId;
-    const { condition, content } = req.body;
+    const {condition, content} = req.body;
 
     try {
         const updatedOrder = await OrderStatus.findByIdAndUpdate(orderId, {
             condition,
             content
-        }, { new: true });
+        }, {new: true});
 
         if (!findByIdAndUpdate) {
-            return res.status(404).json({ message: 'không tồn tại' });
+            return res.status(404).json({message: 'không tồn tại'});
         }
 
 
         res.json(updatedOrder);
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        res.status(500).json({message: error.message});
     }
 });
 
 // Lấy toàn bộ đơn hàng
-app.get('/order', async(req, res) => {
+app.get('/order', async (req, res) => {
     try {
         // Tìm tất cả các đơn hàng trong cơ sở dữ liệu
         const orders = await Order.find();
 
         res.json(orders);
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        res.status(500).json({message: error.message});
     }
 });
 
 // Lấy toàn bộ đơn hàng của một người dùng
-app.get('/orders/:userId', async(req, res) => {
+app.get('/orders/:userId', async (req, res) => {
     const userId = req.params.userId;
 
     try {
         // Tìm tất cả các đơn hàng của người dùng trong cơ sở dữ liệu
-        const orders = await Order.find({ user: userId });
+        const orders = await Order.find({user: userId});
 
         res.json(orders);
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        res.status(500).json({message: error.message});
     }
 });
 
@@ -579,12 +579,12 @@ app.get('/orders/:userId', async(req, res) => {
 //thống kê sản phẩm đã bán ra 
 app.get('/statistics/sold-products', async (req, res) => {
     try {
-        const successfulOrders = await orderDetail.find({ status: 3 });
+        const successfulOrders = await orderDetail.find({status: 3});
 
         const soldProducts = successfulOrders.reduce((accumulator, order) => {
             order.products.forEach(product => {
                 const productId = product.product.toString();
-                const quantity =parseInt(product.quantityProduct);
+                const quantity = parseInt(product.quantityProduct);
 
                 if (accumulator[productId]) {
                     accumulator[productId] += quantity;
@@ -596,27 +596,27 @@ app.get('/statistics/sold-products', async (req, res) => {
             return accumulator;
         }, {});
 
-        const soldProductDetails = await Product.find({ _id: { $in: Object.keys(soldProducts) } });
+        const soldProductDetails = await Product.find({_id: {$in: Object.keys(soldProducts)}});
 
         const result = soldProductDetails.map(product => ({
             productId: product._id,
             productName: product.product_title,
             totalQuantitySold: soldProducts[product._id.toString()] || 0,
         }));
-        const top5Product = result.sort((a,b) => b.totalQuantitySold - a.totalQuantitySold).slice(0, 5);
+        const top5Product = result.sort((a, b) => b.totalQuantitySold - a.totalQuantitySold).slice(0, 5);
         const total = top5Product.reduce((accumulator, currentValue) => accumulator + currentValue.totalQuantitySold, 0);
 
 
-        const totalInsight = top5Product.map(product =>({
+        const totalInsight = top5Product.map(product => ({
             name: product.productName,
-            totalDetail: ((product.totalQuantitySold/total)*100).toFixed(2),
+            totalDetail: ((product.totalQuantitySold / total) * 100).toFixed(2),
         }))
 
 
-         res.json(totalInsight);
+        res.json(totalInsight);
     } catch (error) {
         console.error(error);
-        res.status(500).json({ message: 'Lỗi máy chủ nội bộ' });
+        res.status(500).json({message: 'Lỗi máy chủ nội bộ'});
     }
 });
 
@@ -674,23 +674,23 @@ app.get('/statistics/revenue/:year', async (req, res) => {
         const year = parseInt(req.params.year);
         const successfulOrders = await orderDetail.find({
             status: 3,
-            $expr: { $eq: [{ $year: '$order_date' }, year] }
+            $expr: {$eq: [{$year: '$order_date'}, year]}
         });
 
         // Tạo mảng chứa doanh số và lợi nhuận theo tháng
-        const monthlyData = Array.from({ length: 12 }, (_, monthIndex) => {
+        const monthlyData = Array.from({length: 12}, (_, monthIndex) => {
             const month = monthIndex + 1; // Tháng bắt đầu từ 1
             const ordersInMonth = successfulOrders.filter(order => new Date(order.order_date).getMonth() === monthIndex);
             const totalRevenue = ordersInMonth.reduce((accumulator, order) => accumulator + order.total_amount, 0);
             const totalProfit = totalRevenue * 0.25; // Lợi nhuận là 25% doanh số
 
-            return { month, totalRevenue, totalProfit };
+            return {month, totalRevenue, totalProfit};
         });
 
         res.json(monthlyData);
     } catch (error) {
         console.error(error);
-        res.status(500).json({ message: 'Lỗi máy chủ nội bộ' });
+        res.status(500).json({message: 'Lỗi máy chủ nội bộ'});
     }
 });
 
@@ -703,8 +703,8 @@ app.get('/statistics/revenue/:year/:month', async (req, res) => {
             status: 3,
             $expr: {
                 $and: [
-                    { $eq: [{ $year: '$order_date' }, year] },
-                    { $eq: [{ $month: '$order_date' }, month] }
+                    {$eq: [{$year: '$order_date'}, year]},
+                    {$eq: [{$month: '$order_date'}, month]}
                 ]
             }
         });
@@ -715,10 +715,10 @@ app.get('/statistics/revenue/:year/:month', async (req, res) => {
 
         const totalProfit = totalRevenue * 0.25; // Lợi nhuận là 25% doanh số
 
-        res.json({ totalRevenue, totalProfit });
+        res.json({totalRevenue, totalProfit});
     } catch (error) {
         console.error(error);
-        res.status(500).json({ message: 'Lỗi máy chủ nội bộ' });
+        res.status(500).json({message: 'Lỗi máy chủ nội bộ'});
     }
 });
 
@@ -734,10 +734,10 @@ app.get('/statistics/revenue/:year/:month/:startDay/:endDay', async (req, res) =
             status: 3,
             $expr: {
                 $and: [
-                    { $eq: [{ $year: '$order_date' }, year] },
-                    { $eq: [{ $month: '$order_date' }, month] },
-                    { $gte: [{ $dayOfMonth: '$order_date' }, startDay] },
-                    { $lte: [{ $dayOfMonth: '$order_date' }, endDay] }
+                    {$eq: [{$year: '$order_date'}, year]},
+                    {$eq: [{$month: '$order_date'}, month]},
+                    {$gte: [{$dayOfMonth: '$order_date'}, startDay]},
+                    {$lte: [{$dayOfMonth: '$order_date'}, endDay]}
                 ]
             }
         });
@@ -748,10 +748,10 @@ app.get('/statistics/revenue/:year/:month/:startDay/:endDay', async (req, res) =
 
         const totalProfit = totalRevenue * 0.25; // Lợi nhuận là 25% doanh số
 
-        res.json({ totalRevenue, totalProfit });
+        res.json({totalRevenue, totalProfit});
     } catch (error) {
         console.error(error);
-        res.status(500).json({ message: 'Lỗi máy chủ nội bộ' });
+        res.status(500).json({message: 'Lỗi máy chủ nội bộ'});
     }
 });
 
@@ -766,9 +766,9 @@ app.get('/statistics/revenue/:year/:month/:day', async (req, res) => {
             status: 3,
             $expr: {
                 $and: [
-                    { $eq: [{ $year: '$order_date' }, year] },
-                    { $eq: [{ $month: '$order_date' }, month] },
-                    { $eq: [{ $dayOfMonth: '$order_date' }, day] }
+                    {$eq: [{$year: '$order_date'}, year]},
+                    {$eq: [{$month: '$order_date'}, month]},
+                    {$eq: [{$dayOfMonth: '$order_date'}, day]}
                 ]
             }
         });
@@ -779,10 +779,10 @@ app.get('/statistics/revenue/:year/:month/:day', async (req, res) => {
 
         const totalProfit = totalRevenue * 0.25; // Lợi nhuận là 25% doanh số
 
-        res.json({ totalRevenue, totalProfit });
+        res.json({totalRevenue, totalProfit});
     } catch (error) {
         console.error(error);
-        res.status(500).json({ message: 'Lỗi máy chủ nội bộ' });
+        res.status(500).json({message: 'Lỗi máy chủ nội bộ'});
     }
 });
 
@@ -792,8 +792,8 @@ app.get('/order/getOne/:orderId', async (req, res) => {
     const orderId = req.params.orderId;
     try {
         const orderDetails = await orderDetail.aggregate([{
-            $match: { _id: new ObjectId(orderId) }
-            },
+            $match: {_id: new ObjectId(orderId)}
+        },
             {
                 $unwind: '$products'
             },
@@ -831,23 +831,23 @@ app.get('/order/getOne/:orderId', async (req, res) => {
         if (orderDetails.length > 0) {
             res.json(orderDetails[0]);
         } else {
-            res.status(404).json({ message: 'Không tìm thấy đơn hàng' });
+            res.status(404).json({message: 'Không tìm thấy đơn hàng'});
         }
     } catch (error) {
         console.error(error);
-        res.status(500).json({ message: 'Lỗi máy chủ nội bộ' });
+        res.status(500).json({message: 'Lỗi máy chủ nội bộ'});
     }
 });
 
 
 // Top sản phẩm bán chạy
-app.get('/top-selling', async(req, res) => {
+app.get('/top-selling', async (req, res) => {
     try {
         // Sử dụng aggregation để tính toán top sản phẩm bán chạy
         const topSellingProducts = await Order.aggregate([
-            { $unwind: '$products' },
-            { $group: { _id: '$products.product', totalQuantity: { $sum: '$products.quantity' } } },
-            { $sort: { totalQuantity: -1 } },
+            {$unwind: '$products'},
+            {$group: {_id: '$products.product', totalQuantity: {$sum: '$products.quantity'}}},
+            {$sort: {totalQuantity: -1}},
             {
                 $lookup: {
                     from: 'products',
@@ -856,7 +856,7 @@ app.get('/top-selling', async(req, res) => {
                     as: 'productDetails'
                 }
             },
-            { $unwind: '$productDetails' },
+            {$unwind: '$productDetails'},
             {
                 $project: {
                     _id: 0,
@@ -869,21 +869,21 @@ app.get('/top-selling', async(req, res) => {
 
         res.json(topSellingProducts);
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        res.status(500).json({message: error.message});
     }
 });
 
-app.post('/login', async(req, res) => {
-    const { username, password } = req.body;
+app.post('/login', async (req, res) => {
+    const {username, password} = req.body;
 
     try {
-        const user = await User.findOne({ username });
+        const user = await User.findOne({username});
 
         if (!user) {
-            res.status(404).json({ message: 'Tài khoản không tồn tại' });
+            res.status(404).json({message: 'Tài khoản không tồn tại'});
         } else {
             if (password !== user.password) {
-                res.status(401).json({ message: 'Sai mật khẩu' });
+                res.status(401).json({message: 'Sai mật khẩu'});
             } else {
                 user.status = true;
                 await user.save();
@@ -891,11 +891,11 @@ app.post('/login', async(req, res) => {
             }
         }
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        res.status(500).json({message: error.message});
     }
 });
 
-app.post('/logout/:iduser', async(req, res) => {
+app.post('/logout/:iduser', async (req, res) => {
     const idUser = req.params.iduser;
 
     try {
@@ -903,25 +903,25 @@ app.post('/logout/:iduser', async(req, res) => {
         const user = await User.findById(idUser);
 
         if (!user) {
-            res.status(404).json({ message: 'Người dùng không tồn tại' });
+            res.status(404).json({message: 'Người dùng không tồn tại'});
         } else {
             user.status = false;
             await user.save();
-            res.json({ message: 'Đăng xuất thành công' });
+            res.json({message: 'Đăng xuất thành công'});
         }
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        res.status(500).json({message: error.message});
     }
 });
 
-app.post('/register', async(req, res) => {
-    const { username, password } = req.body;
+app.post('/register', async (req, res) => {
+    const {username, password} = req.body;
 
     try {
-        const existingUser = await User.findOne({ username });
+        const existingUser = await User.findOne({username});
 
         if (existingUser) {
-            return res.status(409).json({ message: 'Username đã tồn tại' });
+            return res.status(409).json({message: 'Username đã tồn tại'});
         }
 
         const user = new User({
@@ -943,21 +943,21 @@ app.post('/register', async(req, res) => {
 
         return res.sendStatus(201);
     } catch (error) {
-        return res.status(500).json({ message: error.message });
+        return res.status(500).json({message: error.message});
     }
 });
 
-app.post('/changepassword', async(req, res) => {
-    const { username, oldPassword, newPassword } = req.body;
+app.post('/changepassword', async (req, res) => {
+    const {username, oldPassword, newPassword} = req.body;
 
     try {
-        const user = await User.findOne({ username });
+        const user = await User.findOne({username});
 
         if (!user) {
-            res.status(404).json({ message: 'Tài khoản không tồn tại' });
+            res.status(404).json({message: 'Tài khoản không tồn tại'});
         } else {
             if (oldPassword !== user.password) {
-                res.status(401).json({ message: 'Sai mật khẩu cũ' });
+                res.status(401).json({message: 'Sai mật khẩu cũ'});
             } else {
                 user.password = newPassword;
                 await user.save();
@@ -966,38 +966,38 @@ app.post('/changepassword', async(req, res) => {
             }
         }
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        res.status(500).json({message: error.message});
     }
 });
 // lấy toàn bộ user
-app.get('/user', async(req, res) => {
+app.get('/user', async (req, res) => {
     try {
         const u = await User.find();
         res.json(u);
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        res.status(500).json({message: error.message});
     }
 });
 // Hiển thị thông tin user dựa trên ID
-app.get('/user/:userId', async(req, res) => {
+app.get('/user/:userId', async (req, res) => {
     const userId = req.params.userId;
 
     try {
         const user = await User.findById(userId);
 
         if (!user) {
-            return res.status(404).json({ message: 'Người dùng không tồn tại' });
+            return res.status(404).json({message: 'Người dùng không tồn tại'});
         }
         res.json(user);
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        res.status(500).json({message: error.message});
     }
 });
 
 
 // Thêm địa chỉ
-app.post('/address/add', async(req, res) => {
-    const { name, phone, address, userId } = req.body;
+app.post('/address/add', async (req, res) => {
+    const {name, phone, address, userId} = req.body;
 
     const add = new Address({
         name,
@@ -1011,31 +1011,31 @@ app.post('/address/add', async(req, res) => {
         await add.save();
         res.json(add);
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        res.status(500).json({message: error.message});
     }
 });
 
 
 // Lấy về toàn bộ địa chỉ dựa trên userId
-app.get('/address/:userId', async(req, res) => {
+app.get('/address/:userId', async (req, res) => {
     const userId = req.params.userId;
 
     try {
-        const addresses = await Address.find({ user: userId });
+        const addresses = await Address.find({user: userId});
         res.json(addresses);
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        res.status(500).json({message: error.message});
     }
 });
 
 
 // Định nghĩa endpoint để sửa địa chỉ
-app.put('/address/edit/:id', async(req, res) => {
+app.put('/address/edit/:id', async (req, res) => {
     const id = req.params.id;
-    const { name, phone, address } = req.body;
+    const {name, phone, address} = req.body;
 
     try {
-        await Address.updateOne({ _id: id }, {
+        await Address.updateOne({_id: id}, {
             name,
             phone,
             address
@@ -1048,10 +1048,10 @@ app.put('/address/edit/:id', async(req, res) => {
 });
 
 // Định nghĩa endpoint để xoá địa chỉ
-app.delete('/address/delete/:id', async(req, res) => {
+app.delete('/address/delete/:id', async (req, res) => {
     const id = req.params.id;
     try {
-        await Address.deleteOne({ _id: id });
+        await Address.deleteOne({_id: id});
         res.sendStatus(200);
     } catch (err) {
         console.error('Lỗi khi xoá dữ liệu:', err);
@@ -1060,7 +1060,7 @@ app.delete('/address/delete/:id', async(req, res) => {
 });
 
 // Hiển thị chi tiết một địa chỉ
-app.get('/address/:id', async(req, res) => {
+app.get('/address/:id', async (req, res) => {
     const address_id = req.params.id;
 
     try {
@@ -1069,23 +1069,23 @@ app.get('/address/:id', async(req, res) => {
 
         if (!add) {
             // địa chỉ không tồn tại
-            res.status(404).json({ message: 'Địa chỉ không tồn tại' });
+            res.status(404).json({message: 'Địa chỉ không tồn tại'});
         } else {
             res.json(add);
         }
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        res.status(500).json({message: error.message});
     }
 });
 
 
 // getAll
-app.get('/address', async(req, res) => {
+app.get('/address', async (req, res) => {
     try {
         const address = await Address.find();
         res.json(address);
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        res.status(500).json({message: error.message});
     }
 });
 
@@ -1118,11 +1118,11 @@ app.get('/address', async(req, res) => {
 // });
 
 // sửa trang cá nhân hiển
-app.put('/profile/edit', async(req, res) => {
-    const { user, fullname, gender, avatar, birthday } = req.body;
+app.put('/profile/edit', async (req, res) => {
+    const {user, fullname, gender, avatar, birthday} = req.body;
 
     try {
-        let profile = await Profile.findOne({ user });
+        let profile = await Profile.findOne({user});
 
         if (profile) {
             profile.fullname = fullname;
@@ -1142,122 +1142,122 @@ app.put('/profile/edit', async(req, res) => {
         await profile.save();
         res.json(profile);
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        res.status(500).json({message: error.message});
     }
 });
 
 
 //lấy về thông tin profile theo userId
-app.get('/profile/:userId', async(req, res) => {
+app.get('/profile/:userId', async (req, res) => {
     const userId = req.params.userId;
 
     try {
-        const profile = await Profile.findOne({ user: userId });
+        const profile = await Profile.findOne({user: userId});
 
         if (profile) {
             res.json(profile);
         } else {
-            res.status(404).json({ message: 'Không tìm thấy hồ sơ' });
+            res.status(404).json({message: 'Không tìm thấy hồ sơ'});
         }
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        res.status(500).json({message: error.message});
     }
 });
 
 //Tìm kiếm sản phẩm theo tiêu đề
-app.post('/products/search', async(req, res) => {
-    const { title } = req.body;
+app.post('/products/search', async (req, res) => {
+    const {title} = req.body;
 
     try {
         const searchString = String(title);
 
-        const products = await Product.find({ product_title: { $regex: searchString, $options: 'i' } });
+        const products = await Product.find({product_title: {$regex: searchString, $options: 'i'}});
         res.json(products);
     } catch (error) {
 
-        res.status(500).json({ message: error.message });
+        res.status(500).json({message: error.message});
     }
 });
 
 // Tạo màu sắc mới cho sản phẩm
-app.post('/colors/add/:productId', async(req, res) => {
+app.post('/colors/add/:productId', async (req, res) => {
     try {
-        const { productId } = req.params;
-        const { color_name, color_image } = req.body;
+        const {productId} = req.params;
+        const {color_name, color_image} = req.body;
 
         // Tạo màu sắc mới
-        const color = await Color.create({ color_name, product: productId, color_image });
+        const color = await Color.create({color_name, product: productId, color_image});
 
         // // Cập nhật mảng colors của sản phẩm
         // await Product.findByIdAndUpdate(productId, { $push: { colors: color._id } });
 
         res.status(201).json(color);
     } catch (error) {
-        res.status(500).json({ error: 'Lỗi server' });
+        res.status(500).json({error: 'Lỗi server'});
     }
 });
 
 // Sửa đổi thông tin màu sắc
-app.put('/colors/edit/:colorId', async(req, res) => {
+app.put('/colors/edit/:colorId', async (req, res) => {
     try {
-        const { colorId } = req.params;
-        const { color_name, color_image } = req.body;
+        const {colorId} = req.params;
+        const {color_name, color_image} = req.body;
 
         // Tìm và cập nhật thông tin màu sắc
-        const color = await Color.findByIdAndUpdate(colorId, { color_name, color_image }, { new: true });
+        const color = await Color.findByIdAndUpdate(colorId, {color_name, color_image}, {new: true});
 
         res.json(color);
     } catch (error) {
-        res.status(500).json({ error: 'Lỗi server' });
+        res.status(500).json({error: 'Lỗi server'});
     }
 });
 
 // Xóa màu sắc
-app.delete('/colors/delete/:colorId', async(req, res) => {
+app.delete('/colors/delete/:colorId', async (req, res) => {
     try {
-        const { colorId } = req.params;
+        const {colorId} = req.params;
 
         // Xóa màu sắc
         await Color.findByIdAndDelete(colorId);
 
         res.sendStatus(204);
     } catch (error) {
-        res.status(500).json({ error: 'Lỗi server' });
+        res.status(500).json({error: 'Lỗi server'});
     }
 });
 
 // Lấy về toàn bộ dữ liệu từ bảng Color
-app.get('/colors/getAll', async(req, res) => {
+app.get('/colors/getAll', async (req, res) => {
     try {
         const colors = await Color.find();
         res.json(colors);
     } catch (error) {
-        res.status(500).json({ error: 'Lỗi server' });
+        res.status(500).json({error: 'Lỗi server'});
     }
 });
 
 //lấy color theo productId
-app.get('/api/colors/:productId', async(req, res) => {
+app.get('/api/colors/:productId', async (req, res) => {
     try {
         const productId = req.params.productId;
 
         // Sử dụng phương thức find với điều kiện productId
-        const colors = await Color.find({ product: productId });
+        const colors = await Color.find({product: productId});
 
         // Trả về danh sách màu sắc
         res.json(colors);
     } catch (error) {
         // Xử lý lỗi nếu có
         console.error('Error getting colors', error);
-        res.status(500).json({ error: 'Internal server error' });
+        res.status(500).json({error: 'Internal server error'});
     }
 });
 
 // Tạo kích thước mới cho sản phẩm
-app.post('/sizes/add/:colorId', async(req, res) => {
+app.post('/sizes/add/:colorId', async (req, res) => {
     try {
-        const { colorId } = req.params;
-        const { size_name, size_quantity } = req.body;
+        const {colorId} = req.params;
+        const {size_name, size_quantity} = req.body;
 
         // Tạo kích thước mới
         const newSize = new Size({
@@ -1270,77 +1270,77 @@ app.post('/sizes/add/:colorId', async(req, res) => {
 
         res.status(201).json(savedSize);
     } catch (error) {
-        res.status(500).json({ error: 'Lỗi server' });
+        res.status(500).json({error: 'Lỗi server'});
     }
 });
 
 // Sửa đổi thông tin kích thước
-app.put('/sizes/edit/:sizeId', async(req, res) => {
+app.put('/sizes/edit/:sizeId', async (req, res) => {
     try {
-        const { sizeId } = req.params;
-        const { size_name, size_quantity } = req.body;
+        const {sizeId} = req.params;
+        const {size_name, size_quantity} = req.body;
 
         // Tìm và cập nhật thông tin kích thước
         const updatedSize = await Size.findByIdAndUpdate(
-            sizeId, { size_name, size_quantity }, { new: true }
+            sizeId, {size_name, size_quantity}, {new: true}
         );
 
         res.json(updatedSize);
     } catch (error) {
-        res.status(500).json({ error: 'Lỗi server' });
+        res.status(500).json({error: 'Lỗi server'});
     }
 });
 
 // Xóa kích thước
-app.delete('/sizes/delete/:sizeId', async(req, res) => {
+app.delete('/sizes/delete/:sizeId', async (req, res) => {
     try {
-        const { sizeId } = req.params;
+        const {sizeId} = req.params;
 
         // Xóa kích thước
         await Size.findByIdAndDelete(sizeId);
 
         res.sendStatus(204);
     } catch (error) {
-        res.status(500).json({ error: 'Lỗi server' });
+        res.status(500).json({error: 'Lỗi server'});
     }
 });
 
 // Lấy về toàn bộ size
-app.get('/sizes/getAll', async(req, res) => {
+app.get('/sizes/getAll', async (req, res) => {
     try {
         const sizes = await Size.find();
         res.json(sizes);
     } catch (error) {
-        res.status(500).json({ error: 'Lỗi server' });
+        res.status(500).json({error: 'Lỗi server'});
     }
 });
 
 // Lấy về size theo color
-app.get('/sizes/:colorId', async(req, res) => {
+app.get('/sizes/:colorId', async (req, res) => {
     try {
-        const { colorId } = req.params;
+        const {colorId} = req.params;
 
         // Tìm các kích thước dựa trên colorId
-        const sizes = await Size.find({ colorId });
+        const sizes = await Size.find({colorId});
 
         res.json(sizes);
     } catch (error) {
-        res.status(500).json({ error: 'Lỗi server' });
+        res.status(500).json({error: 'Lỗi server'});
     }
 });
 
-app.get('/order/addOderDetail/All', async(req, res) => {
+app.get('/order/addOderDetail/All', async (req, res) => {
     const oderAll = await orderDetail.find({});
 
     res.json(oderAll);
 })
 
-app.post('/order/addOderDetail/:id', async(req, res) => {
-    const { id } = req.params;
-    await orderDetail.deleteOne({ _id: id });
+app.post('/order/addOderDetail/:id', async (req, res) => {
+    const {id} = req.params;
+    await orderDetail.deleteOne({_id: id});
 })
 
-app.post('/order/addOderDetail', async(req, res) => {
+app.post('/order/addOderDetail', async (req, res) => {
     try {
         const data = req.body;
 
@@ -1379,23 +1379,46 @@ app.post('/order/addOderDetail', async(req, res) => {
 
     } catch (error) {
         console.error(error);
-        res.status(500).json({ message: 'Lỗi máy chủ nội bộ' });
+        res.status(500).json({message: 'Lỗi máy chủ nội bộ'});
     }
 });
-app.get('/order/detail/:orderId', async(req, res) => {
+app.get('/order/detail/:orderId', async (req, res) => {
     const orderId = req.params.orderId;
 
     try {
         const orderDetail1 = await orderDetail.findById(orderId);
 
         if (!orderDetail1) {
-            return res.status(404).json({ message: 'không tồn tại dữ liệu' });
+            return res.status(404).json({message: 'không tồn tại dữ liệu'});
         }
 
         res.json(orderDetail1);
     } catch (error) {
         console.error(error);
-        res.status(500).json({ message: 'Lỗi rồi' });
+        res.status(500).json({message: 'Lỗi rồi'});
     }
 });
+
+app.get('/idApp',async (req,res)=>{
+    const data = await dataClient.find()
+    res.json(data)
+})
+app.post('/addIdClient', async (req, res) => {
+    try {
+        const data = req.body;
+        console.log(data.idClient)
+        const idClient = await dataClient.findOne({client: data.idClient});
+        if (!idClient) {
+            console.log(1)
+            const  newClient = new dataClient({
+                client:data.idClient
+            })
+            await newClient.save()
+        }
+        console.log(idClient)
+        res.json(true)
+    } catch (e) {
+        console.log(e)
+    }
+})
 module.exports = app;

@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản lí người dùng</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f8f9fa;
+            color: #495057;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            margin-top: 20px;
+        }
+
+        h2 {
+            text-align: center;
+            color: #007bff;
+        }
+
+        .search-container,
+        .filter-container {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .search-input {
+            padding: 10px;
+            width: 60%;
+            border-radius: 5px;
+            border: 1px solid #ced4da;
+        }
+
+        .filter-label {
+            margin-right: 10px;
+        }
+
+        .table-container {
+            width: 100%;
+        }
+
+        .table {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+            background-color: #fff;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+
+        th,
+        td {
+            text-align: left;
+            border: 1px solid #ddd;
+            padding: 12px;
+            word-wrap: break-word;
+        }
+
+        thead {
+            position: sticky;
+            top: 0;
+            background-color: #007bff;
+            color: #fff;
+        }
+
+        tbody tr:nth-child(even) {
+            background-color: #f0f8ff;
+        }
+
+        tbody tr:hover {
+            background-color: #add8e6;
+        }
+
+        .action-buttons {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .ban-button,
+        .unban-button {
+            width: 100%;
+            padding: 8px;
+            cursor: pointer;
+            color: #fff;
+            font-weight: bold;
+            border: none;
+            border-radius: 5px;
+        }
+
+        .ban-button {
+            background-color: #ff0000;
+        }
+
+        .unban-button {
+            background-color: #73ff00;
+        }
+
+        .modal-footer button {
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h2>Danh sách khách hàng</h2>
+
+        <div class="search-container">
+            <input type="text" class="search-input" id="searchInput" placeholder="Tìm kiếm...">
+        </div>
+        <div class="filter-container">
+
+            <input type="radio" name="statusFilter" id="allUsers" checked>
+            <label for="allUsers">Tất cả</label>
+            <input type="radio" name="statusFilter" id="bannedUsers">
+            <label for="bannedUsers">Đã chặn</label>
+            <input type="radio" name="statusFilter" id="unbannedUsers">
+            <label for="unbannedUsers">Chưa chặn</label>
+        </div>
+        <div class="table-container">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th scope="col">ID</th>
+                        <th scope="col">Ảnh đại diện</th>
+                        <th scope="col">Tên</th>
+                        <th scope="col">Giới tính</th>
+                        <th scope="col">Ngày sinh</th>
+                        <th scope="col">Email</th>
+                        <th scope="col">Số điện thoại</th>
+                        <th scope="col">Địa chỉ</th>
+                        <th scope="col">Trạng Thái</th>
+                        <th scope="col">Lý do chặn</th>
+                        <th scope="col">Hành động</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{#each data}}
+                    <tr>
+                        <td style="color: #ff0000;">{{_id}}</td>
+                        <td><img src="{{profile.avatar}}" alt="Avatar" width="100"></td>
+                        <td>{{profile.fullname}}</td>
+                        <td>{{profile.gender}}</td>
+                        <td>{{profile.birthday}}</td>
+                        <td>{{profile.username}}</td>
+                        <td>{{address.phone}}</td>
+                        <td>{{address.address}}</td>
+                        <td>{{profile.status}}</td>
+                        <td style="color: #e813cf;">{{block_reason}}</td>
+                        <td class="action-buttons">
+                            {{#if profile.status}}
+                            <button class="unban-button" data-toggle="modal" data-target="#unbanConfirmationModal"
+                                data-user-id="{{_id}}" onclick="setUserId('{{_id}}')">Mở chặn</button>
+                            {{else}}
+                            <button class="ban-button" data-toggle="modal" data-target="#blockUserModal"
+                                data-user-id="{{_id}}" onclick="setUserId('{{_id}}')">Chặn</button>
+                            {{/if}}
+                        </td>
+
+                    </tr>
+                    {{/each}}
+                </tbody>
+            </table>
+        </div>
+        <form action="/block/" method="POST" id="blockForm">
+            <div class="modal" id="blockUserModal" tabindex="-1" role="dialog">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Chặn người dùng</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <label for="UserId">ID: <span id="modalUserId"></span></label>
+                            <br>
+                            <label for="blockReason">Nhập nội dung chặn:</label>
+                            <input type="text" class="form-control" id="blockReason" name="blockReason">
+                            <input type="hidden" id="modalUserIdInput" name="userId">
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Hủy</button>
+                            <button type="button" class="btn btn-primary" onclick="submitBlockForm()">Chặn</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+        <div class="modal" id="unbanConfirmationModal" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Bỏ chặn người dùng</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <p>Bạn có chắc chắn muốn bỏ chặn người dùng không?</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Hủy</button>
+                        <button type="button" class="btn btn-primary" onclick="unbanUser()">Bỏ chặn</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        function setUserId(userId) {
+            document.getElementById('modalUserId').innerText = userId;
+            document.getElementById('modalUserIdInput').value = userId;
+        }
+
+        function submitBlockForm() {
+            var blockReason = document.getElementById('blockReason').value;
+            var userId = document.getElementById('modalUserId').innerText;
+            document.getElementById('modalUserIdInput').value = userId;
+            document.getElementById('blockForm').submit();
+        }
+
+
+        document.getElementById('searchInput').addEventListener('input', function () {
+            var filter = this.value.toLowerCase();
+            var rows = document.querySelectorAll('tbody tr');
+
+            rows.forEach(function (row) {
+                var text = row.innerText.toLowerCase();
+                row.style.display = text.includes(filter) ? '' : 'none';
+            });
+        });
+
+        var statusFilterRadios = document.getElementsByName('statusFilter');
+        var searchInput = document.getElementById('searchInput');
+
+        function filterRows() {
+            var filter = searchInput.value.toLowerCase();
+            var statusFilter = Array.from(statusFilterRadios).find(radio => radio.checked).id;
+
+            var rows = document.querySelectorAll('tbody tr');
+
+            rows.forEach(function (row) {
+                var text = row.innerText.toLowerCase();
+                var status = row.querySelector('.action-buttons button').innerText.toLowerCase();
+                var shouldDisplay = text.includes(filter) && (
+                    (statusFilter === 'allUsers') ||
+                    (statusFilter === 'bannedUsers' && status.includes('mở chặn')) ||
+                    (statusFilter === 'unbannedUsers' && status.includes('chặn'))
+                );
+
+                row.style.display = shouldDisplay ? '' : 'none';
+            });
+        }
+
+        statusFilterRadios.forEach(function (radio) {
+            radio.addEventListener('change', filterRows);
+        });
+
+        searchInput.addEventListener('input', filterRows);
+    </script>
+
+</body>
+
+</html>
