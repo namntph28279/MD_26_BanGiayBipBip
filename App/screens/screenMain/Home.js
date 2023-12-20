@@ -9,6 +9,7 @@ import { fetchDataAndFav, fetchDataAndSetToRedux } from "../../redux/AllData";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import url from "../../api/url";
 import { useNavigation } from "@react-navigation/native";
+import ipAddress from "../../api/config";
 
 function Home() {
     const navigation = useNavigation();
@@ -145,8 +146,8 @@ function Home() {
                 console.log("Xoa")
             }
         };
-        const imageUrl = item.product_image;
-        const modifiedImageUrl = imageUrl.replace('http://localhost', 'http://192.168.0.101');
+ 
+        const modifiedImageUrl = imageUrl.replace('http://localhost', ipAddress);
         return (
             <View style={styles.productContainer}>
                 <TouchableOpacity
