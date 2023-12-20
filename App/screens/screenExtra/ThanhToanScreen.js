@@ -16,7 +16,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import url from "../../api/url";
 import { Alert } from 'react-native';
 import { getMonney } from '../../util/money';
-
+import ipAddress from "../../api/config";
 import { useDispatch, useSelector } from "react-redux";
 import {fetchDataAndSetToRedux, fetchDataOrder} from "../../redux/AllData";
 import {io} from "socket.io-client";
@@ -180,7 +180,7 @@ const ThanhToanScreen = ({ route, navigation }) => {
 
         return(
             <View key={product.sizeId} style={styles.productItem}>
-                <Image source={{ uri: item.product_image }} style={styles.productImage} />
+                <Image source={{ uri: item.product_image.replace('http://localhost', ipAddress) }} style={styles.productImage} />
                 <View style={styles.productDetails}>
                     <Text>Giày: {item.product_title}</Text>
                     <Text>Màu: {product.color}</Text>

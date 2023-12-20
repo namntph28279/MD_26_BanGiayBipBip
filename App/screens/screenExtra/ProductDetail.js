@@ -19,6 +19,7 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import { getMonney } from "../../util/money";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import url from "../../api/url";
+import ipAddress from "../../api/config";
 
 function ProductDetail({ route, navigation }) {
     const { productId } = route.params;
@@ -61,11 +62,11 @@ function ProductDetail({ route, navigation }) {
                     setSelectedColor(data.colors[0].color_name);
                     const colorImagesData = {};
                     data.colors.forEach((color) => {
-                        colorImagesData[color.color_name] = color.color_image;
+                        colorImagesData[color.color_name] = color.color_image.replace('http://localhost', ipAddress);
                     });
 
                     setColorImages(colorImagesData);
-                    setProductImageURL(data.product_image);
+                    setProductImageURL(data.product_image.replace('http://localhost', ipAddress));
 
                     setSelectedColorData(firstColorId);
                     fetchSizesForColor(firstColorId);

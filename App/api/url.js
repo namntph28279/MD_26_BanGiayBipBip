@@ -5,10 +5,12 @@ const instance = axios.create({
     // baseURL: "https://shoe-bip-bip-2229beceb537.herokuapp.com/",
     //baseURL: "http://172.20.10.2",
  
-     baseURL: "http://10.24.1.17",
+     baseURL: "http://192.168.0.101",
    // baseURL: "http://192.168.2.22:3000/",
 
 });
+
+const ip = "http://192.168.0.101";
 
 instance.interceptors.request.use(//thêm yêu cầu trước mỗi lần gọi 
     async (config) => {//chứa thông tin cấu hình

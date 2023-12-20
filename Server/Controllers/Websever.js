@@ -9,9 +9,32 @@ const express = require('express');
 const app = express();
 const expressHbs = require('express-handlebars');
 const bodyParser = require('body-parser');
-const mongoose = require('mongoose');
 const currencyFormatter = require('currency-formatter');
 const Order = require("../Models/Oderdetail");
+const multer = require('multer');
+const path = require('path');
+const cors = require('cors');
+
+app.use(cors()); 
+app.use(express.urlencoded({ extended: true }));
+app.use(express.static(path.join(__dirname, 'public')));
+const uploadsPath = path.join(__dirname, '../uploads'); 
+app.use('/uploads', express.static(uploadsPath));
+
+
+const storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        cb(null, 'uploads/'); // Destination folder for uploaded images
+    },
+    filename: function (req, file, cb) {
+        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+        const ext = path.extname(file.originalname);
+        cb(null, file.fieldname + '-' + uniqueSuffix + ext);
+    },
+});
+
+const upload = multer({ storage: storage });
+
 
 app.set('Views', __dirname + '/views');
 
@@ -213,7 +236,7 @@ app.post('/order/status/Comfig/:id', async (req, res) => {
             res.json(true)
         } else if (order.status === 2) {
             order.status = 3;
-            order.order_date =Date.now();
+            order.order_date = Date.now();
             console.log(order.order_date);
             await order.save();
             NotificaionClient(idClientArray, "Đơn vị vận đã giao thành công cho bạn")
@@ -230,25 +253,43 @@ app.post('/order/status/Comfig/:id', async (req, res) => {
     }
 });
 
-app.post('/home/add', async (req, res) => {
-    const { product_title, product_price, product_image, product_quantity, product_category } = req.body;
-
-    const product = new Product({
-        product_title,
-        product_price,
-        product_image,
-        product_quantityColor: 0,
-        product_quantity: 0,
-        product_category
-    });
-
+app.post('/home/add', upload.single('product_image'), async (req, res) => {
     try {
-        await product.save();
-        res.redirect('/home')
+        const { product_title, product_price, product_category } = req.body;
+
+        let imagePath = "";
+        if (req.file) {
+            imagePath = req.file.path;
+        }
+        const imageUrl = `http://localhost/${path.normalize(imagePath).replace(/\\/g, '/')}`;
+
+        console.log("title", product_title);
+        console.log("price", product_price);
+        console.log("category", product_category);
+        console.log("image", imageUrl);
+
+        if (!product_title || !product_price) {
+            return res.status(400).send('Missing required fields');
+        }
+
+        const newProduct = new Product({
+            product_title,
+            product_price,
+            product_quantity: 0,
+            product_quantityColor: 0,
+            product_image: imageUrl,
+            product_category,
+        });
+
+        await newProduct.save();
+        res.redirect('/warehouse');
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        console.error(error);
+        res.status(500).send('Server Error');
     }
 });
+
+
 
 app.post('/home/edit/:id', async (req, res) => {
     const id = req.params.id;
@@ -274,7 +315,7 @@ app.post('/home/delete/:id', async (req, res) => {
 
     try {
         await Product.deleteOne({ _id: id });
-        res.redirect('/home')
+        res.redirect('/warehouse')
     } catch (err) {
         console.error('Lỗi khi xoá dữ liệu:', err);
         res.sendStatus(500);

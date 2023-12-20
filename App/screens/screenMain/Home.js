@@ -1,14 +1,14 @@
-import React, {useEffect, useRef, useState} from "react";
-import {ActivityIndicator, Image, ScrollView, StyleSheet, Text, TouchableOpacity, View,} from "react-native";
-import {MaterialIcons,} from "@expo/vector-icons";
+import React, { useEffect, useRef, useState } from "react";
+import { ActivityIndicator, Image, ScrollView, StyleSheet, Text, TouchableOpacity, View, } from "react-native";
+import { MaterialIcons, } from "@expo/vector-icons";
 import Swiper from "react-native-swiper";
-import {Dropdown} from "react-native-element-dropdown";
-import {getMonney} from "../../util/money";
-import {useDispatch, useSelector} from "react-redux";
-import {fetchDataAndFav, fetchDataAndSetToRedux} from "../../redux/AllData";
+import { Dropdown } from "react-native-element-dropdown";
+import { getMonney } from "../../util/money";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchDataAndFav, fetchDataAndSetToRedux } from "../../redux/AllData";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import url from "../../api/url";
-import {useNavigation} from "@react-navigation/native";
+import { useNavigation } from "@react-navigation/native";
 
 function Home() {
     const navigation = useNavigation();
@@ -16,9 +16,9 @@ function Home() {
     const dataSP1 = useSelector((state) => state.dataAll.dataSP); //lấy toàn bộ mảng dữ liệu
     const dataSPFav = useSelector((state) => state.dataAll.dataSPFav); //lấy toàn bộ mảng dữ liệu Fav
     const dataTop3SP = useSelector((state) => state.dataAll.dataTop3SP);
-//lấy id sp Fav
+    //lấy id sp Fav
     const [isProcessing, setIsProcessing] = useState(false);
-    const [checkColorFav,setCheckColorFav] = useState([]);
+    const [checkColorFav, setCheckColorFav] = useState([]);
 
     const [valueSortBy, setValueSortBy] = useState(0);
     const [valueFilter, setValueFilter] = useState(null);
@@ -112,12 +112,12 @@ function Home() {
     };
 
     const renderProductItem = (item) => {
-        const isFav =  checkColorFav.includes(item._id);
+        const isFav = checkColorFav.includes(item._id);
         const toggleHeartColor = async () => {
 
             const checkLogin = await AsyncStorage.getItem('Email');
 
-            if (!checkLogin){
+            if (!checkLogin) {
                 alert("Vui lòng đăng nhập");
                 navigation.navigate('Login');
                 return
@@ -130,14 +130,14 @@ function Home() {
             setIsProcessing(true);
             const idFavourite = item._id;
             const email = await AsyncStorage.getItem('Email');
-            if ( isFav === false) {
-                await url.post("/favourite/addFav", {product_id: idFavourite, user_id: email})
-                 checkColorFav.push(item._id)
+            if (isFav === false) {
+                await url.post("/favourite/addFav", { product_id: idFavourite, user_id: email })
+                checkColorFav.push(item._id)
                 dispatch(fetchDataAndFav());
                 setIsProcessing(false);
                 console.log("Them")
             } else {
-                await url.post("/favourite/addFav", {product_id: idFavourite, user_id: email})
+                await url.post("/favourite/addFav", { product_id: idFavourite, user_id: email })
                 let index = checkColorFav.indexOf(item._id);
                 checkColorFav.splice(index, item._id)
                 dispatch(fetchDataAndFav());
@@ -145,13 +145,15 @@ function Home() {
                 console.log("Xoa")
             }
         };
+        const imageUrl = item.product_image;
+        const modifiedImageUrl = imageUrl.replace('http://localhost', 'http://192.168.0.101');
         return (
             <View style={styles.productContainer}>
                 <TouchableOpacity
                     key={item._id}
                     onPress={async () => {
                         const email = await AsyncStorage.getItem('Email');
-                        navigation.navigate("ProductDetail", {productId: item._id, userId: email});
+                        navigation.navigate("ProductDetail", { productId: item._id, userId: email });
                     }}
                 >
                     <View
@@ -163,7 +165,7 @@ function Home() {
                         }}
                     >
                         <Image
-                            source={{ uri: item.product_image }}
+                            source={{ uri: modifiedImageUrl }}
                             style={{
                                 width: "100%",
                                 height: "70%",
@@ -202,9 +204,9 @@ function Home() {
                     onPress={toggleHeartColor}
                 >
                     <MaterialIcons
-                        name={ isFav ? "favorite" : "favorite-outline"}
+                        name={isFav ? "favorite" : "favorite-outline"}
                         size={30}
-                        color={ isFav ? "red" : "black"}
+                        color={isFav ? "red" : "black"}
                     />
                 </TouchableOpacity>
             </View>
@@ -224,10 +226,10 @@ function Home() {
                         <View key={item._id} style={styles.slide2}>
                             <TouchableOpacity onPress={async () => {
                                 const email = await AsyncStorage.getItem('Email');
-                                navigation.navigate("ProductDetail", {productId: item._id, userId: email});
+                                navigation.navigate("ProductDetail", { productId: item._id, userId: email });
                             }}>
                                 <Image
-                                    source={{ uri: item.product_image }}
+                                    source={{ uri: item.product_image.replace('http://localhost', 'http://192.168.0.101') }}
                                     style={styles.imageBackground}
                                 />
                             </TouchableOpacity>
@@ -247,12 +249,12 @@ function Home() {
     return (
         <View style={styles.container}>
             <ScrollView>
-                <View style={{ alignItems: "center"}}>
+                <View style={{ alignItems: "center" }}>
                     <View style={styles.slide}>{setSwiper()}</View>
                 </View>
 
                 <View style={styles.option}>
-                    <Text style={{fontSize:20,fontWeight:'bold'}}>
+                    <Text style={{ fontSize: 20, fontWeight: 'bold' }}>
                         Sản phẩm
                     </Text>
                     <View>
@@ -267,7 +269,7 @@ function Home() {
                 </View>
 
 
-                <View style={{display:"flex", flexDirection: "row", margin: 10,alignItems:"center"  }}>
+                <View style={{ display: "flex", flexDirection: "row", margin: 10, alignItems: "center" }}>
 
                     <Dropdown
                         style={styles.dropdown}
@@ -315,16 +317,16 @@ function Home() {
 export default Home;
 
 const styles = StyleSheet.create({
-    option:{
-        borderBottomWidth:1,
-        alignItems:"center",
-        marginLeft:20,
-        marginRight:20,
-        marginTop:20,
-        paddingBottom:10,
-        display:"flex",
-        flexDirection:"row",
-        justifyContent:"space-between"
+    option: {
+        borderBottomWidth: 1,
+        alignItems: "center",
+        marginLeft: 20,
+        marginRight: 20,
+        marginTop: 20,
+        paddingBottom: 10,
+        display: "flex",
+        flexDirection: "row",
+        justifyContent: "space-between"
     },
     columnsContainer: {
         flexDirection: "row",
@@ -353,7 +355,7 @@ const styles = StyleSheet.create({
         backgroundColor: "white", // Màu nền của View
         elevation: 5, // Độ đổ bóng
         shadowColor: "gray", // Màu đổ bóng
-        shadowOffset: {width: 0, height: 2}, // Độ dịch chuyển đổ bóng
+        shadowOffset: { width: 0, height: 2 }, // Độ dịch chuyển đổ bóng
         shadowOpacity: 0.5, // Độ trong suốt của đổ bóng
         shadowRadius: 5, // Độ mờ của đổ bóng
     },
@@ -413,7 +415,7 @@ const styles = StyleSheet.create({
 
     loadingContainer: {
         flex: 1,
-        width:250,
+        width: 250,
         justifyContent: "center",
         alignItems: "center",
     },

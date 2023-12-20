@@ -6,7 +6,7 @@ import NoProduct from "../../components/NoProduct";
 import {fetchDataAndSetToRedux} from "../../redux/AllData";
 import url from "../../api/url";
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
+import ipAddress from "../../api/config";
 export default function Favourite({navigation }) {
   const dispatch = useDispatch(); //trả về một đối tượng điều phối
   const [showDialog, setshowDialog] = useState(false);
@@ -189,7 +189,7 @@ export default function Favourite({navigation }) {
                 style={styles.productContainer}>
 
                 <View style={styles.productBox}>
-                  <Image source={{ uri: item.product_image }} style={styles.productImage} />
+                  <Image source={{ uri: item.product_image.replace('http://localhost', ipAddress) }} style={styles.productImage} />
                   <View style={styles.productInfo}>
                     <Text style={styles.productName}>{item.product_title}</Text>
                     <Text style={styles.productPrice}>{getMonney(item.product_price)}</Text>

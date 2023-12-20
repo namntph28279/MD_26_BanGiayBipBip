@@ -17,6 +17,7 @@ import {fetchDataAndFav, fetchDataAndSetToRedux} from "../../redux/AllData";
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import url from "../../api/url";
+import ipAddress from "../../api/config";
 
 function Home({ route, navigation }) {
   const dispatch = useDispatch();
@@ -88,7 +89,7 @@ function Home({ route, navigation }) {
             }}
           >
             <Image
-              source={{ uri: item.product_image }}
+              source={{ uri: item.product_image.replace('http://localhost', ipAddress) }}
               style={{
                 width: "100%",
                 height: "70%",
@@ -150,7 +151,7 @@ function Home({ route, navigation }) {
                 }}
               >
                 <Image
-                  source={{ uri: item.product_image }}
+                  source={{ uri: item.product_image.replace('http://localhost', ipAddress) }}
                   style={styles.imageBackground}
                 />
               </TouchableOpacity>

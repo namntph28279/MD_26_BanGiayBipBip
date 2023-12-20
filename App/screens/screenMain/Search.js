@@ -12,7 +12,7 @@ import {
   SafeAreaView,
 } from "react-native";
 import { getMonney } from "../../util/money";
-import axios from "axios";
+import ipAddress from "../../api/config";
 import _ from "lodash";
 import { useSelector } from "react-redux";
 import url from "../../api/url";
@@ -57,7 +57,7 @@ function Search({ navigation }) {
         }}
       >
         <Image
-          source={{ uri: item.product_image }}
+          source={{ uri: item.product_image.replace('http://localhost', ipAddress) }}
           style={styles.productImage}
         />
         <View style={styles.productDetails}>
@@ -82,7 +82,7 @@ function Search({ navigation }) {
       >
         <View style={styles.saleImageContainer}>
           <Image
-            source={{ uri: item.product_image }}
+            source={{ uri: item.product_image.replace('http://localhost', ipAddress) }}
             style={styles.saleProductImage}
           />
           <View style={styles.saleProductInfo}>
