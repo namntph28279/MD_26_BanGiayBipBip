@@ -1,7 +1,7 @@
 <html lang="en">
 
 <head>
-  <title>Tin Nhắn</title>
+  <title>Thông báo</title>
   <link rel="stylesheet" href="styles.css">
 
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
@@ -9,37 +9,8 @@
   <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
   <style>
-    .modal-title {
-      font-weight: bold;
-    }
-
-
     body {
       margin: 7px auto auto;
-    }
-
-    .card-header {
-      font-weight: bold;
-      font-size: 20px;
-    }
-
-    .card-body {
-      padding: 20px;
-    }
-
-    /* Style cho các button */
-    .btn {
-      font-size: 14px;
-      font-weight: bold;
-    }
-
-    /* Style cho bảng sản phẩm */
-    .table td {
-      vertical-align: middle;
-    }
-
-    .table .table-actions a {
-      margin-right: 5px;
     }
 
     .mess {
@@ -62,84 +33,64 @@
       width: 100%;
     }
 
-    .box-chat {
-      width: 20%;
-      border-right-width: 1px;
-      border-right-color: black;
-      margin: 7px 7px 0px 8px;
-      height: 552px;
+    .text-inputform {
+      resize: none;
+      width: 550px;
+      outline: unset !important;
+      height: 91px;
+      border: 0.5px solid #838383;
+      padding: 7px;
       border-radius: 8px;
-      padding: 8px;
+    }
+
+    .box-notification {
+      height: 393px;
+      margin: 14px;
+      padding: 14px;
+      background: #f1f1f1;
       overflow: auto;
     }
 
-    .information {
-      align-items: center;
-      display: flex;
-      flex-direction: row;
-      background: #eadada;
-      border-radius: 8px;
-      margin: 7px;
-      padding: 8px;
+    .text-title {
+      text-align: center;
+      font-size: 24px;
+      font-weight: 600;
+      margin: 8px;
+    }
+
+    .width-tab {
+      width: 49%;
+    }
+
+    /*  dropdow*/
+    .dropdown {
+      width: 90%;
+      position: relative;
+      display: inline-block;
+    }
+
+    .search {
+      width: 100%;
+      padding: 5px;
+    }
+
+    .options {
+      display: none;
+      position: absolute;
+      z-index: 1;
+      background-color: #fff;
+      border: 1px solid #ccc;
+      max-height: 200px;
+      overflow-y: scroll;
+    }
+
+    .option {
+      padding: 5px;
       cursor: pointer;
     }
 
-    .informationNew {
-      align-items: center;
-      display: flex;
-      font-weight: bold;
-      flex-direction: row;
-      background: #eadada;
-      border-radius: 8px;
-      margin: 7px;
-      padding: 8px;
-      cursor: pointer;
-    }
-
-    .user {
-      max-width: fit-content;
-      background: #d4d4d4;
-      padding: 7px;
-      border-radius: 8px;
-      text-align: left;
-      width: 80%;
-      margin: 8px 0;
-    }
-
-    .admin {
-      max-width: fit-content;
-      background: #4842ff;
-      padding: 7px;
-      border-radius: 8px;
-      margin-left: auto;
-      width: 80%;
-      color: white;
-      margin-bottom: 8px;
-    }
-
-    .contenChat {
-      display: flex;
-      flex-direction: column;
-      justify-content: flex-end;
-    }
-
-    .name-user {
-      font-size: 25px;
-      padding: 6px;
-      font-weight: 700;
-      background: #f2eaea;
-      margin: 0 12px;
-      border-radius: 10px;
-      text-align: center
-    }
-
-    .box-content {
-      background: #f3f4f6;
-      height: 444px;
-      margin: 7px;
-      border-radius: 8px;
-      padding: 8px;
-      overflow: auto;
+    .option:hover {
+      background-color: #f2f2f2;
     }
   </style>
 </head>
@@ -182,7 +133,8 @@
         </div>
         <span class="badge" style="color: white;font-size: 14px;">\{{tinNhanMoi}}</span>
       </a>
-      <a href="/notifications" class="cursor-pointer mess ml-3 mt-3 w-10/12" style="text-decoration: none;border-bottom-width: 1px;">
+      <a href="/notifications" class="cursor-pointer mess ml-3 mt-3 w-10/12"
+         style="text-decoration: none;border-bottom-width: 1px;">
         <div class="flex" style=" padding: 12px;">
           <div>
             <img class="w-5 h-5" src="notifications.png" alt="">
@@ -190,12 +142,12 @@
           <div class="mx-3 text-sm text-gray-100">Thông báo</div>
         </div>
       </a>
-      <a href="/accountManagement" class="cursor-pointer mess ml-3 mt-3 w-10/12" style="text-decoration: none">
-        <div class="flex" style=" padding: 12px;">
+      <a href="/customer" class="cursor-pointer mess ml-3 mt-3 w-10/12" style="display: flex; text-decoration: none">
+        <div class="flex" style="padding: 12px;">
           <div>
-            <img class="w-5 h-5" src="account.png" alt="">
+            <img class="w-5 h-5 " src="iconuser.png" alt="">
           </div>
-          <div class="mx-3 text-sm text-gray-100">Quản lý tài khoản</div>
+          <div class="mx-3 text-sm text-gray-100 ">Quản Lý người dùng</div>
         </div>
       </a>
       <a href="/warehouse" class="cursor-pointer mess ml-3 mt-3 w-10/12" style="text-decoration: none">
@@ -208,21 +160,16 @@
       </a>
     </div>
   </div>
-  <!--Side Navbar-->
-
-  <!--Main area-->
-
   <div class="flex-1">
-    <!--Top navbar-->
     <div>
-
       <div class="bg-white px-2 py-0.5 h-18 flex">
         <div class="left md:w-3/4 sm:w-1/3 flex p-3">
           <img src="person.png" class="w-10 h-10" alt="">
           <span class="block p-2">Admin</span>
         </div>
         <div class="right md:w-1/4 sm:w-2/3 flex  justify-content-end ">
-          <a href="/login" style=" text-decoration: none; color: black; line-height: 58px; margin-right: 24px; ">Đăng xuất</a>
+          <a href="/login" style=" text-decoration: none; color: black; line-height: 58px; margin-right: 24px; ">Đăng
+            xuất</a>
         </div>
       </div>
     </div>
@@ -232,35 +179,80 @@
       <div id="load" class="spinner-border text-primary"></div>
 
       <div class="card w-full" id="hienThidata" style="display: none">
-        <div class="card w-full" style="display: flex;flex-direction: row;padding: 8px">
+        <div class="card w-full" style="display: flex;flex-direction: row;justify-content: space-between;">
 
-          <div class="box-chat">
-            <div v-for="item in dataTitleChat" :class="{'informationNew':item.status,'information':!item.status}"
-                 @click="OpenChatUser(item.user)">
-              \{{item.fullName}}
+          <div class="width-tab">
+            <div class="text-title">
+              Thông báo tất cả
             </div>
-          </div>
-          <div id="checkData" style="width: 80%" v-if="dataContentChat.length > 0">
-            <div class="name-user">
-              \{{nameUser}}
+            <div>
+              <form @submit.prevent="submitContentChat" class="mb-3" style="margin: 0 14px;">
+                <div>
+                    <textarea rows="4" cols="50" class="text-inputform" type="text"
+                              v-model="formData.conTenMain" required></textarea>
+
+                  <div class="input-group-append">
+                    <button class="btn btn-primary" style="width: 100%;margin-top: 8px" type="submit">Gửi</button>
+                  </div>
+                </div>
+              </form>
             </div>
-            <div class="box-content">
-              <div id="listConten" class="contenChat" v-for="item in dataContentChat"
-                   :class="{'admin': item.beLong === 'admin', 'user': item.beLong !== 'admin'}">
-                \{{item.conTenMain}}
-              </div>
-            </div>
-            <form @submit.prevent="submitContentChat" class="mb-3" style="margin: 0 14px;">
-              <div class="input-group">
-                <label class="form-control">
-                  <input style="width: 100%;outline: unset !important;" type="text"
-                         v-model="formData.conTenMain" required>
-                </label>
-                <div class="input-group-append" style="margin-left: 8px;">
-                  <button class="btn btn-primary" type="submit">Gửi</button>
+            <div class="box-notification">
+              <div style=" padding: 8px; background: #60eab1; border-radius: 8px;">
+                <div>
+                  hiển thị các thông báo đã gửi hiển thị các thông báo đã gửi hiển thị các thông báo đã gửi hiển thị các
+                  thông báo đã gửi hiển thị các thông báo đã gửi hiển thị các thông báo đã gửi hiển thị các thông báo đã
+                  gửi hiển thị các thông báo đã gửi hiển thị các thông báo đã gửi hiển thị các
+                </div>
+                <div style="text-align: end;font-weight: 600;margin-top: 8px;">
+                  10/10/2023 8:15AM
                 </div>
               </div>
-            </form>
+            </div>
+          </div>
+          <div class="width-tab">
+            <div class="text-title">
+              Thông báo cho 1 người dùng
+            </div>
+            <div>
+              <form @submit.prevent="submitContentChat" class="mb-3" style="margin: 0 14px;">
+                <div>
+
+                    <textarea rows="4" cols="50" class="text-inputform" type="text"
+                              v-model="formData.conTenMain" required></textarea>
+
+                  <div class="input-group-append"
+                       style=" display: flex;  justify-content: space-between; margin-top: 8px;">
+
+                    <div class="dropdown">
+                      <input type="text" class="search" id="searchInput" placeholder="Tài khoản"
+                             style=" border: 1px solid; border-radius: 8px; outline: unset;" required>
+                      <div class="options">
+                        <div class="option">Option 1</div>
+                        <div class="option">Option 2</div>
+                        <div class="option">Option 3</div>
+                        <div class="option">Option 4</div>
+                        <!-- Thêm các tùy chọn khác vào đây -->
+                      </div>
+                    </div>
+
+                    <button class="btn btn-primary" type="submit">Gửi</button>
+                  </div>
+                </div>
+              </form>
+            </div>
+            <div class="box-notification">
+              <div style=" padding: 8px; background: #60eab1; border-radius: 8px;">
+                <div>
+                  hiển thị các thông báo đã gửi hiển thị các thông báo đã gửi hiển thị các thông báo đã gửi hiển thị các
+                  thông báo đã gửi hiển thị các thông báo đã gửi hiển thị các thông báo đã gửi hiển thị các thông báo đã
+                  gửi hiển thị các thông báo đã gửi hiển thị các thông báo đã gửi hiển thị các
+                </div>
+                <div style="text-align: end;font-weight: 600;margin-top: 8px;">
+                  10/10/2023 8:15AM
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -295,7 +287,7 @@
       socket.on('server-send', () => {
         self.GetAllDataChat();
         self.GetDataCart();
-        if (self.idUser.length > 0){
+        if (self.idUser.length > 0) {
           self.OpenChatUser(self.idUser);
         }
       });
@@ -479,5 +471,31 @@
       })
     });
   }
+</script>
+<script>
+  const searchInput = document.getElementById('searchInput');
+  const options = document.querySelector('.options');
+  const optionItems = document.querySelectorAll('.option');
+  searchInput.addEventListener('click', function () {
+    options.style.display = 'block';
+  });
+  searchInput.addEventListener('input', function () {
+    const searchValue = searchInput.value.toLowerCase();
+    optionItems.forEach(function (option) {
+      const optionText = option.textContent.toLowerCase();
+      if (optionText.includes(searchValue)) {
+        option.style.display = 'block';
+      } else {
+        option.style.display = 'none';
+      }
+    });
+    options.style.display = 'block';
+  });
+
+  document.addEventListener('click', function (event) {
+    if (!searchInput.contains(event.target)) {
+      options.style.display = 'none';
+    }
+  });
 </script>
 </html>

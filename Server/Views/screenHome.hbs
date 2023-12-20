@@ -105,19 +105,11 @@
         </div>
       </a>
       <a href="/customer" class="cursor-pointer mess ml-3 mt-3 w-10/12" style="display: flex; text-decoration: none">
-      <div class="flex" style="padding: 12px;">
-        <div>
-          <img class="w-5 h-5 " src="iconuser.png" alt="">
-        </div>
-        <div class="mx-3 text-sm text-gray-100 ">Quản Lý người dùng</div>
-      </div>
-    </a>
-      <a href="/accountManagement" class="cursor-pointer mess ml-3 mt-3 w-10/12" style="text-decoration: none">
-        <div class="flex" style=" padding: 12px;">
+        <div class="flex" style="padding: 12px;">
           <div>
-            <img class="w-5 h-5" src="account.png" alt="">
+            <img class="w-5 h-5 " src="iconuser.png" alt="">
           </div>
-          <div class="mx-3 text-sm text-gray-100">Quản lý tài khoản</div>
+          <div class="mx-3 text-sm text-gray-100 ">Quản Lý người dùng</div>
         </div>
       </a>
       <a href="/warehouse" class="cursor-pointer mess ml-3 mt-3 w-10/12" style="text-decoration: none">
@@ -144,7 +136,8 @@
           <span class="block p-2">Admin</span>
         </div>
         <div class="right md:w-1/4 sm:w-2/3 flex  justify-content-end ">
-          <a href="/login" style=" text-decoration: none; color: black; line-height: 58px; margin-right: 24px; ">Đăng xuất</a>
+          <a href="/login" style=" text-decoration: none; color: black; line-height: 58px; margin-right: 24px; ">Đăng
+            xuất</a>
         </div>
       </div>
     </div>
@@ -503,10 +496,12 @@
             Tổng tiền:
             <div style="color: red;font-weight: 700;margin-left: 7px;"> \{{formatPrice(dataXemChiTiet.total_All)}}</div>
           </div>
-          <div style="display: flex; text-align: end;justify-content: end;" v-if="dataXemChiTiet.status === 3 || dataXemChiTiet.status === 9">
+          <div style="display: flex; text-align: end;justify-content: end;"
+               v-if="dataXemChiTiet.status === 3 || dataXemChiTiet.status === 9">
             Ngày giao: \{{formatDate(dataXemChiTiet.order_date)}}
           </div>
-<div style="display: flex; text-align: end;justify-content: end;" v-if="dataXemChiTiet.status !== 3 && dataXemChiTiet.status !== 9">
+          <div style="display: flex; text-align: end;justify-content: end;"
+               v-if="dataXemChiTiet.status !== 3 && dataXemChiTiet.status !== 9">
             Ngày đặt: \{{formatDate(dataXemChiTiet.order_date)}}
           </div>
           <div style="display: flex;" v-if="dataXemChiTiet.lyDoHuyDon">
@@ -525,7 +520,8 @@
         <div class="modal-header">
           <h5 class="modal-title" id="exampleModalLabel" v-if="dataXacNhanDon.status === 5">Đồng ý trả hàng tài
             khooản: \{{dataXacNhanDon.customer_email}}?</h5>
-          <h5 class="modal-title" id="exampleModalLabel" v-else>Xác nhận đơn tài khooản: \{{dataXacNhanDon.customer_email}}?</h5>
+          <h5 class="modal-title" id="exampleModalLabel" v-else>Xác nhận đơn tài khooản: \
+            {{dataXacNhanDon.customer_email}}?</h5>
           <button type="button" class="close" @click="closeModalXacNhanDon" aria-label="Close">
             <span aria-hidden="true">&times;</span>
           </button>
@@ -596,7 +592,8 @@
     <div class="modal-dialog" role="document">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title" id="exampleModalLabel" v-if="dataHuyDon.status === 5">Từ chối trả hàng tài khoản: \{{dataHuyDon.customer_email}}?</h5>
+          <h5 class="modal-title" id="exampleModalLabel" v-if="dataHuyDon.status === 5">Từ chối trả hàng tài khoản: \
+            {{dataHuyDon.customer_email}}?</h5>
           <h5 class="modal-title" id="exampleModalLabel" v-else>Hủy đơn tài khoản: \{{dataHuyDon.customer_email}}?</h5>
           <button type="button" class="close" @click="closeModalHuyDon" aria-label="Close">
             <span aria-hidden="true">&times;</span>
