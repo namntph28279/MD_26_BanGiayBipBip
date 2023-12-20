@@ -11,125 +11,119 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
 
     <style>
-        table {
-            width: 100%;
-            border-collapse: collapse;
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f8f9fa;
+            color: #495057;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            margin-top: 20px;
+        }
+
+        h2 {
+            text-align: center;
+            color: #007bff;
+        }
+
+        .search-container,
+        .filter-container {
+            display: flex;
+            justify-content: space-between;
             margin-bottom: 20px;
         }
+
+        .search-input {
+            padding: 10px;
+            width: 60%;
+            border-radius: 5px;
+            border: 1px solid #ced4da;
+        }
+
+        .filter-label {
+            margin-right: 10px;
+        }
+
+        .table-container {
+            width: 100%;
+        }
+
+        .table {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+            background-color: #fff;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
 
         th,
         td {
             text-align: left;
             border: 1px solid #ddd;
-            width: 14.28vw;
-            max-width: 100px;
+            padding: 12px;
             word-wrap: break-word;
         }
 
         thead {
             position: sticky;
             top: 0;
-            background-color: #fff;
-            z-index: 1;
+            background-color: #007bff;
+            color: #fff;
         }
 
         tbody tr:nth-child(even) {
-            background-color: #c2bca3;
+            background-color: #f0f8ff;
         }
 
         tbody tr:hover {
-            background-color: #c1a31c;
-        }
-
-        th:nth-child(1),
-        td:nth-child(1) {
-            width: 15%;
-        }
-
-        th:nth-child(2),
-        td:nth-child(2) {
-            width: 15%;
-        }
-
-        th:nth-child(3),
-        td:nth-child(3) {
-            width: 10%;
-        }
-
-        th:nth-child(4),
-        td:nth-child(4) {
-            width: 15%;
-        }
-
-        th:nth-child(5),
-        td:nth-child(5) {
-            width: 25%;
-        }
-
-        th:nth-child(6),
-        td:nth-child(6) {
-            width: 15%;
-        }
-
-        th:nth-child(7),
-        td:nth-child(7) {
-            width: 30%;
+            background-color: #add8e6;
         }
 
         .action-buttons {
             display: flex;
             justify-content: space-between;
+            align-items: center;
+        }
+
+        .ban-button,
+        .unban-button {
+            width: 100%;
+            padding: 8px;
+            cursor: pointer;
+            color: #fff;
+            font-weight: bold;
+            border: none;
+            border-radius: 5px;
         }
 
         .ban-button {
-            width: 100px;
-            height: 100px;
-            padding: 5px 10px;
-            cursor: pointer;
             background-color: #ff0000;
-            color: #fff;
         }
 
         .unban-button {
-            width: 100px;
-            height: 100px;
-            padding: 5px 10px;
-            cursor: pointer;
-            background-color: #00ff00;
-            color: #fff;
+            background-color: #73ff00;
         }
 
-        .search-container {
-            margin-bottom: 20px;
-        }
-
-        .search-input {
-            padding: 5px;
-            width: 200px;
-        }
-
-        .filter-container {
-            margin-bottom: 20px;
-        }
-
-        .filter-label {
-            margin-right: 10px;
-        }
-         .modal-footer button {
+        .modal-footer button {
             cursor: pointer;
         }
     </style>
 </head>
 
 <body>
-     <div class="container">
+    <div class="container">
         <h2>Danh sách khách hàng</h2>
 
         <div class="search-container">
             <input type="text" class="search-input" id="searchInput" placeholder="Tìm kiếm...">
         </div>
         <div class="filter-container">
-            <label class="filter-label">Hiển thị:</label>
+
             <input type="radio" name="statusFilter" id="allUsers" checked>
             <label for="allUsers">Tất cả</label>
             <input type="radio" name="statusFilter" id="bannedUsers">
@@ -150,6 +144,7 @@
                         <th scope="col">Số điện thoại</th>
                         <th scope="col">Địa chỉ</th>
                         <th scope="col">Trạng Thái</th>
+                        <th scope="col">Lý do chặn</th>
                         <th scope="col">Hành động</th>
                     </tr>
                 </thead>
@@ -165,7 +160,8 @@
                         <td>{{address.phone}}</td>
                         <td>{{address.address}}</td>
                         <td>{{profile.status}}</td>
-                          <td class="action-buttons">
+                        <td>{{block_reason}}</td>
+                        <td class="action-buttons">
                             {{#if profile.status}}
                             <button class="unban-button" data-toggle="modal" data-target="#blockUserModal"
                                 data-user-id="{{_id}}">Mở chặn</button>
@@ -212,12 +208,12 @@
             document.getElementById('modalUserIdInput').value = userId;
         }
 
-      function submitBlockForm() {
-    var blockReason = document.getElementById('blockReason').value;
-    var userId = document.getElementById('modalUserId').innerText;
-    document.getElementById('modalUserIdInput').value = userId;
-    document.getElementById('blockForm').submit();
-}
+        function submitBlockForm() {
+            var blockReason = document.getElementById('blockReason').value;
+            var userId = document.getElementById('modalUserId').innerText;
+            document.getElementById('modalUserIdInput').value = userId;
+            document.getElementById('blockForm').submit();
+        }
 
 
         document.getElementById('searchInput').addEventListener('input', function () {
