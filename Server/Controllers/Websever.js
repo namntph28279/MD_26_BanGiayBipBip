@@ -135,6 +135,51 @@ app.get('/customer', async(req, res) => {
         res.status(500).send('Lỗi rồi');
     }
 });
+app.get('/customer/:userId', async(req, res) => {
+    const userId = req.params.userId;
+
+    try {
+        const user = await User.findById(userId);
+
+        if (!user) {
+            return res.status(404).json({ message: 'Không tồn tại tài khoản' });
+        }
+
+        res.render('../Views/customer.hbs', { data: [user] });
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ message: 'lỗi rồi' });
+    }
+});
+
+app.post('/block', async(req, res) => {
+    let userId = req.body.userId;
+    const blockReason = req.body.blockReason;
+    if (!mongoose.Types.ObjectId.isValid(userId)) {
+        return res.status(400).json({ message: 'UserId không hợp lệ', userId, blockReason });
+
+    }
+
+    try {
+        const user = await User.findById(userId);
+
+        if (!user) {
+            return res.status(404).json({ message: 'Không tồn tại tài khoản' });
+        }
+
+        user.status = true;
+        user.block_reason = blockReason;
+        await user.save();
+
+        res.redirect('/customer');
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ message: 'Lỗi rồi' });
+    }
+});
+
+
+
 app.get('/mess', async(req, res) => {
     try {
         res.render('../Views/screenMessger.hbs');
