@@ -52,6 +52,13 @@ const Login = ({ navigation }) => {
                     const userData = await response.data;
                     const userID = userData._id;
                     const Name = userData.username;
+                    const isBlocked = userData.status;
+                    console.log("sờ ta tus ", userData.status);
+
+                    if (isBlocked === true) {
+                        Alert.alert('Thông báo', 'Tài khoản của bạn đã bị chặn. Vui lòng liên hệ hỗ trợ để biết thêm chi tiết.');
+                        return;  // Dừng việc tiếp tục xử lý
+                    }
 
                     if (userID) {
 
