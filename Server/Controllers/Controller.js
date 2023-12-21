@@ -885,7 +885,7 @@ app.post('/login', async (req, res) => {
             if (password !== user.password) {
                 res.status(401).json({message: 'Sai mật khẩu'});
             } else {
-                user.status = true;
+                // user.status = true;
                 await user.save();
                 res.json(user);
             }
