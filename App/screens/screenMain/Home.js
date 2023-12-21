@@ -146,7 +146,7 @@ function Home() {
                 console.log("Xoa")
             }
         };
- 
+        const imageUrl = item.product_image;
         const modifiedImageUrl = imageUrl.replace('http://localhost', ipAddress);
         return (
             <View style={styles.productContainer}>
