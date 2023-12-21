@@ -219,6 +219,23 @@ app.get('/warehouse', async(req, res) => {
     }
 });
 
+app.get('/warehouse/:cate', async(req, res) => {
+    const cate = req.params.cate;
+    try {
+        if(cate === "men"){
+            category = "Nam";
+        }else if(cate === "women"){
+            category = "Nữ";
+        }else if(cate === "children"){
+            category = "Trẻ em";
+        }
+        const products = await Product.find({product_category:cate}).lean();
+        res.render('../Views/screenWarehouse.hbs', { products,category });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
 
 app.post('/screenWarehouse/search', async(req, res) => {
     const { title } = req.body;
