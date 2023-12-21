@@ -14,11 +14,12 @@ const Order = require("../Models/Oderdetail");
 const multer = require('multer');
 const path = require('path');
 const cors = require('cors');
+const mongoose = require('mongoose');
 
-app.use(cors()); 
+app.use(cors());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'public')));
-const uploadsPath = path.join(__dirname, '../uploads'); 
+const uploadsPath = path.join(__dirname, '../uploads');
 app.use('/uploads', express.static(uploadsPath));
 
 
@@ -48,7 +49,7 @@ const handlebars = expressHbs.create({
     },
     helpers: {
 
-        formatCurrency: function(amount) {
+        formatCurrency: function (amount) {
             return currencyFormatter.format(amount, { code: 'VND' });
         }
     },
@@ -60,7 +61,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(express.json());
 //màn hình home
-app.get('/loadData', async(req, res) => {
+app.get('/loadData', async (req, res) => {
     const choXacNhan = await Order.find({ status: 0 }).sort({ order_date: -1 });
     const choLayHang = await Order.find({ status: 1 }).sort({ order_date: -1 });
     const choGiaoHang = await Order.find({ status: 2 }).sort({ order_date: -1 });
@@ -75,23 +76,23 @@ app.get('/loadData', async(req, res) => {
     res.json(arr)
 })
 
-app.get('/dataOrderUser/:id', async(req, res) => {
+app.get('/dataOrderUser/:id', async (req, res) => {
     const userId = req.params.id;
     const data = await Order.find({ user: userId }).sort({ order_date: -1 });
 
     res.json(data)
 })
-app.get('/home', async(req, res) => {
+app.get('/home', async (req, res) => {
     res.render('../Views/screenHome.hbs');
 
 });
-app.get('/notifications', async(req, res) => {
+app.get('/notifications', async (req, res) => {
     res.render('../Views/screenNotifications.hbs');
 });
-app.get('/accountManagement', async(req, res) => {
+app.get('/accountManagement', async (req, res) => {
     res.render('../Views/screenAccountManagement.hbs');
 });
-app.get('/statistic', async(req, res) => {
+app.get('/statistic', async (req, res) => {
     try {
         res.render('../Views/screenStatistics.hbs');
     } catch (error) {
@@ -99,58 +100,58 @@ app.get('/statistic', async(req, res) => {
     }
 
 });
-app.get('/customer', async(req, res) => {
+app.get('/customer', async (req, res) => {
     try {
         const data = await User.aggregate([{
-                $lookup: {
-                    from: "profiles",
-                    localField: "_id",
-                    foreignField: "user",
-                    as: "profile"
-                }
-            },
-            {
-                $unwind: {
-                    path: "$profile",
-                    preserveNullAndEmptyArrays: true
-                }
-            },
-            {
-                $lookup: {
-                    from: "addresses",
-                    localField: "_id",
-                    foreignField: "user",
-                    as: "address"
-                }
-            },
-            {
-                $unwind: {
-                    path: "$address",
-                    preserveNullAndEmptyArrays: true
-                }
-            },
-            {
-                $project: {
-                    _id: 1,
-                    username: 1,
-                    password: 1,
-                    role: 1,
-                    status: 1,
-                    date: 1,
-                    block_reason: 1,
-                    "profile.fullname": 1,
-                    "profile.gender": 1,
-                    "profile.avatar": 1,
-                    "profile.birthday": 1,
-                    "profile.email": 1,
-                    "profile.phone": 1,
-                    "profile.address": 1,
-                    "profile.username": "$username",
-                    "address.address": 1,
-                    "address.phone": 1,
-                    "profile.status": "$status",
-                }
+            $lookup: {
+                from: "profiles",
+                localField: "_id",
+                foreignField: "user",
+                as: "profile"
             }
+        },
+        {
+            $unwind: {
+                path: "$profile",
+                preserveNullAndEmptyArrays: true
+            }
+        },
+        {
+            $lookup: {
+                from: "addresses",
+                localField: "_id",
+                foreignField: "user",
+                as: "address"
+            }
+        },
+        {
+            $unwind: {
+                path: "$address",
+                preserveNullAndEmptyArrays: true
+            }
+        },
+        {
+            $project: {
+                _id: 1,
+                username: 1,
+                password: 1,
+                role: 1,
+                status: 1,
+                date: 1,
+                block_reason: 1,
+                "profile.fullname": 1,
+                "profile.gender": 1,
+                "profile.avatar": 1,
+                "profile.birthday": 1,
+                "profile.email": 1,
+                "profile.phone": 1,
+                "profile.address": 1,
+                "profile.username": "$username",
+                "address.address": 1,
+                "address.phone": 1,
+                "profile.status": "$status",
+            }
+        }
         ]);
         res.render('../Views/customer.hbs', { data });
     } catch (error) {
@@ -158,7 +159,7 @@ app.get('/customer', async(req, res) => {
         res.status(500).send('Lỗi rồi');
     }
 });
-app.get('/customer/:userId', async(req, res) => {
+app.get('/customer/:userId', async (req, res) => {
     const userId = req.params.userId;
 
     try {
@@ -175,7 +176,7 @@ app.get('/customer/:userId', async(req, res) => {
     }
 });
 
-app.post('/block', async(req, res) => {
+app.post('/block', async (req, res) => {
     let userId = req.body.userId;
     const blockReason = req.body.blockReason;
     if (!mongoose.Types.ObjectId.isValid(userId)) {
@@ -203,14 +204,14 @@ app.post('/block', async(req, res) => {
 
 
 
-app.get('/mess', async(req, res) => {
+app.get('/mess', async (req, res) => {
     try {
         res.render('../Views/screenMessger.hbs');
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
 });
-app.get('/warehouse', async(req, res) => {
+app.get('/warehouse', async (req, res) => {
     try {
         const products = await Product.find().lean();
         res.render('../Views/screenWarehouse.hbs', { products });
@@ -219,25 +220,25 @@ app.get('/warehouse', async(req, res) => {
     }
 });
 
-app.get('/warehouse/:cate', async(req, res) => {
+app.get('/warehouse/:cate', async (req, res) => {
     const cate = req.params.cate;
     try {
-        if(cate === "men"){
+        if (cate === "men") {
             category = "Nam";
-        }else if(cate === "women"){
+        } else if (cate === "women") {
             category = "Nữ";
-        }else if(cate === "children"){
+        } else if (cate === "children") {
             category = "Trẻ em";
         }
-        const products = await Product.find({product_category:cate}).lean();
-        res.render('../Views/screenWarehouse.hbs', { products,category });
+        const products = await Product.find({ product_category: cate }).lean();
+        res.render('../Views/screenWarehouse.hbs', { products, category });
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
 });
 
 
-app.post('/screenWarehouse/search', async(req, res) => {
+app.post('/screenWarehouse/search', async (req, res) => {
     const { title } = req.body;
     try {
         const searchString = String(title);
@@ -250,7 +251,7 @@ app.post('/screenWarehouse/search', async(req, res) => {
         res.status(500).json({ message: error.message });
     }
 });
-app.post('/order/status/:orderId', async(req, res) => {
+app.post('/order/status/:orderId', async (req, res) => {
     const orderId = req.params.orderId;
     const data = req.body
     const order = await Order.findById(orderId);
@@ -305,7 +306,7 @@ app.post('/order/status/:orderId', async(req, res) => {
     }
 });
 
-app.post('/order/statusAPP/:orderId', async(req, res) => {
+app.post('/order/statusAPP/:orderId', async (req, res) => {
     const orderId = req.params.orderId;
     try {
         const order = await Order.findById(orderId);
@@ -317,7 +318,7 @@ app.post('/order/statusAPP/:orderId', async(req, res) => {
     }
 });
 
-app.post('/order/status/Comfig/:id', async(req, res) => {
+app.post('/order/status/Comfig/:id', async (req, res) => {
 
     const orderId = req.params.id;
     console.log(orderId)
@@ -390,10 +391,6 @@ app.post('/home/add', upload.single('product_image'), async (req, res) => {
         }
         const imageUrl = `http://localhost/${path.normalize(imagePath).replace(/\\/g, '/')}`;
 
-        console.log("title", product_title);
-        console.log("price", product_price);
-        console.log("category", product_category);
-        console.log("image", imageUrl);
 
         if (!product_title || !product_price) {
             return res.status(400).send('Missing required fields');
@@ -419,26 +416,34 @@ app.post('/home/add', upload.single('product_image'), async (req, res) => {
 
 
 
-app.post('/home/edit/:id', async (req, res) => {
+app.post('/home/edit/:id', upload.single('product_image'), async (req, res) => {
     const id = req.params.id;
-    const { product_title, product_price, product_image, product_quantity, product_category } = req.body;
+    const { product_title, product_price, product_category } = req.body;
+    let imagePath = "";
+    if (req.file) {
+        imagePath = req.file.path;
+    }
+    const imageUrl = `http://localhost/${path.normalize(imagePath).replace(/\\/g, '/')}`;
+    if (!product_title || !product_price) {
+        return res.status(400).send('Missing required fields');
+    }
 
     try {
         await Product.updateOne({ _id: id }, {
             product_title,
             product_price,
-            product_image,
+            product_image: imageUrl,
             product_category
         }).lean();
 
-        res.redirect('/home')
+        res.redirect('/warehouse')
     } catch (err) {
         console.error('Lỗi khi sửa dữ liệu:', err);
         res.sendStatus(500);
     }
 });
 
-app.post('/home/delete/:id', async(req, res) => {
+app.post('/home/delete/:id', async (req, res) => {
     const id = req.params.id;
 
     try {
@@ -450,7 +455,7 @@ app.post('/home/delete/:id', async(req, res) => {
     }
 });
 
-app.get('/home/detail/:id', async(req, res) => {
+app.get('/home/detail/:id', async (req, res) => {
     try {
         const productId = req.params.id;
 
@@ -513,7 +518,7 @@ app.get('/home/detail/:id', async(req, res) => {
     }
 });
 
-app.post('/home/detail/color/add/:productId', async(req, res) => {
+app.post('/home/detail/color/add/:productId', upload.single('color_image'), async (req, res) => {
     try {
         const productId = req.params.productId;
         const product = await Product.findById(productId).lean();
@@ -521,10 +526,17 @@ app.post('/home/detail/color/add/:productId', async(req, res) => {
         const arrSize = [data.size_26, data.size_27, data.size_28, data.size_29, data.size_34, data.size_35, data.size_36, data.size_37, data.size_38]
         const arrSizeName = [26, 27, 28, 29, 34, 35, 36, 37, 38]
 
+        let imagePath = "";
+        if (req.file) {
+            imagePath = req.file.path;
+        }
+        const imageUrl = `http://localhost/${path.normalize(imagePath).replace(/\\/g, '/')}`;
+
+
         const color = await Color.create({
             product: productId,
             color_name: data.color_name,
-            color_image: data.color_image
+            color_image: imageUrl
         });
         for (let i = 0; i < arrSize.length; i++) {
             await Size.create({
@@ -540,7 +552,7 @@ app.post('/home/detail/color/add/:productId', async(req, res) => {
     }
 })
 
-app.post('/home/detail/colors/edit/:colorId/:productId', async(req, res) => {
+app.post('/home/detail/colors/edit/:colorId/:productId', upload.single("color_image"), async (req, res) => {
     try {
         const colorId = req.params.colorId;
         const productId = req.params.productId;
@@ -554,9 +566,14 @@ app.post('/home/detail/colors/edit/:colorId/:productId', async(req, res) => {
         if (!color) {
             return res.status(404).json({ error: 'Không tìm thấy màu sắc' });
         }
+        let imagePath = "";
+        if (req.file) {
+            imagePath = req.file.path;
+        }
+        const imageUrl = `http://localhost/${path.normalize(imagePath).replace(/\\/g, '/')}`;
 
         color.color_name = data.color_name;
-        color.color_image = data.color_image;
+        color.color_image = imageUrl;
         await color.save();
 
         const colorSizes = await Size.find({ colorId }).lean();
@@ -575,7 +592,7 @@ app.post('/home/detail/colors/edit/:colorId/:productId', async(req, res) => {
     }
 });
 
-app.post('/home/detail/colors/delete/:colorId/:productId', async(req, res) => {
+app.post('/home/detail/colors/delete/:colorId/:productId', async (req, res) => {
     try {
         const colorId = req.params.colorId;
         const productId = req.params.productId;
@@ -597,7 +614,7 @@ app.post('/home/detail/colors/delete/:colorId/:productId', async(req, res) => {
     }
 });
 
-app.post('/chatShop', async(req, res) => {
+app.post('/chatShop', async (req, res) => {
     try {
         const data = req.body;
         const products = await ChatShop.findOne({ user: data.user }).lean();
@@ -610,7 +627,7 @@ app.post('/chatShop', async(req, res) => {
     }
 });
 
-app.post('/chatAllShop', async(req, res) => {
+app.post('/chatAllShop', async (req, res) => {
     try {
         const dataChat = await ChatShop.find().lean();
         return res.send(dataChat)
@@ -618,7 +635,7 @@ app.post('/chatAllShop', async(req, res) => {
         res.status(500).json({ message: error.message });
     }
 });
-app.post('/delete', async(req, res) => {
+app.post('/delete', async (req, res) => {
     try {
         const id = req.body;
         await ChatShop.findByIdAndDelete(id._id);
@@ -626,7 +643,7 @@ app.post('/delete', async(req, res) => {
         console.log(err)
     }
 })
-app.post('/home/chatShop', async(req, res) => {
+app.post('/home/chatShop', async (req, res) => {
     const data = req.body;
     const check = await ChatShop.findOne({ user: data.user })
     if (check) {
@@ -662,7 +679,7 @@ app.post('/home/chatShop', async(req, res) => {
     }
 })
 
-app.get("/AllId", async(req, res) => {
+app.get("/AllId", async (req, res) => {
     try {
         const dataChat = await checkClient.find().lean();
         return res.send(dataChat)
@@ -670,7 +687,7 @@ app.get("/AllId", async(req, res) => {
         res.status(500).json({ message: error.message });
     }
 })
-app.get("/AllIdMess", async(req, res) => {
+app.get("/AllIdMess", async (req, res) => {
     try {
         const dataChat = await checkClientMess.find().lean();
         return res.send(dataChat)
@@ -679,7 +696,7 @@ app.get("/AllIdMess", async(req, res) => {
     }
 })
 
-app.post('/sendNotificationClient', async(req, res) => {
+app.post('/sendNotificationClient', async (req, res) => {
     const data = req.body;
     try {
         const check = await checkClient.findOne({ user: data.user });
@@ -689,7 +706,7 @@ app.post('/sendNotificationClient', async(req, res) => {
     }
 })
 
-app.post('/sendNotificationMess', async(req, res) => {
+app.post('/sendNotificationMess', async (req, res) => {
     const data = req.body;
     try {
         const check = await checkClientMess.findOne({ user: data.user });
@@ -699,7 +716,7 @@ app.post('/sendNotificationMess', async(req, res) => {
     }
 })
 
-app.post('/checkClientUser', async(req, res) => {
+app.post('/checkClientUser', async (req, res) => {
     const data = req.body;
 
     if (data.user === null) {
@@ -736,7 +753,7 @@ app.post('/checkClientUser', async(req, res) => {
     }
 });
 
-app.post('/checkClientMess', async(req, res) => {
+app.post('/checkClientMess', async (req, res) => {
     const data = req.body;
     console.log("start")
     if (data.user === null) {
@@ -774,14 +791,14 @@ app.post('/checkClientMess', async(req, res) => {
         return res.status(500).json({ error: "Lỗi xử lý yêu cầu" });
     }
 });
-app.get('/login', async(req, res) => {
+app.get('/login', async (req, res) => {
     try {
         res.render('../Views/login.hbs', {});
     } catch (error) {
         console.log(error);
     }
 });
-app.post("/web/login", async(req, res) => {
+app.post("/web/login", async (req, res) => {
     try {
         const { username, password } = req.body;
         const user = await User.findOne({ username });
@@ -802,7 +819,7 @@ app.post("/web/login", async(req, res) => {
         res.status(500).json({ message: error.message });
     }
 });
-app.post("/web/register", async(req, res) => {
+app.post("/web/register", async (req, res) => {
     const { username, password, repassword, fullname } = req.body;
 
     try {
@@ -838,7 +855,7 @@ app.post("/web/register", async(req, res) => {
         return res.status(500).json({ message: error.message });
     }
 });
-app.get('/loadData/traHang/:id', async(req, res) => {
+app.get('/loadData/traHang/:id', async (req, res) => {
     try {
         const id = req.params.id;
         const traHang = Order.find({ status: 5, user: id }).sort({ order_date: -1 });
@@ -852,7 +869,7 @@ app.get('/loadData/traHang/:id', async(req, res) => {
     }
 });
 
-app.get('/loadData/donHuy/:id', async(req, res) => {
+app.get('/loadData/donHuy/:id', async (req, res) => {
     try {
         const id = req.params.id;
         const donHuyClient = await Order.find({ status: 4, user: id }).sort({ order_date: -1 });
@@ -866,7 +883,7 @@ app.get('/loadData/donHuy/:id', async(req, res) => {
     }
 });
 //trả hàng
-app.post('/order/return/:orderId', async(req, res) => {
+app.post('/order/return/:orderId', async (req, res) => {
     const orderId = req.params.orderId;
 
     try {
@@ -902,7 +919,7 @@ app.post('/order/return/:orderId', async(req, res) => {
 });
 
 
-app.post('/order/out/:orderId', async(req, res) => {
+app.post('/order/out/:orderId', async (req, res) => {
     const orderId = req.params.orderId;
 
     try {

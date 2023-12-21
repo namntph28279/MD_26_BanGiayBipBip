@@ -169,7 +169,7 @@
                                 <div class="modal-body">
                                     <form action="/home/detail/colors/edit/{{this.dataColer._id}}/{{this.idProduct}}"
                                           method="POST" class="mb-3"
-                                          id="addProductForm">
+                                          id="addProductForm" enctype="multipart/form-data">
 
                                         <div style="display: flex;">
                                             <div>
@@ -178,7 +178,7 @@
                                             </div>
                                             <div class="form-group" style=" margin-left: 8px; width: 90%; ">
                                                 <label for="color_image">Ảnh </label>
-                                                <input type="text" class="form-control" id="color_image"
+                                                <input type="file" class="form-control" id="color_image"
                                                        name="color_image" value="{{this.dataColer.color_image}}"
                                                        required>
                                             </div>
@@ -280,10 +280,10 @@
                         </div>
                         <div class="modal-body">
                             <form action="/home/detail/color/add/{{productWithDetails._id}}" method="POST"
-                                  class="mb-3" id="addProductForm">
+                                  class="mb-3" id="addProductForm" enctype="multipart/form-data">
                                 <div class="form-group">
                                     <label for="color_image">Ảnh</label>
-                                    <input type="text" class="form-control" id="color_image" name="color_image"
+                                    <input type="file" class="form-control" id="color_image" name="color_image"
                                            required>
                                 </div>
                                 <div class="form-group">

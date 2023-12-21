@@ -267,7 +267,7 @@
                                                 </div>
                                                 <div class="modal-body">
                                                     <form action="/home/edit/{{this._id}}" method="POST" class="mb-3"
-                                                        id="addProductForm">
+                                                        id="addProductForm" enctype="multipart/form-data">
                                                         <div style="display: flex;">
                                                             <div>
                                                                 <img src="{{product_image}}"
@@ -277,7 +277,7 @@
                                                             <div class="form-group"
                                                                 style=" margin-left: 8px; width: 80%; ">
                                                                 <label for="product_image">Ảnh</label>
-                                                                <input type="text" class="form-control"
+                                                                <input type="file" class="form-control"
                                                                     id="product_image" name="product_image"
                                                                     value="{{product_image}}" required>
                                                             </div>
