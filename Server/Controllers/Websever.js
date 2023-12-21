@@ -4,6 +4,8 @@ const Size = require('../Models/Size');
 const ChatShop = require('../Models/chatShop');
 const checkClient = require('../Models/CheckClientUser');
 const checkClientMess = require('../Models/CheckClientMess');
+const notification = require('../Models/Notification');
+const notificationOneUser = require('../Models/NotificationOneUser');
 const User = require('../Models/User');
 const express = require('express');
 const app = express();
@@ -15,9 +17,10 @@ const multer = require('multer');
 const path = require('path');
 const cors = require('cors');
 const mongoose = require('mongoose');
+const dataClient = require("../Models/dataClient");
 
 app.use(cors());
-app.use(express.urlencoded({ extended: true }));
+app.use(express.urlencoded({extended: true}));
 app.use(express.static(path.join(__dirname, 'public')));
 const uploadsPath = path.join(__dirname, '../uploads');
 app.use('/uploads', express.static(uploadsPath));
@@ -34,7 +37,7 @@ const storage = multer.diskStorage({
     },
 });
 
-const upload = multer({ storage: storage });
+const upload = multer({storage: storage});
 
 
 app.set('Views', __dirname + '/views');
@@ -50,26 +53,26 @@ const handlebars = expressHbs.create({
     helpers: {
 
         formatCurrency: function (amount) {
-            return currencyFormatter.format(amount, { code: 'VND' });
+            return currencyFormatter.format(amount, {code: 'VND'});
         }
     },
 });
 app.engine('.hbs', handlebars.engine);
 app.set('view engine', '.hbs');
 
-app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.urlencoded({extended: false}));
 app.use(bodyParser.json());
 app.use(express.json());
 //màn hình home
 app.get('/loadData', async (req, res) => {
-    const choXacNhan = await Order.find({ status: 0 }).sort({ order_date: -1 });
-    const choLayHang = await Order.find({ status: 1 }).sort({ order_date: -1 });
-    const choGiaoHang = await Order.find({ status: 2 }).sort({ order_date: -1 });
-    const daGiao = await Order.find({ status: { $in: [3, 9] } }).sort({ order_date: -1 });
+    const choXacNhan = await Order.find({status: 0}).sort({order_date: -1});
+    const choLayHang = await Order.find({status: 1}).sort({order_date: -1});
+    const choGiaoHang = await Order.find({status: 2}).sort({order_date: -1});
+    const daGiao = await Order.find({status: {$in: [3, 9]}}).sort({order_date: -1});
     // const donHuy = await Order.find({status: 4}).sort({order_date: -1});
-    const donHuy = await Order.find({ status: 8 }).sort({ order_date: -1 });
-    const traHang = await Order.find({ status: 5 }).sort({ order_date: -1 });
-    const donHoan = await Order.find({ status: 6 }).sort({ order_date: -1 });
+    const donHuy = await Order.find({status: 8}).sort({order_date: -1});
+    const traHang = await Order.find({status: 5}).sort({order_date: -1});
+    const donHoan = await Order.find({status: 6}).sort({order_date: -1});
 
     const arr = [choXacNhan, choLayHang, choGiaoHang, daGiao, donHuy, traHang, donHoan]
 
@@ -78,7 +81,7 @@ app.get('/loadData', async (req, res) => {
 
 app.get('/dataOrderUser/:id', async (req, res) => {
     const userId = req.params.id;
-    const data = await Order.find({ user: userId }).sort({ order_date: -1 });
+    const data = await Order.find({user: userId}).sort({order_date: -1});
 
     res.json(data)
 })
@@ -96,7 +99,7 @@ app.get('/statistic', async (req, res) => {
     try {
         res.render('../Views/screenStatistics.hbs');
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        res.status(500).json({message: error.message});
     }
 
 });
@@ -110,50 +113,50 @@ app.get('/customer', async (req, res) => {
                 as: "profile"
             }
         },
-        {
-            $unwind: {
-                path: "$profile",
-                preserveNullAndEmptyArrays: true
+            {
+                $unwind: {
+                    path: "$profile",
+                    preserveNullAndEmptyArrays: true
+                }
+            },
+            {
+                $lookup: {
+                    from: "addresses",
+                    localField: "_id",
+                    foreignField: "user",
+                    as: "address"
+                }
+            },
+            {
+                $unwind: {
+                    path: "$address",
+                    preserveNullAndEmptyArrays: true
+                }
+            },
+            {
+                $project: {
+                    _id: 1,
+                    username: 1,
+                    password: 1,
+                    role: 1,
+                    status: 1,
+                    date: 1,
+                    block_reason: 1,
+                    "profile.fullname": 1,
+                    "profile.gender": 1,
+                    "profile.avatar": 1,
+                    "profile.birthday": 1,
+                    "profile.email": 1,
+                    "profile.phone": 1,
+                    "profile.address": 1,
+                    "profile.username": "$username",
+                    "address.address": 1,
+                    "address.phone": 1,
+                    "profile.status": "$status",
+                }
             }
-        },
-        {
-            $lookup: {
-                from: "addresses",
-                localField: "_id",
-                foreignField: "user",
-                as: "address"
-            }
-        },
-        {
-            $unwind: {
-                path: "$address",
-                preserveNullAndEmptyArrays: true
-            }
-        },
-        {
-            $project: {
-                _id: 1,
-                username: 1,
-                password: 1,
-                role: 1,
-                status: 1,
-                date: 1,
-                block_reason: 1,
-                "profile.fullname": 1,
-                "profile.gender": 1,
-                "profile.avatar": 1,
-                "profile.birthday": 1,
-                "profile.email": 1,
-                "profile.phone": 1,
-                "profile.address": 1,
-                "profile.username": "$username",
-                "address.address": 1,
-                "address.phone": 1,
-                "profile.status": "$status",
-            }
-        }
         ]);
-        res.render('../Views/customer.hbs', { data });
+        res.render('../Views/customer.hbs', {data});
     } catch (error) {
         console.error(error);
         res.status(500).send('Lỗi rồi');
@@ -166,13 +169,13 @@ app.get('/customer/:userId', async (req, res) => {
         const user = await User.findById(userId);
 
         if (!user) {
-            return res.status(404).json({ message: 'Không tồn tại tài khoản' });
+            return res.status(404).json({message: 'Không tồn tại tài khoản'});
         }
 
-        res.render('../Views/customer.hbs', { data: [user] });
+        res.render('../Views/customer.hbs', {data: [user]});
     } catch (error) {
         console.error(error);
-        return res.status(500).json({ message: 'lỗi rồi' });
+        return res.status(500).json({message: 'lỗi rồi'});
     }
 });
 
@@ -180,7 +183,7 @@ app.post('/block', async (req, res) => {
     let userId = req.body.userId;
     const blockReason = req.body.blockReason;
     if (!mongoose.Types.ObjectId.isValid(userId)) {
-        return res.status(400).json({ message: 'UserId không hợp lệ', userId, blockReason });
+        return res.status(400).json({message: 'UserId không hợp lệ', userId, blockReason});
 
     }
 
@@ -188,7 +191,7 @@ app.post('/block', async (req, res) => {
         const user = await User.findById(userId);
 
         if (!user) {
-            return res.status(404).json({ message: 'Không tồn tại tài khoản' });
+            return res.status(404).json({message: 'Không tồn tại tài khoản'});
         }
 
         user.status = true;
@@ -198,25 +201,24 @@ app.post('/block', async (req, res) => {
         res.redirect('/customer');
     } catch (error) {
         console.error(error);
-        return res.status(500).json({ message: 'Lỗi rồi' });
+        return res.status(500).json({message: 'Lỗi rồi'});
     }
 });
-
 
 
 app.get('/mess', async (req, res) => {
     try {
         res.render('../Views/screenMessger.hbs');
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        res.status(500).json({message: error.message});
     }
 });
 app.get('/warehouse', async (req, res) => {
     try {
         const products = await Product.find().lean();
-        res.render('../Views/screenWarehouse.hbs', { products });
+        res.render('../Views/screenWarehouse.hbs', {products});
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        res.status(500).json({message: error.message});
     }
 });
 
@@ -230,25 +232,25 @@ app.get('/warehouse/:cate', async (req, res) => {
         } else if (cate === "children") {
             category = "Trẻ em";
         }
-        const products = await Product.find({ product_category: cate }).lean();
-        res.render('../Views/screenWarehouse.hbs', { products, category });
+        const products = await Product.find({product_category: cate}).lean();
+        res.render('../Views/screenWarehouse.hbs', {products, category});
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        res.status(500).json({message: error.message});
     }
 });
 
 
 app.post('/screenWarehouse/search', async (req, res) => {
-    const { title } = req.body;
+    const {title} = req.body;
     try {
         const searchString = String(title);
 
-        const products = await Product.find({ product_title: { $regex: searchString, $options: 'i' } }).lean();
-        res.render('../Views/screenWarehouse.hbs', { products });
+        const products = await Product.find({product_title: {$regex: searchString, $options: 'i'}}).lean();
+        res.render('../Views/screenWarehouse.hbs', {products});
 
     } catch (error) {
 
-        res.status(500).json({ message: error.message });
+        res.status(500).json({message: error.message});
     }
 });
 app.post('/order/status/:orderId', async (req, res) => {
@@ -264,10 +266,10 @@ app.post('/order/status/:orderId', async (req, res) => {
     console.log(mess)
     try {
         if (!order) {
-            return res.status(404).json({ message: 'Đơn hàng không tồn tại' });
+            return res.status(404).json({message: 'Đơn hàng không tồn tại'});
         }
         const idUserOrder = order.user;
-        const IDClient = await checkClient.findOne({ user: idUserOrder });
+        const IDClient = await checkClient.findOne({user: idUserOrder});
         const filteredData = IDClient.client.filter(item => item.status === "true");
         const idClientArray = filteredData.map(item => item.IdClient);
 
@@ -288,6 +290,7 @@ app.post('/order/status/:orderId', async (req, res) => {
                 })
             });
         }
+
         NotificaionClient(idClientArray, mess)
         console.log(order.status)
         if (order.status === 5) {
@@ -302,7 +305,7 @@ app.post('/order/status/:orderId', async (req, res) => {
             res.json(true)
         }
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        res.status(500).json({message: error.message});
     }
 });
 
@@ -314,7 +317,7 @@ app.post('/order/statusAPP/:orderId', async (req, res) => {
         await order.save();
         res.json(true)
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        res.status(500).json({message: error.message});
     }
 });
 
@@ -326,10 +329,10 @@ app.post('/order/status/Comfig/:id', async (req, res) => {
     try {
         const order = await Order.findById(orderId);
         if (!order) {
-            return res.status(404).json({ message: 'Đơn hàng không tồn tại' });
+            return res.status(404).json({message: 'Đơn hàng không tồn tại'});
         }
         const idUserOrder = order.user;
-        const IDClient = await checkClient.findOne({ user: idUserOrder });
+        const IDClient = await checkClient.findOne({user: idUserOrder});
         const filteredData = IDClient.client.filter(item => item.status === "true");
         const idClientArray = filteredData.map(item => item.IdClient);
 
@@ -376,14 +379,14 @@ app.post('/order/status/Comfig/:id', async (req, res) => {
         }
 
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        res.status(500).json({message: error.message});
     }
 });
 
 
 app.post('/home/add', upload.single('product_image'), async (req, res) => {
     try {
-        const { product_title, product_price, product_category } = req.body;
+        const {product_title, product_price, product_category} = req.body;
 
         let imagePath = "";
         if (req.file) {
@@ -414,11 +417,9 @@ app.post('/home/add', upload.single('product_image'), async (req, res) => {
 });
 
 
-
-
 app.post('/home/edit/:id', upload.single('product_image'), async (req, res) => {
     const id = req.params.id;
-    const { product_title, product_price, product_category } = req.body;
+    const {product_title, product_price, product_category} = req.body;
     let imagePath = "";
     if (req.file) {
         imagePath = req.file.path;
@@ -429,7 +430,7 @@ app.post('/home/edit/:id', upload.single('product_image'), async (req, res) => {
     }
 
     try {
-        await Product.updateOne({ _id: id }, {
+        await Product.updateOne({_id: id}, {
             product_title,
             product_price,
             product_image: imageUrl,
@@ -447,7 +448,7 @@ app.post('/home/delete/:id', async (req, res) => {
     const id = req.params.id;
 
     try {
-        await Product.deleteOne({ _id: id });
+        await Product.deleteOne({_id: id});
         res.redirect('/warehouse')
     } catch (err) {
         console.error('Lỗi khi xoá dữ liệu:', err);
@@ -465,16 +466,16 @@ app.get('/home/detail/:id', async (req, res) => {
 
 
         if (!product) {
-            return res.status(404).json({ error: 'Không tìm thấy sản phẩm' });
+            return res.status(404).json({error: 'Không tìm thấy sản phẩm'});
         }
 
         // Lấy thông tin màu sắc của sản phẩm
-        const colors = await Color.find({ product: productId }).lean();
+        const colors = await Color.find({product: productId}).lean();
         const colorAll = [];
         for (let i = 0; i < colors.length; i++) {
             const id = colors[i]._id;
-            const dataSize = await Size.find({ colorId: id }).lean();
-            colorAll.push({ dataColer: colors[i], dataSize, idProduct: product._id })
+            const dataSize = await Size.find({colorId: id}).lean();
+            colorAll.push({dataColer: colors[i], dataSize, idProduct: product._id})
         }
         // Tạo mảng chứa thông tin kích thước của sản phẩm
         const sizes = [];
@@ -482,7 +483,7 @@ app.get('/home/detail/:id', async (req, res) => {
         // Lấy thông tin kích thước của từng màu sắc
         for (const color of colors) {
             const colorId = color._id;
-            const colorSizes = await Size.find({ colorId }).lean();
+            const colorSizes = await Size.find({colorId}).lean();
             sizes.push(...colorSizes);
         }
 
@@ -495,7 +496,7 @@ app.get('/home/detail/:id', async (req, res) => {
         // Tính toán tổng số lượng sản phẩm
         const productQuantity = sizeQuantity;
 
-        await Product.findOneAndUpdate({ _id: idProductSP }, {
+        await Product.findOneAndUpdate({_id: idProductSP}, {
             product_quantity: productQuantity,
             product_quantityColor: colorQuantity,
         });
@@ -511,10 +512,10 @@ app.get('/home/detail/:id', async (req, res) => {
             colorAll
         };
 
-        res.render('../Views/product_detail.hbs', { productWithDetails });
+        res.render('../Views/product_detail.hbs', {productWithDetails});
     } catch (error) {
         console.error(error);
-        res.status(500).json({ error: 'Lỗi server' });
+        res.status(500).json({error: 'Lỗi server'});
     }
 });
 
@@ -548,7 +549,7 @@ app.post('/home/detail/color/add/:productId', upload.single('color_image'), asyn
         res.redirect('/home/detail/' + product._id);
 
     } catch (error) {
-        res.status(500).json({ error: 'Lỗi server' });
+        res.status(500).json({error: 'Lỗi server'});
     }
 })
 
@@ -564,7 +565,7 @@ app.post('/home/detail/colors/edit/:colorId/:productId', upload.single("color_im
         const color = await Color.findById(colorId);
         // Kiểm tra xem màu sắc có tồn tại hay không
         if (!color) {
-            return res.status(404).json({ error: 'Không tìm thấy màu sắc' });
+            return res.status(404).json({error: 'Không tìm thấy màu sắc'});
         }
         let imagePath = "";
         if (req.file) {
@@ -576,19 +577,19 @@ app.post('/home/detail/colors/edit/:colorId/:productId', upload.single("color_im
         color.color_image = imageUrl;
         await color.save();
 
-        const colorSizes = await Size.find({ colorId }).lean();
+        const colorSizes = await Size.find({colorId}).lean();
         for (let i = 0; i < arrSize.length; i++) {
             const sizeId = colorSizes[i]._id;
             const newSizeQuantity = arrSize[i];
             const newSizeName = arrSizeName[i];
-            await Size.findOneAndUpdate({ _id: sizeId }, {
+            await Size.findOneAndUpdate({_id: sizeId}, {
                 size_quantity: newSizeQuantity,
                 size_name: newSizeName,
             });
         }
         res.redirect('/home/detail/' + productId);
     } catch (error) {
-        res.status(500).json({ error: 'Lỗi server' });
+        res.status(500).json({error: 'Lỗi server'});
     }
 });
 
@@ -596,7 +597,7 @@ app.post('/home/detail/colors/delete/:colorId/:productId', async (req, res) => {
     try {
         const colorId = req.params.colorId;
         const productId = req.params.productId;
-        const colorSizes = await Size.find({ colorId }).lean();
+        const colorSizes = await Size.find({colorId}).lean();
 
 
         // Xóa màu sắc
@@ -610,14 +611,14 @@ app.post('/home/detail/colors/delete/:colorId/:productId', async (req, res) => {
         res.redirect('/home/detail/' + productId);
     } catch (error) {
         console.log(error);
-        res.status(500).json({ error: 'Lỗi server' });
+        res.status(500).json({error: 'Lỗi server'});
     }
 });
 
 app.post('/chatShop', async (req, res) => {
     try {
         const data = req.body;
-        const products = await ChatShop.findOne({ user: data.user }).lean();
+        const products = await ChatShop.findOne({user: data.user}).lean();
         if (products) {
             return res.send(products)
         }
@@ -632,7 +633,7 @@ app.post('/chatAllShop', async (req, res) => {
         const dataChat = await ChatShop.find().lean();
         return res.send(dataChat)
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        res.status(500).json({message: error.message});
     }
 });
 app.post('/delete', async (req, res) => {
@@ -645,7 +646,7 @@ app.post('/delete', async (req, res) => {
 })
 app.post('/home/chatShop', async (req, res) => {
     const data = req.body;
-    const check = await ChatShop.findOne({ user: data.user })
+    const check = await ChatShop.findOne({user: data.user})
     if (check) {
         const newChat = {
             beLong: data.beLong,
@@ -672,7 +673,7 @@ app.post('/home/chatShop', async (req, res) => {
                 }]
             })
             await newChat.save()
-            return res.json({ message: "Tạo chat thành công" });
+            return res.json({message: "Tạo chat thành công"});
         } catch (error) {
             console.log(error);
         }
@@ -684,7 +685,7 @@ app.get("/AllId", async (req, res) => {
         const dataChat = await checkClient.find().lean();
         return res.send(dataChat)
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        res.status(500).json({message: error.message});
     }
 })
 app.get("/AllIdMess", async (req, res) => {
@@ -692,27 +693,27 @@ app.get("/AllIdMess", async (req, res) => {
         const dataChat = await checkClientMess.find().lean();
         return res.send(dataChat)
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        res.status(500).json({message: error.message});
     }
 })
 
 app.post('/sendNotificationClient', async (req, res) => {
     const data = req.body;
     try {
-        const check = await checkClient.findOne({ user: data.user });
+        const check = await checkClient.findOne({user: data.user});
         return res.send(check)
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        res.status(500).json({message: error.message});
     }
 })
 
 app.post('/sendNotificationMess', async (req, res) => {
     const data = req.body;
     try {
-        const check = await checkClientMess.findOne({ user: data.user });
+        const check = await checkClientMess.findOne({user: data.user});
         return res.send(check)
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        res.status(500).json({message: error.message});
     }
 })
 
@@ -723,7 +724,7 @@ app.post('/checkClientUser', async (req, res) => {
         return
     }
     try {
-        const check = await checkClient.findOne({ user: data.user });
+        const check = await checkClient.findOne({user: data.user});
 
         if (check) {
             const clientUser = check.client.find((c) => c.IdClient === data.IdClient);
@@ -731,10 +732,17 @@ app.post('/checkClientUser', async (req, res) => {
             if (clientUser) {
                 clientUser.status = data.status;
                 await check.save();
-                return res.json({ message: "Cập nhật client thành công" });
+                return res.json({message: "Cập nhật client thành công"});
             } else {
-                const updatedCheckClient = await checkClient.findOneAndUpdate({ user: data.user }, { $push: { client: { IdClient: data.IdClient, status: data.status } } }, { new: true, upsert: true });
-                return res.json({ message: "Tạo client thành công", data: updatedCheckClient });
+                const updatedCheckClient = await checkClient.findOneAndUpdate({user: data.user}, {
+                    $push: {
+                        client: {
+                            IdClient: data.IdClient,
+                            status: data.status
+                        }
+                    }
+                }, {new: true, upsert: true});
+                return res.json({message: "Tạo client thành công", data: updatedCheckClient});
             }
         } else {
             const newCheckClient = new checkClient({
@@ -745,11 +753,11 @@ app.post('/checkClientUser', async (req, res) => {
                 }]
             });
             await newCheckClient.save();
-            return res.json({ message: "Tạo client thành công", data: newCheckClient });
+            return res.json({message: "Tạo client thành công", data: newCheckClient});
         }
     } catch (error) {
         console.error(error);
-        return res.status(500).json({ error: "Lỗi xử lý yêu cầu" });
+        return res.status(500).json({error: "Lỗi xử lý yêu cầu"});
     }
 });
 
@@ -761,7 +769,7 @@ app.post('/checkClientMess', async (req, res) => {
     }
     try {
 
-        const check = await checkClientMess.findOne({ user: data.user });
+        const check = await checkClientMess.findOne({user: data.user});
 
         if (check) {
             const clientUser = check.client.find((c) => c.IdClient === data.IdClient);
@@ -770,10 +778,17 @@ app.post('/checkClientMess', async (req, res) => {
 
                 clientUser.status = data.status;
                 await check.save();
-                return res.json({ message: "Cập nhật trạng thái thành công" });
+                return res.json({message: "Cập nhật trạng thái thành công"});
             } else {
-                const updatedCheckClient = await checkClientMess.findOneAndUpdate({ user: data.user }, { $push: { client: { IdClient: data.IdClient, status: data.status } } }, { new: true, upsert: true });
-                return res.json({ message: "Tạo trạng thái thành công", data: updatedCheckClient });
+                const updatedCheckClient = await checkClientMess.findOneAndUpdate({user: data.user}, {
+                    $push: {
+                        client: {
+                            IdClient: data.IdClient,
+                            status: data.status
+                        }
+                    }
+                }, {new: true, upsert: true});
+                return res.json({message: "Tạo trạng thái thành công", data: updatedCheckClient});
             }
         } else {
             const newCheckClient = new checkClientMess({
@@ -784,11 +799,11 @@ app.post('/checkClientMess', async (req, res) => {
                 }]
             });
             await newCheckClient.save();
-            return res.json({ message: "Tạo client thành công", data: newCheckClient });
+            return res.json({message: "Tạo client thành công", data: newCheckClient});
         }
     } catch (error) {
         console.error(error);
-        return res.status(500).json({ error: "Lỗi xử lý yêu cầu" });
+        return res.status(500).json({error: "Lỗi xử lý yêu cầu"});
     }
 });
 app.get('/login', async (req, res) => {
@@ -800,8 +815,8 @@ app.get('/login', async (req, res) => {
 });
 app.post("/web/login", async (req, res) => {
     try {
-        const { username, password } = req.body;
-        const user = await User.findOne({ username });
+        const {username, password} = req.body;
+        const user = await User.findOne({username});
         if (!user || user.role !== 2) {
             const error = "Tài khoản không tồn tại";
             res.redirect("/login");
@@ -816,14 +831,14 @@ app.post("/web/login", async (req, res) => {
             }
         }
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        res.status(500).json({message: error.message});
     }
 });
 app.post("/web/register", async (req, res) => {
-    const { username, password, repassword, fullname } = req.body;
+    const {username, password, repassword, fullname} = req.body;
 
     try {
-        const existingUser = await User.findOne({ username });
+        const existingUser = await User.findOne({username});
 
         if (existingUser) {
             const error = "Tài khoản đã tồn tại";
@@ -852,34 +867,34 @@ app.post("/web/register", async (req, res) => {
             res.redirect("/login");
         }
     } catch (error) {
-        return res.status(500).json({ message: error.message });
+        return res.status(500).json({message: error.message});
     }
 });
 app.get('/loadData/traHang/:id', async (req, res) => {
     try {
         const id = req.params.id;
-        const traHang = Order.find({ status: 5, user: id }).sort({ order_date: -1 });
-        const donHoan = Order.find({ status: 6, user: id }).sort({ order_date: -1 })
+        const traHang = Order.find({status: 5, user: id}).sort({order_date: -1});
+        const donHoan = Order.find({status: 6, user: id}).sort({order_date: -1})
         const arr = traHang.concat(donHoan)
 
         res.json(arr);
     } catch (error) {
         console.error(error);
-        res.status(500).json({ error: 'Đã xảy ra lỗi' });
+        res.status(500).json({error: 'Đã xảy ra lỗi'});
     }
 });
 
 app.get('/loadData/donHuy/:id', async (req, res) => {
     try {
         const id = req.params.id;
-        const donHuyClient = await Order.find({ status: 4, user: id }).sort({ order_date: -1 });
-        const donHuyServer = await Order.find({ status: 8, user: id }).sort({ order_date: -1 });
+        const donHuyClient = await Order.find({status: 4, user: id}).sort({order_date: -1});
+        const donHuyServer = await Order.find({status: 8, user: id}).sort({order_date: -1});
         const arr = donHuyClient.concat(donHuyServer);
 
         res.json(arr);
     } catch (error) {
         console.error(error);
-        res.status(500).json({ error: 'Đã xảy ra lỗi' });
+        res.status(500).json({error: 'Đã xảy ra lỗi'});
     }
 });
 //trả hàng
@@ -890,12 +905,12 @@ app.post('/order/return/:orderId', async (req, res) => {
         const order = await Order.findById(orderId);
 
         if (!order) {
-            return res.status(404).json({ message: 'Đơn hàng không tồn tại' });
+            return res.status(404).json({message: 'Đơn hàng không tồn tại'});
         }
 
         // Check if the order status is eligible for return (assuming status 4 means "Đã giao")
         if (order.status !== 3) {
-            return res.status(400).json({ message: 'Không thể trả đơn hàng với trạng thái hiện tại' });
+            return res.status(400).json({message: 'Không thể trả đơn hàng với trạng thái hiện tại'});
         }
         if (req.body.status === 'waiting_approval') {
             setTimeout(() => {
@@ -909,12 +924,12 @@ app.post('/order/return/:orderId', async (req, res) => {
             order.status = 9;
             console.log('dfsfdsfsdfs', order.status = 9);
         } else {
-            return res.status(400).json({ message: 'Trạng thái không hợp lệ' });
+            return res.status(400).json({message: 'Trạng thái không hợp lệ'});
         }
 
-        res.json({ message: 'Cập nhật trạng thái đơn hàng thành công' });
+        res.json({message: 'Cập nhật trạng thái đơn hàng thành công'});
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        res.status(500).json({message: error.message});
     }
 });
 
@@ -926,12 +941,12 @@ app.post('/order/out/:orderId', async (req, res) => {
         const order = await Order.findById(orderId);
 
         if (!order) {
-            return res.status(404).json({ message: 'Đơn hàng không tồn tại' });
+            return res.status(404).json({message: 'Đơn hàng không tồn tại'});
         }
 
         // Check if the order status is eligible for return (assuming status 4 means "Đã giao")
         if (order.status !== 3) {
-            return res.status(400).json({ message: 'Không thể trả đơn hàng với trạng thái hiện tại' });
+            return res.status(400).json({message: 'Không thể trả đơn hàng với trạng thái hiện tại'});
         }
         if (req.body.status === 'hh') {
             setTimeout(() => {
@@ -942,16 +957,110 @@ app.post('/order/out/:orderId', async (req, res) => {
                 order.save();
             }, 1000); // 1000 milliseconds (1 second)
         } else {
-            return res.status(400).json({ message: 'Trạng thái không hợp lệ' });
+            return res.status(400).json({message: 'Trạng thái không hợp lệ'});
         }
 
-        res.json({ message: 'Cập nhật trạng thái đơn hàng thành công' });
+        res.json({message: 'Cập nhật trạng thái đơn hàng thành công'});
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        res.status(500).json({message: error.message});
     }
 });
 
+app.get('/dataNotification', async (req, res) => {
+    const data = await notification.find();
+    const sort = data.sort((a, b) => new Date(b.date) - new Date(a.date))
+    res.json(sort)
+})
 
+app.get('/dataNameUser', async (req, res) => {
+    const data = await User.find().exec();
+    const name = data.map(item => item.username);
+    res.json(name)
+})
+app.post('/addNotification', async (req, res) => {
+    try {
+        const data = req.body;
+        if (data.noiDung) {
+            const newNotification = new notification({
+                noiDung: data.noiDung
+            })
+            console.log(data.noiDung)
+            await newNotification.save()
+
+            const dataIdApp = await dataClient.find().exec();
+            const clients = dataIdApp.map(item => item.client);
+
+            NotificaionClient(clients, data.noiDung)
+            console.log(clients)
+        }
+
+        function NotificaionClient(id, mess) {
+            fetch('https://exp.host/--/api/v2/push/send', {
+                mode: 'no-cors',
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    to: id,
+                    title: 'ShopBipBip',
+                    body: mess,
+                    data: {
+                        message: mess,
+                    },
+                })
+            });
+        }
+
+        res.json(true)
+    } catch (e) {
+        console.log(e)
+    }
+})
+
+app.post('/addNotification', async (req, res) => {
+    try {
+        const data = req.body;
+
+
+        if (data.noiDung) {
+            const newNotification = new notificationOneUser({
+                userName:data.userName,
+                noiDung: data.noiDung
+            })
+            console.log(data.noiDung)
+            await newNotification.save()
+
+            const dataIdApp = await dataClient.find().exec();
+            const clients = dataIdApp.map(item => item.client);
+
+            NotificaionClient(clients, data.noiDung)
+            console.log(clients)
+        }
+
+        function NotificaionClient(id, mess) {
+            fetch('https://exp.host/--/api/v2/push/send', {
+                mode: 'no-cors',
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    to: id,
+                    title: 'ShopBipBip',
+                    body: mess,
+                    data: {
+                        message: mess,
+                    },
+                })
+            });
+        }
+
+        res.json(true)
+    } catch (e) {
+        console.log(e)
+    }
+})
 
 
 module.exports = app;

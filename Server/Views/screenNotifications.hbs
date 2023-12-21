@@ -44,7 +44,7 @@
     }
 
     .box-notification {
-      height: 393px;
+      height: 362px;
       margin: 14px;
       padding: 14px;
       background: #f1f1f1;
@@ -186,10 +186,10 @@
               Thông báo tất cả
             </div>
             <div>
-              <form @submit.prevent="submitContentChat" class="mb-3" style="margin: 0 14px;">
+              <form @submit.prevent="submitNotificationAllApp" class="mb-3" style="margin: 0 14px;">
                 <div>
                     <textarea rows="4" cols="50" class="text-inputform" type="text"
-                              v-model="formData.conTenMain" required></textarea>
+                              v-model="formDataAllApp.noiDung" required></textarea>
 
                   <div class="input-group-append">
                     <button class="btn btn-primary" style="width: 100%;margin-top: 8px" type="submit">Gửi</button>
@@ -198,15 +198,10 @@
               </form>
             </div>
             <div class="box-notification">
-              <div style=" padding: 8px; background: #60eab1; border-radius: 8px;">
-                <div>
-                  hiển thị các thông báo đã gửi hiển thị các thông báo đã gửi hiển thị các thông báo đã gửi hiển thị các
-                  thông báo đã gửi hiển thị các thông báo đã gửi hiển thị các thông báo đã gửi hiển thị các thông báo đã
-                  gửi hiển thị các thông báo đã gửi hiển thị các thông báo đã gửi hiển thị các
-                </div>
-                <div style="text-align: end;font-weight: 600;margin-top: 8px;">
-                  10/10/2023 8:15AM
-                </div>
+              <div style=" padding: 8px; background: #60eab1; border-radius: 8px; margin-bottom: 8px"
+                   v-for="item in dataNotificationApp">
+                <div>\{{item.noiDung}}</div>
+                <div style="text-align: end;font-weight: 600;margin-top: 8px;">\{{formatDate(item.date)}}</div>
               </div>
             </div>
           </div>
@@ -215,34 +210,37 @@
               Thông báo cho 1 người dùng
             </div>
             <div>
-              <form @submit.prevent="submitContentChat" class="mb-3" style="margin: 0 14px;">
+              <form @submit.prevent="submitOneNotification" class="mb-3" style="margin: 0 14px;">
                 <div>
 
                     <textarea rows="4" cols="50" class="text-inputform" type="text"
-                              v-model="formData.conTenMain" required></textarea>
+                              v-model="formData.noiDung" required></textarea>
 
-                  <div class="input-group-append"
-                       style=" display: flex;  justify-content: space-between; margin-top: 8px;">
+
+                  <div style=" display: flex;  justify-content: space-between; margin-top: 8px;">
 
                     <div class="dropdown">
-                      <input type="text" class="search" id="searchInput" placeholder="Tài khoản"
+                      <input type="text" class="search" id="searchInput" placeholder="Tài khoản" autocomplete="off"
+                             v-model="formData.accountUser"
                              style=" border: 1px solid; border-radius: 8px; outline: unset;" required>
                       <div class="options">
-                        <div class="option">Option 1</div>
-                        <div class="option">Option 2</div>
-                        <div class="option">Option 3</div>
-                        <div class="option">Option 4</div>
+                        <div class="option" v-for="item in nameUserAll">\{{item}}</div>
                         <!-- Thêm các tùy chọn khác vào đây -->
                       </div>
                     </div>
 
-                    <button class="btn btn-primary" type="submit">Gửi</button>
+                    <div class="input-group-append">
+                      <button class="btn btn-primary" type="submit">Gửi</button>
+                    </div>
                   </div>
                 </div>
               </form>
             </div>
             <div class="box-notification">
               <div style=" padding: 8px; background: #60eab1; border-radius: 8px;">
+                <div style="font-weight: 600;margin-bottom: 8px;">
+                  Tài khoản: vuvanhai568@gmail.com
+                </div>
                 <div>
                   hiển thị các thông báo đã gửi hiển thị các thông báo đã gửi hiển thị các thông báo đã gửi hiển thị các
                   thông báo đã gửi hiển thị các thông báo đã gửi hiển thị các thông báo đã gửi hiển thị các thông báo đã
@@ -268,18 +266,17 @@
     el: "#dataALL",
     data: {
       idUser: '',
-      nameUser: '',
-      dataTitleChat: {},
-      dataContentChat: {},
-      checkClick: false,
+      formDataAllApp: {
+        noiDung: ''
+      },
       formData: {
-        user: '',
-        conTenMain: '',
-        beLong: "admin",
-        status: false
+        accountUser: '',
+        noiDung: ''
       },
       tinNhanMoi: 0,
-      donHangMoi: 0
+      donHangMoi: 0,
+      dataNotificationApp: {},
+      nameUserAll: {}
     },
     mounted() {
       const socket = io();
@@ -287,6 +284,7 @@
       socket.on('server-send', () => {
         self.GetAllDataChat();
         self.GetDataCart();
+        self.GetDataNameUser();
         if (self.idUser.length > 0) {
           self.OpenChatUser(self.idUser);
         }
@@ -303,9 +301,15 @@
     },
 
     methods: {
+      formatDate(vale) {
+        const date = new Date(vale);
 
+        const formattedDate = date.toLocaleDateString();
+        const formattedTime = date.toLocaleTimeString();
+
+        return `${formattedDate} - ${formattedTime}`;
+      },
       GetAllDataChat: function () {
-        console.log("Start")
         var self = this;
         fetch('/chatAllShop', {
           method: 'POST',
@@ -321,37 +325,12 @@
                 }
                 return a.status ? -1 : 1;
               });
-              self.dataTitleChat = sortedData;
               self.tinNhanMoi = sortedData.filter(item => item.status === true).length
 
               var load = document.getElementById("load")
               var duLieu = document.getElementById("hienThidata")
               load.style.display = "none"
               duLieu.style.display = "block"
-            })
-            .catch(error => {
-              console.error(error);
-            });
-      },
-      OpenChatUser: function (id) {
-        var self = this;
-        if (self.checkClick) {
-          return
-        }
-        self.checkClick = true;
-        fetch('/chatShop', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({user: id})
-        })
-            .then(response => response.json())
-            .then(data => {
-              self.idUser = id
-              self.nameUser = data.fullName
-              self.dataContentChat = data.content
-              self.checkClick = false;
             })
             .catch(error => {
               console.error(error);
@@ -373,30 +352,95 @@
               console.error(error);
             });
       },
-      submitContentChat() {
+      GetDataAllNotification: function () {
         var self = this;
-        const socket = io();
-        self.formData.user = self.idUser;
+        fetch('/dataNotification', {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+        })
+            .then(response => response.json())
+            .then(data => {
+              self.dataNotificationApp = data
+            })
+            .catch(error => {
+              console.error(error);
+            });
+      },
+      GetDataNameUser: function () {
+        const self = this;
+        fetch('/dataNameUser', {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+        })
+            .then(response => response.json())
+            .then(data => {
+              self.nameUserAll = data;
+              setTimeout(function () {
+                self.selectName();
+              }, 1000);
+            })
+            .catch(error => {
+              console.error(error);
+            });
+      },
+      selectName: function () {
+        var self = this
+        const searchInput = document.getElementById('searchInput');
+        const options = document.querySelector('.options');
+        const optionItems = document.querySelectorAll('.option');
+        searchInput.addEventListener('click', () => {
+          options.style.display = 'block';
+        });
+        optionItems.forEach(option => {
+          option.addEventListener('click', () => {
+            self.formData.accountUser = option.textContent
+            options.style.display = 'none';
+          });
+        });
+        searchInput.addEventListener('input', () => {
+          const searchValue = searchInput.value.toLowerCase();
+          optionItems.forEach(option => {
+            const optionText = option.textContent.toLowerCase();
+            if (optionText.includes(searchValue)) {
+              option.style.display = 'block';
+            } else {
+              option.style.display = 'none';
+            }
+          });
+          options.style.display = 'block';
+        });
 
-        fetch('/home/chatShop', {
+        document.addEventListener('click', event => {
+          if (!searchInput.contains(event.target)) {
+            options.style.display = 'none';
+          }
+        });
+      },
+      submitNotificationAllApp() {
+        var self = this
+        fetch('/addNotification', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
           },
-          body: JSON.stringify(self.formData)
+          body: JSON.stringify(self.formDataAllApp)
         })
             .then(response => response.json())
             .then(data => {
               if (data === true) {
-                socket.emit('client-send');
-                checkNottifi(self.idUser, self.formData.conTenMain)
-                self.formData.conTenMain = '';
+                self.GetDataAllNotification()
+                self.formDataAllApp.noiDung = '';
               }
             })
             .catch(error => {
               console.error(error);
             });
-
+      },
+      submitOneNotification() {
 
       }
     }
@@ -404,98 +448,12 @@
 
   vm.GetAllDataChat();
   vm.GetDataCart();
+  vm.GetDataAllNotification();
+  vm.GetDataNameUser();
 
-  function checkNottifi(idDataChat, value) {
-    fetch('/sendNotificationClient', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({user: idDataChat})
-    })
-        .then(response => response.json())
-        .then(data => {
-          const dataIdApp = data.client;
-          const filteredData = dataIdApp.filter(item => item.status === "true");
-          if (filteredData.length === 0) {
-            return
-          }
-          checkNottifiMess(idDataChat, value)
 
-        })
-        .catch(error => {
-          console.error(error);
-        });
-
-  }
-
-  function checkNottifiMess(idDataChat, value) {
-    fetch('/sendNotificationMess', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({user: idDataChat})
-    })
-        .then(response => response.json())
-        .then(data => {
-          const dataIdApp = data.client
-          const filteredData = dataIdApp.filter(item => item.status === "false");
-          if (filteredData.length === 0) {
-            return
-          }
-          const idClientArray = filteredData.map(item => item.IdClient);
-          NotificaionClient(idClientArray, value)
-
-        })
-        .catch(error => {
-          console.error(error);
-        });
-
-  }
-
-  function NotificaionClient(id, mess) {
-    fetch('https://exp.host/--/api/v2/push/send', {
-      mode: 'no-cors',
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        to: id,
-        title: 'ShopBipBip',
-        body: mess,
-        data: {
-          message: mess,
-        },
-      })
-    });
-  }
 </script>
 <script>
-  const searchInput = document.getElementById('searchInput');
-  const options = document.querySelector('.options');
-  const optionItems = document.querySelectorAll('.option');
-  searchInput.addEventListener('click', function () {
-    options.style.display = 'block';
-  });
-  searchInput.addEventListener('input', function () {
-    const searchValue = searchInput.value.toLowerCase();
-    optionItems.forEach(function (option) {
-      const optionText = option.textContent.toLowerCase();
-      if (optionText.includes(searchValue)) {
-        option.style.display = 'block';
-      } else {
-        option.style.display = 'none';
-      }
-    });
-    options.style.display = 'block';
-  });
 
-  document.addEventListener('click', function (event) {
-    if (!searchInput.contains(event.target)) {
-      options.style.display = 'none';
-    }
-  });
 </script>
 </html>
