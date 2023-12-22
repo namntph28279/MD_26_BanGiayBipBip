@@ -112,8 +112,15 @@ const getDataDonHang = async () => {
 const getTokenApp = async () => {
     try {
         const pushTokenData = await Notifications.getExpoPushTokenAsync();
-        const idApp= pushTokenData.data
-     await url.post(`/addIdClient`,{idClient:idApp})
+        const idApp = pushTokenData.data
+        await url.post(`/addIdClient`, {idClient: idApp})
+
+        const email = await AsyncStorage.getItem("Email");
+        if (email !== null) {
+            console.log(1)
+            await url.post(`/checkClientUser`, {user: email, IdClient: idApp, status: true})
+            console.log(pushTokenData.data)
+        }
         console.log(pushTokenData.data)
         return pushTokenData.data;
     } catch (error) {
@@ -132,7 +139,7 @@ const dataAll = createSlice({
         dataUser: [],
         dataCart: [],
         dataDonHang: [],
-        dataTop3SP:[],
+        dataTop3SP: [],
         dataTokenApp: []
     },
     reducers: {
