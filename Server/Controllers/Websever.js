@@ -119,7 +119,7 @@ app.get('/dataOrderUser/:id', async (req, res) => {
     const data = await Order.find({user: userId}).sort({order_date: -1});
     res.json(data)
 })
-app.get('/home', async(req, res) => {
+app.get('/home', async (req, res) => {
     res.render('../Views/screenHome.hbs');
 
 });
@@ -137,16 +137,16 @@ app.get('/statistic', async (req, res) => {
     }
 
 });
-app.get('/customer', async(req, res) => {
+app.get('/customer', async (req, res) => {
     try {
         const data = await User.aggregate([{
-                $lookup: {
-                    from: "profiles",
-                    localField: "_id",
-                    foreignField: "user",
-                    as: "profile"
-                }
-            },
+            $lookup: {
+                from: "profiles",
+                localField: "_id",
+                foreignField: "user",
+                as: "profile"
+            }
+        },
             {
                 $unwind: {
                     path: "$profile",
@@ -213,11 +213,11 @@ app.get('/customer/:userId', async (req, res) => {
     }
 });
 
-app.post('/block', async(req, res) => {
+app.post('/block', async (req, res) => {
     let userId = req.body.userId;
     const blockReason = req.body.blockReason;
     if (!mongoose.Types.ObjectId.isValid(userId)) {
-        return res.status(400).json({ message: 'UserId không hợp lệ', userId, blockReason });
+        return res.status(400).json({message: 'UserId không hợp lệ', userId, blockReason});
 
     }
 
@@ -225,7 +225,7 @@ app.post('/block', async(req, res) => {
         const user = await User.findById(userId);
 
         if (!user) {
-            return res.status(404).json({ message: 'Không tồn tại tài khoản' });
+            return res.status(404).json({message: 'Không tồn tại tài khoản'});
         }
 
         user.status = true;
@@ -235,37 +235,12 @@ app.post('/block', async(req, res) => {
         res.redirect('/customer');
     } catch (error) {
         console.error(error);
-        return res.status(500).json({ message: 'Lỗi rồi' });
-    }
-});
-app.post('/unblock', async(req, res) => {
-    let userId = req.body.userId;
-
-    if (!mongoose.Types.ObjectId.isValid(userId)) {
-        return res.status(400).json({ message: 'UserId không hợp lệ', userId });
-    }
-
-    try {
-        const user = await User.findById(userId);
-
-        if (!user) {
-            return res.status(404).json({ message: 'Không tồn tại tài khoản' });
-        }
-        if (!user.status) {
-            return res.status(400).json({ message: 'Người dùng đã được mở chặn trước đó' });
-        }
-        user.status = false;
-        user.block_reason = 'Đã bỏ chặn';
-        await user.save();
-
-        res.status(200).json({ message: 'Người dùng đã được bỏ chặn thành công' });
-    } catch (error) {
-        console.error(error);
-        return res.status(500).json({ message: 'Lỗi rồi' });
+        return res.status(500).json({message: 'Lỗi rồi'});
     }
 });
 
-app.get('/mess', async(req, res) => {
+
+app.get('/mess', async (req, res) => {
     try {
         res.render('../Views/screenMessger.hbs');
     } catch (error) {
@@ -690,7 +665,8 @@ app.post('/chatShop', async (req, res) => {
 app.post('/chatAllShop', async (req, res) => {
     try {
         const dataChat = await ChatShop.find().lean();
-        return res.send(dataChat)
+        const sort = dataChat.sort((a, b) => new Date(b.date) - new Date(a.date))
+        return res.send(sort)
     } catch (error) {
         res.status(500).json({message: error.message});
     }
@@ -711,9 +687,40 @@ app.post('/home/chatShop', async (req, res) => {
             beLong: data.beLong,
             conTenMain: data.conTenMain,
         }
+        if (data.beLong === "admin") {
+            const idApp = await checkClient.findOne({user: check.user})
+            const idAppMess = await checkClientMess.findOne({user: check.user})
+            const client = idApp.client
+            const clienCheckMess = idAppMess.client
+            const dataClient = client.filter(item => item.status === "true").map(item => item.IdClient)
+            const dataClientMess = clienCheckMess.filter(item => item.status === "false").map(item => item.IdClient)
 
+            if (dataClient.length !== 0) {
+                const intersection = dataClient.filter(item => dataClientMess.includes(item));
+                NotificaionClient(intersection, data.conTenMain)
+            }
+
+            function NotificaionClient(id, mess) {
+                fetch('https://exp.host/--/api/v2/push/send', {
+                    mode: 'no-cors',
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        to: id,
+                        title: 'ShopBipBip',
+                        body: mess,
+                        data: {
+                            message: mess,
+                        },
+                    })
+                });
+            }
+        }
         try {
             check.status = data.status;
+            check.date = Date.now();
             check.content.push(newChat)
             await check.save()
             return res.json(true);
@@ -1090,7 +1097,7 @@ app.post('/addNotificationOneUser', async (req, res) => {
 
         const idUser = dataUser._id
         const idApp = await checkClient.findOne({user: idUser})
-        const client =  idApp.client
+        const client = idApp.client
         const dataClient = client.filter(item => item.status === "true").map(item => item.IdClient)
         NotificaionClient(dataClient, data.noiDung)
 
