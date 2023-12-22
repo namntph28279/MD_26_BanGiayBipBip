@@ -116,7 +116,7 @@
 </head>
 
 <body>
-    <div class="container">
+    <div  class="flex-1">
         <h2>Danh sách khách hàng</h2>
 
         <div class="search-container">
@@ -273,7 +273,33 @@
 
         searchInput.addEventListener('input', filterRows);
     </script>
+<script>
+    function unbanUser() {
+        var userId = document.getElementById('modalUserId').innerText;
 
+        fetch('/unblock', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                userId: userId,
+            }),
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.message.includes('bỏ chặn')) {
+                window.location.reload();
+            } else {
+                alert('Có lỗi xảy ra khi bỏ chặn người dùng.');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Có lỗi xảy ra khi gửi yêu cầu.');
+        });
+    }
+</script>
 </body>
 
 </html>
