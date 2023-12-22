@@ -15,4 +15,4 @@ const dataClient = new mongoose.Schema({
 
 const NotificationOneUser = mongoose.model('NotificationOneUser', dataClient);
 
-module.exports = NotifNotificationOneUserication;
+module.exports = NotificationOneUser;
