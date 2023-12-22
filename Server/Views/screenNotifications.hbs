@@ -207,16 +207,16 @@
               </form>
 
             </div>
-           <div v-if="dataNotificationApp.length !== 0">
-             <div class="text-delete" @click="openModal">Xóa tất cả</div>
-             <div class="box-notification">
-               <div style=" padding: 8px; background: #60eab1; border-radius: 8px; margin-bottom: 8px"
-                    v-for="item in dataNotificationApp">
-                 <div>\{{item.noiDung}}</div>
-                 <div style="text-align: end;font-weight: 600;margin-top: 8px;">\{{formatDate(item.date)}}</div>
-               </div>
-             </div>
-           </div>
+            <div v-if="dataNotificationApp.length !== 0">
+              <div class="text-delete" @click="openModal">Xóa tất cả</div>
+              <div class="box-notification">
+                <div style=" padding: 8px; background: #60eab1; border-radius: 8px; margin-bottom: 8px"
+                     v-for="item in dataNotificationApp">
+                  <div>\{{item.noiDung}}</div>
+                  <div style="text-align: end;font-weight: 600;margin-top: 8px;">\{{formatDate(item.date)}}</div>
+                </div>
+              </div>
+            </div>
           </div>
           <div class="width-tab">
             <div class="text-title">
@@ -248,19 +248,19 @@
               </form>
 
             </div>
-           <div  v-if="dataNotificationOneApp.length !== 0">
-             <div class="text-delete" @click="openModalXoa">Xóa tất cả</div>
-             <div class="box-notification">
-               <div style="padding: 8px; background: #60eab1; border-radius: 8px;margin-bottom: 8px"
-                    v-for="item in dataNotificationOneApp">
-                 <div style="font-weight: 600;margin-bottom: 8px;">
-                   Tài khoản: \{{item.userName}}
-                 </div>
-                 <div>\{{item.noiDung}}</div>
-                 <div style="text-align: end;font-weight: 600;margin-top: 8px;">\{{formatDate(item.date)}}</div>
-               </div>
-             </div>
-           </div>
+            <div  v-if="dataNotificationOneApp.length !== 0">
+              <div class="text-delete" @click="openModalXoa">Xóa tất cả</div>
+              <div class="box-notification">
+                <div style="padding: 8px; background: #60eab1; border-radius: 8px;margin-bottom: 8px"
+                     v-for="item in dataNotificationOneApp">
+                  <div style="font-weight: 600;margin-bottom: 8px;">
+                    Tài khoản: \{{item.userName}}
+                  </div>
+                  <div>\{{item.noiDung}}</div>
+                  <div style="text-align: end;font-weight: 600;margin-top: 8px;">\{{formatDate(item.date)}}</div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -408,7 +408,7 @@
       },
       GetDataCart: function () {
         var self = this;
-        fetch('/loadData', {
+        fetch('/loadDataChoXacNhan', {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json'
@@ -416,7 +416,7 @@
         })
             .then(response => response.json())
             .then(data => {
-              self.donHangMoi = data[0].length
+              self.donHangMoi = data.length
             })
             .catch(error => {
               console.error(error);

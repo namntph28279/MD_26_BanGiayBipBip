@@ -151,62 +151,62 @@
     <div class=" bg-indigo-800">
       <div class=" text-xl text-gray-200 uppercase font-bold" style="padding: 33px;">Shop BipBip</div>
     </div>
-  <div>
-    <a href="/statistic" class="cursor-pointer mess ml-3 mt-3 w-10/12" style="text-decoration: none">
-    <div class="flex" style=" padding: 12px;">
-      <div>
-        <img class="w-5 h-5" src="analytics.png" alt="">
-      </div>
-      <div class="mx-3 text-sm text-gray-100 ">Thống kê</div>
-    </div>
-  </a>
-    <a href="/home" class=" cursor-pointer mess ml-3 mt-3 w-10/12" style="text-decoration: none;display: flex;  ">
-      <div class="flex" style=" padding: 12px;">
-        <div>
-          <img class="w-5 h-5" src="dashboard.png" alt="">
+    <div>
+      <a href="/statistic" class="cursor-pointer mess ml-3 mt-3 w-10/12" style="text-decoration: none">
+        <div class="flex" style=" padding: 12px;">
+          <div>
+            <img class="w-5 h-5" src="analytics.png" alt="">
+          </div>
+          <div class="mx-3 text-sm text-gray-100 ">Thống kê</div>
         </div>
-        <div class="mx-3 text-sm text-gray-100 ">Đơn Hàng</div>
-      </div>
-      <span class="badge" style="color: white;font-size: 14px;">\{{donHangMoi}}</span>
-    </a>
-    <a href="/mess" class="cursor-pointer mess ml-3 mt-3 w-10/12"
-       style="border-bottom-width: 1px; text-decoration: none; display: flex; ">
-      <div class="flex" style=" padding: 12px;">
-        <div>
-          <img class="w-5 h-5 " src="messages.png" alt="">
+      </a>
+      <a href="/home" class=" cursor-pointer mess ml-3 mt-3 w-10/12" style="text-decoration: none;display: flex;  ">
+        <div class="flex" style=" padding: 12px;">
+          <div>
+            <img class="w-5 h-5" src="dashboard.png" alt="">
+          </div>
+          <div class="mx-3 text-sm text-gray-100 ">Đơn Hàng</div>
         </div>
-        <div class="mx-3 text-sm text-gray-100 ">Tin Nhắn
+        <span class="badge" style="color: white;font-size: 14px;">\{{donHangMoi}}</span>
+      </a>
+      <a href="/mess" class="cursor-pointer mess ml-3 mt-3 w-10/12"
+         style="border-bottom-width: 1px; text-decoration: none; display: flex; ">
+        <div class="flex" style=" padding: 12px;">
+          <div>
+            <img class="w-5 h-5 " src="messages.png" alt="">
+          </div>
+          <div class="mx-3 text-sm text-gray-100 ">Tin Nhắn
+
+          </div>
 
         </div>
-
-      </div>
-      <span class="badge" style="color: white;font-size: 14px;">\{{tinNhanMoi}}</span>
-    </a>
-    <a href="/notifications" class="cursor-pointer mess ml-3 mt-3 w-10/12" style="text-decoration: none">
-    <div class="flex" style=" padding: 12px;">
-      <div>
-        <img class="w-5 h-5" src="notifications.png" alt="">
-      </div>
-      <div class="mx-3 text-sm text-gray-100">Thông báo</div>
+        <span class="badge" style="color: white;font-size: 14px;">\{{tinNhanMoi}}</span>
+      </a>
+      <a href="/notifications" class="cursor-pointer mess ml-3 mt-3 w-10/12" style="text-decoration: none">
+        <div class="flex" style=" padding: 12px;">
+          <div>
+            <img class="w-5 h-5" src="notifications.png" alt="">
+          </div>
+          <div class="mx-3 text-sm text-gray-100">Thông báo</div>
+        </div>
+      </a>
+      <a href="/customer" class="cursor-pointer mess ml-3 mt-3 w-10/12" style="display: flex; text-decoration: none">
+        <div class="flex" style="padding: 12px;">
+          <div>
+            <img class="w-5 h-5 " src="iconuser.png" alt="">
+          </div>
+          <div class="mx-3 text-sm text-gray-100 ">Quản Lý người dùng</div>
+        </div>
+      </a>
+      <a href="/warehouse" class="cursor-pointer mess ml-3 mt-3 w-10/12" style="text-decoration: none">
+        <div class="flex" style=" padding: 12px;">
+          <div>
+            <img class="w-5 h-5" src="kho.svg" alt="">
+          </div>
+          <div class="mx-3 text-sm text-gray-100">Kho Hàng</div>
+        </div>
+      </a>
     </div>
-  </a>
-    <a href="/customer" class="cursor-pointer mess ml-3 mt-3 w-10/12" style="display: flex; text-decoration: none">
-      <div class="flex" style="padding: 12px;">
-        <div>
-          <img class="w-5 h-5 " src="iconuser.png" alt="">
-        </div>
-        <div class="mx-3 text-sm text-gray-100 ">Quản Lý người dùng</div>
-      </div>
-    </a>
-    <a href="/warehouse" class="cursor-pointer mess ml-3 mt-3 w-10/12" style="text-decoration: none">
-      <div class="flex" style=" padding: 12px;">
-        <div>
-          <img class="w-5 h-5" src="kho.svg" alt="">
-        </div>
-        <div class="mx-3 text-sm text-gray-100">Kho Hàng</div>
-      </div>
-    </a>
-  </div>
   </div>
   <!--Side Navbar-->
 
@@ -367,7 +367,7 @@
       },
       GetDataCart: function () {
         var self = this;
-        fetch('/loadData', {
+        fetch('/loadDataChoXacNhan', {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json'
@@ -375,7 +375,7 @@
         })
             .then(response => response.json())
             .then(data => {
-              self.donHangMoi = data[0].length
+              self.donHangMoi = data.length
             })
             .catch(error => {
               console.error(error);
@@ -397,87 +397,17 @@
             .then(data => {
               if (data === true) {
                 socket.emit('client-send');
-                checkNottifi(self.idUser, self.formData.conTenMain)
                 self.formData.conTenMain = '';
               }
             })
             .catch(error => {
               console.error(error);
             });
-
-
       }
     }
   })
 
   vm.GetAllDataChat();
   vm.GetDataCart();
-
-  function checkNottifi(idDataChat, value) {
-    fetch('/sendNotificationClient', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({user: idDataChat})
-    })
-        .then(response => response.json())
-        .then(data => {
-          const dataIdApp = data.client;
-          const filteredData = dataIdApp.filter(item => item.status === "true");
-          if (filteredData.length === 0) {
-            return
-          }
-          checkNottifiMess(idDataChat, value)
-
-        })
-        .catch(error => {
-          console.error(error);
-        });
-
-  }
-
-  function checkNottifiMess(idDataChat, value) {
-    fetch('/sendNotificationMess', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({user: idDataChat})
-    })
-        .then(response => response.json())
-        .then(data => {
-          const dataIdApp = data.client
-          const filteredData = dataIdApp.filter(item => item.status === "false");
-          if (filteredData.length === 0) {
-            return
-          }
-          const idClientArray = filteredData.map(item => item.IdClient);
-          NotificaionClient(idClientArray, value)
-
-        })
-        .catch(error => {
-          console.error(error);
-        });
-
-  }
-
-  function NotificaionClient(id, mess) {
-    fetch('https://exp.host/--/api/v2/push/send', {
-      mode: 'no-cors',
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        to: id,
-        title: 'ShopBipBip',
-        body: mess,
-        data: {
-          message: mess,
-        },
-      })
-    });
-  }
 </script>
 </html>
