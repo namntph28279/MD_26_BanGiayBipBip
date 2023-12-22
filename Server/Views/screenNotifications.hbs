@@ -17,7 +17,9 @@
       position: relative;
       display: inline-block;
     }
-
+    .displayNone {
+      display: none;
+    }
     .mess::after {
       content: "";
       position: absolute;
@@ -44,7 +46,7 @@
     }
 
     .box-notification {
-      height: 362px;
+      height: 325px;
       margin: 14px;
       padding: 14px;
       background: #f1f1f1;
@@ -91,6 +93,14 @@
 
     .option:hover {
       background-color: #f2f2f2;
+    }
+
+    .text-delete{
+      cursor: pointer;
+      text-align: end;
+      padding-right: 14px;
+      color: red;
+      font-family: sans-serif;
     }
   </style>
 </head>
@@ -185,25 +195,28 @@
             <div class="text-title">
               Thông báo tất cả
             </div>
-            <div>
+            <div >
               <form @submit.prevent="submitNotificationAllApp" class="mb-3" style="margin: 0 14px;">
                 <div>
                     <textarea rows="4" cols="50" class="text-inputform" type="text"
                               v-model="formDataAllApp.noiDung" required></textarea>
-
                   <div class="input-group-append">
                     <button class="btn btn-primary" style="width: 100%;margin-top: 8px" type="submit">Gửi</button>
                   </div>
                 </div>
               </form>
+
             </div>
-            <div class="box-notification">
-              <div style=" padding: 8px; background: #60eab1; border-radius: 8px; margin-bottom: 8px"
-                   v-for="item in dataNotificationApp">
-                <div>\{{item.noiDung}}</div>
-                <div style="text-align: end;font-weight: 600;margin-top: 8px;">\{{formatDate(item.date)}}</div>
-              </div>
-            </div>
+           <div v-if="dataNotificationApp.length !== 0">
+             <div class="text-delete" @click="deleteAllNotification">Xóa tất cả</div>
+             <div class="box-notification">
+               <div style=" padding: 8px; background: #60eab1; border-radius: 8px; margin-bottom: 8px"
+                    v-for="item in dataNotificationApp">
+                 <div>\{{item.noiDung}}</div>
+                 <div style="text-align: end;font-weight: 600;margin-top: 8px;">\{{formatDate(item.date)}}</div>
+               </div>
+             </div>
+           </div>
           </div>
           <div class="width-tab">
             <div class="text-title">
@@ -212,20 +225,15 @@
             <div>
               <form @submit.prevent="submitOneNotification" class="mb-3" style="margin: 0 14px;">
                 <div>
-
                     <textarea rows="4" cols="50" class="text-inputform" type="text"
                               v-model="formData.noiDung" required></textarea>
-
-
                   <div style=" display: flex;  justify-content: space-between; margin-top: 8px;">
-
                     <div class="dropdown">
                       <input type="text" class="search" id="searchInput" placeholder="Tài khoản" autocomplete="off"
-                             v-model="formData.accountUser"
+                             v-model="formData.userName"
                              style=" border: 1px solid; border-radius: 8px; outline: unset;" required>
                       <div class="options">
                         <div class="option" v-for="item in nameUserAll">\{{item}}</div>
-                        <!-- Thêm các tùy chọn khác vào đây -->
                       </div>
                     </div>
 
@@ -233,24 +241,26 @@
                       <button class="btn btn-primary" type="submit">Gửi</button>
                     </div>
                   </div>
+                  <div :class="{'displayNone':checkThongTin}" style="color: red;font-weight: 700;font-family: sans-serif">
+                    Tài khoản không đúng vui lòng nhập lại
+                  </div>
                 </div>
               </form>
+
             </div>
-            <div class="box-notification">
-              <div style=" padding: 8px; background: #60eab1; border-radius: 8px;">
-                <div style="font-weight: 600;margin-bottom: 8px;">
-                  Tài khoản: vuvanhai568@gmail.com
-                </div>
-                <div>
-                  hiển thị các thông báo đã gửi hiển thị các thông báo đã gửi hiển thị các thông báo đã gửi hiển thị các
-                  thông báo đã gửi hiển thị các thông báo đã gửi hiển thị các thông báo đã gửi hiển thị các thông báo đã
-                  gửi hiển thị các thông báo đã gửi hiển thị các thông báo đã gửi hiển thị các
-                </div>
-                <div style="text-align: end;font-weight: 600;margin-top: 8px;">
-                  10/10/2023 8:15AM
-                </div>
-              </div>
-            </div>
+           <div  v-if="dataNotificationOneApp.length !== 0">
+             <div class="text-delete" @click="deleteAllNotificationOne">Xóa tất cả</div>
+             <div class="box-notification">
+               <div style="padding: 8px; background: #60eab1; border-radius: 8px;margin-bottom: 8px"
+                    v-for="item in dataNotificationOneApp">
+                 <div style="font-weight: 600;margin-bottom: 8px;">
+                   Tài khoản: \{{item.userName}}
+                 </div>
+                 <div>\{{item.noiDung}}</div>
+                 <div style="text-align: end;font-weight: 600;margin-top: 8px;">\{{formatDate(item.date)}}</div>
+               </div>
+             </div>
+           </div>
           </div>
         </div>
       </div>
@@ -270,13 +280,15 @@
         noiDung: ''
       },
       formData: {
-        accountUser: '',
+        userName: '',
         noiDung: ''
       },
       tinNhanMoi: 0,
       donHangMoi: 0,
       dataNotificationApp: {},
-      nameUserAll: {}
+      dataNotificationOneApp: {},
+      nameUserAll: {},
+      checkThongTin: true
     },
     mounted() {
       const socket = io();
@@ -368,6 +380,25 @@
               console.error(error);
             });
       },
+
+      GetDataAllOneNotification: function () {
+        console.log(123)
+        var self = this;
+        fetch('/dataAllNotificationOneUser', {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+        })
+            .then(response => response.json())
+            .then(data => {
+              self.dataNotificationOneApp = data
+              console.log(self.dataNotificationOneApp)
+            })
+            .catch(error => {
+              console.error(error);
+            });
+      },
       GetDataNameUser: function () {
         const self = this;
         fetch('/dataNameUser', {
@@ -397,7 +428,7 @@
         });
         optionItems.forEach(option => {
           option.addEventListener('click', () => {
-            self.formData.accountUser = option.textContent
+            self.formData.userName = option.textContent
             options.style.display = 'none';
           });
         });
@@ -441,7 +472,69 @@
             });
       },
       submitOneNotification() {
+        var self = this
+        fetch('/addNotificationOneUser', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(self.formData)
+        })
+            .then(response => response.json())
+            .then(data => {
+              if (data === true) {
 
+                self.GetDataAllOneNotification()
+
+                self.formData.noiDung = '';
+                self.formData.userName = '';
+                self.checkThongTin = true
+              }else {
+                self.formData.userName = '';
+                self.checkThongTin = false
+              }
+            })
+            .catch(error => {
+              console.error(error);
+            });
+      },
+      deleteAllNotification(){
+        var self = this
+        fetch('/deleteAllNotification', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(self.formDataAllApp)
+        })
+            .then(response => response.json())
+            .then(data => {
+              if (data === true) {
+                self.GetDataAllNotification()
+              }
+            })
+            .catch(error => {
+              console.error(error);
+            });
+      },
+      deleteAllNotificationOne(){
+        var self = this
+        fetch('/deleteAllNotificationOne', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(self.formDataAllApp)
+        })
+            .then(response => response.json())
+            .then(data => {
+              if (data === true) {
+                self.GetDataAllOneNotification()
+              }
+            })
+            .catch(error => {
+              console.error(error);
+            });
       }
     }
   })
@@ -450,7 +543,7 @@
   vm.GetDataCart();
   vm.GetDataAllNotification();
   vm.GetDataNameUser();
-
+  vm.GetDataAllOneNotification();
 
 </script>
 <script>

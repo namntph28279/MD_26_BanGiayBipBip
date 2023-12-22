@@ -1415,7 +1415,6 @@ app.post('/addIdClient', async (req, res) => {
             })
             await newClient.save()
         }
-        console.log(idClient)
         res.json(true)
     } catch (e) {
         console.log(e)

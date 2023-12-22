@@ -719,17 +719,17 @@ app.post('/sendNotificationMess', async (req, res) => {
 
 app.post('/checkClientUser', async (req, res) => {
     const data = req.body;
-
+    console.log(data.user)
     if (data.user === null) {
         return
     }
     try {
         const check = await checkClient.findOne({user: data.user});
-
         if (check) {
             const clientUser = check.client.find((c) => c.IdClient === data.IdClient);
 
             if (clientUser) {
+                console.log(1)
                 clientUser.status = data.status;
                 await check.save();
                 return res.json({message: "Cập nhật client thành công"});
@@ -742,9 +742,10 @@ app.post('/checkClientUser', async (req, res) => {
                         }
                     }
                 }, {new: true, upsert: true});
-                return res.json({message: "Tạo client thành công", data: updatedCheckClient});
+                return res.json(true);
             }
         } else {
+            console.log(2)
             const newCheckClient = new checkClient({
                 user: data.user,
                 client: [{
@@ -753,7 +754,7 @@ app.post('/checkClientUser', async (req, res) => {
                 }]
             });
             await newCheckClient.save();
-            return res.json({message: "Tạo client thành công", data: newCheckClient});
+            return res.json(true);
         }
     } catch (error) {
         console.error(error);
@@ -984,7 +985,6 @@ app.post('/addNotification', async (req, res) => {
             const newNotification = new notification({
                 noiDung: data.noiDung
             })
-            console.log(data.noiDung)
             await newNotification.save()
 
             const dataIdApp = await dataClient.find().exec();
@@ -1025,10 +1025,9 @@ app.post('/addNotification', async (req, res) => {
 
         if (data.noiDung) {
             const newNotification = new notificationOneUser({
-                userName:data.userName,
+                userName: data.userName,
                 noiDung: data.noiDung
             })
-            console.log(data.noiDung)
             await newNotification.save()
 
             const dataIdApp = await dataClient.find().exec();
@@ -1062,5 +1061,58 @@ app.post('/addNotification', async (req, res) => {
     }
 })
 
+app.get('/dataAllNotificationOneUser',async (req,res)=>{
+    const data = await notificationOneUser.find()
+    const sort = data.sort((a, b) => new Date(b.date) - new Date(a.date))
+    res.json(sort)
+})
+app.post('/addNotificationOneUser', async (req, res) => {
+    const data = req.body;
+    const dataUser = await User.findOne({username: data.userName})
+    if (dataUser) {
 
+        const idUser = dataUser._id
+        const idApp = await checkClient.findOne({user: idUser})
+        const client =  idApp.client
+        const dataClient = client.filter(item => item.status === "true").map(item => item.IdClient)
+        NotificaionClient(dataClient, data.noiDung)
+
+        const newNotification = new notificationOneUser({
+            userName:data.userName,
+            noiDung:data.noiDung
+            })
+        newNotification.save()
+        function NotificaionClient(id, mess) {
+            fetch('https://exp.host/--/api/v2/push/send', {
+                mode: 'no-cors',
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    to: id,
+                    title: 'ShopBipBip',
+                    body: mess,
+                    data: {
+                        message: mess,
+                    },
+                })
+            });
+        }
+
+        res.json(true)
+    }else {
+        res.json(false)
+    }
+
+})
+
+app.post('/deleteAllNotification',async (req,res) =>{
+    await notification.deleteMany()
+    res.json(true)
+})
+app.post('/deleteAllNotificationOne',async (req,res) =>{
+    await notificationOneUser.deleteMany()
+    res.json(true)
+})
 module.exports = app;
