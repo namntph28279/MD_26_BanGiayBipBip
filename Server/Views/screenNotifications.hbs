@@ -208,7 +208,7 @@
 
             </div>
            <div v-if="dataNotificationApp.length !== 0">
-             <div class="text-delete" @click="deleteAllNotification">Xóa tất cả</div>
+             <div class="text-delete" @click="openModal">Xóa tất cả</div>
              <div class="box-notification">
                <div style=" padding: 8px; background: #60eab1; border-radius: 8px; margin-bottom: 8px"
                     v-for="item in dataNotificationApp">
@@ -249,7 +249,7 @@
 
             </div>
            <div  v-if="dataNotificationOneApp.length !== 0">
-             <div class="text-delete" @click="deleteAllNotificationOne">Xóa tất cả</div>
+             <div class="text-delete" @click="openModalXoa">Xóa tất cả</div>
              <div class="box-notification">
                <div style="padding: 8px; background: #60eab1; border-radius: 8px;margin-bottom: 8px"
                     v-for="item in dataNotificationOneApp">
@@ -262,6 +262,51 @@
              </div>
            </div>
           </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="xacNhan" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+       aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Bạn có chắc muốn xóa toàn bộ thông báo không ?</h5>
+          <button type="button" class="close" @click="closeModal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <form>
+            <button type="button" class="btn btn-secondary"
+                    data-dismiss="modal"> Thoát
+            </button>
+            <button @click="deleteAllNotification" type="button" class="btn btn-danger">Xác nhận</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="xacNhanXoa" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+       aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Bạn có chắc muốn xóa toàn bộ thông báo cho người dùng không ?</h5>
+          <button type="button" class="close" @click="closeModalXoa" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <form>
+            <button type="button" class="btn btn-secondary"
+                    data-dismiss="modal"> Thoát
+            </button>
+            <button @click="deleteAllNotificationOne" type="button" class="btn btn-danger">Xác nhận</button>
+          </form>
+
         </div>
       </div>
     </div>
@@ -313,6 +358,19 @@
     },
 
     methods: {
+      openModal() {
+        $('#xacNhan').modal('show');
+      },
+      closeModal() {
+        $('#xacNhan').modal('hide');
+      },
+
+      openModalXoa() {
+        $('#xacNhanXoa').modal('show');
+      },
+      closeModalXoa() {
+        $('#xacNhanXoa').modal('hide');
+      },
       formatDate(vale) {
         const date = new Date(vale);
 
@@ -512,6 +570,7 @@
               if (data === true) {
                 self.GetDataAllNotification()
               }
+              self.closeModal()
             })
             .catch(error => {
               console.error(error);
@@ -531,6 +590,7 @@
               if (data === true) {
                 self.GetDataAllOneNotification()
               }
+              self.closeModalXoa()
             })
             .catch(error => {
               console.error(error);
