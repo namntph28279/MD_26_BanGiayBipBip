@@ -15,11 +15,9 @@
       margin: 7px auto auto;
     }
 
-    /* Style cho các button */
-
-    /* Style cho bảng sản phẩm */
     .table td {
       vertical-align: middle;
+      font-size: 15px;
     }
 
     .table .table-actions a {
@@ -50,12 +48,61 @@
       width: 100%;
     }
 
-    .highcharts-figure,
+
     .highcharts-data-table table {
       min-width: 320px;
       max-width: 800px;
       height: 400px;
       margin: 1em auto;
+    }
+
+    .box-size-table {
+      display: flex;
+      align-items: center;
+      justify-content: end;
+    }
+
+    .text-box-size-table {
+      font-size: 16px;
+      font-weight: 600;
+      margin-right: 8px;
+    }
+
+    .box-arrow {
+      display: flex;
+      width: 10%;
+      justify-content: space-around;
+    }
+
+    .box-extra-arrow {
+      padding: 6px;
+      border: 0.5px solid;
+      cursor: pointer;
+      margin-right: 2px;
+    }
+
+    .box-extra-arrow:hover {
+      background: #dedede
+    }
+
+    .box-table {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      height: 100%;
+    }
+
+    .background_status {
+      background: #E4E5E8FF;
+    }
+
+    .display_Block{
+      display: block !important;
+    }
+
+    .check_Status{
+      display:none ;
+      padding: 0 8px;
     }
   </style>
 </head>
@@ -142,7 +189,7 @@
       </div>
     </div>
     <!--Top navbar-->
-    <div class="card-container flex m-7 space-x-6 " style=" justify-content: center;">
+    <div class="card-container flex   space-x-6 " style=" justify-content: center;margin-top: 14px;">
 
       <div id="load" class="spinner-border text-primary"></div>
 
@@ -152,298 +199,427 @@
           <div style=" display: flex; line-height: 48px;  margin: 0 14px; justify-content: space-between;">
             <div style="display: flex">
               <div style="margin: 0 10px;">
-                <button class="btn-cf default-selected" style=" padding: 0 8px;"
-                        onclick="openOrder('choXacNhan')">
+                <button :class="{background_status: statusChoXacNhan}" class="btn-cf default-selected "
+                        style=" padding: 0 8px;" @click="clickChoXacNhan">
                   Chờ xác nhận
                 </button>
                 <span id="totalChoXacNhan" class="position-absolute translate-middle badge rounded-pill bg-danger"
                       style="color: white">
-                  \{{choXacNhan.length}}
+                  \{{sizechoXacNhan}}
                 </span>
               </div>
 
               <div style="margin: 0 10px;">
-                <button class="btn-cf" style=" padding: 0 8px;" onclick="openOrder('choLayHang')">Chờ lấy hàng
+                <button :class="{background_status: statusChoLayHang}" class="btn-cf" style=" padding: 0 8px;" @click="clickChoLayHang">Chờ lấy hàng
                 </button>
                 <span id="totalChoLayHang" class="position-absolute translate-middle badge rounded-pill bg-danger"
                       style="color: white">
-                  \{{choLayHang.length}}
+                  \{{sizechoLayHang}}
                 </span>
               </div>
 
               <div style="margin: 0 10px;">
-                <button class="btn-cf" style=" padding: 0 8px;" onclick="openOrder('choGiaoHang')">Chờ giao hàng
+                <button :class="{background_status: statusChoGiaoHang}" class="btn-cf" style=" padding: 0 8px;" @click="clickChoGiaoHang">Chờ giao hàng
                 </button>
                 <span id="totalChoGiaoHang" class="position-absolute translate-middle badge rounded-pill bg-danger"
                       style="color: white">
-                  \{{choGiaoHang.length}}
+                  \{{sizechoGiaoHang}}
                 </span>
               </div>
 
               <div style="margin: 0 10px;">
-                <button class="btn-cf" style=" padding: 0 8px;" onclick="openOrder('daGiao')">Đã giao
+                <button :class="{background_status: statusDaGiao}" class="btn-cf" style=" padding: 0 8px;" @click="clickDaGiao">Đã giao
                 </button>
               </div>
             </div>
             <div style="display: flex">
               <div style="margin: 0 10px;">
-                <button class="btn-cf" style=" padding: 0 8px;" onclick="openOrder('donHuy')">Đơn hủy</button>
+                <button :class="{background_status: statusDonHuy}" class="btn-cf" style=" padding: 0 8px;" @click="clickDonHuy">Đơn hủy</button>
               </div>
 
               <div style="margin: 0 10px;">
-                <button class="btn-cf" style=" padding: 0 8px;" onclick="openOrder('traHang')">Trả hàng</button>
+                <button :class="{background_status: statusTraHang}" class="btn-cf" style=" padding: 0 8px;" @click="clickTraHang">Trả hàng</button>
                 <span id="totalTraHang" class="position-absolute translate-middle badge rounded-pill bg-danger"
                       style="color: white">
-                  \{{traHang.length}}
+                  \{{sizetraHang}}
                 </span>
               </div>
               <div style="margin: 0 10px;">
-                <button class="btn-cf" style=" padding: 0 8px;" onclick="openOrder('donHoan')">Đơn Hoàn</button>
+                <button :class="{background_status: statusDonHoan}" class="btn-cf" style=" padding: 0 8px;" @click="clickDonHoan">Đơn Hoàn</button>
               </div>
             </div>
           </div>
         </div>
         <div style="margin: 8px;color: #0008ff;display: flex;">
-          <div>Đơn hàng</div>
-          <div id="selectedText"></div>
+          <div>Đơn hàng > \{{nameStatus}}</div>
         </div>
+        <div style="height: 500px;margin: 7px;border-radius: 8px;padding: 8px;">
+          <div id="choXacNhan" :class="{display_Block:statusChoXacNhan}" class="check_Status">
+            <div class="box-table">
+              <table class="table table-bordered ">
+                <thead>
+                <tr>
+                  <th style="text-align: center;width: 110px">STT</th>
+                  <th style="text-align: center;">Mã Đơn Hàng</th>
+                  <th style="text-align: center;">Tài khoản đặt</th>
+                  <th style="text-align: center;width: 120px">Số lượng</th>
+                  <th style="text-align: center;width: 130px">Giá tiền</th>
+                  <th style="text-align: center;width: 100px">Chi tiết</th>
+                  <th style="text-align: center;width: 145px;">Thao tác</th>
+                </tr>
+                </thead>
+                <tbody>
 
-        <div style="    height: 456px;
-                      margin: 7px;
-                      border-radius: 8px;
-                      padding: 8px;
-                      overflow: auto">
-          <div id="choXacNhan" class=" status" style="padding: 0 8px;">
-            <table class="table table-bordered ">
-              <thead>
-              <tr>
-                <th style="text-align: center;width: 110px">STT</th>
-                <th style="text-align: center;">Mã Đơn Hàng</th>
-                <th style="text-align: center;">Tài khoản đặt</th>
-                <th style="text-align: center;width: 120px">Số lượng</th>
-                <th style="text-align: center;width: 130px">Giá tiền</th>
-                <th style="text-align: center;width: 100px">Chi tiết</th>
-                <th style="text-align: center;width: 145px;">Thao tác</th>
-              </tr>
-              </thead>
-              <tbody>
-
-              <tr v-for="(item, index) in choXacNhan">
-                <td>\{{index+1}}</td>
-                <td>\{{item._id}}</td>
-                <td>\{{item.customer_email}}</td>
-                <td>\{{item.total_quantity}}</td>
-                <td>\{{formatPrice(item.total_amount)}}</td>
-                <td>
-                  <img width="50px" src="detail.png" class="btn btn-primary btn-sm"
-                       @click="openModalXemChiTiet(choXacNhan[index])"/>
-                </td>
-                <td>
-                  <img width="50px" src="tick.png" class="btn btn-success btn-sm"
-                       @click="openModalXacNhanDon(choXacNhan[index])"/>
-                  <img width="50px" src="close.png" class="btn btn-danger btn-sm"
-                       @click="openModalHuyDon(choXacNhan[index])"/>
-                </td>
-              </tr>
-              </tbody>
-            </table>
+                <tr v-for="(item, index) in choXacNhan[indexSize-1]">
+                  <td>\{{((indexSize-1) * 6)+index+1}}</td>
+                  <td>\{{item._id}}</td>
+                  <td>\{{item.customer_email}}</td>
+                  <td>\{{item.total_quantity}}</td>
+                  <td>\{{formatPrice(item.total_amount)}}</td>
+                  <td>
+                    <img width="50px" src="detail.png" class="btn btn-primary btn-sm"
+                         @click="openModalXemChiTiet(choXacNhan[indexSize-1][index])"/>
+                  </td>
+                  <td>
+                    <img width="50px" src="tick.png" class="btn btn-success btn-sm"
+                         @click="openModalXacNhanDon(choXacNhan[indexSize-1][index])"/>
+                    <img width="50px" src="close.png" class="btn btn-danger btn-sm"
+                         @click="openModalHuyDon(choXacNhan[indexSize-1][index])"/>
+                  </td>
+                </tr>
+                </tbody>
+              </table>
+              <div class="box-size-table">
+                <div class="text-box-size-table">\{{sizeTable(indexSize)}} của tổng số \{{sizechoXacNhan}}</div>
+                <div class="box-arrow">
+                  <div class="box-extra-arrow" @click="backSize(choXacNhan)">
+                    <img src="next.png" style="width: 24px" alt="">
+                  </div>
+                  <div class="box-extra-arrow" @click="arrowBackSize(choXacNhan)">
+                    <img src="back-arrow.png" style="width: 24px" alt="">
+                  </div>
+                  <div class="box-extra-arrow" @click="arrowNextSize(choXacNhan)">
+                    <img src="right-arrow.png" style="width: 24px" alt="">
+                  </div>
+                  <div class="box-extra-arrow" @click="nextSize(choXacNhan)">
+                    <img src="back.png" style="width: 24px" alt="">
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
 
-          <div id="choLayHang" class=" status" style="display:none ;padding: 0 8px;">
-            <table class="table table-bordered ">
-              <thead>
-              <tr>
-                <th style="text-align: center;width: 110px">STT</th>
-                <th style="text-align: center;">Mã Đơn Hàng</th>
-                <th style="text-align: center;">Tài khoản đặt</th>
-                <th style="text-align: center;width: 120px">Số lượng</th>
-                <th style="text-align: center;width: 130px">Giá tiền</th>
-                <th style="text-align: center;width: 100px">Chi tiết</th>
-                <th style="text-align: center;width: 145px;">Thao tác</th>
-              </tr>
-              </thead>
-              <tbody>
+          <div id="choLayHang" :class="{display_Block:statusChoLayHang}" class="check_Status">
+            <div class="box-table">
+              <table class="table table-bordered ">
+                <thead>
+                <tr>
+                  <th style="text-align: center;width: 110px">STT</th>
+                  <th style="text-align: center;">Mã Đơn Hàng</th>
+                  <th style="text-align: center;">Tài khoản đặt</th>
+                  <th style="text-align: center;width: 120px">Số lượng</th>
+                  <th style="text-align: center;width: 130px">Giá tiền</th>
+                  <th style="text-align: center;width: 100px">Chi tiết</th>
+                  <th style="text-align: center;width: 145px;">Thao tác</th>
+                </tr>
+                </thead>
+                <tbody>
 
-              <tr v-for="(item, index) in choLayHang">
-                <td>\{{index+1}}</td>
-                <td>\{{item._id}}</td>
-                <td>\{{item.customer_email}}</td>
-                <td>\{{item.total_quantity}}</td>
-                <td>\{{formatPrice(item.total_amount)}}</td>
-                <td>
-                  <img width="50px" src="detail.png" class="btn btn-primary btn-sm"
-                       @click="openModalXemChiTiet(choLayHang[index])"/>
-                </td>
-                <td>
-                  <img width="50px" src="tick.png" class="btn btn-success btn-sm"
-                       @click="openModalXacNhanDon(choLayHang[index])"/>
-                  <img width="50px" src="close.png" class="btn btn-danger btn-sm"
-                       @click="openModalHuyDon(choLayHang[index])"/>
-                </td>
-              </tr>
-              </tbody>
-            </table>
-          </div>
-          <div id="donHuy" class=" status" style="display:none ;padding: 0 8px;">
-            <table class="table table-bordered ">
-              <thead>
-              <tr>
-                <th style="text-align: center;width: 110px">STT</th>
-                <th style="text-align: center;">Mã Đơn Hàng</th>
-                <th style="text-align: center;">Tài khoản đặt</th>
-                <th style="text-align: center;width: 120px">Số lượng</th>
-                <th style="text-align: center;width: 130px">Giá tiền</th>
-                <th style="text-align: center;width: 100px">Chi tiết</th>
-              </tr>
-              </thead>
-              <tbody>
-
-              <tr v-for="(item, index) in donHuy">
-                <td>\{{index+1}}</td>
-                <td>\{{item._id}}</td>
-                <td>\{{item.customer_email}}</td>
-                <td>\{{item.total_quantity}}</td>
-                <td>\{{formatPrice(item.total_amount)}}</td>
-                <td>
-                  <img width="50px" src="detail.png" class="btn btn-primary btn-sm"
-                       @click="openModalXemChiTiet(donHuy[index])"/>
-                </td>
-              </tr>
-              </tbody>
-            </table>
-          </div>
-          <div id="choGiaoHang" class=" status" style="display:none ;padding: 0 8px;">
-            <table class="table table-bordered ">
-              <thead>
-              <tr>
-                <th style="text-align: center;width: 110px">STT</th>
-                <th style="text-align: center;">Mã Đơn Hàng</th>
-                <th style="text-align: center;">Tài khoản đặt</th>
-                <th style="text-align: center;width: 120px">Số lượng</th>
-                <th style="text-align: center;width: 130px">Giá tiền</th>
-                <th style="text-align: center;width: 100px">Chi tiết</th>
-                <th style="text-align: center;width: 145px;">Thao tác</th>
-              </tr>
-              </thead>
-              <tbody>
-
-              <tr v-for="(item, index) in choGiaoHang">
-                <td>\{{index+1}}</td>
-                <td>\{{item._id}}</td>
-                <td>\{{item.customer_email}}</td>
-                <td>\{{item.total_quantity}}</td>
-                <td>\{{formatPrice(item.total_amount)}}</td>
-                <td>
-                  <img width="50px" src="detail.png" class="btn btn-primary btn-sm"
-                       @click="openModalXemChiTiet(choGiaoHang[index])"/>
-                </td>
-                <td>
-                  <img width="50px" src="tick.png" class="btn btn-success btn-sm"
-                       @click="openModalXacNhanDon(choGiaoHang[index])"/>
-                  <img width="50px" src="close.png" class="btn btn-danger btn-sm"
-                       @click="openModalHuyDon(choGiaoHang[index])"/>
-                </td>
-              </tr>
-              </tbody>
-            </table>
-          </div>
-          <div id="daGiao" class=" status" style="display:none ;padding: 0 8px;">
-            <table class="table table-bordered ">
-              <thead>
-              <tr>
-                <th style="text-align: center;width: 110px">STT</th>
-                <th style="text-align: center;">Mã Đơn Hàng</th>
-                <th style="text-align: center;">Tài khoản đặt</th>
-                <th style="text-align: center;width: 120px">Số lượng</th>
-                <th style="text-align: center;width: 130px">Giá tiền</th>
-                <th style="text-align: center;width: 100px">Chi tiết</th>
-              </tr>
-              </thead>
-              <tbody>
-
-              <tr v-for="(item, index) in daGiao">
-                <td>\{{index+1}}</td>
-                <td>\{{item._id}}</td>
-                <td>\{{item.customer_email}}</td>
-                <td>\{{item.total_quantity}}</td>
-                <td>\{{formatPrice(item.total_amount)}}</td>
-                <td>
-                  <img width="50px" src="detail.png" class="btn btn-primary btn-sm"
-                       @click="openModalXemChiTiet(daGiao[index])"/>
-                </td>
-              </tr>
-              </tbody>
-            </table>
+                <tr v-for="(item, index) in choLayHang[indexSize-1]">
+                  <td>\{{((indexSize-1) * 6)+index+1}}</td>
+                  <td>\{{item._id}}</td>
+                  <td>\{{item.customer_email}}</td>
+                  <td>\{{item.total_quantity}}</td>
+                  <td>\{{formatPrice(item.total_amount)}}</td>
+                  <td>
+                    <img width="50px" src="detail.png" class="btn btn-primary btn-sm"
+                         @click="openModalXemChiTiet(choLayHang[indexSize-1][index])"/>
+                  </td>
+                  <td>
+                    <img width="50px" src="tick.png" class="btn btn-success btn-sm"
+                         @click="openModalXacNhanDon(choLayHang[indexSize-1][index])"/>
+                    <img width="50px" src="close.png" class="btn btn-danger btn-sm"
+                         @click="openModalHuyDon(choLayHang[indexSize-1][index])"/>
+                  </td>
+                </tr>
+                </tbody>
+              </table>
+              <div class="box-size-table">
+                <div class="text-box-size-table">\{{sizeTable(indexSize)}} của tổng số \{{sizechoLayHang}}</div>
+                <div class="box-arrow">
+                  <div class="box-extra-arrow" @click="backSize(choLayHang)">
+                    <img src="next.png" style="width: 24px" alt="">
+                  </div>
+                  <div class="box-extra-arrow" @click="arrowBackSize(choLayHang)">
+                    <img src="back-arrow.png" style="width: 24px" alt="">
+                  </div>
+                  <div class="box-extra-arrow" @click="arrowNextSize(choLayHang)">
+                    <img src="right-arrow.png" style="width: 24px" alt="">
+                  </div>
+                  <div class="box-extra-arrow" @click="nextSize(choLayHang)">
+                    <img src="back.png" style="width: 24px" alt="">
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
 
-          <div id="traHang" class=" status" style="display:none ;padding: 0 8px;">
-            <table class="table table-bordered ">
-              <thead>
-              <tr>
-                <th style="text-align: center;width: 110px">STT</th>
-                <th style="text-align: center;">Mã Đơn Hàng</th>
-                <th style="text-align: center;">Tài khoản đặt</th>
-                <th style="text-align: center;width: 120px">Số lượng</th>
-                <th style="text-align: center;width: 130px">Giá tiền</th>
-                <th style="text-align: center;width: 100px">Chi tiết</th>
-                <th style="text-align: center;width: 145px;">Thao tác</th>
-              </tr>
-              </thead>
-              <tbody>
+          <div id="donHuy" :class="{display_Block:statusDonHuy}" class="check_Status">
+            <div class="box-table">
+              <table class="table table-bordered ">
+                <thead>
+                <tr>
+                  <th style="text-align: center;width: 110px">STT</th>
+                  <th style="text-align: center;">Mã Đơn Hàng</th>
+                  <th style="text-align: center;">Tài khoản đặt</th>
+                  <th style="text-align: center;width: 120px">Số lượng</th>
+                  <th style="text-align: center;width: 130px">Giá tiền</th>
+                  <th style="text-align: center;width: 100px">Chi tiết</th>
+                </tr>
+                </thead>
+                <tbody>
 
-              <tr v-for="(item, index) in traHang">
-                <td>\{{index+1}}</td>
-                <td>\{{item._id}}</td>
-                <td>\{{item.customer_email}}</td>
-                <td>\{{item.total_quantity}}</td>
-                <td>\{{formatPrice(item.total_amount)}}</td>
-                <td>
-                  <img width="50px" src="detail.png" class="btn btn-primary btn-sm"
-                       @click="openModalXemChiTiet(traHang[index])"/>
-                </td>
-                <td>
-                  <img width="50px" src="tick.png" class="btn btn-success btn-sm"
-                       @click="openModalXacNhanDon(traHang[index])"/>
-                  <img width="50px" src="close.png" class="btn btn-danger btn-sm"
-                       @click="openModalHuyDon(traHang[index])"/>
-                </td>
-              </tr>
-              </tbody>
-            </table>
+                <tr v-for="(item, index) in donHuy[indexSize-1]">
+                  <td>\{{((indexSize-1) * 6)+index+1}}</td>
+                  <td>\{{item._id}}</td>
+                  <td>\{{item.customer_email}}</td>
+                  <td>\{{item.total_quantity}}</td>
+                  <td>\{{formatPrice(item.total_amount)}}</td>
+                  <td>
+                    <img width="50px" src="detail.png" class="btn btn-primary btn-sm"
+                         @click="openModalXemChiTiet(donHuy[indexSize-1][index])"/>
+                  </td>
+                </tr>
+                </tbody>
+              </table>
+              <div class="box-size-table">
+                <div class="text-box-size-table">\{{sizeTable(indexSize)}} của tổng số \{{sizedonHuy}}</div>
+                <div class="box-arrow">
+                  <div class="box-extra-arrow" @click="backSize(donHuy)">
+                    <img src="next.png" style="width: 24px" alt="">
+                  </div>
+                  <div class="box-extra-arrow" @click="arrowBackSize(donHuy)">
+                    <img src="back-arrow.png" style="width: 24px" alt="">
+                  </div>
+                  <div class="box-extra-arrow" @click="arrowNextSize(donHuy)">
+                    <img src="right-arrow.png" style="width: 24px" alt="">
+                  </div>
+                  <div class="box-extra-arrow" @click="nextSize(donHuy)">
+                    <img src="back.png" style="width: 24px" alt="">
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
-          <div id="donHoan" class=" status" style="display:none ;padding: 0 8px;">
-            <table class="table table-bordered ">
-              <thead>
-              <tr>
-                <th style="text-align: center;width: 110px">STT</th>
-                <th style="text-align: center;">Mã Đơn Hàng</th>
-                <th style="text-align: center;">Tài khoản đặt</th>
-                <th style="text-align: center;width: 120px">Số lượng</th>
-                <th style="text-align: center;width: 130px">Giá tiền</th>
-                <th style="text-align: center;width: 100px">Chi tiết</th>
-              </tr>
-              </thead>
-              <tbody>
 
-              <tr v-for="(item, index) in donHoan">
-                <td>\{{index+1}}</td>
-                <td>\{{item._id}}</td>
-                <td>\{{item.customer_email}}</td>
-                <td>\{{item.total_quantity}}</td>
-                <td>\{{formatPrice(item.total_amount)}}</td>
-                <td>
-                  <img width="50px" src="detail.png" class="btn btn-primary btn-sm"
-                       @click="openModalXemChiTiet(donHoan[index])"/>
-                </td>
+          <div id="choGiaoHang" :class="{display_Block:statusChoGiaoHang}" class="check_Status">
+            <div class="box-table">
+              <table class="table table-bordered ">
+                <thead>
+                <tr>
+                  <th style="text-align: center;width: 110px">STT</th>
+                  <th style="text-align: center;">Mã Đơn Hàng</th>
+                  <th style="text-align: center;">Tài khoản đặt</th>
+                  <th style="text-align: center;width: 120px">Số lượng</th>
+                  <th style="text-align: center;width: 130px">Giá tiền</th>
+                  <th style="text-align: center;width: 100px">Chi tiết</th>
+                  <th style="text-align: center;width: 145px;">Thao tác</th>
+                </tr>
+                </thead>
+                <tbody>
 
-              </tr>
-              </tbody>
-            </table>
+                <tr v-for="(item, index) in choGiaoHang[indexSize-1]">
+                  <td>\{{((indexSize-1) * 6)+index+1}}</td>
+                  <td>\{{item._id}}</td>
+                  <td>\{{item.customer_email}}</td>
+                  <td>\{{item.total_quantity}}</td>
+                  <td>\{{formatPrice(item.total_amount)}}</td>
+                  <td>
+                    <img width="50px" src="detail.png" class="btn btn-primary btn-sm"
+                         @click="openModalXemChiTiet(choGiaoHang[indexSize-1][index])"/>
+                  </td>
+                  <td>
+                    <img width="50px" src="tick.png" class="btn btn-success btn-sm"
+                         @click="openModalXacNhanDon(choGiaoHang[indexSize-1][index])"/>
+                    <img width="50px" src="close.png" class="btn btn-danger btn-sm"
+                         @click="openModalHuyDon(choGiaoHang[indexSize-1][index])"/>
+                  </td>
+                </tr>
+                </tbody>
+              </table>
+              <div class="box-size-table">
+                <div class="text-box-size-table">\{{sizeTable(indexSize)}} của tổng số \{{sizechoGiaoHang}}</div>
+                <div class="box-arrow">
+                  <div class="box-extra-arrow" @click="backSize(choGiaoHang)">
+                    <img src="next.png" style="width: 24px" alt="">
+                  </div>
+                  <div class="box-extra-arrow" @click="arrowBackSize(choGiaoHang)">
+                    <img src="back-arrow.png" style="width: 24px" alt="">
+                  </div>
+                  <div class="box-extra-arrow" @click="arrowNextSize(choGiaoHang)">
+                    <img src="right-arrow.png" style="width: 24px" alt="">
+                  </div>
+                  <div class="box-extra-arrow" @click="nextSize(choGiaoHang)">
+                    <img src="back.png" style="width: 24px" alt="">
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div id="daGiao" :class="{display_Block:statusDaGiao}" class="check_Status">
+            <div class="box-table">
+              <table class="table table-bordered ">
+                <thead>
+                <tr>
+                  <th style="text-align: center;width: 110px">STT</th>
+                  <th style="text-align: center;">Mã Đơn Hàng</th>
+                  <th style="text-align: center;">Tài khoản đặt</th>
+                  <th style="text-align: center;width: 120px">Số lượng</th>
+                  <th style="text-align: center;width: 130px">Giá tiền</th>
+                  <th style="text-align: center;width: 100px">Chi tiết</th>
+                </tr>
+                </thead>
+                <tbody>
+
+                <tr v-for="(item, index) in daGiao[indexSize-1]">
+                  <td>\{{((indexSize-1) * 6)+index+1}}</td>
+                  <td>\{{item._id}}</td>
+                  <td>\{{item.customer_email}}</td>
+                  <td>\{{item.total_quantity}}</td>
+                  <td>\{{formatPrice(item.total_amount)}}</td>
+                  <td>
+                    <img width="50px" src="detail.png" class="btn btn-primary btn-sm"
+                         @click="openModalXemChiTiet(daGiao[indexSize-1][index])"/>
+                  </td>
+                </tr>
+                </tbody>
+              </table>
+              <div class="box-size-table">
+                <div class="text-box-size-table">\{{sizeTable(indexSize)}} của tổng số \{{sizedaGiao}}</div>
+                <div class="box-arrow">
+                  <div class="box-extra-arrow" @click="backSize(daGiao)">
+                    <img src="next.png" style="width: 24px" alt="">
+                  </div>
+                  <div class="box-extra-arrow" @click="arrowBackSize(daGiao)">
+                    <img src="back-arrow.png" style="width: 24px" alt="">
+                  </div>
+                  <div class="box-extra-arrow" @click="arrowNextSize(daGiao)">
+                    <img src="right-arrow.png" style="width: 24px" alt="">
+                  </div>
+                  <div class="box-extra-arrow" @click="nextSize(daGiao)">
+                    <img src="back.png" style="width: 24px" alt="">
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div id="traHang" :class="{display_Block:statusTraHang}" class="check_Status">
+            <div class="box-table">
+              <table class="table table-bordered ">
+                <thead>
+                <tr>
+                  <th style="text-align: center;width: 110px">STT</th>
+                  <th style="text-align: center;">Mã Đơn Hàng</th>
+                  <th style="text-align: center;">Tài khoản đặt</th>
+                  <th style="text-align: center;width: 120px">Số lượng</th>
+                  <th style="text-align: center;width: 130px">Giá tiền</th>
+                  <th style="text-align: center;width: 100px">Chi tiết</th>
+                  <th style="text-align: center;width: 145px;">Thao tác</th>
+                </tr>
+                </thead>
+                <tbody>
+
+                <tr v-for="(item, index) in traHang[indexSize-1]">
+                  <td>\{{((indexSize-1) * 6)+index+1}}</td>
+                  <td>\{{item._id}}</td>
+                  <td>\{{item.customer_email}}</td>
+                  <td>\{{item.total_quantity}}</td>
+                  <td>\{{formatPrice(item.total_amount)}}</td>
+                  <td>
+                    <img width="50px" src="detail.png" class="btn btn-primary btn-sm"
+                         @click="openModalXemChiTiet(traHang[indexSize-1][index])"/>
+                  </td>
+                  <td>
+                    <img width="50px" src="tick.png" class="btn btn-success btn-sm"
+                         @click="openModalXacNhanDon(traHang[indexSize-1][index])"/>
+                    <img width="50px" src="close.png" class="btn btn-danger btn-sm"
+                         @click="openModalHuyDon(traHang[indexSize-1][index])"/>
+                  </td>
+                </tr>
+                </tbody>
+              </table>
+              <div class="box-size-table">
+                <div class="text-box-size-table">\{{sizeTable(indexSize)}} của tổng số \{{sizetraHang}}</div>
+                <div class="box-arrow">
+                  <div class="box-extra-arrow" @click="backSize(traHang)">
+                    <img src="next.png" style="width: 24px" alt="">
+                  </div>
+                  <div class="box-extra-arrow" @click="arrowBackSize(traHang)">
+                    <img src="back-arrow.png" style="width: 24px" alt="">
+                  </div>
+                  <div class="box-extra-arrow" @click="arrowNextSize(traHang)">
+                    <img src="right-arrow.png" style="width: 24px" alt="">
+                  </div>
+                  <div class="box-extra-arrow" @click="nextSize(traHang)">
+                    <img src="back.png" style="width: 24px" alt="">
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div id="donHoan" :class="{display_Block:statusDonHoan}" class="check_Status">
+            <div class="box-table">
+              <table class="table table-bordered ">
+                <thead>
+                <tr>
+                  <th style="text-align: center;width: 110px">STT</th>
+                  <th style="text-align: center;">Mã Đơn Hàng</th>
+                  <th style="text-align: center;">Tài khoản đặt</th>
+                  <th style="text-align: center;width: 120px">Số lượng</th>
+                  <th style="text-align: center;width: 130px">Giá tiền</th>
+                  <th style="text-align: center;width: 100px">Chi tiết</th>
+                </tr>
+                </thead>
+                <tbody>
+
+                <tr v-for="(item, index) in donHoan[indexSize-1]">
+                  <td>\{{((indexSize-1) * 6)+index+1}}</td>
+                  <td>\{{item._id}}</td>
+                  <td>\{{item.customer_email}}</td>
+                  <td>\{{item.total_quantity}}</td>
+                  <td>\{{formatPrice(item.total_amount)}}</td>
+                  <td>
+                    <img width="50px" src="detail.png" class="btn btn-primary btn-sm"
+                         @click="openModalXemChiTiet(donHoan[indexSize-1][index])"/>
+                  </td>
+
+                </tr>
+                </tbody>
+              </table>
+              <div class="box-size-table">
+                <div class="text-box-size-table">\{{sizeTable(indexSize)}} của tổng số \{{sizedonHoan}}</div>
+                <div class="box-arrow">
+                  <div class="box-extra-arrow" @click="backSize(donHoan)">
+                    <img src="next.png" style="width: 24px" alt="">
+                  </div>
+                  <div class="box-extra-arrow" @click="arrowBackSize(donHoan)">
+                    <img src="back-arrow.png" style="width: 24px" alt="">
+                  </div>
+                  <div class="box-extra-arrow" @click="arrowNextSize(donHoan)">
+                    <img src="right-arrow.png" style="width: 24px" alt="">
+                  </div>
+                  <div class="box-extra-arrow" @click="nextSize(donHoan)">
+                    <img src="back.png" style="width: 24px" alt="">
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
-
-
     </div>
   </div>
 
@@ -504,8 +680,12 @@
                v-if="dataXemChiTiet.status !== 3 && dataXemChiTiet.status !== 9">
             Ngày đặt: \{{formatDate(dataXemChiTiet.order_date)}}
           </div>
-          <div style="display: flex;" v-if="dataXemChiTiet.lyDoHuyDon">
-            Lý do hủy:
+          <div style="display: flex;" v-if="dataXemChiTiet.lyDoHuyDon && dataXemChiTiet.status === 9">
+            Lý do hủy trả hàng:
+            <div style="font-weight: 600;margin-left: 7px;"> \{{dataXemChiTiet.lyDoHuyDon}}</div>
+          </div>
+          <div style="display: flex;" v-if="dataXemChiTiet.lyDoHuyDon && dataXemChiTiet.status !== 9">
+            Lý do hủy đơn hàng:
             <div style="font-weight: 600;margin-left: 7px;"> \{{dataXemChiTiet.lyDoHuyDon}}</div>
           </div>
         </div>
@@ -520,8 +700,9 @@
         <div class="modal-header">
           <h5 class="modal-title" id="exampleModalLabel" v-if="dataXacNhanDon.status === 5">Đồng ý trả hàng tài
             khooản: \{{dataXacNhanDon.customer_email}}?</h5>
-          <h5 class="modal-title" id="exampleModalLabel" v-else>Xác nhận đơn tài khooản: \
-            {{dataXacNhanDon.customer_email}}?</h5>
+          <h5 class="modal-title" id="exampleModalLabel" v-else>Xác nhận đơn tài khooản:
+            \{{dataXacNhanDon.customer_email}}?
+          </h5>
           <button type="button" class="close" @click="closeModalXacNhanDon" aria-label="Close">
             <span aria-hidden="true">&times;</span>
           </button>
@@ -592,8 +773,9 @@
     <div class="modal-dialog" role="document">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title" id="exampleModalLabel" v-if="dataHuyDon.status === 5">Từ chối trả hàng tài khoản: \
-            {{dataHuyDon.customer_email}}?</h5>
+          <h5 class="modal-title" id="exampleModalLabel" v-if="dataHuyDon.status === 5">Từ chối trả hàng tài khoản:
+            \{{dataHuyDon.customer_email}}?
+          </h5>
           <h5 class="modal-title" id="exampleModalLabel" v-else>Hủy đơn tài khoản: \{{dataHuyDon.customer_email}}?</h5>
           <button type="button" class="close" @click="closeModalHuyDon" aria-label="Close">
             <span aria-hidden="true">&times;</span>
@@ -667,58 +849,8 @@
 </div>
 
 </body>
-<script>
-  let selectedCity = null;
-  let addedTexts = [];
-  let dataCart = []
-
-
-  window.onload = function () {
-    const defaultButton = document.querySelector('.btn-cf.default-selected');
-    defaultButton.click();
-  };
-
-  function NotificaionClient() {
-    fetch('https://exp.host/--/api/v2/push/send', {
-      mode: 'no-cors',
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        to: 'ExponentPushToken[l9_Yr-DKiVXVowKIC5pO_D]',
-        title: 'ShopBipBip',
-        body: 'Hello'
-      })
-    });
-  }
-
-  function openOrder(orderName) {
-    let i;
-    const x = document.getElementsByClassName("status");
-    const buttons = document.querySelectorAll(".btn-cf");
-    const buttonText = document.querySelector('.btn-cf[onclick="openOrder(\'' + orderName + '\')"]');
-    if (!addedTexts.includes(orderName)) {
-      selectedCity = orderName
-      addedTexts = orderName
-      const selectedText = document.getElementById("selectedText");
-      selectedText.textContent = "  > " + buttonText.innerText;
-    }
-    for (i = 0; i < buttons.length; i++) {
-      buttons[i].style.background = "white";
-    }
-    for (i = 0; i < x.length; i++) {
-      x[i].style.display = "none";
-    }
-    buttonText.style.background = "rgba(229, 231, 235, 255)"
-    document.getElementById(orderName).style.display = "block";
-  }
-
-
-</script>
 <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/vue@2"></script>
-
 <script>
   var vmCart = new Vue({
     el: '#donHangAll',
@@ -730,6 +862,15 @@
       donHuy: {},
       traHang: {},
       donHoan: {},
+
+      sizechoXacNhan: {},
+      sizechoLayHang: {},
+      sizechoGiaoHang: {},
+      sizedaGiao: {},
+      sizedonHuy: {},
+      sizetraHang: {},
+      sizedonHoan: {},
+
       showModal: false,
 
       dataXemChiTiet: {},
@@ -739,7 +880,17 @@
       donHangMoi: 0,
       formData: {
         noiDung: ''
-      }
+      },
+
+      indexSize: 1,
+      nameStatus: 'Chờ xác nhận',
+      statusChoXacNhan: true,
+      statusChoLayHang: false,
+      statusChoGiaoHang: false,
+      statusDaGiao: false,
+      statusDonHuy: false,
+      statusTraHang: false,
+      statusDonHoan: false,
     },
     mounted() {
       const socket = io();
@@ -758,6 +909,37 @@
       }
     },
     methods: {
+      sizeTable(vale) {
+        const start = (vale - 1) * 6 + 1
+        const end = (vale - 1) * 6 + 6
+        return `${start} - ${end}`;
+      },
+
+      nextSize(arr) {
+        var self = this
+        self.indexSize = arr.length
+      },
+      arrowNextSize(arr) {
+        var self = this
+        var i = self.indexSize
+        if (0 < i && i < arr.length) {
+          self.indexSize = i + 1
+        }
+        console.log(i)
+      },
+      arrowBackSize(arr) {
+        var self = this
+        var i = self.indexSize
+        if (1 < i && i <= arr.length) {
+          self.indexSize = i - 1
+        }
+        console.log(i)
+      },
+      backSize(arr) {
+        var self = this
+        self.indexSize = 1
+      },
+
       formatDate(vale) {
         const date = new Date(vale);
         const year = date.getFullYear();
@@ -798,7 +980,7 @@
 
       GetDataCart: function () {
         var self = this;
-        fetch('/loadData', {
+        fetch('/loadDataChoXacNhan', {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json'
@@ -806,14 +988,11 @@
         })
             .then(response => response.json())
             .then(data => {
-              self.choXacNhan = data[0]
-              self.choLayHang = data[1]
-              self.choGiaoHang = data[2]
-              self.daGiao = data[3]
-              self.donHuy = data[4]
-              self.traHang = data[5]
-              self.donHoan = data[6]
-              self.donHangMoi = data[0].length
+              var dataChoXacNhan = splitList(data, 6)
+              self.choXacNhan = dataChoXacNhan
+
+              self.sizechoXacNhan = data.length
+              self.donHangMoi = data.length
               var load = document.getElementById("load")
               var duLieu = document.getElementById("hienThidata")
 
@@ -823,6 +1002,105 @@
             .catch(error => {
               console.error(error);
             });
+
+        fetch('/loadDataChoLayHang', {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+        })
+            .then(response => response.json())
+            .then(data => {
+              var dataChoLayHang = splitList(data, 6)
+              self.choLayHang = dataChoLayHang
+              self.sizechoLayHang = data.length
+            })
+            .catch(error => {
+              console.error(error);
+            });
+
+        fetch('/loadDataChoGiaoHang', {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+        })
+            .then(response => response.json())
+            .then(data => {
+              var dataChoGiaoHang = splitList(data, 6)
+              self.choGiaoHang = dataChoGiaoHang
+              self.sizechoGiaoHang = data.length
+            })
+            .catch(error => {
+              console.error(error);
+            });
+
+        fetch('/loadDataTraHang', {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+        })
+            .then(response => response.json())
+            .then(data => {
+              var dataTraHang = splitList(data, 6)
+              self.traHang = dataTraHang
+              self.sizetraHang = data.length
+            })
+            .catch(error => {
+              console.error(error);
+            });
+
+        fetch('/loadDataDaGiao', {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+        })
+            .then(response => response.json())
+            .then(data => {
+              var dataDaGiao = splitList(data, 6)
+              self.daGiao = dataDaGiao
+              self.sizedaGiao = data.length
+            })
+            .catch(error => {
+              console.error(error);
+            });
+
+        fetch('/loadDataDonHuy', {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+        })
+            .then(response => response.json())
+            .then(data => {
+              var dataDonHuy = splitList(data, 6)
+              self.donHuy = dataDonHuy
+              self.sizedonHuy = data.length
+            })
+            .catch(error => {
+              console.error(error);
+            });
+
+
+        fetch('/loadDataDonHoan', {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+        })
+            .then(response => response.json())
+            .then(data => {
+              var dataDonHoan = splitList(data, 6)
+              self.donHoan = dataDonHoan
+              self.sizedonHoan = data.length
+            })
+            .catch(error => {
+              console.error(error);
+            });
+
+
       },
       GetAllDataChat: function () {
         var self = this;
@@ -863,7 +1141,6 @@
               console.error(error);
             });
       },
-
       submitHuyDon() {
         const self = this;
         const socket = io();
@@ -887,12 +1164,106 @@
             .catch(error => {
               console.error(error);
             });
-      }
-    }
+      },
 
+
+      clickChoXacNhan() {
+        var self = this
+        self.indexSize= 1
+        self.nameStatus = 'Chờ xác nhận'
+        self.statusChoXacNhan = true
+        self.statusChoLayHang = false
+        self.statusChoGiaoHang = false
+        self.statusDaGiao = false
+        self.statusDonHuy = false
+        self.statusTraHang = false
+        self.statusDonHoan = false
+      },
+      clickChoLayHang() {
+        var self = this
+        self.indexSize= 1
+        self.nameStatus = 'Chờ lấy hàng'
+        self.statusChoXacNhan = false
+        self.statusChoLayHang = true
+        self.statusChoGiaoHang = false
+        self.statusDaGiao = false
+        self.statusDonHuy = false
+        self.statusTraHang = false
+        self.statusDonHoan = false
+      },
+      clickChoGiaoHang() {
+        var self = this
+        self.indexSize= 1
+        self.nameStatus = 'Chờ giao hàng'
+        self.statusChoXacNhan = false
+        self.statusChoLayHang = false
+        self.statusChoGiaoHang = true
+        self.statusDaGiao = false
+        self.statusDonHuy = false
+        self.statusTraHang = false
+        self.statusDonHoan = false
+      },
+      clickDaGiao() {
+        var self = this
+        self.indexSize= 1
+        self.nameStatus = 'Đã giao'
+        self.statusChoXacNhan = false
+        self.statusChoLayHang = false
+        self.statusChoGiaoHang = false
+        self.statusDaGiao = true
+        self.statusDonHuy = false
+        self.statusTraHang = false
+        self.statusDonHoan = false
+      },
+      clickDonHuy() {
+        var self = this
+        self.indexSize= 1
+        self.nameStatus = 'Đơn hủy'
+        self.statusChoXacNhan = false
+        self.statusChoLayHang = false
+        self.statusChoGiaoHang = false
+        self.statusDaGiao = false
+        self.statusDonHuy = true
+        self.statusTraHang = false
+        self.statusDonHoan = false
+      },
+      clickTraHang() {
+        var self = this
+        self.indexSize= 1
+        self.nameStatus = 'Trả hàng'
+        self.statusChoXacNhan = false
+        self.statusChoLayHang = false
+        self.statusChoGiaoHang = false
+        self.statusDaGiao = false
+        self.statusDonHuy = false
+        self.statusTraHang = true
+        self.statusDonHoan = false
+      },
+      clickDonHoan() {
+        var self = this
+        self.indexSize= 1
+        self.nameStatus = 'Đơn hoàn'
+        self.statusChoXacNhan = false
+        self.statusChoLayHang = false
+        self.statusChoGiaoHang = false
+        self.statusDaGiao = false
+        self.statusDonHuy = false
+        self.statusTraHang = false
+        self.statusDonHoan = true
+      },
+    }
   });
+
   vmCart.GetAllDataChat();
   vmCart.GetDataCart();
 
+  function splitList(arr, size) {
+    let result = [];
+    for (let i = 0; i < arr.length; i += size) {
+      let chunk = arr.slice(i, i + size);
+      result.push(chunk);
+    }
+    return result;
+  }
 </script>
 </html>

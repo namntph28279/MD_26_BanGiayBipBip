@@ -15,6 +15,10 @@ const chatShopSchema = new mongoose.Schema({
         type: Boolean,
         default: false
     },
+    date:{
+        type: Date,
+        default: Date.now
+    },
     content: {
         type: [{
             beLong: String,

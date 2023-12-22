@@ -79,10 +79,44 @@ app.get('/loadData', async (req, res) => {
     res.json(arr)
 })
 
+app.get('/loadDataChoXacNhan', async (req, res) => {
+    const choXacNhan = await Order.find({status: 0}).sort({order_date: -1});
+    res.json(choXacNhan)
+})
+
+app.get('/loadDataChoLayHang', async (req, res) => {
+    const choLayHang = await Order.find({status: 1}).sort({order_date: -1});
+    res.json(choLayHang)
+})
+
+app.get('/loadDataChoGiaoHang', async (req, res) => {
+    const choGiaoHang = await Order.find({status: 2}).sort({order_date: -1});
+    res.json(choGiaoHang)
+})
+
+app.get('/loadDataDaGiao', async (req, res) => {
+    const daGiao = await Order.find({status: {$in: [3, 9]}}).sort({order_date: -1});
+    res.json(daGiao)
+})
+
+app.get('/loadDataDonHuy', async (req, res) => {
+    const donHuy = await Order.find({status: 8}).sort({order_date: -1});
+    res.json(donHuy)
+})
+
+app.get('/loadDataTraHang', async (req, res) => {
+    const traHang = await Order.find({status: 5}).sort({order_date: -1});
+    res.json(traHang)
+})
+
+app.get('/loadDataDonHoan', async (req, res) => {
+    const donHoan = await Order.find({status: 6}).sort({order_date: -1});
+    res.json(donHoan)
+})
+
 app.get('/dataOrderUser/:id', async (req, res) => {
     const userId = req.params.id;
     const data = await Order.find({user: userId}).sort({order_date: -1});
-
     res.json(data)
 })
 app.get('/home', async (req, res) => {
@@ -631,7 +665,8 @@ app.post('/chatShop', async (req, res) => {
 app.post('/chatAllShop', async (req, res) => {
     try {
         const dataChat = await ChatShop.find().lean();
-        return res.send(dataChat)
+        const sort = dataChat.sort((a, b) => new Date(b.date) - new Date(a.date))
+        return res.send(sort)
     } catch (error) {
         res.status(500).json({message: error.message});
     }
@@ -652,9 +687,40 @@ app.post('/home/chatShop', async (req, res) => {
             beLong: data.beLong,
             conTenMain: data.conTenMain,
         }
+        if (data.beLong === "admin") {
+            const idApp = await checkClient.findOne({user: check.user})
+            const idAppMess = await checkClientMess.findOne({user: check.user})
+            const client = idApp.client
+            const clienCheckMess = idAppMess.client
+            const dataClient = client.filter(item => item.status === "true").map(item => item.IdClient)
+            const dataClientMess = clienCheckMess.filter(item => item.status === "false").map(item => item.IdClient)
 
+            if (dataClient.length !== 0) {
+                const intersection = dataClient.filter(item => dataClientMess.includes(item));
+                NotificaionClient(intersection, data.conTenMain)
+            }
+
+            function NotificaionClient(id, mess) {
+                fetch('https://exp.host/--/api/v2/push/send', {
+                    mode: 'no-cors',
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        to: id,
+                        title: 'ShopBipBip',
+                        body: mess,
+                        data: {
+                            message: mess,
+                        },
+                    })
+                });
+            }
+        }
         try {
             check.status = data.status;
+            check.date = Date.now();
             check.content.push(newChat)
             await check.save()
             return res.json(true);
@@ -1018,50 +1084,8 @@ app.post('/addNotification', async (req, res) => {
     }
 })
 
-app.post('/addNotification', async (req, res) => {
-    try {
-        const data = req.body;
 
-
-        if (data.noiDung) {
-            const newNotification = new notificationOneUser({
-                userName: data.userName,
-                noiDung: data.noiDung
-            })
-            await newNotification.save()
-
-            const dataIdApp = await dataClient.find().exec();
-            const clients = dataIdApp.map(item => item.client);
-
-            NotificaionClient(clients, data.noiDung)
-            console.log(clients)
-        }
-
-        function NotificaionClient(id, mess) {
-            fetch('https://exp.host/--/api/v2/push/send', {
-                mode: 'no-cors',
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    to: id,
-                    title: 'ShopBipBip',
-                    body: mess,
-                    data: {
-                        message: mess,
-                    },
-                })
-            });
-        }
-
-        res.json(true)
-    } catch (e) {
-        console.log(e)
-    }
-})
-
-app.get('/dataAllNotificationOneUser',async (req,res)=>{
+app.get('/dataAllNotificationOneUser', async (req, res) => {
     const data = await notificationOneUser.find()
     const sort = data.sort((a, b) => new Date(b.date) - new Date(a.date))
     res.json(sort)
@@ -1073,15 +1097,16 @@ app.post('/addNotificationOneUser', async (req, res) => {
 
         const idUser = dataUser._id
         const idApp = await checkClient.findOne({user: idUser})
-        const client =  idApp.client
+        const client = idApp.client
         const dataClient = client.filter(item => item.status === "true").map(item => item.IdClient)
         NotificaionClient(dataClient, data.noiDung)
 
         const newNotification = new notificationOneUser({
-            userName:data.userName,
-            noiDung:data.noiDung
-            })
+            userName: data.userName,
+            noiDung: data.noiDung
+        })
         newNotification.save()
+
         function NotificaionClient(id, mess) {
             fetch('https://exp.host/--/api/v2/push/send', {
                 mode: 'no-cors',
@@ -1101,17 +1126,17 @@ app.post('/addNotificationOneUser', async (req, res) => {
         }
 
         res.json(true)
-    }else {
+    } else {
         res.json(false)
     }
 
 })
 
-app.post('/deleteAllNotification',async (req,res) =>{
+app.post('/deleteAllNotification', async (req, res) => {
     await notification.deleteMany()
     res.json(true)
 })
-app.post('/deleteAllNotificationOne',async (req,res) =>{
+app.post('/deleteAllNotificationOne', async (req, res) => {
     await notificationOneUser.deleteMany()
     res.json(true)
 })
