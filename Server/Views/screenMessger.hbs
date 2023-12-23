@@ -9,37 +9,15 @@
   <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
   <style>
-    .modal-title {
-      font-weight: bold;
-    }
 
 
     body {
       margin: 7px auto auto;
     }
-
-    .card-header {
-      font-weight: bold;
-      font-size: 20px;
-    }
-
-    .card-body {
-      padding: 20px;
-    }
-
     /* Style cho các button */
     .btn {
       font-size: 14px;
       font-weight: bold;
-    }
-
-    /* Style cho bảng sản phẩm */
-    .table td {
-      vertical-align: middle;
-    }
-
-    .table .table-actions a {
-      margin-right: 5px;
     }
 
     .mess {
@@ -60,16 +38,6 @@
 
     .mess:hover::after {
       width: 100%;
-    }
-
-    .box-chat {
-      width: 20%;
-      border-right-width: 1px;
-      border-right-color: black;
-      margin: 7px 7px 0px 8px;
-      height: 552px;
-      padding: 8px;
-      overflow: auto;
     }
 
     .information {
@@ -132,14 +100,6 @@
       text-align: center
     }
 
-    .box-content {
-      background: #f3f4f6;
-      height: 444px;
-      margin: 7px;
-      border-radius: 8px;
-      padding: 8px;
-      overflow: auto;
-    }
 
     .box-input {
       width: 93%;
@@ -288,8 +248,8 @@
               <div class="name-user">
                 \{{nameUser}}
               </div>
-              <div class="box-Content-One-chat">
-                <div id="listConten" class="contenChat" v-for="item in dataContentChat"
+              <div id="listConten"  class="box-Content-One-chat">
+                <div class="contenChat" v-for="item in dataContentChat"
                      :class="{'admin': item.beLong === 'admin', 'user': item.beLong !== 'admin'}">
                   \{{item.conTenMain}}
                 </div>
@@ -407,10 +367,16 @@
               self.dataContentChat = data.content
               self.checkClick = false;
               self.checkInput = false
+              setTimeout(self.scrollViewEnd,100)
             })
             .catch(error => {
               console.error(error);
             });
+      },
+
+      scrollViewEnd(){
+        var element = document.querySelector('.box-Content-One-chat');
+        element.scrollTop = element.scrollHeight;
       },
       GetDataCart: function () {
         var self = this;
