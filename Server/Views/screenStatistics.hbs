@@ -3,30 +3,8 @@
 <head>
   <title>Đơn Hàng</title>
   <link rel="stylesheet" href="styles.css">
-
   <script src="https://code.highcharts.com/highcharts.js"></script>
   <style>
-
-
-    body {
-      margin: 7px auto auto;
-    }
-
-    /* Style cho các button */
-
-    /* Style cho bảng sản phẩm */
-    .table td {
-      vertical-align: middle;
-    }
-
-    .table .table-actions a {
-      margin-right: 5px;
-    }
-
-    .btn-cf {
-      outline: unset !important;
-    }
-
     .mess {
       position: relative;
       display: inline-block;
@@ -54,127 +32,389 @@
       height: 400px;
       margin: 1em auto;
     }
+
+    .box-Main {
+      background: white;
+      margin: 14px 8px;
+      width: 99%;
+      height: 96%;
+    }
+
+    .box-Main-Status {
+      width: 100%;
+      height: 6%;
+    }
+
+    .box-status {
+      display: flex;
+      height: 100%;
+      justify-content: space-between;
+    }
+
+    .box-text-Status {
+      display: flex;
+    }
+
+    .buttom-status {
+      height: 100%;
+      padding: 0 8px;
+    }
+
+    .text-sizse-color {
+      color: white;
+    }
+
+    .margin-text-Status {
+      margin: 0 10px;
+    }
+
+    .box-text-Status-extra {
+      height: 7%;
+      padding: 0 10px;
+      display: flex;
+      align-items: center;
+    }
+
+    .text-Status {
+      color: #1307ef;
+      font-family: sans-serif;
+    }
+
+    .box-order {
+      width: 100%;
+      height: 100%;
+    }
+
+    .box-Main-order {
+      width: 100%;
+      height: 87%;
+    }
+
+    .body-Main {
+      display: flex;
+      width: 100%;
+      height: 100%;
+    }
+
+    .box-Main-One {
+      width: 16%;
+      height: 100%;
+      background-color: rgba(49, 46, 129, var(--tw-bg-opacity));
+      display: flex;
+      flex-direction: column;
+    }
+
+    .box-Text-Title {
+      background-color: rgba(55, 48, 163, var(--tw-bg-opacity));
+      height: 13%;
+      width: 100%;
+    }
+
+    .text-Title {
+      color: white;
+      font-size: 24px;
+      padding: 24px;
+      font-family: sans-serif;
+      font-weight: 600;
+    }
+
+    .box-Main-Two {
+      width: 84%;
+      height: 100%;
+    }
+
+    .box-Main-Extra {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .box-infomation {
+      width: 100%;
+      height: 11%;
+    }
+
+    .information {
+      display: flex;
+      height: 100%;
+      width: 100%;
+      justify-content: space-between;
+      padding: 0 18px;
+      background: white;
+      align-items: center;
+    }
+
+    .information-Admin {
+      display: flex;
+      width: 8%;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .link-a:hover {
+      text-decoration: none;
+    }
+
+    .link-a {
+      color: black;
+      font-size: 16px;
+      font-family: sans-serif;
+    }
+
+    .box-order-Main {
+      width: 100%;
+      height: 89%;
+    }
+
+    .table-order {
+      width: 100%;
+      height: 87%;
+    }
+
+    .item-click {
+      height: 87%;
+      width: 100%;
+    }
+
+    .load-Spinner {
+      padding: 20%;
+      width: 100%;
+      text-align: center;
+    }
+    #container {
+      height: 50%;
+      width: 40%;
+      position: absolute;
+    }
+    #container2 {
+      height: 50%;
+      width: 40%;
+      position: absolute;
+    }
+    .dropdown-Op{
+      outline: none;
+      padding: 8px;
+      border-radius: 8px;
+      cursor: pointer;
+      margin-left: 14px;
+    }
+
+    .box-Main-TK {
+      display: flex;
+      justify-content: space-around;
+    }
+
+    .box-TopFive {
+      width: 49%;
+    }
+
+    .box-Year {
+      width: 49%;
+    }
   </style>
 </head>
-
 <body class="bg-gray-200">
-<div class="flex ">
-  <!--Side Navbar-->
-  <div class="bg-indigo-900 w-1/6">
-    <div class=" bg-indigo-800">
-      <div class=" text-xl text-gray-200 uppercase font-bold" style="padding: 33px;">Shop BipBip</div>
+<div id="dataALL">
+  <div class="body-Main">
+    <div class="box-Main-One">
+      <div class="box-Text-Title">
+        <div class="text-Title">Shop BipBip</div>
+      </div>
+      <div class="item-click">
+        <a href="/statistic" class=" cursor-pointer mess ml-3 mt-3 w-10/12"
+           style="border-bottom-width: 1px;text-decoration: none ">
+          <div class="flex" style=" padding: 12px;">
+            <div>
+              <img class="w-5 h-5" src="analytics.png" alt="">
+            </div>
+            <div class="mx-3 text-sm text-gray-100 ">Thống kê</div>
+          </div>
+        </a>
+        <a href="/home" class=" cursor-pointer mess ml-3 mt-3 w-10/12"
+           style="display: flex; text-decoration: none ">
+          <div class="flex" style=" padding: 12px;">
+            <div>
+              <img class="w-5 h-5" src="dashboard.png" alt="">
+            </div>
+            <div class="mx-3 text-sm text-gray-100 ">Đơn Hàng</div>
+          </div>
+          <span class="badge" style="color: white;font-size: 14px;">\{{donHangMoi}}</span>
+        </a>
+        <a href="/mess" class="cursor-pointer mess ml-3 mt-3 w-10/12" style="display: flex; text-decoration: none">
+          <div class="flex" style="padding: 12px;">
+            <div>
+              <img class="w-5 h-5 " src="messages.png" alt="">
+            </div>
+            <div class="mx-3 text-sm text-gray-100 ">Tin Nhắn</div>
+          </div>
+          <span class="badge" style="color: white;font-size: 14px;">\{{tinNhanMoi}}</span>
+        </a>
+        <a href="/notifications" class="cursor-pointer mess ml-3 mt-3 w-10/12" style="text-decoration: none">
+          <div class="flex" style=" padding: 12px;">
+            <div>
+              <img class="w-5 h-5" src="notifications.png" alt="">
+            </div>
+            <div class="mx-3 text-sm text-gray-100">Thông báo</div>
+          </div>
+        </a>
+        <a href="/customer" class="cursor-pointer mess ml-3 mt-3 w-10/12" style="display: flex; text-decoration: none">
+          <div class="flex" style="padding: 12px;">
+            <div>
+              <img class="w-5 h-5 " src="iconuser.png" alt="">
+            </div>
+            <div class="mx-3 text-sm text-gray-100 ">Quản Lý người dùng</div>
+          </div>
+        </a>
+        <a href="/warehouse" class="cursor-pointer mess ml-3 mt-3 w-10/12" style="text-decoration: none">
+          <div class="flex" style=" padding: 12px;">
+            <div>
+              <img class="w-5 h-5" src="kho.svg" alt="">
+            </div>
+            <div class="mx-3 text-sm text-gray-100">Kho Hàng</div>
+          </div>
+        </a>
+      </div>
     </div>
-    <div>
-      <a href="/statistic" class=" cursor-pointer mess ml-3 mt-3 w-10/12"
-         style="border-bottom-width: 1px; text-decoration: none ">
-        <div class="flex" style=" padding: 12px;">
-          <div>
-            <img class="w-5 h-5" src="analytics.png" alt="">
-          </div>
-          <div class="mx-3 text-sm text-gray-100 ">Thống kê</div>
-        </div>
-      </a>
-      <a href="/home" class=" cursor-pointer mess ml-3 mt-3 w-10/12"
-         style=" text-decoration: none ">
-        <div class="flex" style=" padding: 12px;">
-          <div>
-            <img class="w-5 h-5" src="dashboard.png" alt="">
-          </div>
-          <div class="mx-3 text-sm text-gray-100 ">Đơn Hàng</div>
-        </div>
-      </a>
-      <a href="/mess" class="cursor-pointer mess ml-3 mt-3 w-10/12" style="text-decoration: none">
-        <div class="flex" style=" padding: 12px;">
-          <div>
-            <img class="w-5 h-5 " src="messages.png" alt="">
-          </div>
-          <div class="mx-3 text-sm text-gray-100 ">Tin Nhắn</div>
-        </div>
-      </a>
-      <a href="/notifications" class="cursor-pointer mess ml-3 mt-3 w-10/12" style="text-decoration: none">
-        <div class="flex" style=" padding: 12px;">
-          <div>
-            <img class="w-5 h-5" src="notifications.png" alt="">
-          </div>
-          <div class="mx-3 text-sm text-gray-100">Thông báo</div>
-        </div>
-      </a>
-      <a href="/customer" class="cursor-pointer mess ml-3 mt-3 w-10/12" style="display: flex; text-decoration: none">
-        <div class="flex" style="padding: 12px;">
-          <div>
-            <img class="w-5 h-5 " src="iconuser.png" alt="">
-          </div>
-          <div class="mx-3 text-sm text-gray-100 ">Quản Lý người dùng</div>
-        </div>
-      </a>
-      <a href="/warehouse" class="cursor-pointer mess ml-3 mt-3 w-10/12" style="text-decoration: none">
-        <div class="flex" style=" padding: 12px;">
-          <div>
-            <img class="w-5 h-5" src="kho.svg" alt="">
-          </div>
-          <div class="mx-3 text-sm text-gray-100">Kho Hàng</div>
-        </div>
-      </a>
-    </div>
-  </div>
-  <!--Side Navbar-->
 
-  <!--Main area-->
-
-  <div class="flex-1">
-    <!--Top navbar-->
-    <div>
-
-      <div class="bg-white px-2 py-0.5 h-18 flex">
-        <div class="left md:w-3/4 sm:w-1/3 flex p-3">
-          <img src="person.png" class="w-10 h-10" alt="">
-          <span class="block p-2">Admin</span>
+    <div class="box-Main-Two">
+      <div class="box-Main-Extra">
+        <div class="box-infomation">
+          <div class="information">
+            <div class="information-Admin">
+              <img src="person.png" class="w-10 h-10" alt="">
+              <span>Admin</span>
+            </div>
+            <div>
+              <a class="link-a" href="/login">Đăng xuất</a>
+            </div>
+          </div>
         </div>
-        <div class="right md:w-1/4 sm:w-2/3 flex" style="justify-content: end;">
-          <a href="/login" style=" text-decoration: none; color: black; line-height: 58px; margin-right: 24px; ">Đăng xuất</a>
+        <div class="box-order-Main">
+          <div id="load" class="load-Spinner">
+            <div class="spinner-border text-primary"></div>
+          </div>
+         <div id="hienThidata" style="display: none">
+
+         <div class="box-Main-TK">
+           <div class="box-TopFive">
+             <div>
+              Top 5 sản phẩm bán chạy
+             </div>
+             <figure class="highcharts-figure">
+               <div id="container"></div>
+             </figure>
+           </div>
+
+           <div class="box-Year">
+             <div style="display: flex;align-items: center">
+               <div>
+                 Thống kê năm:
+               </div>
+
+               <select id="dateYearSelect" name="dateYear" class="dropdown-Op">
+                 <option>2020</option>
+                 <option>2021</option>
+                 <option>2022</option>
+                 <option>2023</option>
+                 <option>2024</option>
+                 <option>2025</option>
+                 <option>2026</option>
+                 <option>2027</option>
+                 <option>2028</option>
+                 <option>2029</option>
+               </select>
+             </div>
+             <figure class="highcharts-figure">
+               <div id="container2"></div>
+             </figure>
+           </div>
+         </div>
+         </div>
+
         </div>
       </div>
     </div>
-    <!--Top navbar-->
-    <div style="width: 1179px ;margin-left: 45px;">
-      <figure class="highcharts-figure">
-        <div id="container"></div>
-      </figure>
-
-      <div style="display: flex;align-items: center">
-        <div>
-          Thống kê năm:
-        </div>
-
-        <select id="dateYearSelect" name="dateYear" style="outline: none;
-    padding: 8px;
-    border-radius: 8px;
-    cursor: pointer;
-    margin-left: 14px;">
-          <option>2020</option>
-          <option>2021</option>
-          <option>2022</option>
-          <option>2023</option>
-          <option>2024</option>
-          <option>2025</option>
-          <option>2026</option>
-          <option>2027</option>
-          <option>2028</option>
-          <option>2029</option>
-        </select>
-      </div>
-
-
-      <figure class="highcharts-figure">
-        <div id="container2"></div>
-      </figure>
-    </div>
-
-
   </div>
 </div>
 
 </body>
+
+<script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/vue@2"></script>
+<script>
+  var vm = new Vue({
+    el: "#dataALL",
+    data: {
+      tinNhanMoi: 0,
+      donHangMoi: 0,
+    },
+    mounted() {
+      const socket = io();
+      const self = this;
+      socket.on('server-send', () => {
+        self.GetAllDataChat();
+        self.GetDataCart();
+      });
+      this.socket = socket;
+    },
+    beforeDestroy() {
+      const socket = io();
+      if (socket) {
+        this.socket.disconnect();
+      }
+    },
+    methods: {
+      GetAllDataChat: function () {
+        var self = this;
+        fetch('/chatAllShop', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        })
+            .then(response => response.json())
+            .then(data => {
+              const sortedData = data.sort((a, b) => {
+                if (a.status === b.status) {
+                  return 0;
+                }
+                return a.status ? -1 : 1;
+              });
+              self.tinNhanMoi = sortedData.filter(item => item.status === true).length
+
+              var load = document.getElementById("load")
+              var duLieu = document.getElementById("hienThidata")
+              load.style.display = "none"
+              duLieu.style.display = "block"
+            })
+            .catch(error => {
+              console.error(error);
+            });
+      },
+      GetDataCart: function () {
+        var self = this;
+        fetch('/loadDataChoXacNhan', {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+        })
+            .then(response => response.json())
+            .then(data => {
+              self.donHangMoi = data.length
+            })
+            .catch(error => {
+              console.error(error);
+            });
+      },
+    }
+  })
+
+  vm.GetAllDataChat();
+  vm.GetDataCart();
+</script>
+
 <script>
 
   function handleSelectChange(event) {
@@ -266,7 +506,7 @@
         type: 'pie'
       },
       title: {
-        text: ' Top 5 sản phẩm bán chạy'
+        text: ''
       },
       tooltip: {
         valueSuffix: '%'
@@ -321,7 +561,7 @@
         type: 'column'
       },
       title: {
-        text: ' Doanh số năm ' +year,
+        text: '',
       },
       subtitle: {
         text: ' ',

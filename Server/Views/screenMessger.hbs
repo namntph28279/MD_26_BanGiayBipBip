@@ -3,18 +3,11 @@
 <head>
   <title>Tin Nhắn</title>
   <link rel="stylesheet" href="styles.css">
-
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
   <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
   <style>
-
-
-    body {
-      margin: 7px auto auto;
-    }
-    /* Style cho các button */
     .btn {
       font-size: 14px;
       font-weight: bold;
@@ -96,7 +89,6 @@
       font-weight: 700;
       background: #f2eaea;
       margin: 0 12px;
-      border-radius: 10px;
       text-align: center
     }
 
@@ -119,7 +111,7 @@
 
     .box-chat-Main {
       width: 100%;
-      height: 83%;
+      height: 100%;
       background: white;
     }
 
@@ -150,125 +142,218 @@
       background: #f6ecec;
       border-radius: 8px;
     }
+
+
+    .body-Main {
+      display: flex;
+      width: 100%;
+      height: 100%;
+    }
+
+    .box-Main-One {
+      width: 16%;
+      height: 100%;
+      background-color: rgba(49, 46, 129, var(--tw-bg-opacity));
+      display: flex;
+      flex-direction: column;
+    }
+
+    .box-Text-Title {
+      background-color: rgba(55, 48, 163, var(--tw-bg-opacity));
+      height: 13%;
+      width: 100%;
+    }
+
+    .text-Title {
+      color: white;
+      font-size: 24px;
+      padding: 24px;
+      font-family: sans-serif;
+      font-weight: 600;
+    }
+
+    .box-Main-Two {
+      width: 84%;
+      height: 100%;
+    }
+
+    .box-Main-Extra {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .box-infomation {
+      width: 100%;
+      height: 11%;
+    }
+
+    .information-Box {
+      display: flex;
+      height: 100%;
+      width: 100%;
+      justify-content: space-between;
+      padding: 0 18px;
+      background: white;
+      align-items: center;
+    }
+
+    .information-Admin {
+      display: flex;
+      width: 8%;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .link-a:hover {
+      text-decoration: none;
+    }
+
+    .link-a {
+      color: black;
+      font-size: 16px;
+      font-family: sans-serif;
+    }
+
+    .box-order-Main {
+      width: 99%;
+      height: 89%;
+      margin: 14px 8px;
+    }
+
+    .item-click {
+      height: 87%;
+      width: 100%;
+    }
+
+    .load-Spinner {
+      padding: 20%;
+      width: 100%;
+      text-align: center;
+    }
   </style>
 </head>
 
 <body class="bg-gray-200">
-<div class="flex" id="dataALL" style="height: 100%;">
-  <div class="bg-indigo-900 w-1/6 ">
-    <div class=" bg-indigo-800">
-      <div class=" text-xl text-gray-200 uppercase font-bold" style="padding: 33px;">Shop BipBip</div>
-    </div>
-    <div>
-      <a href="/statistic" class="cursor-pointer mess ml-3 mt-3 w-10/12" style="text-decoration: none">
-        <div class="flex" style=" padding: 12px;">
-          <div>
-            <img class="w-5 h-5" src="analytics.png" alt="">
-          </div>
-          <div class="mx-3 text-sm text-gray-100 ">Thống kê</div>
-        </div>
-      </a>
-      <a href="/home" class=" cursor-pointer mess ml-3 mt-3 w-10/12" style="text-decoration: none;display: flex;  ">
-        <div class="flex" style=" padding: 12px;">
-          <div>
-            <img class="w-5 h-5" src="dashboard.png" alt="">
-          </div>
-          <div class="mx-3 text-sm text-gray-100 ">Đơn Hàng</div>
-        </div>
-        <span class="badge" style="color: white;font-size: 14px;">\{{donHangMoi}}</span>
-      </a>
-      <a href="/mess" class="cursor-pointer mess ml-3 mt-3 w-10/12"
-         style="border-bottom-width: 1px; text-decoration: none; display: flex; ">
-        <div class="flex" style=" padding: 12px;">
-          <div>
-            <img class="w-5 h-5 " src="messages.png" alt="">
-          </div>
-          <div class="mx-3 text-sm text-gray-100 ">Tin Nhắn
-
-          </div>
-
-        </div>
-        <span class="badge" style="color: white;font-size: 14px;">\{{tinNhanMoi}}</span>
-      </a>
-      <a href="/notifications" class="cursor-pointer mess ml-3 mt-3 w-10/12" style="text-decoration: none">
-        <div class="flex" style=" padding: 12px;">
-          <div>
-            <img class="w-5 h-5" src="notifications.png" alt="">
-          </div>
-          <div class="mx-3 text-sm text-gray-100">Thông báo</div>
-        </div>
-      </a>
-      <a href="/customer" class="cursor-pointer mess ml-3 mt-3 w-10/12" style="display: flex; text-decoration: none">
-        <div class="flex" style="padding: 12px;">
-          <div>
-            <img class="w-5 h-5 " src="iconuser.png" alt="">
-          </div>
-          <div class="mx-3 text-sm text-gray-100 ">Quản Lý người dùng</div>
-        </div>
-      </a>
-      <a href="/warehouse" class="cursor-pointer mess ml-3 mt-3 w-10/12" style="text-decoration: none">
-        <div class="flex" style=" padding: 12px;">
-          <div>
-            <img class="w-5 h-5" src="kho.svg" alt="">
-          </div>
-          <div class="mx-3 text-sm text-gray-100">Kho Hàng</div>
-        </div>
-      </a>
-    </div>
-  </div>
-  <div class="flex-1">
-    <div>
-      <div class="bg-white px-2 py-0.5 h-18 flex">
-        <div class="left md:w-3/4 sm:w-1/3 flex p-3">
-          <img src="person.png" class="w-10 h-10" alt="">
-          <span class="block p-2">Admin</span>
-        </div>
-        <div class="right md:w-1/4 sm:w-2/3 flex  justify-content-end ">
-          <a href="/login" style=" text-decoration: none; color: black; line-height: 58px; margin-right: 24px; ">Đăng
-            xuất</a>
-        </div>
+<div id="dataALL">
+  <div class="body-Main">
+    <div class="box-Main-One">
+      <div class="box-Text-Title">
+        <div class="text-Title">Shop BipBip</div>
       </div>
-    </div>
-    <div class="m-7">
-
-      <div style="width: 100%;text-align: center;">
-        <div id="load" class="spinner-border text-primary"></div>
-      </div>
-
-      <div id="hienThidata" style="display: none">
-        <div class="box-chat-Main">
-          <div class="box-extra-chat">
-            <div class="box-All-Chat">
-              <div v-for="item in dataTitleChat" :class="{'informationNew':item.status,'information':!item.status}"
-                   @click="OpenChatUser(item.user)">
-                \{{item.fullName}}
-              </div>
+      <div class="item-click">
+        <a href="/statistic" class=" cursor-pointer mess ml-3 mt-3 w-10/12"
+           style="text-decoration: none ">
+          <div class="flex" style=" padding: 12px;">
+            <div>
+              <img class="w-5 h-5" src="analytics.png" alt="">
             </div>
-            <div id="checkData" class="box-One-Chat" v-if="dataContentChat.length > 0">
-              <div class="name-user">
-                \{{nameUser}}
-              </div>
-              <div id="listConten"  class="box-Content-One-chat">
-                <div class="contenChat" v-for="item in dataContentChat"
-                     :class="{'admin': item.beLong === 'admin', 'user': item.beLong !== 'admin'}">
-                  \{{item.conTenMain}}
-                </div>
-              </div>
-              <form @submit.prevent="submitContentChat" class="mb-3" style="margin: 0 14px;">
-                <div class="input-group">
-                  <label :class="checkInput ?'box-input-err': 'box-input'">
-                    <input style="width: 100%;outline: unset !important;" type="text"
-                           v-model="formData.conTenMain">
-                  </label>
-                  <div style="margin-left: 8px;">
-                    <button class="btn btn-primary" type="submit">Gửi</button>
+            <div class="mx-3 text-sm text-gray-100 ">Thống kê</div>
+          </div>
+        </a>
+        <a href="/home" class=" cursor-pointer mess ml-3 mt-3 w-10/12"
+           style="display: flex; text-decoration: none ">
+          <div class="flex" style=" padding: 12px;">
+            <div>
+              <img class="w-5 h-5" src="dashboard.png" alt="">
+            </div>
+            <div class="mx-3 text-sm text-gray-100 ">Đơn Hàng</div>
+          </div>
+          <span class="badge" style="color: white;font-size: 14px;">\{{donHangMoi}}</span>
+        </a>
+        <a href="/mess" class="cursor-pointer mess ml-3 mt-3 w-10/12" style="display: flex;border-bottom-width: 1px; text-decoration: none">
+          <div class="flex" style="padding: 12px;">
+            <div>
+              <img class="w-5 h-5 " src="messages.png" alt="">
+            </div>
+            <div class="mx-3 text-sm text-gray-100 ">Tin Nhắn</div>
+          </div>
+          <span class="badge" style="color: white;font-size: 14px;">\{{tinNhanMoi}}</span>
+        </a>
+        <a href="/notifications" class="cursor-pointer mess ml-3 mt-3 w-10/12" style="text-decoration: none">
+          <div class="flex" style=" padding: 12px;">
+            <div>
+              <img class="w-5 h-5" src="notifications.png" alt="">
+            </div>
+            <div class="mx-3 text-sm text-gray-100">Thông báo</div>
+          </div>
+        </a>
+        <a href="/customer" class="cursor-pointer mess ml-3 mt-3 w-10/12" style="display: flex; text-decoration: none">
+          <div class="flex" style="padding: 12px;">
+            <div>
+              <img class="w-5 h-5 " src="iconuser.png" alt="">
+            </div>
+            <div class="mx-3 text-sm text-gray-100 ">Quản Lý người dùng</div>
+          </div>
+        </a>
+        <a href="/warehouse" class="cursor-pointer mess ml-3 mt-3 w-10/12" style="text-decoration: none">
+          <div class="flex" style=" padding: 12px;">
+            <div>
+              <img class="w-5 h-5" src="kho.svg" alt="">
+            </div>
+            <div class="mx-3 text-sm text-gray-100">Kho Hàng</div>
+          </div>
+        </a>
+      </div>
+    </div>
+
+    <div class="box-Main-Two">
+      <div class="box-Main-Extra">
+        <div class="box-infomation">
+          <div class="information-Box">
+            <div class="information-Admin">
+              <img src="person.png" class="w-10 h-10" alt="">
+              <span>Admin</span>
+            </div>
+            <div>
+              <a class="link-a" href="/login">Đăng xuất</a>
+            </div>
+          </div>
+        </div>
+        <div class="box-order-Main">
+
+          <div id="load" class="load-Spinner">
+            <div class="spinner-border text-primary"></div>
+          </div>
+
+          <div id="hienThidata" style="display: none">
+            <div class="box-chat-Main">
+              <div class="box-extra-chat">
+                <div class="box-All-Chat">
+                  <div v-for="item in dataTitleChat" :class="{'informationNew':item.status,'information':!item.status}"
+                       @click="OpenChatUser(item.user)">
+                    \{{item.fullName}}
                   </div>
                 </div>
-              </form>
+                <div id="checkData" class="box-One-Chat" v-if="dataContentChat.length > 0">
+                  <div class="name-user">
+                    \{{nameUser}}
+                  </div>
+                  <div id="listConten"  class="box-Content-One-chat">
+                    <div class="contenChat" v-for="item in dataContentChat"
+                         :class="{'admin': item.beLong === 'admin', 'user': item.beLong !== 'admin'}">
+                      \{{item.conTenMain}}
+                    </div>
+                  </div>
+                  <form @submit.prevent="submitContentChat" class="mb-3" style="margin: 0 14px;">
+                    <div class="input-group" style="justify-content: space-around;">
+                      <label :class="checkInput ?'box-input-err': 'box-input'">
+                        <input style="width: 100%;outline: unset !important;" type="text"
+                               v-model="formData.conTenMain">
+                      </label>
+                      <div style="margin-left: 8px;">
+                        <button class="btn btn-primary" type="submit">Gửi</button>
+                      </div>
+                    </div>
+                  </form>
+                </div>
+              </div>
             </div>
           </div>
         </div>
       </div>
+
     </div>
   </div>
 </div>
