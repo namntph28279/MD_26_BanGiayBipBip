@@ -679,15 +679,12 @@ app.post('/delete', async (req, res) => {
         console.log(err)
     }
 })
-app.post('/home/chatShop', async (req, res) => {
+
+app.post('/home/notificationChatShop', async (req, res) => {
     const data = req.body;
     const check = await ChatShop.findOne({user: data.user})
     if (check) {
         try {
-            const newChat = {
-                beLong: data.beLong,
-                conTenMain: data.conTenMain,
-            }
             if (data.beLong === "admin") {
                 const idApp = await checkClient.findOne({user: check.user})
                 const idAppMess = await checkClientMess.findOne({user: check.user})
@@ -718,18 +715,28 @@ app.post('/home/chatShop', async (req, res) => {
                         })
                     });
                 }
-                check.status = data.status;
-                check.date = Date.now();
-                check.content.push(newChat)
-                check.save()
-                return res.json(true);
-            }else {
-                check.status = data.status;
-                check.date = Date.now();
-                check.content.push(newChat)
-                check.save()
                 return res.json(true);
             }
+        } catch (error) {
+            return res.json(false);
+        }
+    }
+})
+
+app.post('/home/chatShop', async (req, res) => {
+    const data = req.body;
+    const check = await ChatShop.findOne({user: data.user})
+    if (check) {
+        try {
+            const newChat = {
+                beLong: data.beLong,
+                conTenMain: data.conTenMain,
+            }
+                check.status = data.status;
+                check.date = Date.now();
+                check.content.push(newChat)
+                check.save()
+                return res.json(true);
         } catch (error) {
             return res.json(false);
         }

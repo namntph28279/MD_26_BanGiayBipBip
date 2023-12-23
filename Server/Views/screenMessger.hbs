@@ -453,11 +453,18 @@
               .catch(error => {
                 console.error(error);
               });
+
+          fetch('/home/notificationChatShop', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(self.formData)
+          })
         }
       }
     }
   })
-
   vm.GetAllDataChat();
   vm.GetDataCart();
 </script>
