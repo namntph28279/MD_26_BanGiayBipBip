@@ -17,9 +17,11 @@
       position: relative;
       display: inline-block;
     }
+
     .displayNone {
       display: none;
     }
+
     .mess::after {
       content: "";
       position: absolute;
@@ -47,7 +49,7 @@
 
     .box-notification {
       height: 325px;
-      margin: 14px;
+      margin: 0 14px;
       padding: 14px;
       background: #f1f1f1;
       overflow: auto;
@@ -74,6 +76,17 @@
     .search {
       width: 100%;
       padding: 5px;
+      border: 1px solid;
+      border-radius: 8px;
+      outline: unset;
+    }
+
+    .search-err {
+      width: 100%;
+      padding: 5px;
+      border: 2px solid red;
+      border-radius: 8px;
+      outline: unset;
     }
 
     .options {
@@ -95,12 +108,35 @@
       background-color: #f2f2f2;
     }
 
-    .text-delete{
+    .text-delete {
+      width: 16%;
       cursor: pointer;
       text-align: end;
       padding-right: 14px;
       color: red;
       font-family: sans-serif;
+    }
+
+    .text-err {
+      text-align: center;
+      color: red;
+      font-weight: 600;
+      font-size: 17px;
+    }
+
+    .input-err {
+      resize: none;
+      width: 550px;
+      outline: unset !important;
+      height: 82px;
+      border: 2px solid red;
+      padding: 7px;
+      border-radius: 8px;
+    }
+
+    .box-delete {
+      display: flex;
+      justify-content: end;
     }
   </style>
 </head>
@@ -195,11 +231,13 @@
             <div class="text-title">
               Thông báo tất cả
             </div>
-            <div >
+            <div>
               <form @submit.prevent="submitNotificationAllApp" class="mb-3" style="margin: 0 14px;">
                 <div>
-                    <textarea rows="4" cols="50" class="text-inputform" type="text"
-                              v-model="formDataAllApp.noiDung" required></textarea>
+                    <textarea rows="4" cols="50" :class="checkInputNotificationAll ?  'input-err' : 'text-inputform' "
+                              type="text"
+                              v-model="formDataAllApp.noiDung"></textarea>
+<!--                  <div v-if="checkInputNotificationAll === true " class="text-err">Vui lòng điền thông tin</div>-->
                   <div class="input-group-append">
                     <button class="btn btn-primary" style="width: 100%;margin-top: 8px" type="submit">Gửi</button>
                   </div>
@@ -207,8 +245,11 @@
               </form>
 
             </div>
+
             <div v-if="dataNotificationApp.length !== 0">
-              <div class="text-delete" @click="openModal">Xóa tất cả</div>
+              <div class="box-delete">
+                <div class="text-delete" @click="openModal">Xóa tất cả</div>
+              </div>
               <div class="box-notification">
                 <div style=" padding: 8px; background: #60eab1; border-radius: 8px; margin-bottom: 8px"
                      v-for="item in dataNotificationApp">
@@ -225,13 +266,15 @@
             <div>
               <form @submit.prevent="submitOneNotification" class="mb-3" style="margin: 0 14px;">
                 <div>
-                    <textarea rows="4" cols="50" class="text-inputform" type="text"
-                              v-model="formData.noiDung" required></textarea>
+                    <textarea rows="4" cols="50" :class="checkInputNotificationOne ?  'input-err' : 'text-inputform' "
+                              type="text"
+                              v-model="formData.noiDung"></textarea>
                   <div style=" display: flex;  justify-content: space-between; margin-top: 8px;">
                     <div class="dropdown">
-                      <input type="text" class="search" id="searchInput" placeholder="Tài khoản" autocomplete="off"
+                      <input type="text" :class="checkInputUserNameOne ?'search-err': 'search'" id="searchInput"
+                             placeholder="Tài khoản" autocomplete="off"
                              v-model="formData.userName"
-                             style=" border: 1px solid; border-radius: 8px; outline: unset;" required>
+                      >
                       <div class="options">
                         <div class="option" v-for="item in nameUserAll">\{{item}}</div>
                       </div>
@@ -241,15 +284,18 @@
                       <button class="btn btn-primary" type="submit">Gửi</button>
                     </div>
                   </div>
-                  <div :class="{'displayNone':checkThongTin}" style="color: red;font-weight: 700;font-family: sans-serif">
+                  <div :class="{'displayNone':checkThongTin}"
+                       style="color: red;font-weight: 700;font-family: sans-serif">
                     Tài khoản không đúng vui lòng nhập lại
                   </div>
                 </div>
               </form>
 
             </div>
-            <div  v-if="dataNotificationOneApp.length !== 0">
-              <div class="text-delete" @click="openModalXoa">Xóa tất cả</div>
+            <div v-if="dataNotificationOneApp.length !== 0">
+              <div class="box-delete">
+                <div class="text-delete" @click="openModalXoa">Xóa tất cả</div>
+              </div>
               <div class="box-notification">
                 <div style="padding: 8px; background: #60eab1; border-radius: 8px;margin-bottom: 8px"
                      v-for="item in dataNotificationOneApp">
@@ -294,7 +340,8 @@
     <div class="modal-dialog" role="document">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title" id="exampleModalLabel">Bạn có chắc muốn xóa toàn bộ thông báo cho người dùng không ?</h5>
+          <h5 class="modal-title" id="exampleModalLabel">Bạn có chắc muốn xóa toàn bộ thông báo cho người dùng không
+            ?</h5>
           <button type="button" class="close" @click="closeModalXoa" aria-label="Close">
             <span aria-hidden="true">&times;</span>
           </button>
@@ -333,7 +380,10 @@
       dataNotificationApp: {},
       dataNotificationOneApp: {},
       nameUserAll: {},
-      checkThongTin: true
+      checkThongTin: true,
+      checkInputNotificationAll: false,
+      checkInputNotificationOne: false,
+      checkInputUserNameOne: false,
     },
     mounted() {
       const socket = io();
@@ -440,7 +490,6 @@
       },
 
       GetDataAllOneNotification: function () {
-        console.log(123)
         var self = this;
         fetch('/dataAllNotificationOneUser', {
           method: 'GET',
@@ -511,52 +560,73 @@
       },
       submitNotificationAllApp() {
         var self = this
-        fetch('/addNotification', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(self.formDataAllApp)
-        })
-            .then(response => response.json())
-            .then(data => {
-              if (data === true) {
-                self.GetDataAllNotification()
-                self.formDataAllApp.noiDung = '';
-              }
-            })
-            .catch(error => {
-              console.error(error);
-            });
+        if (self.formDataAllApp.noiDung.trim() === '') {
+          self.checkInputNotificationAll = true
+        } else {
+          fetch('/addNotification', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(self.formDataAllApp)
+          })
+              .then(response => response.json())
+              .then(data => {
+                if (data === true) {
+                  self.GetDataAllNotification()
+                  self.formDataAllApp.noiDung = '';
+                  self.checkInputNotificationAll = false
+                }
+              })
+              .catch(error => {
+                console.error(error);
+              });
+        }
       },
       submitOneNotification() {
         var self = this
-        fetch('/addNotificationOneUser', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(self.formData)
-        })
-            .then(response => response.json())
-            .then(data => {
-              if (data === true) {
 
-                self.GetDataAllOneNotification()
+        if (self.formData.userName.trim() === '' || self.formData.noiDung.trim() === '') {
+          if (self.formData.userName.trim() === '' && self.formData.noiDung.trim() === '') {
+            self.checkInputNotificationOne = true
+            self.checkInputUserNameOne = true
+          }else if (self.formData.userName.trim() === ''){
+            self.checkInputNotificationOne = false
+            self.checkInputUserNameOne = true
+          }else{
+            self.checkInputNotificationOne = true
+            self.checkInputUserNameOne = false
+          }
 
-                self.formData.noiDung = '';
-                self.formData.userName = '';
-                self.checkThongTin = true
-              }else {
-                self.formData.userName = '';
-                self.checkThongTin = false
-              }
-            })
-            .catch(error => {
-              console.error(error);
-            });
+        } else {
+          fetch('/addNotificationOneUser', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(self.formData)
+          })
+              .then(response => response.json())
+              .then(data => {
+                if (data === true) {
+                  self.GetDataAllOneNotification()
+
+                  self.formData.noiDung = '';
+                  self.formData.userName = '';
+                  self.checkThongTin = true
+                  self.checkInputNotificationOne = false
+                  self.checkInputUserNameOne = false
+                } else {
+                  self.formData.userName = '';
+                  self.checkThongTin = false
+                }
+              })
+              .catch(error => {
+                console.error(error);
+              });
+        }
       },
-      deleteAllNotification(){
+      deleteAllNotification() {
         var self = this
         fetch('/deleteAllNotification', {
           method: 'POST',
@@ -569,6 +639,7 @@
             .then(data => {
               if (data === true) {
                 self.GetDataAllNotification()
+                self.checkInputNotificationAll = false
               }
               self.closeModal()
             })
@@ -576,7 +647,7 @@
               console.error(error);
             });
       },
-      deleteAllNotificationOne(){
+      deleteAllNotificationOne() {
         var self = this
         fetch('/deleteAllNotificationOne', {
           method: 'POST',
@@ -589,6 +660,8 @@
             .then(data => {
               if (data === true) {
                 self.GetDataAllOneNotification()
+                self.checkInputNotificationOne = false
+                self.checkInputUserNameOne = false
               }
               self.closeModalXoa()
             })

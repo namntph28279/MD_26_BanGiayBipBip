@@ -683,47 +683,53 @@ app.post('/home/chatShop', async (req, res) => {
     const data = req.body;
     const check = await ChatShop.findOne({user: data.user})
     if (check) {
-        const newChat = {
-            beLong: data.beLong,
-            conTenMain: data.conTenMain,
-        }
-        if (data.beLong === "admin") {
-            const idApp = await checkClient.findOne({user: check.user})
-            const idAppMess = await checkClientMess.findOne({user: check.user})
-            const client = idApp.client
-            const clienCheckMess = idAppMess.client
-            const dataClient = client.filter(item => item.status === "true").map(item => item.IdClient)
-            const dataClientMess = clienCheckMess.filter(item => item.status === "false").map(item => item.IdClient)
-
-            if (dataClient.length !== 0) {
-                const intersection = dataClient.filter(item => dataClientMess.includes(item));
-                NotificaionClient(intersection, data.conTenMain)
-            }
-
-            function NotificaionClient(id, mess) {
-                fetch('https://exp.host/--/api/v2/push/send', {
-                    mode: 'no-cors',
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        to: id,
-                        title: 'ShopBipBip',
-                        body: mess,
-                        data: {
-                            message: mess,
-                        },
-                    })
-                });
-            }
-        }
         try {
-            check.status = data.status;
-            check.date = Date.now();
-            check.content.push(newChat)
-            await check.save()
-            return res.json(true);
+            const newChat = {
+                beLong: data.beLong,
+                conTenMain: data.conTenMain,
+            }
+            if (data.beLong === "admin") {
+                const idApp = await checkClient.findOne({user: check.user})
+                const idAppMess = await checkClientMess.findOne({user: check.user})
+                const client = idApp.client
+                const clienCheckMess = idAppMess.client
+                const dataClient = client.filter(item => item.status === "true").map(item => item.IdClient)
+                const dataClientMess = clienCheckMess.filter(item => item.status === "false").map(item => item.IdClient)
+
+                if (dataClient.length !== 0) {
+                    const intersection = dataClient.filter(item => dataClientMess.includes(item));
+                    NotificaionClient(intersection, data.conTenMain)
+                }
+
+                function NotificaionClient(id, mess) {
+                    fetch('https://exp.host/--/api/v2/push/send', {
+                        mode: 'no-cors',
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            to: id,
+                            title: 'ShopBipBip',
+                            body: mess,
+                            data: {
+                                message: mess,
+                            },
+                        })
+                    });
+                }
+                check.status = data.status;
+                check.date = Date.now();
+                check.content.push(newChat)
+                check.save()
+                return res.json(true);
+            }else {
+                check.status = data.status;
+                check.date = Date.now();
+                check.content.push(newChat)
+                check.save()
+                return res.json(true);
+            }
         } catch (error) {
             return res.json(false);
         }
@@ -1041,7 +1047,11 @@ app.get('/dataNotification', async (req, res) => {
 
 app.get('/dataNameUser', async (req, res) => {
     const data = await User.find().exec();
-    const name = data.map(item => item.username);
+    const filterName = data.filter(item => item.status === false)
+    const sortName = filterName.sort((a, b) => new Date(b.date) - new Date(a.date))
+    console.log(sortName)
+    const name = sortName.map(item => item.username);
+    console.log(name)
     res.json(name)
 })
 app.post('/addNotification', async (req, res) => {
@@ -1093,19 +1103,23 @@ app.get('/dataAllNotificationOneUser', async (req, res) => {
 app.post('/addNotificationOneUser', async (req, res) => {
     const data = req.body;
     const dataUser = await User.findOne({username: data.userName})
+    console.log(dataUser)
     if (dataUser) {
 
         const idUser = dataUser._id
         const idApp = await checkClient.findOne({user: idUser})
-        const client = idApp.client
-        const dataClient = client.filter(item => item.status === "true").map(item => item.IdClient)
-        NotificaionClient(dataClient, data.noiDung)
+
+        if (idApp) {
+            const clientApp = idApp.client
+            const dataClient = clientApp.filter(item => item.status === "true").map(item => item.IdClient)
+            NotificaionClient(dataClient, data.noiDung)
+        }
 
         const newNotification = new notificationOneUser({
             userName: data.userName,
             noiDung: data.noiDung
         })
-        newNotification.save()
+        await newNotification.save()
 
         function NotificaionClient(id, mess) {
             fetch('https://exp.host/--/api/v2/push/send', {
