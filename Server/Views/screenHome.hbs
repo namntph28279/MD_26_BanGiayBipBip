@@ -449,7 +449,7 @@
                         </tbody>
                       </table>
                     </div>
-                    <div class="box-size-table">
+                    <div class="box-size-table" v-if="sizechoXacNhan > 7">
                       <div class="text-box-size-table">\{{sizeTable(indexSize)}} của tổng số \{{sizechoXacNhan}}</div>
                       <div class="box-arrow">
                         <div class="box-extra-arrow" @click="backSize(choXacNhan)">
@@ -504,7 +504,7 @@
                       </tr>
                       </tbody>
                     </table>
-                    <div class="box-size-table">
+                    <div class="box-size-table" v-if="sizechoLayHang >7">
                       <div class="text-box-size-table">\{{sizeTable(indexSize)}} của tổng số \{{sizechoLayHang}}</div>
                       <div class="box-arrow">
                         <div class="box-extra-arrow" @click="backSize(choLayHang)">
@@ -552,7 +552,7 @@
                       </tr>
                       </tbody>
                     </table>
-                    <div class="box-size-table">
+                    <div class="box-size-table" v-if="sizedonHuy > 7">
                       <div class="text-box-size-table">\{{sizeTable(indexSize)}} của tổng số \{{sizedonHuy}}</div>
                       <div class="box-arrow">
                         <div class="box-extra-arrow" @click="backSize(donHuy)">
@@ -607,7 +607,7 @@
                       </tr>
                       </tbody>
                     </table>
-                    <div class="box-size-table">
+                    <div class="box-size-table" v-if="sizechoGiaoHang > 7">
                       <div class="text-box-size-table">\{{sizeTable(indexSize)}} của tổng số \{{sizechoGiaoHang}}</div>
                       <div class="box-arrow">
                         <div class="box-extra-arrow" @click="backSize(choGiaoHang)">
@@ -655,7 +655,7 @@
                       </tr>
                       </tbody>
                     </table>
-                    <div class="box-size-table">
+                    <div class="box-size-table" v-if="sizedaGiao > 7">
                       <div class="text-box-size-table">\{{sizeTable(indexSize)}} của tổng số \{{sizedaGiao}}</div>
                       <div class="box-arrow">
                         <div class="box-extra-arrow" @click="backSize(daGiao)">
@@ -710,7 +710,7 @@
                       </tr>
                       </tbody>
                     </table>
-                    <div class="box-size-table">
+                    <div class="box-size-table" v-if="sizetraHang > 7">
                       <div class="text-box-size-table">\{{sizeTable(indexSize)}} của tổng số \{{sizetraHang}}</div>
                       <div class="box-arrow">
                         <div class="box-extra-arrow" @click="backSize(traHang)">
@@ -759,7 +759,7 @@
                       </tr>
                       </tbody>
                     </table>
-                    <div class="box-size-table">
+                    <div class="box-size-table" v-if="sizedonHoan > 7">
                       <div class="text-box-size-table">\{{sizeTable(indexSize)}} của tổng số \{{sizedonHoan}}</div>
                       <div class="box-arrow">
                         <div class="box-extra-arrow" @click="backSize(donHoan)">
