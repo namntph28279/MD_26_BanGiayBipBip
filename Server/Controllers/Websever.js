@@ -239,30 +239,30 @@ app.post('/block', async (req, res) => {
     }
 });
 
-app.post('/unblock', async(req, res) => {
+app.post('/unblock', async (req, res) => {
     let userId = req.body.userId;
 
     if (!mongoose.Types.ObjectId.isValid(userId)) {
-        return res.status(400).json({ message: 'UserId không hợp lệ', userId });
+        return res.status(400).json({message: 'UserId không hợp lệ', userId});
     }
 
     try {
         const user = await User.findById(userId);
 
         if (!user) {
-            return res.status(404).json({ message: 'Không tồn tại tài khoản' });
+            return res.status(404).json({message: 'Không tồn tại tài khoản'});
         }
         if (!user.status) {
-            return res.status(400).json({ message: 'Người dùng đã được mở chặn trước đó' });
+            return res.status(400).json({message: 'Người dùng đã được mở chặn trước đó'});
         }
         user.status = false;
         user.block_reason = 'Đã bỏ chặn';
         await user.save();
 
-        res.status(200).json({ message: 'Người dùng đã được bỏ chặn thành công' });
+        res.status(200).json({message: 'Người dùng đã được bỏ chặn thành công'});
     } catch (error) {
         console.error(error);
-        return res.status(500).json({ message: 'Lỗi rồi' });
+        return res.status(500).json({message: 'Lỗi rồi'});
     }
 });
 app.get('/mess', async (req, res) => {
@@ -740,6 +740,7 @@ app.post('/home/notificationChatShop', async (req, res) => {
                         })
                     });
                 }
+
                 return res.json(true);
             }
         } catch (error) {
@@ -757,11 +758,11 @@ app.post('/home/chatShop', async (req, res) => {
                 beLong: data.beLong,
                 conTenMain: data.conTenMain,
             }
-                check.status = data.status;
-                check.date = Date.now();
-                check.content.push(newChat)
-                check.save()
-                return res.json(true);
+            check.status = data.status;
+            check.date = Date.now();
+            check.content.push(newChat)
+            await check.save()
+            return res.json(true);
         } catch (error) {
             return res.json(false);
         }
