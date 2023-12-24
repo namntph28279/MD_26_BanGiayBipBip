@@ -4,7 +4,7 @@
   <title>Thống kê</title>
   <link rel="stylesheet" href="styles.css">
   <script src="https://code.highcharts.com/highcharts.js"></script>
-
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
   <!-- Latest compiled and minified CSS -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 
@@ -35,63 +35,6 @@
     .highcharts-data-table table {
       min-width: 320px;
       max-width: 1179px;
-    }
-
-    .box-Main {
-      background: white;
-      margin: 14px 8px;
-      width: 99%;
-      height: 96%;
-    }
-
-    .box-Main-Status {
-      width: 100%;
-      height: 6%;
-    }
-
-    .box-status {
-      display: flex;
-      height: 100%;
-      justify-content: space-between;
-    }
-
-    .box-text-Status {
-      display: flex;
-    }
-
-    .buttom-status {
-      height: 100%;
-      padding: 0 8px;
-    }
-
-    .text-sizse-color {
-      color: white;
-    }
-
-    .margin-text-Status {
-      margin: 0 10px;
-    }
-
-    .box-text-Status-extra {
-      height: 7%;
-      padding: 0 10px;
-      display: flex;
-      align-items: center;
-    }
-
-    .text-Status {
-      color: #1307ef;
-      font-family: sans-serif;
-    }
-
-    .box-order {
-      width: 100%;
-      height: 100%;
-    }
-
-    .box-Main-order {
-      width: 100%;
-      height: 87%;
     }
 
     .body-Main {
@@ -272,12 +215,12 @@
     .box-two {
       height: 93%;
     }
+
     .box-size-table {
       display: flex;
       align-items: center;
       justify-content: end;
       padding: 14px 0;
-      height: 13%;
       width: 100%;
     }
 
@@ -303,14 +246,21 @@
     .box-extra-arrow:hover {
       background: #dedede
     }
+
     .box-text-total {
       display: flex;
       justify-content: space-around;
     }
-    .box-one-views {height: 40%;display: flex;justify-content: space-between;padding: 8px 14px;}
+
+    .box-one-views {
+      height: 39%;
+      display: flex;
+      justify-content: space-between;
+      padding: 8px 14px;
+    }
 
     .box-two-view {
-      height: 50%;
+      height: 60%;
       padding: 8px 14px;
     }
 
@@ -339,11 +289,38 @@
       font-family: sans-serif;
       line-height: 44px;
     }
-    .display-None{
+
+    .display-None {
       display: none;
     }
-    .backGround{
+
+    .backGround {
       background: white
+    }
+
+    .oderNew {
+      font-weight: 600;
+      height: 14%;
+    }
+
+    .table-order-New {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      height: 75%;
+    }
+
+    .table-no-Order {
+      display: flex;
+      height: 75%;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      font-family: sans-serif;
+    }
+    .text-Status-table{
+      font-family: sans-serif;
+      font-weight: 600;
     }
   </style>
 </head>
@@ -430,7 +407,6 @@
           </div>
 
           <div id="hienThidata" style="display: none">
-
             <div class="box-All-TK">
               <div class="bg-gray-200 box-one">
                 <div class="text-click-L">
@@ -443,7 +419,7 @@
                 <div class="box-total-acc">
                   <div>
                     <div class="text-main">
-                      Tài khoản:
+                      Tài khoản
                     </div>
                     <div>
                       <table class="table table-bordered">
@@ -457,10 +433,11 @@
                         </thead>
                         <tbody>
                         <tr>
-                          <td>0</td>
-                          <td>0</td>
-                          <td>0</td>
-                          <td>0</td>
+                          <td>\{{totalUser}}</td>
+                          <td>\{{totalUserNew}}</td>
+                          <td>\{{totalUserActivity}}</td>
+                          <td>\{{totalUserBlock}}</td>
+
                         </tr>
                         </tbody>
                       </table>
@@ -492,17 +469,9 @@
                         Thống kê doanh số các tháng năm:
                       </div>
 
-                      <select id="dateYearSelect" name="dateYear" class="dropdown-Op">
-                        <option>2020</option>
-                        <option>2021</option>
-                        <option>2022</option>
-                        <option>2023</option>
-                        <option>2024</option>
-                        <option>2025</option>
-                        <option>2026</option>
-                        <option>2027</option>
-                        <option>2028</option>
-                        <option>2029</option>
+                      <select id="dateYearSelect" name="dateYear" class="dropdown-Op" v-model="selectYear"
+                              @change="selectClickYear">
+                        <option v-for="item in numberYear" :value="item" :key="item">\{{item}}</option>
                       </select>
                     </div>
                     <figure class="highcharts-figure">
@@ -512,151 +481,216 @@
                 </div>
               </div>
               <div class="box-two" :class="{'display-None': boxTwo}" style="background: white">
-                  <div class="box-one-views">
-                    <div class="box-one-extra">
-                      <div class="box-Ds-Date">
-                       <div class="text-Ds">
-                         Doanh số trong ngày
-                       </div>
-                        <div>
-                          <input type="date" class="form-control" >
-                        </div>
+                <div class="box-one-views">
+                  <div class="box-one-extra">
+                    <div class="box-Ds-Date">
+                      <div class="text-Ds">
+                        Doanh số trong ngày
                       </div>
-                      <div  style="display: flex">
-                       <div class="text-Ds">
-                         Tổng số tiền:
-                       </div>
-                        <div class="text-Ds" style="font-weight: 600; color: red;margin-left: 8px">
-                          2.000.000vnd
-                        </div>
+                      <div>
+                        <input type="date" class="form-control">
                       </div>
                     </div>
-
-                     <div class="box-two-extra">
-                       <div class="text-top3">
-                        Top khách hàng mua nhiều
-                       </div>
-                       <div>
-                         <table class="table table-bordered">
-                           <thead>
-                           <tr>
-                             <th style="text-align: center;width: 110px">STT</th>
-                             <th style="text-align: center;">Tên</th>
-                             <th style="text-align: center;">Tài khoản đặt</th>
-                             <th style="text-align: center;">Số hóa đơn</th>
-                           </tr>
-                           </thead>
-                           <tbody>
-                           <tr>
-                             <td>0</td>
-                             <td>0</td>
-                             <td>0</td>
-                           </tr>
-                           <tr>
-                             <td>0</td>
-                             <td>0</td>
-                             <td>0</td>
-                           </tr>
-                           <tr>
-                             <td>0</td>
-                             <td>0</td>
-                             <td>0</td>
-                           </tr>
-                           </tbody>
-                         </table>
-                       </div>
-                     </div>
+                    <div style="display: flex">
+                      <div class="text-Ds">
+                        Tổng số tiền:
+                      </div>
+                      <div class="text-Ds" style="font-weight: 600; color: red;margin-left: 8px">
+                        2.000.000vnd
+                      </div>
+                    </div>
                   </div>
 
-                <div class="box-two-view">
-                 <div class="text-top3"> Đơn hàng mới trong ngày</div>
-                  <div>
-                    <table class="table table-bordered">
-                      <thead>
-                      <tr>
-                        <th style="text-align: center;width: 110px">STT</th>
-                        <th style="text-align: center;">Mã Đơn Hàng</th>
-                        <th style="text-align: center;">Tài khoản đặt</th>
-                        <th style="text-align: center;width: 120px">Số lượng</th>
-                        <th style="text-align: center;width: 130px">Giá tiền</th>
-                        <th style="text-align: center;width: 100px">Chi tiết</th>
-                        <th style="text-align: center;width: 145px;">Trạng thái</th>
-                      </tr>
-                      </thead>
-                      <tbody>
-                      <tr>
-                        <td>0</td>
-                        <td>0</td>
-                        <td>0</td>
-                        <td>0</td>
-                        <td>0</td>
-                        <td>0</td>
-                        <td>0</td>
-                      </tr>
-                      <tr>
-                        <td>0</td>
-                        <td>0</td>
-                        <td>0</td>
-                        <td>0</td>
-                        <td>0</td>
-                        <td>0</td>
-                        <td>0</td>
-                      </tr>
-                      <tr>
-                        <td>0</td>
-                        <td>0</td>
-                        <td>0</td>
-                        <td>0</td>
-                        <td>0</td>
-                        <td>0</td>
-                        <td>0</td>
-                      </tr>
-                      <tr>
-                        <td>0</td>
-                        <td>0</td>
-                        <td>0</td>
-                        <td>0</td>
-                        <td>0</td>
-                        <td>0</td>
-                        <td>0</td>
-                      </tr>
-                      <tr>
-                        <td>0</td>
-                        <td>0</td>
-                        <td>0</td>
-                        <td>0</td>
-                        <td>0</td>
-                        <td>0</td>
-                        <td>0</td>
-                      </tr>
-                      </tbody>
-                    </table>
-                  </div>
-                  <div class="box-size-table">
-                    <div class="text-box-size-table">1 của tổng số 1</div>
-                    <div class="box-arrow">
-                      <div class="box-extra-arrow"  >
-                        <img src="next.png" style="width: 24px" alt="">
-                      </div>
-                      <div class="box-extra-arrow"  >
-                        <img src="back-arrow.png" style="width: 24px" alt="">
-                      </div>
-                      <div class="box-extra-arrow"  >
-                        <img src="right-arrow.png" style="width: 24px" alt="">
-                      </div>
-                      <div class="box-extra-arrow"  >
-                        <img src="back.png" style="width: 24px" alt="">
-                      </div>
+                  <div class="box-two-extra">
+                    <div class="text-top3">
+                      Top khách hàng mua nhiều
+                    </div>
+                    <div>
+                      <table class="table table-bordered">
+                        <thead>
+                        <tr>
+                          <th style="text-align: center;width: 110px">STT</th>
+                          <th style="text-align: center;">Tên</th>
+                          <th style="text-align: center;">Tài khoản đặt</th>
+                          <th style="text-align: center;">Số hóa đơn</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                          <td>0</td>
+                          <td>0</td>
+                          <td>0</td>
+                        </tr>
+                        <tr>
+                          <td>0</td>
+                          <td>0</td>
+                          <td>0</td>
+                        </tr>
+                        <tr>
+                          <td>0</td>
+                          <td>0</td>
+                          <td>0</td>
+                        </tr>
+                        </tbody>
+                      </table>
                     </div>
                   </div>
                 </div>
+
+                <div class="box-two-view">
+                  <div class="text-top3 oderNew"> Đơn hàng mới trong ngày</div>
+                  <div class="table-order-New" v-if="sizeOder !== 0">
+                    <div style="height: 98%">
+                      <table class="table table-bordered">
+                        <thead>
+                        <tr>
+                          <th style="text-align: center;width: 110px">STT</th>
+                          <th style="text-align: center;">Mã Đơn Hàng</th>
+                          <th style="text-align: center;">Tài khoản đặt</th>
+                          <th style="text-align: center;width: 120px">Số lượng</th>
+                          <th style="text-align: center;width: 130px">Giá tiền</th>
+                          <th style="text-align: center;width: 100px">Chi tiết</th>
+                          <th style="text-align: center;width: 145px;">Trạng thái</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr v-for="(item,index) in dataOrderNews[indexSize-1]">
+                          <td>\{{((indexSize-1) * 4)+index+1}}</td>
+                          <td>\{{item._id}}</td>
+                          <td>\{{item.customer_email}}</td>
+                          <td>\{{item.total_quantity}}</td>
+                          <td>\{{formatPrice(item.total_amount)}}</td>
+                          <td>
+                            <img width="40px" src="detail.png" class="btn btn-primary btn-sm"
+                                 @click="openModalXemChiTiet(dataOrderNews[indexSize-1][index])"/>
+                          </td>
+                          <td>
+                            <div v-if="item.status === 0" class="text-Status-table">
+                              Chờ xác nhận
+                            </div>
+                            <div v-if="item.status === 1" class="text-Status-table">
+                              Chờ lấy hàng
+                            </div>
+                            <div v-if="item.status === 2" class="text-Status-table">
+                              Chờ giao hàng
+                            </div>
+                            <div v-if="item.status === 3 || item.status === 9 " class="text-Status-table">
+                              Đã giao
+                            </div>
+                            <div v-if="item.status === 8" class="text-Status-table">
+                              Đơn Hủy
+                            </div>
+                            <div v-if="item.status === 5" class="text-Status-table">
+                              Trả hàng
+                            </div>
+                            <div v-if="item.status === 6" class="text-Status-table">
+                              Đơn hoàn
+                            </div>
+                          </td>
+                        </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                    <div class="box-size-table" v-if="sizeOder > 4">
+                      <div class="text-box-size-table">\{{sizeTable(indexSize)}} của tổng số \{{sizeOder}}</div>
+                      <div class="box-arrow">
+                        <div class="box-extra-arrow" @click="backSize(dataOrderNews)">
+                          <img src="next.png" style="width: 24px" alt="">
+                        </div>
+                        <div class="box-extra-arrow" @click="arrowBackSize(dataOrderNews)">
+                          <img src="back-arrow.png" style="width: 24px" alt="">
+                        </div>
+                        <div class="box-extra-arrow" @click="arrowNextSize(dataOrderNews)">
+                          <img src="right-arrow.png" style="width: 24px" alt="">
+                        </div>
+                        <div class="box-extra-arrow" @click="nextSize(dataOrderNews)">
+                          <img src="back.png" style="width: 24px" alt="">
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="table-no-Order" v-if="sizeOder === 0">
+                    Chưa có đơn hàng mới nào trong ngày
+                  </div>
+                </div>
+
               </div>
             </div>
-
-
           </div>
 
         </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="xemChiTiet" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+       aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Thông tin chi tiết</h5>
+          <button type="button" class="close" @click="closeModalXemChiTiet" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div style="margin-bottom: 2px" class="modal-body">
+          <div>
+            Họ và tên: \{{dataXemChiTiet.userName}} <br>
+            Số điện thoại: \{{dataXemChiTiet.phone}}<br>
+            Địa chỉ: \{{dataXemChiTiet.address}}
+          </div>
+          <div v-for="(item,index) in dataXemChiTiet.products" style="display: flex;padding: 12px">
+            <img style="height: 80px; margin-right: 8px;width: 80px;  border-radius: 8px;"
+                 :src=(item.img_product) alt="">
+            <div style="width: 100%">
+              <div style="font-weight: 700;font-size: 16px">
+                \{{item.name_Product}}
+              </div>
+              <div style="display: flex;justify-content: space-between;">
+
+                <div style="display: flex">
+                  <div style="color:#656769; margin-right: 7px">
+                    \{{item.name_Color}}
+                  </div>
+                  <div style="color:#656769;">
+                    \{{item.name_Size}}
+                  </div>
+                </div>
+
+                <div>
+                  x \{{item.quantityProduct}}
+                </div>
+              </div>
+              <div style="text-align: end;color: red">
+                \{{formatPrice(item.name_Price)}}
+
+              </div>
+            </div>
+          </div>
+
+          <div style="display: flex; text-align: end;justify-content: end;">
+            Tổng tiền:
+            <div style="color: red;font-weight: 700;margin-left: 7px;"> \{{formatPrice(dataXemChiTiet.total_All)}}</div>
+          </div>
+          <div style="display: flex; text-align: end;justify-content: end;"
+               v-if="dataXemChiTiet.status === 3 || dataXemChiTiet.status === 9">
+            Ngày giao: \{{formatDate(dataXemChiTiet.order_date)}}
+          </div>
+          <div style="display: flex; text-align: end;justify-content: end;"
+               v-if="dataXemChiTiet.status !== 3 && dataXemChiTiet.status !== 9">
+            Ngày đặt: \{{formatDate(dataXemChiTiet.order_date)}}
+          </div>
+          <div style="display: flex;" v-if="dataXemChiTiet.lyDoHuyDon && dataXemChiTiet.status === 9">
+            Lý do hủy trả hàng:
+            <div style="font-weight: 600;margin-left: 7px;"> \{{dataXemChiTiet.lyDoHuyDon}}</div>
+          </div>
+          <div style="display: flex;" v-if="dataXemChiTiet.lyDoHuyDon && dataXemChiTiet.status !== 9">
+            Lý do hủy đơn hàng:
+            <div style="font-weight: 600;margin-left: 7px;"> \{{dataXemChiTiet.lyDoHuyDon}}</div>
+          </div>
+        </div>
+
       </div>
     </div>
   </div>
@@ -672,8 +706,18 @@
     data: {
       tinNhanMoi: 0,
       donHangMoi: 0,
-      boxOne:false,
-      boxTwo:true
+      boxOne: false,
+      boxTwo: true,
+      totalUser: 0,
+      totalUserNew: 0,
+      totalUserActivity: 0,
+      totalUserBlock: 0,
+      numberYear: ['2021', '2022', '2023', '2024', '2025', '2026', '2027', '2028', '2029'],
+      selectYear: new Date().getFullYear(),
+      dataOrderNews: {},
+      dataXemChiTiet: {},
+      indexSize: 1,
+      sizeOder: 0
     },
     mounted() {
       const socket = io();
@@ -681,6 +725,8 @@
       socket.on('server-send', () => {
         self.GetAllDataChat();
         self.GetDataCart();
+        self.GetDataUser();
+        self.GetOrderNews();
       });
       this.socket = socket;
     },
@@ -691,15 +737,66 @@
       }
     },
     methods: {
-      tabTwo(){
-          var self = this
+      sizeTable(vale) {
+        const start = (vale - 1) * 4 + 1
+        const end = (vale - 1) * 4 + 4
+        return `${start} - ${end}`;
+      },
+      nextSize(arr) {
+        var self = this
+        self.indexSize = arr.length
+      },
+      arrowNextSize(arr) {
+        var self = this
+        var i = self.indexSize
+        if (0 < i && i < arr.length) {
+          self.indexSize = i + 1
+        }
+        console.log(i)
+      },
+      arrowBackSize(arr) {
+        var self = this
+        var i = self.indexSize
+        if (1 < i && i <= arr.length) {
+          self.indexSize = i - 1
+        }
+        console.log(i)
+      },
+      backSize(arr) {
+        var self = this
+        self.indexSize = 1
+      },
+      formatDate(vale) {
+        const date = new Date(vale);
+        const year = date.getFullYear();
+        const month = date.getMonth() + 1;
+        const day = date.getDate();
+        return `${day}-${month}-${year}`;
+      },
+      formatPrice(value) {
+        let val = (value / 1).toFixed(0);
+        return val.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + " đ";
+      },
+      openModalXemChiTiet(data) {
+        this.dataXemChiTiet = data
+        $('#xemChiTiet').modal('show');
+      },
+      closeModalXemChiTiet() {
+        this.dataXemChiTiet = {};
+        $('#xemChiTiet').modal('hide');
+      },
+      tabTwo() {
+        var self = this
         self.boxOne = true
         self.boxTwo = false
       },
-      tabOne(){
+      tabOne() {
         var self = this
         self.boxOne = false
         self.boxTwo = true
+      },
+      selectClickYear() {
+        vm.GetThongKeYear()
       },
       GetAllDataChat: function () {
         var self = this;
@@ -718,11 +815,6 @@
                 return a.status ? -1 : 1;
               });
               self.tinNhanMoi = sortedData.filter(item => item.status === true).length
-
-              var load = document.getElementById("load")
-              var duLieu = document.getElementById("hienThidata")
-              load.style.display = "none"
-              duLieu.style.display = "block"
             })
             .catch(error => {
               console.error(error);
@@ -744,97 +836,146 @@
               console.error(error);
             });
       },
+
+      GetDataUser: function () {
+        var self = this;
+        fetch('/totalUser', {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+        })
+            .then(response => response.json())
+            .then(data => {
+              self.totalUser = data
+            })
+            .catch(error => {
+              console.error(error);
+            });
+        fetch('/totalNewUser', {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+        })
+            .then(response => response.json())
+            .then(data => {
+              self.totalUserNew = data
+            })
+            .catch(error => {
+              console.error(error);
+            });
+        fetch('/totalUserActive', {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+        })
+            .then(response => response.json())
+            .then(data => {
+              self.totalUserActivity = data
+            })
+            .catch(error => {
+              console.error(error);
+            });
+        fetch('/totalUserBlock', {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+        })
+            .then(response => response.json())
+            .then(data => {
+              self.totalUserBlock = data
+            })
+            .catch(error => {
+              console.error(error);
+            });
+      },
+      GetTopFive: function () {
+        fetch('/statistics/sold-products', {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+        })
+            .then(response => response.json())
+            .then(data => {
+
+              let dataAll = [];
+              for (let i = 0; i < data.length; i++) {
+                dataAll.push({
+                  name: data[i].name,
+                  y: parseFloat(data[i].totalDetail)
+                })
+              }
+              highChart(dataAll)
+              var load = document.getElementById("load")
+              var duLieu = document.getElementById("hienThidata")
+              load.style.display = "none"
+              duLieu.style.display = "block"
+            })
+            .catch(error => {
+              console.error(error);
+            });
+      },
+      GetThongKeYear: function () {
+        var self = this
+        fetch('/statistics/revenue/' + self.selectYear, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+        })
+            .then(response => response.json())
+            .then(data => {
+              let dataAllRevenue = [];
+              for (let i = 0; i < data.length; i++) {
+                dataAllRevenue.push(data[i].totalRevenue)
+              }
+              highChartColum(dataAllRevenue)
+            })
+            .catch(error => {
+              console.error(error);
+            });
+      },
+      GetOrderNews: function () {
+        var self = this
+        fetch('/orderNews', {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+        })
+            .then(response => response.json())
+            .then(data => {
+              var oderNews = splitList(data, 4)
+              self.dataOrderNews = oderNews
+              self.sizeOder = data.length
+            })
+            .catch(error => {
+              console.error(error);
+            });
+      },
     }
   })
 
+  vm.GetOrderNews();
+  vm.GetThongKeYear();
+  vm.GetTopFive();
+  vm.GetDataUser();
   vm.GetAllDataChat();
   vm.GetDataCart();
-</script>
 
-<script>
-
-  function handleSelectChange(event) {
-    var selectedValue = event.target.value;
-
-    sreach(selectedValue)
+  function splitList(arr, size) {
+    let result = [];
+    for (let i = 0; i < arr.length; i += size) {
+      let chunk = arr.slice(i, i + size);
+      result.push(chunk);
+    }
+    return result;
   }
 
-  var selectElement = document.getElementById("dateYearSelect");
-  selectElement.onchange = handleSelectChange;
-  selectElement.value = "2023";
-
-  function sreach(year) {
-    fetch('/statistics/revenue/' + year, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-    })
-        .then(response => response.json())
-        .then(data => {
-
-          let dataAllRevenue = [];
-          let dataAllProfit = [];
-          for (let i = 0; i < data.length; i++) {
-            dataAllRevenue.push(data[i].totalRevenue)
-            dataAllProfit.push(data[i].totalProfit)
-          }
-          highChartColum(year, dataAllRevenue, dataAllProfit)
-        })
-        .catch(error => {
-          console.error(error);
-        });
-  }
-
-
-  function loadData() {
-    fetch('/statistics/sold-products', {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-    })
-        .then(response => response.json())
-        .then(data => {
-
-          let dataAll = [];
-          for (let i = 0; i < data.length; i++) {
-            dataAll.push({
-              name: data[i].name,
-              y: parseFloat(data[i].totalDetail)
-            })
-          }
-          highChart(dataAll)
-        })
-        .catch(error => {
-          console.error(error);
-        });
-
-    fetch('/statistics/revenue/2023', {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-    })
-        .then(response => response.json())
-        .then(data => {
-
-          let dataAllRevenue = [];
-          let dataAllProfit = [];
-          for (let i = 0; i < data.length; i++) {
-            dataAllRevenue.push(data[i].totalRevenue)
-            dataAllProfit.push(data[i].totalProfit)
-          }
-          highChartColum(2023, dataAllRevenue, dataAllProfit)
-        })
-        .catch(error => {
-          console.error(error);
-        });
-  }
-
-  loadData()
-
-  //vẽ biểu đồ
   function highChart(dataAll) {
     Highcharts.chart('container', {
       credits: {
@@ -886,8 +1027,7 @@
       }]
     });
   }
-
-  function highChartColum(year, dataAllRevenue, dataAllProfit) {
+  function highChartColum(dataAllRevenue) {
     Highcharts.chart('container2', {
       credits: {
         enabled: false
