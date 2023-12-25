@@ -18,6 +18,8 @@ const path = require('path');
 const cors = require('cors');
 const mongoose = require('mongoose');
 const dataClient = require("../Models/dataClient");
+const CartItem = require('../Models/CartItem');
+const FavouriteItem = require('../Models/FavouriteItem');
 
 app.use(cors());
 app.use(express.urlencoded({extended: true}));
@@ -508,6 +510,10 @@ app.post('/home/delete/:id', async (req, res) => {
 
     try {
         await Product.deleteOne({_id: id});
+        await FavouriteItem.deleteMany({product: id });
+        await CartItem.deleteMany({product: id });
+
+        
         res.redirect('/warehouse')
     } catch (err) {
         console.error('Lỗi khi xoá dữ liệu:', err);

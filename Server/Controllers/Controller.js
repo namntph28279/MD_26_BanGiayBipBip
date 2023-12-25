@@ -118,7 +118,7 @@ app.delete('/delete/:id', async (req, res) => {
         await FavouriteItem.deleteMany({product: id });
         await CartItem.deleteMany({product: id });
 
-        io.sockets.emit("productDeleted", id);
+        
         res.sendStatus(200);
     } catch (err) {
         console.error('Lỗi khi xoá dữ liệu:', err);
@@ -626,53 +626,6 @@ app.get('/statistics/sold-products', async (req, res) => {
         res.status(500).json({message: 'Lỗi máy chủ nội bộ'});
     }
 });
-
-
-// // Thống kê doanh số và lợi nhuận theo năm
-// app.get('/statistics/revenue/:year', async (req, res) => {
-//     try {
-//         const year = parseInt(req.params.year);
-//         const successfulOrders = await orderDetail.find({
-//             status: 3,
-//             $expr: { $eq: [{ $year: '$order_date' }, year] }
-//         });
-
-//         const totalRevenue = successfulOrders.reduce((accumulator, order) => {
-//             return accumulator + order.total_amount;
-//         }, 0);
-
-//         res.json({ totalRevenue });
-//     } catch (error) {
-//         console.error(error);
-//         res.status(500).json({ message: 'Lỗi máy chủ nội bộ' });
-//     }
-// });
-
-// // Thống kê doanh số và lợi nhuận theo tháng
-// app.get('/statistics/revenue/:year/:month', async (req, res) => {
-//     try {
-//         const year = parseInt(req.params.year);
-//         const month = parseInt(req.params.month);
-//         const successfulOrders = await orderDetail.find({
-//             status: 4,
-//             $expr: {
-//                 $and: [
-//                     { $eq: [{ $year: '$order_date' }, year] },
-//                     { $eq: [{ $month: '$order_date' }, month] }
-//                 ]
-//             }
-//         });
-
-//         const totalRevenue = successfulOrders.reduce((accumulator, order) => {
-//             return accumulator + order.total_amount;
-//         }, 0);
-
-//         res.json({ totalRevenue });
-//     } catch (error) {
-//         console.error(error);
-//         res.status(500).json({ message: 'Lỗi máy chủ nội bộ' });
-//     }
-// });
 
 
 // Thống kê doanh số và lợi nhuận theo năm
@@ -1481,6 +1434,106 @@ app.get('/orderNews', async (req, res) => {
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: 'Đã xảy ra lỗi' });
+    }
+});
+
+//api top khách hàng mua nhiều
+app.get('/top-customers', async (req, res) => {
+    try {
+        // Sử dụng aggregation để nhóm và tính tổng số lượng sản phẩm của từng khách hàng
+        const topCustomers = await Oderdetail.aggregate([
+            {
+                $unwind: "$products"
+            },
+            {
+                $group: {
+                    _id: "$user",
+                    totalQuantity: { $sum: { $toInt: "$products.quantityProduct" } },
+                    totalAmount: { $sum: "$total_amount" },
+                    totalOrders: { $sum: 1 }
+                }
+            },
+            {
+                $sort: { totalQuantity: -1 }
+            },
+            {
+                $limit: 3 // Lấy top 3 khách hàng mua nhiều nhất
+            },
+            {
+                $lookup: {
+                    from: "users", // Tên bảng users trong cơ sở dữ liệu
+                    localField: "_id",
+                    foreignField: "_id",
+                    as: "userDetails"
+                }
+            },
+            {
+                $unwind: "$userDetails"
+            },
+            {
+                $project: {
+                    _id: 0,
+                    name: { $arrayElemAt: [{ $split: ["$userDetails.username", "@"] }, 0] }, // Lấy phần tử đầu tiên của mảng
+                    username: "$userDetails.username",
+                    totalOrders: 1,
+                    totalQuantity: 1
+                }
+            }
+        ]);
+
+        res.json(topCustomers);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+});
+
+//api trả về đơn hàng mới đặt theo ngày
+app.get('/api/orders-by-date/:year/:month/:day', async (req, res) => {
+    try {
+        const { year, month, day } = req.params;
+
+        // Convert date parameters to a Date object
+        const searchDate = new Date(`${year}-${month}-${day}`);
+
+        // Query orders with a specific date and status
+        const orders = await Oderdetail.find({
+            order_date: {
+                $gte: searchDate,
+                $lt: new Date(searchDate.getTime() + 24 * 60 * 60 * 1000),
+            },
+            status: 0,
+        });
+
+        res.json(orders);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+});
+
+//api trả về doanh số theo năm
+app.get('/api/orders-by-year/:year', async (req, res) => {
+    try {
+        const { year } = req.params;
+
+        // Tìm tất cả các đơn hàng thành công trong năm cụ thể
+        const successfulOrders = await orderDetail.find({
+            status: 3,
+            $expr: {
+                $eq: [{ $year: '$order_date' }, parseInt(year)]
+            }
+        });
+
+        // Tính tổng doanh số
+        const totalRevenue = successfulOrders.reduce((accumulator, order) => {
+            return accumulator + order.total_amount;
+        }, 0);
+
+        res.json({ totalRevenue });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Lỗi máy chủ nội bộ' });
     }
 });
 module.exports = app;
