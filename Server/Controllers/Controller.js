@@ -106,12 +106,18 @@ app.put('/edit/:id', async (req, res) => {
     }
 });
 
+const io = require('../server');
+
 // Định nghĩa endpoint để xoá dữ liệu
 app.delete('/delete/:id', async (req, res) => {
     const id = req.params.id;
 
     try {
         await Product.deleteOne({_id: id});
+        await FavouriteItem.deleteMany({product: id });
+        await CartItem.deleteMany({product: id });
+
+        io.sockets.emit("productDeleted", id);
         res.sendStatus(200);
     } catch (err) {
         console.error('Lỗi khi xoá dữ liệu:', err);
