@@ -1543,4 +1543,17 @@ app.get('/api/orders-by-year/:year', async (req, res) => {
         res.status(500).json({ message: 'Lỗi máy chủ nội bộ' });
     }
 });
+
+//api trả về tổng số sản phẩm
+app.get('/api/countProducts', async (req, res) => {
+    try {
+        
+        const totalProducts = await Product.countDocuments();
+
+        res.json({ totalProducts });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Lỗi máy chủ nội bộ' });
+    }
+});
 module.exports = app;
