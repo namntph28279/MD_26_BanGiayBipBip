@@ -6,6 +6,8 @@ import { passwordValidator } from '../../helpers/passwordValidator';
 import axios from 'axios';
 import { CommonActions } from '@react-navigation/native';
 import url from "../../api/url";
+import {io} from "socket.io-client";
+import {getUrl} from "../../api/socketio";
 
 function Register({ navigation }) {
     const [username, setUsername] = useState('');
@@ -53,6 +55,10 @@ function Register({ navigation }) {
                 if (response.status === 201) {
                     Alert.alert("Xin chào", "Bạn đã đăng ký thành công ")
                     console.log('Đăng ký thành công');
+
+                    const socketInstance = io(getUrl());
+                    socketInstance.emit('client-send');
+
                     navigation.dispatch(
                         CommonActions.reset({
                             index: 0,

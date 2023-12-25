@@ -2,6 +2,7 @@ const Product = require('../Models/Product');
 const CartItem = require('../Models/CartItem');
 const FavouriteItem = require('../Models/FavouriteItem');
 const Order = require('../Models/Order');
+const Oderdetail = require("../Models/Oderdetail");
 const User = require('../Models/User');
 const Address = require('../Models/Address');
 const Profile = require('../Models/Profile');
@@ -1426,4 +1427,60 @@ app.post('/addIdClient', async (req, res) => {
         console.log(e)
     }
 })
+
+app.get('/totalUser',async (req,res) =>{
+    const data = await User.find().count();
+    res.json(data)
+})
+app.get('/totalNewUser', async (req, res) => {
+    const currentDate = new Date();
+    const currentMonth = currentDate.getMonth() + 1;
+    const currentYear = currentDate.getFullYear();
+
+    const startDate = new Date(currentYear, currentMonth - 1, 1);
+    const endDate = new Date(currentYear, currentMonth, 0);
+    try {
+        const data = await User.find({
+            date: {
+                $gte: startDate,
+                $lte: endDate
+            }
+        }).count();
+
+        res.json(data);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Đã xảy ra lỗi' });
+    }
+});
+app.get('/totalUserActive',async (req,res) =>{
+    const data = await User.findOne({status : false}).count();
+    res.json(data)
+})
+app.get('/totalUserBlock',async (req,res) =>{
+    const data = await User.findOne({status : true}).count();
+    res.json(data)
+})
+
+app.get('/orderNews', async (req, res) => {
+    const currentDate = new Date();
+    const currentYear = currentDate.getFullYear();
+    const currentMonth = currentDate.getMonth() + 1;
+    const currentDay = currentDate.getDate();
+
+    const startDate = new Date(currentYear, currentMonth - 1, currentDay, 0, 0, 0);
+    const endDate = new Date(currentYear, currentMonth - 1, currentDay, 23, 59, 59);
+    try {
+        const data = await orderDetail.find({
+            order_date: {
+                $gte: startDate,
+                $lte: endDate
+            }
+        }).sort({order_date: -1});
+        res.json(data);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Đã xảy ra lỗi' });
+    }
+});
 module.exports = app;

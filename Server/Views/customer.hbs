@@ -20,8 +20,10 @@
         }
 
         .container {
-            margin-top: 20px;
-        }
+        max-width: 1300px; 
+        margin: 0 auto;
+        padding: 0 15px;
+    }
 
         h2 {
             text-align: center;
@@ -52,7 +54,7 @@
 
         .table {
             width: 100%;
-            max-width: 1500px;
+            max-width: 2500px;
             margin: 0 auto;
             border-collapse: collapse;
             margin-bottom: 20px;
@@ -113,57 +115,58 @@
         .modal-footer button {
             cursor: pointer;
         }
+
+        .filter-container select {
+            padding: 8px;
+            border-radius: 5px;
+            border: 1px solid #ced4da;
+        }
     </style>
 </head>
 
 <body>
     <div class="container">
         <h2>Danh sách khách hàng</h2>
-
-        <div class="search-container">
-            <input type="text" class="search-input" id="searchInput" placeholder="Tìm kiếm...">
-        </div>
         <div class="filter-container">
-
-            <input type="radio" name="statusFilter" id="allUsers" checked>
-            <label for="allUsers">Tất cả</label>
-            <input type="radio" name="statusFilter" id="bannedUsers">
-            <label for="bannedUsers">Đã chặn</label>
-            {{!-- <input type="radio" name="statusFilter" id="unbannedUsers">
-            <label for="unbannedUsers">Chưa chặn</label> --}}
+            <input type="text" class="search-input" id="searchInput" placeholder="Tìm kiếm...">
+            <select id="statusFilter">
+                <option value="allUsers" selected>Tất cả</option>
+                <option value="bannedUsers">Đã chặn</option>
+            </select>
         </div>
+
         <div class="table-responsive">
             <table class="table table-bordered">
                 <thead>
                     <tr>
-                         <th rowspan="2">STT</th>
-                        <th scope="col">ID</th>
-                        <th scope="col">Ảnh đại diện</th>
+                        <th rowspan="2">STT</th>
+                        <th scope="col" colspan="2">ID</th>
+                        <th scope="col">Ảnh</th>
                         <th scope="col" colspan="2">Tên</th>
-                        <th scope="col">Giới tính</th>
+                        <th scope="col">Giới Tính</th>
                         <th scope="col" colspan="2">Ngày sinh</th>
-                          <th scope="col" colspan="2">Email</th>
-                        <th scope="col">Số điện thoại</th>
+                        <th scope="col" colspan="3">Email</th>
+                        <th scope="col" colspan="2">SDT</th>
                         <th scope="col" colspan="2">Địa chỉ</th>
-                        <th scope="col">Trạng Thái</th>
-                        <th scope="col" colspan="2">Lý do chặn</th>
+                        {{!-- <th scope="col">Trạng Thái</th> --}}
+                        <th scope="col">Lý do chặn</th>
                         <th scope="col">Hành động</th>
                     </tr>
                 </thead>
                 <tbody>
                     {{#each data}}
                     <tr>
-                         <td>{{@index}}</td>
-                        <td style="color: #ff0000;">{{_id}}</td>
+                        <td>{{@index}}</td>
+                        <td style="color: #ff0000; font-size: 8px;" colspan="2">{{_id}}</td>
                         <td><img src="{{profile.avatar}}" alt="Avatar" width="70%"></td>
                         <td colspan="2">{{profile.fullname}}</td>
                         <td>{{profile.gender}}</td>
                         <td colspan="2">{{profile.birthday}}</td>
-                         <td colspan="2">{{profile.username}}</td>
-                        <td>{{address.phone}}</td>
+                        <td colspan="3" style=" font-size: 10px;">{{profile.username}}</td>
+                        <td colspan="2">{{address.phone}}</td>
                         <td colspan="2">{{address.address}}</td>
-                        <td>{{profile.status}}</td>
-                        <td style="color: #e813cf; font-weight: bold;" colspan="2">{{block_reason}}</td>
+                        {{!-- <td>{{profile.status}}</td> --}}
+                        <td style="color: #e813cf; font-weight: bold;">{{block_reason}}</td>
                         <td class="action-buttons">
                             {{#if profile.status}}
                             <button class="unban-button" data-toggle="modal" data-target="#unbanConfirmationModal"
@@ -248,12 +251,13 @@
             });
         });
 
-        var statusFilterRadios = document.getElementsByName('statusFilter');
         var searchInput = document.getElementById('searchInput');
+
+        var statusFilter = document.getElementById('statusFilter');
 
         function filterRows() {
             var filter = searchInput.value.toLowerCase();
-            var statusFilter = Array.from(statusFilterRadios).find(radio => radio.checked).id;
+            var selectedStatus = statusFilter.value;
 
             var rows = document.querySelectorAll('tbody tr');
 
@@ -261,18 +265,17 @@
                 var text = row.innerText.toLowerCase();
                 var status = row.querySelector('.action-buttons button').innerText.toLowerCase();
                 var shouldDisplay = text.includes(filter) && (
-                    (statusFilter === 'allUsers') ||
-                    (statusFilter === 'bannedUsers' && status.includes('mở chặn')) ||
-                    (statusFilter === 'unbannedUsers' && status.includes('chặn'))
+                    (selectedStatus === 'allUsers') ||
+                    (selectedStatus === 'bannedUsers' && status.includes('mở chặn')) ||
+                    (selectedStatus === 'unbannedUsers' && status.includes('chặn'))
                 );
 
                 row.style.display = shouldDisplay ? '' : 'none';
             });
         }
 
-        statusFilterRadios.forEach(function (radio) {
-            radio.addEventListener('change', filterRows);
-        });
+        statusFilter.addEventListener('change', filterRows);
+
 
         searchInput.addEventListener('input', filterRows);
     </script>

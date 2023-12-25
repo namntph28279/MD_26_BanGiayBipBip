@@ -64,6 +64,19 @@
         .mess:hover::after {
             width: 100%;
         }
+        .search-container {
+            float: left;
+            justify-content: space-between;
+            margin-left: 15px;
+            line-height: 20px;
+        }
+
+        .search-input {
+            padding: 2px 5px 2px 5px;
+            width: 100%;
+            border-radius: 5px;
+            border: 1px solid #ced4da;
+        }
     </style>
 </head>
 
@@ -153,7 +166,7 @@
                     <div class="card-header">
 
                         <div class="dropdown">
-                            <button class="btn btn-secondary dropdown-toggle float-left" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <button class="btn btn-outline-secondary dropdown-toggle float-left" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                                 {{#if category}}
                                     {{category}}
                                 {{else}}
@@ -166,9 +179,12 @@
                                 <li><a class="dropdown-item" href="/warehouse/women">Nữ</a></li>
                                 <li><a class="dropdown-item" href="/warehouse/children">Trẻ em</a></li>
                             </ul>
+
                         </div>
-                        
-                        
+
+                        <div class="search-container">
+                            <input type="text" class="search-input" id="searchInput" placeholder="Tìm kiếm...">
+                        </div>
                         <button class="btn btn-primary float-right" data-toggle="modal" data-target="#addProductModal">Thêm sản phẩm
                         </button>
 
@@ -378,7 +394,17 @@
             </div>
         </div>
     </div>
+    <script>
+        document.getElementById('searchInput').addEventListener('input', function () {
+            var filter = this.value.toLowerCase();
+            var rows = document.querySelectorAll('tbody tr');
 
+            rows.forEach(function (row) {
+                var text = row.innerText.toLowerCase();
+                row.style.display = text.includes(filter) ? '' : 'none';
+            });
+        });
+    </script>
 
 </body>
 

@@ -1,6 +1,6 @@
 export function getUrl() {
 
-    return 'http://192.168.4.173';
+    return 'http://172.20.10.2';
 
 
 }

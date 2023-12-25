@@ -1,3 +1,3 @@
-const ipAddress = 'http://192.168.4.173';
+const ipAddress = 'http://172.20.10.2';
 
 export default ipAddress;
