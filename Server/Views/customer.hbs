@@ -325,7 +325,76 @@
             </div>
 
         </div>
+        <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/vue@2"></script>
         <script>
+            const vm = new Vue({
+                el: '#dataALL',
+                data: {
+                    tinNhanMoi: 0,
+                    donHangMoi: 0,
+                },
+                methods: {
+                    GetDataCart: function () {
+                        return new Promise((resolve, reject) => {
+                            fetch('/loadDataChoXacNhan', {
+                                method: 'GET',
+                                headers: {
+                                    'Content-Type': 'application/json'
+                                },
+                            })
+                                .then(response => response.json())
+                                .then(data => {
+                                    resolve(data.length);
+                                })
+                                .catch(error => {
+                                    reject(error);
+                                });
+                        });
+                    },
+                    GetAllDataChat: function () {
+                        return new Promise((resolve, reject) => {
+                            fetch('/chatAllShop', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json'
+                                }
+                            })
+                                .then(response => response.json())
+                                .then(data => {
+                                    const sortedData = data.sort((a, b) => {
+                                        if (a.status === b.status) {
+                                            return 0;
+                                        }
+                                        return a.status ? -1 : 1;
+                                    });
+                                    resolve(sortedData.filter(item => item.status === true).length);
+                                })
+                                .catch(error => {
+                                    reject(error);
+                                });
+                        });
+                    },
+                },
+                mounted() {
+                    this.GetDataCart()
+                        .then(count => {
+                            this.donHangMoi = count;
+                        })
+                        .catch(error => {
+                            console.error(error);
+                        });
+
+                    this.GetAllDataChat()
+                        .then(count => {
+                            this.tinNhanMoi = count;
+                        })
+                        .catch(error => {
+                            console.error(error);
+                        });
+                },
+            });
+
             function setUserId(userId) {
                 document.getElementById('modalUserId').innerText = userId;
                 document.getElementById('modalUserIdInput').value = userId;
@@ -337,7 +406,6 @@
                 document.getElementById('modalUserIdInput').value = userId;
                 document.getElementById('blockForm').submit();
             }
-
 
             document.getElementById('searchInput').addEventListener('input', function () {
                 var filter = this.value.toLowerCase();
@@ -374,10 +442,8 @@
 
             statusFilter.addEventListener('change', filterRows);
 
-
             searchInput.addEventListener('input', filterRows);
-        </script>
-        <script>
+
             function unbanUser() {
                 var userId = document.getElementById('modalUserId').innerText;
 
@@ -404,6 +470,8 @@
                     });
             }
         </script>
+
+
 </body>
 
 </html>
