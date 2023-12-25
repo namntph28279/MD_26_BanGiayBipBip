@@ -11,6 +11,14 @@ const getDataProduct = async () => {
         return [];
     }
 };
+const getDataAllUser = async () => {
+    try {
+        const response = await url.get("/user");
+        return response.data;
+    } catch (error) {
+        return [];
+    }
+};
 
 const getDataTop3SP = async () => {
     try {
@@ -133,6 +141,7 @@ const dataAll = createSlice({
 
     initialState: {
         dataSP: [],
+        dataAU: [],
         dataSPBestSale: [],
         dataSPFav: [],
         dataUserID: [],
@@ -145,6 +154,9 @@ const dataAll = createSlice({
     reducers: {
         setDataSP: (state, action) => {
             state.dataSP = action.payload;
+        },
+        setDataAU: (state, action) => {
+            state.dataAU = action.payload;
         },
         setDataSPBestSale: (state, action) => {
             state.dataSPBestSale = action.payload;
@@ -175,6 +187,7 @@ const dataAll = createSlice({
 
 export const {
     setDataSP,
+    setDataAU,
     setDataSPBestSale,
     setDataSPFav,
     setAsyncStorage,
@@ -189,6 +202,9 @@ export const {
 export const fetchDataAndSetToRedux = () => async (dispatch) => {
     const data = await getDataProduct();
     dispatch(setDataSP(data));
+
+    const dataAllUser = await getDataAllUser();
+    dispatch(setDataAU(dataAllUser));
 
     const dataBestSale = await getDataSPBestSale();
     dispatch(setDataSPBestSale(dataBestSale));
@@ -232,6 +248,11 @@ export const fetchDataOrder = () => async (dispatch) => {
 export const fetchDataUser = () => async (dispatch) => {
     const dataUser = await getDataUser();
     dispatch(setUser(dataUser))
+};
+//
+export const fetchDataAllUser = () => async (dispatch) => {
+    const dataAllUser = await getDataAllUser();
+    dispatch(setDataAU(dataAllUser));
 };
 
 export default dataAll.reducer;

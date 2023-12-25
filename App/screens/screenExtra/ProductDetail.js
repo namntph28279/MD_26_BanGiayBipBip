@@ -48,6 +48,9 @@ function ProductDetail({ route, navigation }) {
     useEffect(() => {
         const fetchData = async () => {
             try {
+                const storedIsBlockedString = await AsyncStorage.getItem('1');  // Lấy ra dưới dạng chuỗi
+            const storedIsBlocked = JSON.parse(storedIsBlockedString);
+            console.log("sta", storedIsBlocked)
                 const response = await url.get(`/product/${productId}`);
                 const data = response.data;
 

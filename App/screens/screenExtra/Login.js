@@ -1,15 +1,20 @@
-import React, { useState } from 'react';
+import React, { useState,useEffect } from 'react';
 import { View, Text, TextInput, TouchableOpacity, Image, Alert, StyleSheet } from 'react-native';
 import axios from 'axios';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as Notifications from "expo-notifications";
 import url from "../../api/url";
-import {fetchDataAndSetToRedux} from "../../redux/AllData";
+import {fetchDataAndSetToRedux, fetchDataAllUser} from "../../redux/AllData";
 import {useDispatch} from "react-redux";
+import { io } from 'socket.io-client';
+import { getUrl } from "../../api/socketio";
 
 const Login = ({ navigation }) => {
     const [userName, setUserName] = useState('');
     const [password, setPassword] = useState('');
+    const [socket, setSocket] = useState(null);
+    const [serverData, setServerData] = useState(null);
+
     const [checkUserName, setCheckUserName] = useState(true);
     const [checkPass, setCheckPass] = useState(true);
     const [validateUserName, setValidateUserName] = useState(true);
@@ -35,6 +40,26 @@ const Login = ({ navigation }) => {
         return true;
     };
 
+    const fetchData = async () => {
+        console.log("startjkjkjkjkj")
+        dispatch(fetchDataAllUser()); 
+    };
+    useEffect(() => {
+        const socketInstance = io(getUrl());
+        setSocket(socketInstance);
+        return () => {
+            socketInstance.disconnect();
+        };
+    }, []);
+
+    useEffect(() => {
+        if (socket) {
+            socket.on('server-send', function (data) {
+                fetchData() // mỗi khi có sự kiện từ máy chủ sẽ gọi lại fechData
+            });
+        }
+    }, [socket]);
+
 
     const handleLogin = async () => {
         if (validate()) {
@@ -55,10 +80,10 @@ const Login = ({ navigation }) => {
                     const isBlocked = userData.status;
                     console.log("sờ ta tus ", userData.status);
 
-                    if (isBlocked === true) {
-                        Alert.alert('Thông báo', 'Tài khoản của bạn đã bị chặn. Vui lòng liên hệ hỗ trợ để biết thêm chi tiết.');
-                        return;  // Dừng việc tiếp tục xử lý
-                    }
+                    // if (isBlocked === true) {
+                    //     Alert.alert('Thông báo', 'Tài khoản của bạn đã bị chặn. Vui lòng liên hệ hỗ trợ để biết thêm chi tiết.');
+                    //     return;  // Dừng việc tiếp tục xử lý
+                    // }
 
                     if (userID) {
 
@@ -66,6 +91,7 @@ const Login = ({ navigation }) => {
                         await AsyncStorage.setItem("Email", userID);
                         await AsyncStorage.setItem("Name",username);
                         await AsyncStorage.setItem("Name1",Name);
+                        await AsyncStorage.setItem('1', JSON.stringify(isBlocked));
                         const pushTokenData = await Notifications.getExpoPushTokenAsync();
                         await AsyncStorage.setItem("TokenApp", pushTokenData.data);
                         await url.post("/checkClientUser", {user: userID, IdClient: pushTokenData.data, status: true});
