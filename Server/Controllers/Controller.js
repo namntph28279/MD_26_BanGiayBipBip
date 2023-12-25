@@ -716,11 +716,14 @@ app.get('/statistics/revenue/:year/:month/:startDay/:endDay', async (req, res) =
 });
 
 //Thống kê 1 ngày
-app.get('/statistics/revenue/:year/:month/:day', async (req, res) => {
+app.get('/statistics/revenueOneDate/:date', async (req, res) => {
     try {
-        const year = parseInt(req.params.year);
-        const month = parseInt(req.params.month);
-        const day = parseInt(req.params.day);
+        const date = req.params.date
+        console.log(date) //log ra:"2023-12-25"
+
+        const year = parseInt(date.substr(0, 4));
+        const month = parseInt(date.substr(5, 2));
+        const day = parseInt(date.substr(8, 2));
 
         const successfulOrders = await orderDetail.find({
             status: 3,
@@ -1369,7 +1372,6 @@ app.post('/addIdClient', async (req, res) => {
         console.log(data.idClient)
         const idClient = await dataClient.findOne({client: data.idClient});
         if (!idClient) {
-            console.log(1)
             const  newClient = new dataClient({
                 client:data.idClient
             })
@@ -1428,7 +1430,8 @@ app.get('/orderNews', async (req, res) => {
             order_date: {
                 $gte: startDate,
                 $lte: endDate
-            }
+            },
+            status: 0
         }).sort({order_date: -1});
         res.json(data);
     } catch (error) {
@@ -1526,11 +1529,15 @@ app.get('/api/orders-by-year/:year', async (req, res) => {
         });
 
         // Tính tổng doanh số
-        const totalRevenue = successfulOrders.reduce((accumulator, order) => {
-            return accumulator + order.total_amount;
-        }, 0);
+       if (successfulOrders){
+           const totalRevenue = successfulOrders.reduce((accumulator, order) => {
+               return accumulator + order.total_amount;
+           }, 0);
 
-        res.json({ totalRevenue });
+           res.json({ totalRevenue });
+       }else {
+           res.json({totalRevenue: 0})
+       }
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: 'Lỗi máy chủ nội bộ' });

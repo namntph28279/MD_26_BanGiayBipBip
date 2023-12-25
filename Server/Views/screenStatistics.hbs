@@ -148,7 +148,6 @@
       padding: 8px;
       border-radius: 8px;
       cursor: pointer;
-      margin-left: 14px;
     }
 
     .box-Main-TK {
@@ -190,6 +189,10 @@
       height: 5%;
     }
 
+    .display_None {
+      display: none;
+    }
+
     .box-total-acc {
       padding: 8px 14px;
       height: 33%;
@@ -206,6 +209,14 @@
       line-height: 42px;
       font-size: 20px;
       font-weight: 600;
+    }
+
+    .text-main-Two {
+      width: 50%;
+      line-height: 42px;
+      font-size: 20px;
+      font-weight: 600;
+      text-align: center;
     }
 
     .box-one {
@@ -318,7 +329,8 @@
       font-size: 24px;
       font-family: sans-serif;
     }
-    .text-Status-table{
+
+    .text-Status-table {
       font-family: sans-serif;
       font-weight: 600;
     }
@@ -402,11 +414,11 @@
         </div>
 
         <div class="box-order-Main">
-          <div id="load" class="load-Spinner">
+          <div :class="checkStatus ? ' ' : 'display_None' " class="load-Spinner">
             <div class="spinner-border text-primary"></div>
           </div>
 
-          <div id="hienThidata" style="display: none">
+          <div id="hienThidata" :class="checkStatus ? 'display_None' : ' ' ">
             <div class="box-All-TK">
               <div class="bg-gray-200 box-one">
                 <div class="text-click-L">
@@ -444,11 +456,20 @@
                     </div>
                   </div>
                   <div class="box-text-total">
-                    <div class="text-main">
+                    <div class="text-main-Two">
                       Tổng số sản phẩm đang có: 100
                     </div>
-                    <div class="text-main">
-                      Tổng doanh số năm: 25.000.000
+                    <div class="text-main-Two" style="display: flex;justify-content: center">
+                      <div>
+                        Tổng doanh số năm
+                      </div>
+                      <div>
+                        <select name="dateYearOne" class="dropdown-Op" v-model="selectYearOne"
+                                @change="selectClickYearOne">
+                          <option v-for="item in numberYear" :value="item" :key="item">\{{item}}</option>
+                        </select>
+                      </div>
+                      <div>: \{{formatPrice(numberMoney)}}</div>
                     </div>
                   </div>
                 </div>
@@ -488,7 +509,7 @@
                         Doanh số trong ngày
                       </div>
                       <div>
-                        <input type="date" class="form-control">
+                        <input type="date" class="form-control" v-model="selectedDate" @change="handleDateChange">
                       </div>
                     </div>
                     <div style="display: flex">
@@ -496,7 +517,7 @@
                         Tổng số tiền:
                       </div>
                       <div class="text-Ds" style="font-weight: 600; color: red;margin-left: 8px">
-                        2.000.000vnd
+                        \{{formatPrice(numberMoneyOneDay)}}
                       </div>
                     </div>
                   </div>
@@ -516,21 +537,13 @@
                         </tr>
                         </thead>
                         <tbody>
-                        <tr>
-                          <td>0</td>
-                          <td>0</td>
-                          <td>0</td>
+                        <tr v-for="(item,index) in dataTopCustom">
+                          <td>Top \{{index + 1}}</td>
+                          <td>\{{item.name}}</td>
+                          <td>\{{item.username}}</td>
+                          <td>\{{item.totalOrders}}</td>
                         </tr>
-                        <tr>
-                          <td>0</td>
-                          <td>0</td>
-                          <td>0</td>
-                        </tr>
-                        <tr>
-                          <td>0</td>
-                          <td>0</td>
-                          <td>0</td>
-                        </tr>
+
                         </tbody>
                       </table>
                     </div>
@@ -564,29 +577,7 @@
                             <img width="40px" src="detail.png" class="btn btn-primary btn-sm"
                                  @click="openModalXemChiTiet(dataOrderNews[indexSize-1][index])"/>
                           </td>
-                          <td>
-                            <div v-if="item.status === 0" class="text-Status-table">
-                              Chờ xác nhận
-                            </div>
-                            <div v-if="item.status === 1" class="text-Status-table">
-                              Chờ lấy hàng
-                            </div>
-                            <div v-if="item.status === 2" class="text-Status-table">
-                              Chờ giao hàng
-                            </div>
-                            <div v-if="item.status === 3 || item.status === 9 " class="text-Status-table">
-                              Đã giao
-                            </div>
-                            <div v-if="item.status === 8" class="text-Status-table">
-                              Đơn Hủy
-                            </div>
-                            <div v-if="item.status === 5" class="text-Status-table">
-                              Trả hàng
-                            </div>
-                            <div v-if="item.status === 6" class="text-Status-table">
-                              Đơn hoàn
-                            </div>
-                          </td>
+                          <td>Chờ xác nhận</td>
                         </tr>
                         </tbody>
                       </table>
@@ -714,10 +705,16 @@
       totalUserBlock: 0,
       numberYear: ['2021', '2022', '2023', '2024', '2025', '2026', '2027', '2028', '2029'],
       selectYear: new Date().getFullYear(),
+      selectYearOne: new Date().getFullYear(),
       dataOrderNews: {},
       dataXemChiTiet: {},
       indexSize: 1,
-      sizeOder: 0
+      sizeOder: 0,
+      dataTopCustom: {},
+      checkStatus: true,
+      numberMoney: 0,
+      selectedDate: new Date().toISOString().split('T')[0],
+      numberMoneyOneDay: 0,
     },
     mounted() {
       const socket = io();
@@ -727,6 +724,7 @@
         self.GetDataCart();
         self.GetDataUser();
         self.GetOrderNews();
+        self.GetDataTopCustom();
       });
       this.socket = socket;
     },
@@ -737,6 +735,10 @@
       }
     },
     methods: {
+      formatPrice(value) {
+        let val = (value / 1).toFixed(0);
+        return val.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + " đ";
+      },
       sizeTable(vale) {
         const start = (vale - 1) * 4 + 1
         const end = (vale - 1) * 4 + 4
@@ -795,8 +797,17 @@
         self.boxOne = false
         self.boxTwo = true
       },
+      selectClickYearOne() {
+        vm.GetThongKeYearOne()
+      },
       selectClickYear() {
         vm.GetThongKeYear()
+      },
+      handleDateChange(event) {
+        var self = this
+        const newDate = event.target.value;
+        self.selectedDate = newDate
+        self.GetDataTKOneDay()
       },
       GetAllDataChat: function () {
         var self = this;
@@ -836,7 +847,22 @@
               console.error(error);
             });
       },
-
+      GetDataTKOneDay: function () {
+        var self = this
+        fetch('/statistics/revenueOneDate/' + self.selectedDate, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+        })
+            .then(response => response.json())
+            .then(data => {
+              self.numberMoneyOneDay = data.totalRevenue
+            })
+            .catch(error => {
+              console.error(error);
+            });
+      },
       GetDataUser: function () {
         var self = this;
         fetch('/totalUser', {
@@ -893,6 +919,7 @@
             });
       },
       GetTopFive: function () {
+        var self = this
         fetch('/statistics/sold-products', {
           method: 'GET',
           headers: {
@@ -910,15 +937,30 @@
                 })
               }
               highChart(dataAll)
-              var load = document.getElementById("load")
-              var duLieu = document.getElementById("hienThidata")
-              load.style.display = "none"
-              duLieu.style.display = "block"
+              self.checkStatus = false
             })
             .catch(error => {
               console.error(error);
             });
       },
+
+      GetThongKeYearOne: function () {
+        var self = this
+        fetch('/api/orders-by-year/' + self.selectYearOne, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+        })
+            .then(response => response.json())
+            .then(data => {
+              self.numberMoney = data.totalRevenue
+            })
+            .catch(error => {
+              console.error(error);
+            });
+      },
+
       GetThongKeYear: function () {
         var self = this
         fetch('/statistics/revenue/' + self.selectYear, {
@@ -957,9 +999,28 @@
               console.error(error);
             });
       },
+      GetDataTopCustom: function () {
+        var self = this;
+        fetch('/top-customers', {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+        })
+            .then(response => response.json())
+            .then(data => {
+              self.dataTopCustom = data
+            })
+            .catch(error => {
+              console.error(error);
+            });
+      },
     }
   })
 
+  vm.GetDataTKOneDay();
+  vm.GetThongKeYearOne();
+  vm.GetDataTopCustom();
   vm.GetOrderNews();
   vm.GetThongKeYear();
   vm.GetTopFive();
@@ -1027,6 +1088,7 @@
       }]
     });
   }
+
   function highChartColum(dataAllRevenue) {
     Highcharts.chart('container2', {
       credits: {

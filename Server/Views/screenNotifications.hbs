@@ -255,6 +255,9 @@
     .css-buttom{
       margin-top: 8px;
     }
+    .display_None{
+      display: none;
+    }
   </style>
 </head>
 
@@ -336,11 +339,11 @@
         <!--Top navbar-->
         <div class="box-order-Main">
 
-          <div id="load" class="load-Spinner">
+          <div   :class="checkStatus ? ' ' : 'display_None' " class="load-Spinner">
             <div class="spinner-border text-primary"></div>
           </div>
 
-          <div id="hienThidata" style="display: none">
+          <div id="hienThidata"  :class="checkStatus ? 'display_None' : ' ' ">
             <div class="box-Main">
               <div class="box-Main-Notification">
                 <div class="width-tab">
@@ -501,6 +504,7 @@
       checkInputNotificationAll: false,
       checkInputNotificationOne: false,
       checkInputUserNameOne: false,
+      checkStatus:true
     },
     mounted() {
       const socket = io();
@@ -567,11 +571,7 @@
                 return a.status ? -1 : 1;
               });
               self.tinNhanMoi = sortedData.filter(item => item.status === true).length
-
-              var load = document.getElementById("load")
-              var duLieu = document.getElementById("hienThidata")
-              load.style.display = "none"
-              duLieu.style.display = "block"
+              self.checkStatus = false
             })
             .catch(error => {
               console.error(error);

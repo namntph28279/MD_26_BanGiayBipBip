@@ -254,6 +254,10 @@
       width: 100%;
       text-align: center;
     }
+
+    .display_None {
+      display: none;
+    }
   </style>
 </head>
 
@@ -335,11 +339,11 @@
         </div>
 
         <div class="box-order-Main">
-          <div id="load" class="load-Spinner">
+          <div class="load-Spinner" :class="checkStatus ? ' ' : 'display_None' ">
             <div class="spinner-border text-primary"></div>
           </div>
 
-          <div id="hienThidata" style="display: none">
+          <div :class="checkStatus ? 'display_None' : ' ' ">
             <div class="box-Main">
               <div class="box-Main-Status">
                 <div class="box-status">
@@ -1035,7 +1039,7 @@
       sizedonHoan: {},
 
       showModal: false,
-
+      checkStatus: true,
       dataXemChiTiet: {},
       dataXacNhanDon: {},
       dataHuyDon: {},
@@ -1156,11 +1160,7 @@
 
               self.sizechoXacNhan = data.length
               self.donHangMoi = data.length
-              var load = document.getElementById("load")
-              var duLieu = document.getElementById("hienThidata")
-
-              load.style.display = "none"
-              duLieu.style.display = "block"
+              self.checkStatus = false
             })
             .catch(error => {
               console.error(error);
