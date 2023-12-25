@@ -17,10 +17,10 @@ mongoose.connect('mongodb+srv://namnguyen:Nam280103@cluster0.zyd4ou2.mongodb.net
     .then(() => {
         console.log('Connected to MongoDB');
         // Tiếp tục khởi chạy server sau khi kết nối thành công
-        const server = app.listen(server_port, server_host, function() {
+        var server = app.listen(server_port, server_host, function() {
             console.log('Listening on port %d', server_port)
         });
-        const io = socket(server);
+        var io = socket(server);
 
         io.on("connection", function(socket) {
             console.log("Có kết nối: " + socket.id)

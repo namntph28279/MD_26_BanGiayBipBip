@@ -153,6 +153,82 @@
         .table {
             margin-top: 50px;
         }
+
+        .modal-title {
+            font-weight: bold;
+        }
+
+            {
+                {
+                !-- bê nguyên từ màn warehouse --
+            }
+        }
+
+        body {
+            margin: 7px auto auto;
+        }
+
+        .card-header {
+            font-weight: bold;
+            font-size: 20px;
+        }
+
+        .card-body {
+            padding: 20px;
+        }
+
+        .btn {
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .table td {
+            vertical-align: middle;
+        }
+
+        .table .table-actions a {
+            margin-right: 5px;
+        }
+
+        .mess {
+            position: relative;
+            display: inline-block;
+        }
+
+        .mess::after {
+            content: "";
+            position: absolute;
+            left: 0;
+            bottom: 0;
+            width: 0;
+            height: 1px;
+            background-color: white;
+            transition: width 0.5s ease-in-out;
+        }
+
+        .mess:hover::after {
+            width: 100%;
+        }
+
+        .search-container {
+            float: left;
+            justify-content: space-between;
+            margin-left: 15px;
+            line-height: 20px;
+        }
+
+        .search-input {
+            padding: 2px 5px 2px 5px;
+            width: 100%;
+            border-radius: 5px;
+            border: 1px solid #ced4da;
+        }
+
+            {
+                {
+                !-- end bê nguyên từ màn warehouse --
+            }
+        }
     </style>
 </head>
 
@@ -162,65 +238,58 @@
             <div class=" bg-indigo-800">
                 <div class=" text-xl text-gray-200 uppercase font-bold" style="padding: 33px;">Shop BipBip</div>
             </div>
-            <div>
-                <a href="/statistic" class="cursor-pointer mess ml-3 mt-3 w-10/12" style="text-decoration: none">
-                    <div class="flex" style=" padding: 12px;">
-                        <div>
-                            <img class="w-5 h-5" src="analytics.png" alt="">
-                        </div>
-                        <div class="mx-3 text-sm text-gray-100 ">Thống kê</div>
+            <a href="/statistic" class=" cursor-pointer mess ml-3 mt-3 w-10/12" style="text-decoration: none ">
+                <div class="flex" style=" padding: 12px;">
+                    <div>
+                        <img class="w-5 h-5" src="../analytics.png" alt="">
                     </div>
-                </a>
-                <a href="/home" class=" cursor-pointer mess ml-3 mt-3 w-10/12"
-                    style="text-decoration: none;display: flex;  ">
-                    <div class="flex" style=" padding: 12px;">
-                        <div>
-                            <img class="w-5 h-5" src="dashboard.png" alt="">
-                        </div>
-                        <div class="mx-3 text-sm text-gray-100 ">Đơn Hàng</div>
+                    <div class="mx-3 text-sm text-gray-100 ">Thống kê</div>
+                </div>
+            </a>
+            <a href="/home" class=" cursor-pointer mess ml-3 mt-3 w-10/12"
+                style="display: flex; text-decoration: none ">
+                <div class="flex" style=" padding: 12px;">
+                    <div>
+                        <img class="w-5 h-5" src="dashboard.png" alt="">
                     </div>
-                    <span class="badge" style="color: white;font-size: 14px;">\{{donHangMoi}}</span>
-                </a>
-                <a href="/mess" class="cursor-pointer mess ml-3 mt-3 w-10/12"
-                    style=" text-decoration: none; display: flex; ">
-                    <div class="flex" style=" padding: 12px;">
-                        <div>
-                            <img class="w-5 h-5 " src="messages.png" alt="">
-                        </div>
-                        <div class="mx-3 text-sm text-gray-100 ">Tin Nhắn
-
-                        </div>
-
+                    <div class="mx-3 text-sm text-gray-100 ">Đơn Hàng</div>
+                </div>
+                <span class="badge" style="color: white;font-size: 14px;">\{{donHangMoi}}</span>
+            </a>
+            <a href="/mess" class="cursor-pointer mess ml-3 mt-3 w-10/12" style="display: flex; text-decoration: none">
+                <div class="flex" style="padding: 12px;">
+                    <div>
+                        <img class="w-5 h-5 " src="messages.png" alt="">
                     </div>
-                    <span class="badge" style="color: white;font-size: 14px;">\{{tinNhanMoi}}</span>
-                </a>
-                <a href="/notifications" class="cursor-pointer mess ml-3 mt-3 w-10/12"
-                    style="text-decoration: none;border-bottom-width: 1px;">
-                    <div class="flex" style=" padding: 12px;">
-                        <div>
-                            <img class="w-5 h-5" src="notifications.png" alt="">
-                        </div>
-                        <div class="mx-3 text-sm text-gray-100">Thông báo</div>
+                    <div class="mx-3 text-sm text-gray-100 ">Tin Nhắn</div>
+                </div>
+                <span class="badge" style="color: white;font-size: 14px;">\{{tinNhanMoi}}</span>
+            </a>
+            <a href="/notifications" class="cursor-pointer mess ml-3 mt-3 w-10/12" style="text-decoration: none">
+                <div class="flex" style=" padding: 12px;">
+                    <div>
+                        <img class="w-5 h-5" src="../notifications.png" alt="">
                     </div>
-                </a>
-                <a href="/customer" class="cursor-pointer mess ml-3 mt-3 w-10/12"
-                    style="display: flex; text-decoration: none">
-                    <div class="flex" style="padding: 12px;">
-                        <div>
-                            <img class="w-5 h-5 " src="iconuser.png" alt="">
-                        </div>
-                        <div class="mx-3 text-sm text-gray-100 ">Quản Lý người dùng</div>
+                    <div class="mx-3 text-sm text-gray-100">Thông báo</div>
+                </div>
+            </a>
+            <a href="/customer" class="cursor-pointer mess ml-3 mt-3 w-10/12"
+                style="border-bottom-width: 1px;  text-decoration: none">
+                <div class="flex" style="padding: 12px;">
+                    <div>
+                        <img class="w-5 h-5 " src="../iconuser.png" alt="">
                     </div>
-                </a>
-                <a href="/warehouse" class="cursor-pointer mess ml-3 mt-3 w-10/12" style="text-decoration: none">
-                    <div class="flex" style=" padding: 12px;">
-                        <div>
-                            <img class="w-5 h-5" src="kho.svg" alt="">
-                        </div>
-                        <div class="mx-3 text-sm text-gray-100">Kho Hàng</div>
+                    <div class="mx-3 text-sm text-gray-100 ">Quản Lý người dùng</div>
+                </div>
+            </a>
+            <a href="/warehouse" class="cursor-pointer mess ml-3 mt-3 w-10/12" style="text-decoration: none">
+                <div class="flex" style=" padding: 12px;">
+                    <div>
+                        <img class="w-5 h-5" src="../kho.svg" alt="">
                     </div>
-                </a>
-            </div>
+                    <div class="mx-3 text-sm text-gray-100">Kho Hàng</div>
+                </div>
+            </a>
         </div>
         <div class="navbar-placeholder"></div>
         <div class="flex-1">
