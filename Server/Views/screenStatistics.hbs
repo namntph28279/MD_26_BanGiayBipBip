@@ -457,7 +457,7 @@
                   </div>
                   <div class="box-text-total">
                     <div class="text-main-Two">
-                      Tổng số sản phẩm đang có: 100
+                      Tổng số sản phẩm đang có: \{{totalProduct.totalProducts}} sản phẩm
                     </div>
                     <div class="text-main-Two" style="display: flex;justify-content: center">
                       <div>
@@ -715,6 +715,7 @@
       numberMoney: 0,
       selectedDate: new Date().toISOString().split('T')[0],
       numberMoneyOneDay: 0,
+      totalProduct:0
     },
     mounted() {
       const socket = io();
@@ -1015,9 +1016,26 @@
               console.error(error);
             });
       },
+      GetDataTotalProduct: function () {
+        var self = this;
+        fetch('/api/countProducts', {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+        })
+            .then(response => response.json())
+            .then(data => {
+              self.totalProduct = data
+            })
+            .catch(error => {
+              console.error(error);
+            });
+      },
     }
   })
 
+  vm.GetDataTotalProduct();
   vm.GetDataTKOneDay();
   vm.GetThongKeYearOne();
   vm.GetDataTopCustom();

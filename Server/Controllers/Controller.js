@@ -719,7 +719,6 @@ app.get('/statistics/revenue/:year/:month/:startDay/:endDay', async (req, res) =
 app.get('/statistics/revenueOneDate/:date', async (req, res) => {
     try {
         const date = req.params.date
-        console.log(date) //log ra:"2023-12-25"
 
         const year = parseInt(date.substr(0, 4));
         const month = parseInt(date.substr(5, 2));
