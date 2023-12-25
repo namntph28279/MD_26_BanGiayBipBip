@@ -177,7 +177,7 @@
                                 <li><a class="dropdown-item" href="/warehouse">Tất cả</a></li>
                                 <li><a class="dropdown-item" href="/warehouse/men">Nam</a></li>
                                 <li><a class="dropdown-item" href="/warehouse/women">Nữ</a></li>
-                                <li><a class="dropdown-item" href="/warehouse/children">Trẻ em</a></li>
+                                {{!-- <li><a class="dropdown-item" href="/warehouse/children">Trẻ em</a></li> --}}
                             </ul>
 
                         </div>
@@ -344,6 +344,24 @@
                                 </tbody>
                             </table>
 
+                            {{!-- <div class="box-size-table" v-if="sizedonHoan > 7">
+                                <div class="text-box-size-table">\{{sizeTable(indexSize)}} của tổng số \{{sizedonHoan}}</div>
+                                <div class="box-arrow">
+                                    <div class="box-extra-arrow" @click="backSize(donHoan)">
+                                    <img src="next.png" style="width: 24px" alt="">
+                                    </div>
+                                    <div class="box-extra-arrow" @click="arrowBackSize(donHoan)">
+                                    <img src="back-arrow.png" style="width: 24px" alt="">
+                                    </div>
+                                    <div class="box-extra-arrow" @click="arrowNextSize(donHoan)">
+                                    <img src="right-arrow.png" style="width: 24px" alt="">
+                                    </div>
+                                    <div class="box-extra-arrow" @click="nextSize(donHoan)">
+                                    <img src="back.png" style="width: 24px" alt="">
+                                    </div>
+                                </div>
+                            </div> --}}
+
                         </div>
                         <div class="modal fade" id="addProductModal" tabindex="-1" role="dialog"
                             aria-labelledby="addProductModalLabel" aria-hidden="true">
@@ -400,8 +418,12 @@
             var rows = document.querySelectorAll('tbody tr');
 
             rows.forEach(function (row) {
-                var text = row.innerText.toLowerCase();
-                row.style.display = text.includes(filter) ? '' : 'none';
+                var cell = row.querySelector('td:nth-child(2)');
+                if(cell){
+                    var text = cell.innerText.toLowerCase();
+                    row.style.display = text.includes(filter) ? '' : 'none';
+                }
+                
             });
         });
     </script>
