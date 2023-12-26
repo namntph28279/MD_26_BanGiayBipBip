@@ -17,9 +17,6 @@
         }
 
 
-        body {
-            margin: 7px auto auto;
-        }
 
         .card-header {
             font-weight: bold;
@@ -27,7 +24,7 @@
         }
 
         .card-body {
-            padding: 20px;
+            padding: 0px 10px;
         }
 
         /* Style cho các button */
@@ -64,11 +61,15 @@
         .mess:hover::after {
             width: 100%;
         }
+
+        .card-search{
+            padding: 10px;
+        }
         .search-container {
             float: left;
             justify-content: space-between;
-            margin-left: 15px;
-            line-height: 20px;
+            line-height: 30px;
+            width: 100%;
         }
 
         .search-input {
@@ -161,10 +162,9 @@
             </div>
             <!--Top navbar-->
 
-            <div class="card-container flex m-7 space-x-6 ">
+            <div class="card-container" style="margin: 5px">
                 <div class="card w-full">
                     <div class="card-header">
-
                         <div class="dropdown">
                             <button class="btn btn-outline-secondary dropdown-toggle float-left" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                                 {{#if category}}
@@ -179,20 +179,35 @@
                                 <li><a class="dropdown-item" href="/warehouse/women">Nữ</a></li>
                                 {{!-- <li><a class="dropdown-item" href="/warehouse/children">Trẻ em</a></li> --}}
                             </ul>
-
                         </div>
 
-                        <div class="search-container">
-                            <input type="text" class="search-input" id="searchInput" placeholder="Tìm kiếm...">
+                        <div class="dropdown" >
+                            <button class="btn btn-outline-secondary dropdown-toggle float-left" type="button" data-bs-toggle="dropdown" aria-expanded="false" style="margin-left:10px; width: 160px;">
+                                {{#if }}
+                                    {{}}
+                                {{else}}
+                                    Giá&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;
+                                {{/if}}
+                            </button>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="#">Giá: Thấp đến Cao</a></li>
+                                <li><a class="dropdown-item" href="#">Giá: Cao đến Thấp</a></li>
+                            </ul>
                         </div>
+
                         <button class="btn btn-primary float-right" data-toggle="modal" data-target="#addProductModal">Thêm sản phẩm
                         </button>
 
                     </div>
 
+                    <div class="card-search">
+                        <div class="search-container">
+                            <input type="text" class="search-input" id="searchInput" placeholder="Tìm kiếm...">
+                        </div>
+                    </div>
 
 
-                    <div style="height: 555px;border-radius: 8px;overflow: auto;">
+                    <div style="border-radius: 8px;overflow: auto;">
                         <div class="card-body">
 
                             <table class="table table-bordered ">
