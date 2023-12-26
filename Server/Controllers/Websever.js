@@ -294,7 +294,39 @@ app.get('/warehouse/:cate', async (req, res) => {
             category = "Trẻ em";
         }
         const products = await Product.find({product_category: cate}).lean();
-        res.render('../Views/screenWarehouse.hbs', {products, category});
+        res.render('../Views/screenWarehouse.hbs', {products, category,cate});
+    } catch (error) {
+        res.status(500).json({message: error.message});
+    }
+});
+
+app.get('/warehouse/:cate/:sort', async (req, res) => {
+    const {sort} = req.params;
+    const {cate} = req.params;
+    try {
+        if (cate === "men") {
+            category = "Nam";
+        } else if (cate === "women") {
+            category = "Nữ";
+        } else if (cate === "all") {
+            category = "Tất cả";
+        }
+        if (sort === "lowtohight") {
+            sortName = "Giá: Thấp đến Cao";
+        } else if (sort === "highttolow") {
+            sortName = "Giá: Cao đến Thấp";
+        }
+        if(cate==="all"){
+            const products = await Product.find().lean();
+            const sortProducts = sort === "lowtohight"?products.slice().sort((a,b)=>a.product_price - b.product_price):products.slice().sort((a,b)=>b.product_price - a.product_price);
+            res.render('../Views/screenWarehouse.hbs', {products:sortProducts,category, sortName,cate});
+        }else{
+            const products = await Product.find({product_category: cate}).lean();
+            const sortProducts = sort === "lowtohight"?products.slice().sort((a,b)=>a.product_price - b.product_price):products.slice().sort((a,b)=>b.product_price - a.product_price);
+            res.render('../Views/screenWarehouse.hbs', {products:sortProducts,category, sortName,cate});
+        }
+
+        
     } catch (error) {
         res.status(500).json({message: error.message});
     }
