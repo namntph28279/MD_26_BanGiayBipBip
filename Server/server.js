@@ -26,7 +26,7 @@ mongoose.connect('mongodb+srv://namnguyen:Nam280103@cluster0.zyd4ou2.mongodb.net
             console.log("Có kết nối: " + socket.id)
             socket.on("client-send", function() {
                 console.log("Server nhận được")
-                io.sockets.emit("server-send",data)
+                io.sockets.emit("server-send")
             })
         })
     })

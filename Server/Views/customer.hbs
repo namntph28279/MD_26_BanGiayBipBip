@@ -10,7 +10,7 @@
     <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
-
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         body {
             font-family: 'Arial', sans-serif;
@@ -193,6 +193,7 @@
         .mess {
             position: relative;
             display: inline-block;
+            white-space: nowrap;
         }
 
         .mess::after {
@@ -305,7 +306,7 @@
                             xuất</a>
                     </div>
                 </div>
-                <h2>Danh sách khách hàng</h2>
+                {{!-- <h2>Danh sách khách hàng</h2> --}}
                 <div class="filter-container">
                     <input type="text" class="search-input" id="searchInput" placeholder="Tìm kiếm...">
                     <select id="statusFilter">
@@ -320,16 +321,16 @@
                             <tr>
                                 <th rowspan="2">STT</th>
                                 <th scope="col" colspan="2">ID</th>
-                                <th scope="col">Ảnh</th>
+                                {{!-- <th scope="col">Ảnh</th> --}}
                                 <th scope="col" colspan="2">Tên</th>
-                                <th scope="col">Giới Tính</th>
+                                {{!-- <th scope="col">Giới Tính</th>
                                 <th scope="col" colspan="2">Ngày sinh</th>
                                 <th scope="col" colspan="3">Email</th>
                                 <th scope="col" colspan="2">SDT</th>
-                                <th scope="col" colspan="2">Địa chỉ</th>
+                                <th scope="col" colspan="2">Địa chỉ</th> --}}
                                 {{!-- <th scope="col">Trạng Thái</th> --}}
-                                <th scope="col">Lý do chặn</th>
-                                <th scope="col">Hành động</th>
+                                <th scope="col" colspan="3">Lý do chặn</th>
+                                <th scope="col" colspan="2">Hành động</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -337,16 +338,16 @@
                             <tr>
                                 <td>{{@index}}</td>
                                 <td style="color: #ff0000; font-size: 8px;" colspan="2">{{_id}}</td>
-                                <td><img src="{{profile.avatar}}" alt="Avatar" width="70%"></td>
+                                {{!-- <td><img src="{{profile.avatar}}" alt="Avatar" width="70%"></td> --}}
                                 <td colspan="2">{{profile.fullname}}</td>
-                                <td>{{profile.gender}}</td>
+                                {{!-- <td>{{profile.gender}}</td>
                                 <td colspan="2">{{profile.birthday}}</td>
                                 <td colspan="3" style=" font-size: 10px;">{{profile.username}}</td>
                                 <td colspan="2">{{address.phone}}</td>
-                                <td colspan="2">{{address.address}}</td>
+                                <td colspan="2">{{address.address}}</td> --}}
                                 {{!-- <td>{{profile.status}}</td> --}}
-                                <td style="color: #e813cf; font-weight: bold;">{{block_reason}}</td>
-                                <td class="action-buttons">
+                                <td style="color: #e813cf; font-weight: bold;" colspan="3">{{block_reason}}</td>
+                                <td class="action-buttons" colspan="2" style="margin-left: 30px;">
                                     {{#if profile.status}}
                                     <button class="unban-button" data-toggle="modal"
                                         data-target="#unbanConfirmationModal" data-user-id="{{_id}}"
@@ -355,6 +356,13 @@
                                     <button class="ban-button" data-toggle="modal" data-target="#blockUserModal"
                                         data-user-id="{{_id}}" onclick="setUserId('{{_id}}')">Chặn</button>
                                     {{/if}}
+
+                                </td>
+                                <td>
+                                    <button class="btn btn-info" onclick="showUserDetails('{{_id}}')">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+
                                 </td>
 
                             </tr>
@@ -407,11 +415,98 @@
                         </div>
                     </div>
                 </div>
+                <div class="modal" id="userDetailsModal" tabindex="-1" role="dialog">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Thông tin chi tiết người dùng</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Đóng">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <p>Họ và tên: <span id="modalFullname"></span></p>
+                                        <p>Giới tính: <span id="modalGender"></span></p>
+                                        <p>Ngày sinh: <span id="modalBirthday"></span></p>
+                                        <p>Username: <span id="modalUsername"></span></p>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <p>Số điện thoại: <span id="modalPhone"></span></p>
+                                        <p>Địa chỉ: <span id="modalAddress"></span></p>
+                                        <p>...</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
 
         </div>
         <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/vue@2"></script>
+        <script>
+            function showUserDetails(userId) {
+                fetch(`/customer/${userId}`)
+                    .then(response => response.json())
+                    .then(userData => {
+                        populateUserDetailsModal(userData);
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        $('#userDetailsModal').modal('show');
+                    });
+            }
+            function populateUserDetailsModal(userData) {
+                document.getElementById('modalUserId').innerText = userData._id || 'Không có dữ liệu';
+                document.getElementById('modalFullname').innerText = userData.profile.fullname || 'Không có dữ liệu';
+                document.getElementById('modalGender').innerText = userData.profile.gender || 'Không có dữ liệu';
+                document.getElementById('modalBirthday').innerText = userData.profile.birthday || 'Không có dữ liệu';
+                document.getElementById('modalUsername').innerText = userData.profile.username || 'Không có dữ liệu';
+                document.getElementById('modalPhone').innerText = userData.address.phone || 'Không có dữ liệu';
+                document.getElementById('modalAddress').innerText = userData.address.address || 'Không có dữ liệu';
+                if (userData.profile.birthday) {
+                    document.getElementById('modalBirthday').innerText = userData.profile.birthday;
+                } else {
+                    document.getElementById('modalBirthday').innerText = 'Không có dữ liệu';
+                }
+                if (userData.profile.gender) {
+                    document.getElementById('modalGender').innerText = userData.profile.gender;
+                } else {
+                    document.getElementById('modalGender').innerText = 'Không có dữ liệu';
+                }
+                if (userData.profile.fullname) {
+                    document.getElementById('modalFullname').innerText = userData.profile.fullname;
+                } else {
+                    document.getElementById('modalFullname').innerText = 'Không có dữ liệu';
+                }
+
+                if (userData.profile.username) {
+                    document.getElementById('modalUsername').innerText = userData.profile.username;
+                } else {
+                    document.getElementById('modalUsername').innerText = 'Không có dữ liệu';
+                }
+
+                if (userData.address.phone) {
+                    document.getElementById('modalPhone').innerText = userData.address.phone;
+                } else {
+                    document.getElementById('modalPhone').innerText = 'Không có dữ liệu';
+                }
+
+                if (userData.address && userData.address.address) {
+                    document.getElementById('modalAddress').innerText = userData.address.address;
+                } else {
+                    document.getElementById('modalAddress').innerText = 'Không có dữ liệu';
+                }
+                $('#userDetailsModal').modal('show');
+            }
+        </script>
+
         <script>
             const vm = new Vue({
                 el: '#dataALL',
