@@ -4,7 +4,7 @@ import axios from 'axios';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as Notifications from "expo-notifications";
 import url from "../../api/url";
-import {fetchDataAndSetToRedux, fetchDataAllUser} from "../../redux/AllData";
+import {fetchDataAndSetToRedux} from "../../redux/AllData";
 import {useDispatch} from "react-redux";
 import { io } from 'socket.io-client';
 import { getUrl } from "../../api/socketio";
@@ -41,8 +41,8 @@ const Login = ({ navigation }) => {
     };
 
     const fetchData = async () => {
-        console.log("startjkjkjkjkj")
-        dispatch(fetchDataAllUser()); 
+        console.log("start")//Khi component được tạo, gọi fetchData để lấy dữ liệu đơn hàng từ Redux store thông qua useSelector và dispatch.
+        dispatch(fetchDataAndSetToRedux())
     };
     useEffect(() => {
         const socketInstance = io(getUrl());
@@ -80,10 +80,10 @@ const Login = ({ navigation }) => {
                     const isBlocked = userData.status;
                     console.log("sờ ta tus ", userData.status);
 
-                    // if (isBlocked === true) {
-                    //     Alert.alert('Thông báo', 'Tài khoản của bạn đã bị chặn. Vui lòng liên hệ hỗ trợ để biết thêm chi tiết.');
-                    //     return;  // Dừng việc tiếp tục xử lý
-                    // }
+                    if (isBlocked === true) {
+                        Alert.alert('Thông báo', 'Tài khoản của bạn đã bị chặn. Vui lòng liên hệ hỗ trợ để biết thêm chi tiết.');
+                        return;  // Dừng việc tiếp tục xử lý
+                    }
 
                     if (userID) {
 

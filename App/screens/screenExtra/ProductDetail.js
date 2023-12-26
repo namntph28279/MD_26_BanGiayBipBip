@@ -49,8 +49,8 @@ function ProductDetail({ route, navigation }) {
         const fetchData = async () => {
             try {
                 const storedIsBlockedString = await AsyncStorage.getItem('1');  // Lấy ra dưới dạng chuỗi
-            const storedIsBlocked = JSON.parse(storedIsBlockedString);
-            console.log("sta", storedIsBlocked)
+                const storedIsBlocked = JSON.parse(storedIsBlockedString);
+                console.log("stahh", storedIsBlocked)
                 const response = await url.get(`/product/${productId}`);
                 const data = response.data;
 
@@ -231,8 +231,8 @@ function ProductDetail({ route, navigation }) {
                 const cartItem = {
                     user_id: email,
                     product_id: productId,
-                    size_id:selectedSize._id,
-                    color_id:selectedColorData,
+                    size_id: selectedSize._id,
+                    color_id: selectedColorData,
                     quantity: quantity,
                 };
 
@@ -261,7 +261,7 @@ function ProductDetail({ route, navigation }) {
             //ảnh
             setSelectedColorImage(colorImages[color]);
         }
-        console.log('màu của color',selectedColorData)
+        console.log('màu của color', selectedColorData)
     };
 
     const selectSize = (size) => {
@@ -277,7 +277,7 @@ function ProductDetail({ route, navigation }) {
             setQuantity(quantity - 1);
         }
     };
-//zoomimage
+    //zoomimage
     const zoom = new Animated.Value(1);
     const handleZoom = Animated.event(
         [{ nativeEvent: { scale: zoom } }],
@@ -298,7 +298,7 @@ function ProductDetail({ route, navigation }) {
     };
     const buyNow = async () => {
         const email = await AsyncStorage.getItem('Email');
-        if (!email){
+        if (!email) {
             alert("Vui lòng đăng nhập");
             navigation.navigate('Login');
             return
@@ -308,11 +308,11 @@ function ProductDetail({ route, navigation }) {
             if (email) {
                 const productInfo = {
                     product: productId,
-                    colorId :selectedSize.colorId,
-                    sizeId:selectedSize._id,
+                    colorId: selectedSize.colorId,
+                    sizeId: selectedSize._id,
                     quantity: quantity,
-                    color:selectedColor,
-                    size:selectedSize.size_name,
+                    color: selectedColor,
+                    size: selectedSize.size_name,
                 };
                 const updatedSelectedProducts = [...selectedProducts, productInfo];
 
@@ -356,37 +356,37 @@ function ProductDetail({ route, navigation }) {
                         {product && (
                             <Text style={styles.productAdditionalInfo}>{product.product_title}</Text>
                         )}
-                    <View style={styles.priceContainer}>
+                        <View style={styles.priceContainer}>
+                            {product && (
+                                <Text style={styles.productPrice}>{getMonney(product.product_price)}</Text>
+                            )}
+                        </View>
+                        {/* Add a product description */}
                         {product && (
-                            <Text style={styles.productPrice}>{getMonney(product.product_price)}</Text>
+                            <Text style={styles.productDescription}>{product.product_description}</Text>
                         )}
-                    </View>
-                    {/* Add a product description */}
-                    {product && (
-                        <Text style={styles.productDescription}>{product.product_description}</Text>
-                    )}
-                    <ScrollView
-                        style={styles.colorOptionsContainer}
-                        horizontal={true}
-                        showsHorizontalScrollIndicator={false}
-                    >
-                        {colorOptions.map((color, index) => (
-                            <TouchableOpacity
-                                key={index}
-                                style={[
-                                    styles.optionButton,
-                                    selectedColor === color && styles.selectedOption,
-                                ]}
-                                onPress={() => selectColor(color)}
-                            >
-                                {colorImages[color] && (
-                                    <Image source={{ uri: colorImages[color] }} style={styles.colorOptionImage} />
-                                )}
-                                <Text style={styles.optionButtonText}>{color}</Text>
+                        <ScrollView
+                            style={styles.colorOptionsContainer}
+                            horizontal={true}
+                            showsHorizontalScrollIndicator={false}
+                        >
+                            {colorOptions.map((color, index) => (
+                                <TouchableOpacity
+                                    key={index}
+                                    style={[
+                                        styles.optionButton,
+                                        selectedColor === color && styles.selectedOption,
+                                    ]}
+                                    onPress={() => selectColor(color)}
+                                >
+                                    {colorImages[color] && (
+                                        <Image source={{ uri: colorImages[color] }} style={styles.colorOptionImage} />
+                                    )}
+                                    <Text style={styles.optionButtonText}>{color}</Text>
 
-                            </TouchableOpacity>
-                        ))}
-                    </ScrollView>
+                                </TouchableOpacity>
+                            ))}
+                        </ScrollView>
 
 
 
@@ -416,24 +416,24 @@ function ProductDetail({ route, navigation }) {
 
 
                         <View style={styles.quantityContainer}>
-                        <TouchableOpacity style={styles.quantityButton} onPress={decreaseQuantity}>
-                            <Text style={styles.quantityButtonText}>-</Text>
-                        </TouchableOpacity>
-                        <Text style={styles.quantityText}>{quantity}</Text>
-                        <TouchableOpacity style={styles.quantityButton} onPress={increaseQuantity}>
-                            <Text style={styles.quantityButtonText}>+</Text>
-                        </TouchableOpacity>
+                            <TouchableOpacity style={styles.quantityButton} onPress={decreaseQuantity}>
+                                <Text style={styles.quantityButtonText}>-</Text>
+                            </TouchableOpacity>
+                            <Text style={styles.quantityText}>{quantity}</Text>
+                            <TouchableOpacity style={styles.quantityButton} onPress={increaseQuantity}>
+                                <Text style={styles.quantityButtonText}>+</Text>
+                            </TouchableOpacity>
 
-                    </View>
-                    <View style={styles.buttonContainer}>
-                        <TouchableOpacity style={styles.addToCartButton} onPress={addToCart}>
-                            <Text style={styles.addToCartButtonText}>Thêm vào giỏ hàng</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity style={styles.addToCartButtonBuy} onPress={buyNow}>
-                            <Text style={styles.addToCartButtonText1}>Mua Ngay</Text>
-                        </TouchableOpacity>
+                        </View>
+                        <View style={styles.buttonContainer}>
+                            <TouchableOpacity style={styles.addToCartButton} onPress={addToCart}>
+                                <Text style={styles.addToCartButtonText}>Thêm vào giỏ hàng</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity style={styles.addToCartButtonBuy} onPress={buyNow}>
+                                <Text style={styles.addToCartButtonText1}>Mua Ngay</Text>
+                            </TouchableOpacity>
 
-                    </View>
+                        </View>
                     </ScrollView>
 
                 </>
@@ -445,26 +445,26 @@ function ProductDetail({ route, navigation }) {
                 animationType="slide"
             >
                 <TouchableWithoutFeedback onPress={closeModal}>
-                <View style={styles.modalContainer}>
-                    <View style={styles.modalContent}>
-                        <TouchableOpacity style={styles.closeModalButton} onPress={() => setImageModalVisible(false)}>
-                            <Text style={styles.closeModalButtonText}>X</Text>
-                        </TouchableOpacity>
+                    <View style={styles.modalContainer}>
+                        <View style={styles.modalContent}>
+                            <TouchableOpacity style={styles.closeModalButton} onPress={() => setImageModalVisible(false)}>
+                                <Text style={styles.closeModalButtonText}>X</Text>
+                            </TouchableOpacity>
 
-                        {product && (
-                            <PinchGestureHandler onGestureEvent={handleZoom} onHandlerStateChange={handleZoomState}>
-                                {/*<Animated.Image*/}
-                                {/*    source={{ uri: product.product_image }}*/}
-                                {/*    style={[styles.productImage, { transform: [{ scale: zoom }] }]}*/}
-                                {/*        />*/}
-                                <Animated.Image
-                                    source={{ uri: selectedColorImage || productImageURL }}
-                                    style={[styles.productImage, { transform: [{ scale: zoom }] }]}
-                                />
-                                        </PinchGestureHandler>
-                        )}
+                            {product && (
+                                <PinchGestureHandler onGestureEvent={handleZoom} onHandlerStateChange={handleZoomState}>
+                                    {/*<Animated.Image*/}
+                                    {/*    source={{ uri: product.product_image }}*/}
+                                    {/*    style={[styles.productImage, { transform: [{ scale: zoom }] }]}*/}
+                                    {/*        />*/}
+                                    <Animated.Image
+                                        source={{ uri: selectedColorImage || productImageURL }}
+                                        style={[styles.productImage, { transform: [{ scale: zoom }] }]}
+                                    />
+                                </PinchGestureHandler>
+                            )}
+                        </View>
                     </View>
-                </View>
                 </TouchableWithoutFeedback>
             </Modal>
         </SafeAreaView>
@@ -517,7 +517,7 @@ const styles = StyleSheet.create({
         fontSize: 16,
         fontWeight: 'bold',
         marginTop: 2,
-        alignSelf:'center'
+        alignSelf: 'center'
     },
     colorOptionImage: {
         width: 100,
