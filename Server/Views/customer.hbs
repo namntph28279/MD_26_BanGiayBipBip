@@ -88,21 +88,23 @@
             background-color: #add8e6;
         }
 
-        .action-buttons {
+        .table td .action-buttons {
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
 
         .ban-button,
-        .unban-button {
-            width: 100%;
+        .unban-button,
+        .btn-info {
+            width: 80px;
             padding: 6px;
             cursor: pointer;
             color: #fff;
             font-weight: bold;
             border: none;
             border-radius: 5px;
+            text-align: center;
         }
 
         .ban-button {
@@ -112,6 +114,27 @@
         .unban-button {
             background-color: #73ff00;
         }
+
+        .btn-info {
+            background-color: #007bff;
+        }
+
+        .modal-content {
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.8);
+        }
+
+        #modalAvatarImage {
+            border-radius: 10px;
+            width: 100%;
+            height: auto;
+            display: block;
+            margin: 0 auto;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.8);
+            margin-bottom: 10px;
+        }
+
 
         .modal-footer button {
             cursor: pointer;
@@ -151,7 +174,7 @@
         }
 
         .table {
-            margin-top: 50px;
+            margin-top: 0;
         }
 
         .modal-title {
@@ -357,13 +380,11 @@
                                         data-user-id="{{_id}}" onclick="setUserId('{{_id}}')">Chặn</button>
                                     {{/if}}
 
-                                </td>
-                                <td>
                                     <button class="btn btn-info" onclick="showUserDetails('{{_id}}')">
                                         <i class="fas fa-eye"></i>
                                     </button>
-
                                 </td>
+
 
                             </tr>
                             {{/each}}
@@ -427,15 +448,26 @@
                             <div class="modal-body">
                                 <div class="row">
                                     <div class="col-md-6">
-                                        <p>Họ và tên: <span id="modalFullname"></span></p>
-                                        <p>Giới tính: <span id="modalGender"></span></p>
-                                        <p>Ngày sinh: <span id="modalBirthday"></span></p>
-                                        <p>Username: <span id="modalUsername"></span></p>
+                                        <img id="modalAvatarImage" src="" alt="Avatar"
+                                            style="width: 100%; height: auto; display: block; margin: 0 auto;margin-bottom: 10px;">
+                                        <p style="font-weight: bold;">Số điện thoại: <span id="modalPhone"
+                                                style="font-weight: initial;"></span></p>
+                                        <p style="font-weight: bold;">Địa chỉ: <span id="modalAddress"
+                                                style="font-weight: initial;"></span></p>
+                                        <p style="font-weight: bold;">..........</p>
+
                                     </div>
                                     <div class="col-md-6">
-                                        <p>Số điện thoại: <span id="modalPhone"></span></p>
-                                        <p>Địa chỉ: <span id="modalAddress"></span></p>
-                                        <p>...</p>
+                                        <p style="font-weight: bold;">Họ và tên: <span id="modalFullname"
+                                                style="font-weight: initial;"></span></p>
+                                        <p style="font-weight: bold;">Giới tính: <span id="modalGender"
+                                                style="font-weight: initial;"></span></p>
+                                        <p style="font-weight: bold;">Ngày sinh: <span id="modalBirthday"
+                                                style="font-weight: initial;"></span></p>
+                                        <p style="font-weight: bold;">Email: <span id="modalUsername"
+                                                style="font-weight: initial;"></span></p>
+
+
                                     </div>
                                 </div>
                             </div>
@@ -470,6 +502,17 @@
                 document.getElementById('modalUsername').innerText = userData.profile.username || 'Không có dữ liệu';
                 document.getElementById('modalPhone').innerText = userData.address.phone || 'Không có dữ liệu';
                 document.getElementById('modalAddress').innerText = userData.address.address || 'Không có dữ liệu';
+
+                var avatarImageElement = document.getElementById('modalAvatarImage');
+                if (userData.profile && userData.profile.avatar) {
+                    avatarImageElement.setAttribute('src', userData.profile.avatar);
+                    avatarImageElement.setAttribute('alt', 'Avatar');
+                } else {
+                    avatarImageElement.setAttribute('src', 'https://bazanxanh.com/wp-content/themes/travel/images/no-image.jpg');
+                    avatarImageElement.setAttribute('alt', 'Default Avatar');
+                }
+
+
                 if (userData.profile.birthday) {
                     document.getElementById('modalBirthday').innerText = userData.profile.birthday;
                 } else {
