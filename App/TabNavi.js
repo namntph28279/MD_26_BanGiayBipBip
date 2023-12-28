@@ -27,50 +27,72 @@ const Tab = createBottomTabNavigator();
 
 
 const TabNavi = ({ navigation }) => {
-    const [userID, setUserID] = useState('');
+    const checkUserStatus = async () => {
 
-    useEffect(() => {
-        // Gọi getUserId ban đầu
-        getUserId();
-
-        // Thiết lập interval để gọi getUserId mỗi 2 giây
-        const intervalId = setInterval(() => {
-            getUserId();
-        }, 1000);
-
-        // Kiểm tra giá trị storedIsBlocked từ AsyncStorage
-       
-
-        // Gọi hàm kiểm tra mỗi khi component được render hoặc re-render
-        checkIsBlocked();
-
-        // Trong trường hợp component bị hủy, bạn cần xóa interval để ngăn chặn việc gọi không cần thiết.
-        return () => {
-            clearInterval(intervalId);
-        };
-    }, [navigation]);
-
-    const getUserId = async () => {
         try {
-            const user = await AsyncStorage.getItem('Email');
-            setUserID(user);
+            const email = await AsyncStorage.getItem("Email");
+
+            if (email !== null) {
+                const response = await url.get(`/user/${email}`);
+                const userData = response.data;
+
+                if (userData.status) {
+                    const { date, block_reason } = userData;
+                    console.log(`Tài khoản đã bị khóa. ngày: ${date}, nội dung: ${block_reason}`);
+                    Alert.alert('Thông báo', 'Tài khoản của bạn đã bị chặn vào lúc: \n'+ userData.date);
+                    await AsyncStorage.removeItem("Email");
+
+                    navigation.navigate('Login');
+                }
+            }
         } catch (error) {
-            console.error('Error while fetching user ID:', error);
+            console.error(error);
         }
     };
-     const checkIsBlocked = async () => {
-            try {
-                const storedIsBlockedString = await AsyncStorage.getItem('1');
-                const storedIsBlocked = JSON.parse(storedIsBlockedString);
-                console.log('status user', storedIsBlocked)
-                if (storedIsBlocked === true) {
-                    await AsyncStorage.removeItem('1');
-                    navigation.navigate('Login');  // Chuyển hướng đến màn hình Login nếu blocked
-                }
-            } catch (error) {
-                console.error('Error while checking block status:', error);
-            }
-        };
+    const [userID, setUserID] = useState('');
+
+    // useEffect(() => {
+    //     // Gọi getUserId ban đầu
+    //     getUserId();
+    //
+    //     // Thiết lập interval để gọi getUserId mỗi 2 giây
+    //     const intervalId = setInterval(() => {
+    //         getUserId();
+    //     }, 1000);
+    //
+    //     // Kiểm tra giá trị storedIsBlocked từ AsyncStorage
+    //
+    //
+    //     // Gọi hàm kiểm tra mỗi khi component được render hoặc re-render
+    //     checkIsBlocked();
+    //
+    //     // Trong trường hợp component bị hủy, bạn cần xóa interval để ngăn chặn việc gọi không cần thiết.
+    //     return () => {
+    //         clearInterval(intervalId);
+    //     };
+    // }, [navigation]);
+
+    // const getUserId = async () => {
+    //     try {
+    //         const user = await AsyncStorage.getItem('Email');
+    //         setUserID(user);
+    //     } catch (error) {
+    //         console.error('Error while fetching user ID:', error);
+    //     }
+    // };
+     // const checkIsBlocked = async () => {
+     //        try {
+     //            const storedIsBlockedString = await AsyncStorage.getItem('1');
+     //            const storedIsBlocked = JSON.parse(storedIsBlockedString);
+     //            console.log('status user', storedIsBlocked)
+     //            if (storedIsBlocked === true) {
+     //                await AsyncStorage.removeItem('1');
+     //                navigation.navigate('Login');  // Chuyển hướng đến màn hình Login nếu blocked
+     //            }
+     //        } catch (error) {
+     //            console.error('Error while checking block status:', error);
+     //        }
+     //    };
 
     return (
         <Tab.Navigator
@@ -87,12 +109,11 @@ const TabNavi = ({ navigation }) => {
                 options={{
                     tabBarIcon: ({ color, size }) => <Ionicons name='home' color={color} size={size} />
                 }}
-                listeners={{
-                    focus: () => {
-                            checkIsBlocked(); // Kiểm tra lại nếu màn hình Home được focus
-                        
-                    }
-                }}
+                        listeners={{
+                            focus: () => {
+                                checkUserStatus();
+                            },
+                        }}
             />
             <Tab.Screen name={"Tìm Kiếm"} component={Search}
                 options={{
@@ -100,18 +121,34 @@ const TabNavi = ({ navigation }) => {
                     tabBarIcon: ({ color, size }) => <Ionicons name='search' color={color} size={size} />
 
                 }}
+                        listeners={{
+                            focus: () => {
+                                checkUserStatus();
+                            },
+                        }}
             />
             <Tab.Screen name={"Yêu Thích"} component={Favourite}
                 initialParams={{ userID }}
                 options={{
                     tabBarIcon: ({ color, size }) => <Ionicons name='heart' color={color} size={size} />
-                }} />
+                }}
+                        listeners={{
+                            focus: () => {
+                                checkUserStatus();
+                            },
+                        }}
+            />
             <Tab.Screen
                 name="Giỏ Hàng"
                 component={Cart}
                 initialParams={{ userID }}
                 options={{
                     tabBarIcon: ({ color, size }) => <Ionicons name='cart' color={color} size={size} />
+                }}
+                listeners={{
+                    focus: () => {
+                        checkUserStatus();
+                    },
                 }}
             />
 
@@ -121,6 +158,11 @@ const TabNavi = ({ navigation }) => {
                 options={{
                     tabBarLabel: 'Tài Khoản',
                     tabBarIcon: ({ color, size }) => <Ionicons name='person' color={color} size={size} />
+                }}
+                listeners={{
+                    focus: () => {
+                        checkUserStatus();
+                    },
                 }}
             />
 
