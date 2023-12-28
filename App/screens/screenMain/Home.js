@@ -10,6 +10,8 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import url from "../../api/url";
 import { useNavigation } from "@react-navigation/native";
 import ipAddress from "../../api/config";
+import io from 'socket.io-client';
+import { getUrl } from "../../api/socketio";
 
 function Home() {
     const navigation = useNavigation();
@@ -27,6 +29,16 @@ function Home() {
     const swiperRef = useRef(null);
 
     const [dataSP, setDataSP] = useState([]);
+    
+    useEffect(() => { 
+        const socket = io(getUrl());
+        socket.on('data-deleted', (data) => {
+            console.log('Nhận được sự kiện data-deleted:', data);
+        });
+        return () => {
+            socket.disconnect();
+        };
+    }, []);
 
     React.useEffect(() => {
         return navigation.addListener("focus", () => {

@@ -595,6 +595,7 @@ app.post('/home/edit/:id', upload.single('product_image'), async(req, res) => {
     }
 });
 
+
 app.post('/home/delete/:id', async(req, res) => {
     const id = req.params.id;
 
@@ -602,7 +603,14 @@ app.post('/home/delete/:id', async(req, res) => {
         await Product.deleteOne({ _id: id });
         await FavouriteItem.deleteMany({ product: id });
         await CartItem.deleteMany({ product: id });
+        const { io } = require('../server');
 
+        if(io){
+            io.sockets.emit('data-deleted', { id });
+            console.log("ok");
+        }else{
+            console.log("fail");
+        }
 
         res.redirect('/warehouse')
     } catch (err) {
