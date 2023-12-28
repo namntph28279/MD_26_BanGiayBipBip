@@ -81,7 +81,7 @@ const Login = ({ navigation }) => {
                     console.log("sờ ta tus ", userData.status);
 
                     if (isBlocked === true) {
-                        Alert.alert('Thông báo', 'Tài khoản của bạn đã bị chặn. Vui lòng liên hệ hỗ trợ để biết thêm chi tiết.');
+                        Alert.alert('Thông báo', 'Tài khoản của bạn đã bị chặn vào lúc: \n'+ userData.date);
                         return;  // Dừng việc tiếp tục xử lý
                     }
 

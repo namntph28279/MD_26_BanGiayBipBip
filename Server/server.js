@@ -13,9 +13,9 @@ var server_host = process.env.YOUR_HOST || '0.0.0.0';
 var io;
 
 mongoose.connect('mongodb+srv://namnguyen:Nam280103@cluster0.zyd4ou2.mongodb.net/DB?retryWrites=true&w=majority', {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-})
+        useNewUrlParser: true,
+        useUnifiedTopology: true,
+    })
     .then(() => {
         console.log('Connected to MongoDB');
         const server = app.listen(server_port, server_host, function() {

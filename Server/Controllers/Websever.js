@@ -306,6 +306,20 @@ app.post('/block', async(req, res) => {
         return res.status(500).json({ message: 'Lỗi rồi' });
     }
 });
+app.get('/checkstatususer/:userId', async(req, res) => {
+    try {
+        const userId = req.params.userId;
+        const userInfo = await User.findById(userId, 'status date block_reason');
+
+        if (!userInfo) {
+            return res.status(404).json({ message: 'không tồn tại user' });
+        }
+        res.json(userInfo);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Lỗi' });
+    }
+});
 
 app.post('/unblock', async(req, res) => {
     let userId = req.body.userId;
@@ -613,10 +627,10 @@ app.post('/home/delete/:id', async(req, res) => {
         await CartItem.deleteMany({ product: id });
         const { io } = require('../server');
 
-        if(io){
+        if (io) {
             io.sockets.emit('data-deleted', { id });
             console.log("ok");
-        }else{
+        } else {
             console.log("fail");
         }
 

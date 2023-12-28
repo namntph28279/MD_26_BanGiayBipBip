@@ -33,80 +33,34 @@ const TabNavi = ({ navigation }) => {
     const [userID, setUserID] = useState('');
     useEffect(() => {
         const fetchData = async () => {
-          const socket = io(getUrl());
-    
-          socket.on('data-block', async (data) => {
-            console.log('Nhận được sự kiện data-block:', data);
-            try {
-              const idFromAsyncStorage = await AsyncStorage.getItem("Email");
+            const socket = io(getUrl());
 
-              console.log("try-block", data.userId);
-              console.log("try-block 111  --- ", idFromAsyncStorage);
-    
-              if (idFromAsyncStorage === data.userId) {
-                navigation.navigate('Login');
-              }
-    
-              
-            } catch (error) {
-              console.error('Lỗi khi lấy dữ liệu từ AsyncStorage:', error);
-            }
-          });
-          socket.on('data-deleted', (data) => {
-            dispatch(fetchDataAndSetToRedux());
-        });
-    
-          return () => {
-            socket.disconnect();
-          };
-        };
-    
-        fetchData();
-      }, [navigation]);
+            socket.on('data-block', async (data) => {
+                console.log('Nhận được sự kiện data-block:', data);
+                try {
+                    const idFromAsyncStorage = await AsyncStorage.getItem("Email");
+
+                    if (idFromAsyncStorage === data.userId) {
+                        navigation.navigate('Login');
+                    }
 
 
-    // useEffect(() => {
-    //     // Gọi getUserId ban đầu
-    //     getUserId();
-
-    //     // Thiết lập interval để gọi getUserId mỗi 2 giây
-    //     const intervalId = setInterval(() => {
-    //         getUserId();
-    //     }, 1000);
-
-    //     // Kiểm tra giá trị storedIsBlocked từ AsyncStorage
-       
-
-    //     // Gọi hàm kiểm tra mỗi khi component được render hoặc re-render
-    //     checkIsBlocked();
-
-    //     // Trong trường hợp component bị hủy, bạn cần xóa interval để ngăn chặn việc gọi không cần thiết.
-    //     return () => {
-    //         clearInterval(intervalId);
-    //     };
-    // }, [navigation]);
-
-    const getUserId = async () => {
-        try {
-            const user = await AsyncStorage.getItem('Email');
-            setUserID(user);
-        } catch (error) {
-            console.error('Error while fetching user ID:', error);
-        }
-    };
-     const checkIsBlocked = async () => {
-            try {
-                const storedIsBlockedString = await AsyncStorage.getItem('1');
-                const storedIsBlocked = JSON.parse(storedIsBlockedString);
-                console.log('status user', storedIsBlocked)
-                if (storedIsBlocked === true) {
-                    await AsyncStorage.removeItem('1');
-                    navigation.navigate('Login');  // Chuyển hướng đến màn hình Login nếu blocked
+                } catch (error) {
+                    console.error('Lỗi khi lấy dữ liệu từ AsyncStorage:', error);
                 }
-            } catch (error) {
-                console.error('Error while checking block status:', error);
-            }
+            });
+            socket.on('data-deleted', (data) => {
+                dispatch(fetchDataAndSetToRedux());
+            });
+
+            return () => {
+                socket.disconnect();
+            };
         };
+
+        fetchData();
+    }, [navigation]);
+
 
     return (
         <Tab.Navigator
@@ -123,16 +77,11 @@ const TabNavi = ({ navigation }) => {
                 options={{
                     tabBarIcon: ({ color, size }) => <Ionicons name='home' color={color} size={size} />
                 }}
-                listeners={{
-                    focus: () => {
-                            checkIsBlocked(); // Kiểm tra lại nếu màn hình Home được focus
-                        
-                    }
-                }}
+               
             />
             <Tab.Screen name={"Tìm Kiếm"} component={Search}
                 options={{
-                    
+
                     tabBarIcon: ({ color, size }) => <Ionicons name='search' color={color} size={size} />
 
                 }}
