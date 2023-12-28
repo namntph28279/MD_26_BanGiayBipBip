@@ -291,6 +291,14 @@ app.post('/block', async(req, res) => {
         user.status = true;
         user.block_reason = blockReason;
         await user.save();
+        const { io } = require('../server');
+
+        if(io){
+            io.sockets.emit('data-block', { userId });
+            console.log("block");
+        }else{
+            console.log("fail");
+        }
 
         res.redirect('/customer');
     } catch (error) {

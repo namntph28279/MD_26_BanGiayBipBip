@@ -18,6 +18,8 @@ import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import url from "../../api/url";
 import ipAddress from "../../api/config";
+import io from 'socket.io-client';
+import { getUrl } from "../../api/socketio";
 
 function Home({ route, navigation }) {
   const dispatch = useDispatch();
@@ -30,6 +32,16 @@ function Home({ route, navigation }) {
 
   const [dataSP, setDataSP] = useState([]);
   const [dataSwiper, setDataSwiper] = useState([]);
+  useEffect(() => { 
+    const socket = io(getUrl());
+    socket.on('data-deleted', (data) => {
+        console.log('Nhận được sự kiện data-deleted:', data);
+        dispatch(fetchDataAndSetToRedux());
+    });
+    return () => {
+        socket.disconnect();
+    };
+}, []);
   useEffect(() => {
     setDataSP(dataSP1);
     setDataSwiper(dataSP1);

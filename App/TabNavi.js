@@ -12,6 +12,9 @@ import { useIsFocused } from "@react-navigation/native";
 import * as Notifications from "expo-notifications";
 import { Alert, Platform } from "react-native";
 import url from "./api/url";
+import io from 'socket.io-client';
+import { getUrl } from "./api/socketio";
+
 
 Notifications.setNotificationHandler({
     handleNotification: async () => {
@@ -28,27 +31,60 @@ const Tab = createBottomTabNavigator();
 
 const TabNavi = ({ navigation }) => {
     const [userID, setUserID] = useState('');
-
     useEffect(() => {
-        // Gọi getUserId ban đầu
-        getUserId();
+        const fetchData = async () => {
+          const socket = io(getUrl());
+    
+          socket.on('data-block', async (data) => {
+            console.log('Nhận được sự kiện data-block:', data);
+            try {
+              const idFromAsyncStorage = await AsyncStorage.getItem("Email");
 
-        // Thiết lập interval để gọi getUserId mỗi 2 giây
-        const intervalId = setInterval(() => {
-            getUserId();
-        }, 1000);
+              console.log("try-block", data.userId);
+              console.log("try-block 111  --- ", idFromAsyncStorage);
+    
+              if (idFromAsyncStorage === data.userId) {
+                navigation.navigate('Login');
+              }
+    
+              
+            } catch (error) {
+              console.error('Lỗi khi lấy dữ liệu từ AsyncStorage:', error);
+            }
+          });
+          socket.on('data-deleted', (data) => {
+            dispatch(fetchDataAndSetToRedux());
+        });
+    
+          return () => {
+            socket.disconnect();
+          };
+        };
+    
+        fetchData();
+      }, [navigation]);
 
-        // Kiểm tra giá trị storedIsBlocked từ AsyncStorage
+
+    // useEffect(() => {
+    //     // Gọi getUserId ban đầu
+    //     getUserId();
+
+    //     // Thiết lập interval để gọi getUserId mỗi 2 giây
+    //     const intervalId = setInterval(() => {
+    //         getUserId();
+    //     }, 1000);
+
+    //     // Kiểm tra giá trị storedIsBlocked từ AsyncStorage
        
 
-        // Gọi hàm kiểm tra mỗi khi component được render hoặc re-render
-        checkIsBlocked();
+    //     // Gọi hàm kiểm tra mỗi khi component được render hoặc re-render
+    //     checkIsBlocked();
 
-        // Trong trường hợp component bị hủy, bạn cần xóa interval để ngăn chặn việc gọi không cần thiết.
-        return () => {
-            clearInterval(intervalId);
-        };
-    }, [navigation]);
+    //     // Trong trường hợp component bị hủy, bạn cần xóa interval để ngăn chặn việc gọi không cần thiết.
+    //     return () => {
+    //         clearInterval(intervalId);
+    //     };
+    // }, [navigation]);
 
     const getUserId = async () => {
         try {

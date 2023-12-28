@@ -20,6 +20,8 @@ import { getMonney } from "../../util/money";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import url from "../../api/url";
 import ipAddress from "../../api/config";
+import io from 'socket.io-client';
+import { getUrl } from "../../api/socketio";
 
 function ProductDetail({ route, navigation }) {
     const { productId } = route.params;
@@ -44,6 +46,15 @@ function ProductDetail({ route, navigation }) {
     const [availableSizes, setAvailableSizes] = useState([]);
 
     // const userId = '64ab9784b65d14d1076c3477';
+    useEffect(() => {
+        const socket = io(getUrl());
+        socket.on('data-deleted', (data) => {
+            navigation.navigate('Home');
+        });
+        return () => {
+            socket.disconnect();
+        };
+    }, []);
 
     useEffect(() => {
         const fetchData = async () => {
