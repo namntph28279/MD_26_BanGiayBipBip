@@ -354,10 +354,22 @@ app.get('/mess', async(req, res) => {
         res.status(500).json({ message: error.message });
     }
 });
-app.get('/warehouse', async(req, res) => {
+
+app.get('/dataWarehouse', async(req, res) => {
     try {
         const products = await Product.find().lean();
-        res.render('../Views/screenWarehouse.hbs', { products });
+        res.json(products)
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
+
+
+
+app.get('/warehouse', async(req, res) => {
+    try {
+        res.render('../Views/screenWarehouse.hbs');
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
@@ -370,11 +382,9 @@ app.get('/warehouse/:cate', async(req, res) => {
             category = "Nam";
         } else if (cate === "women") {
             category = "Nữ";
-        } else if (cate === "children") {
-            category = "Trẻ em";
         }
         const products = await Product.find({ product_category: cate }).lean();
-        res.render('../Views/screenWarehouse.hbs', { products, category, cate });
+        res.json(products);
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
@@ -399,11 +409,11 @@ app.get('/warehouse/:cate/:sort', async(req, res) => {
         if (cate === "all") {
             const products = await Product.find().lean();
             const sortProducts = sort === "lowtohight" ? products.slice().sort((a, b) => a.product_price - b.product_price) : products.slice().sort((a, b) => b.product_price - a.product_price);
-            res.render('../Views/screenWarehouse.hbs', { products: sortProducts, category, sortName, cate });
+            res.json(sortProducts)
         } else {
             const products = await Product.find({ product_category: cate }).lean();
             const sortProducts = sort === "lowtohight" ? products.slice().sort((a, b) => a.product_price - b.product_price) : products.slice().sort((a, b) => b.product_price - a.product_price);
-            res.render('../Views/screenWarehouse.hbs', { products: sortProducts, category, sortName, cate });
+            res.json(sortProducts)
         }
 
 
