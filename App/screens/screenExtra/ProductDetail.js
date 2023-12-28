@@ -59,9 +59,7 @@ function ProductDetail({ route, navigation }) {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const storedIsBlockedString = await AsyncStorage.getItem('1');  // Lấy ra dưới dạng chuỗi
-                const storedIsBlocked = JSON.parse(storedIsBlockedString);
-                console.log("stahh", storedIsBlocked)
+                
                 const response = await url.get(`/product/${productId}`);
                 const data = response.data;
 
@@ -258,6 +256,37 @@ function ProductDetail({ route, navigation }) {
             console.error('Lỗi thêm vào giỏ hàng:', error);
         }
     };
+    const checkUserStatus = async () => {
+
+        try {
+            const email = await AsyncStorage.getItem("Email");
+
+            if (email !== null) {
+                const response = await url.get(`/user/${email}`);
+                const userData = response.data;
+
+                if (userData.status) {
+                    const { date, block_reason } = userData;
+                    console.log(`Tài khoản đã bị khóa. ngày: ${date}, nội dung: ${block_reason}`);
+                    alert('Tài khoản của bạn đã bị chặn vào lúc: \n'+ userData.date);
+                    await AsyncStorage.removeItem("Email");
+
+                    navigation.navigate('Login');
+                }
+            }
+        } catch (error) {
+            console.error(error);
+        }
+    };
+
+    const checkAddCard = () => {
+        checkUserStatus();
+        addToCart();
+    }
+    const checkBuy = () => {
+        checkUserStatus();
+        buyNow();
+    }
 
 
     // const sizeOptions = ['28', '29', '30', '31'];
@@ -437,10 +466,10 @@ function ProductDetail({ route, navigation }) {
 
                         </View>
                         <View style={styles.buttonContainer}>
-                            <TouchableOpacity style={styles.addToCartButton} onPress={addToCart}>
+                            <TouchableOpacity style={styles.addToCartButton} onPress={checkAddCard}>
                                 <Text style={styles.addToCartButtonText}>Thêm vào giỏ hàng</Text>
                             </TouchableOpacity>
-                            <TouchableOpacity style={styles.addToCartButtonBuy} onPress={buyNow}>
+                            <TouchableOpacity style={styles.addToCartButtonBuy} onPress={checkBuy}>
                                 <Text style={styles.addToCartButtonText1}>Mua Ngay</Text>
                             </TouchableOpacity>
 
