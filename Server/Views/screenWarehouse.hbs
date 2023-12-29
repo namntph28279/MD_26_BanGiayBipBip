@@ -428,20 +428,25 @@
                         \{{ selectedValueGender }}
                       </button>
                       <ul class="dropdown-menu">
-                        <li><a class="dropdown-item" @click="selectOptionGender('all')" style="cursor: pointer;">Tất cả</a></li>
-                        <li><a class="dropdown-item" @click="selectOptionGender('men')" style="cursor: pointer;">Nam</a></li>
-                        <li><a class="dropdown-item" @click="selectOptionGender('women')" style="cursor: pointer;">Nữ</a></li>
+                        <li><a class="dropdown-item" @click="selectOptionGender('all')" style="cursor: pointer;">Tất
+                          cả</a></li>
+                        <li><a class="dropdown-item" @click="selectOptionGender('men')" style="cursor: pointer;">Nam</a>
+                        </li>
+                        <li><a class="dropdown-item" @click="selectOptionGender('women')"
+                               style="cursor: pointer;">Nữ</a></li>
                       </ul>
                     </div>
 
                     <div class="dropdown">
                       <button class="btn btn-outline-secondary dropdown-toggle float-left" type="button"
                               data-bs-toggle="dropdown" aria-expanded="false" style="margin-left:10px; ">
-                      \{{selectedValueMoney}}
+                        \{{selectedValueMoney}}
                       </button>
                       <ul class="dropdown-menu">
-                        <li style="cursor: pointer;"><a class="dropdown-item" @click="selectOptionSort('lowtohight')" >Giá: Thấp đến Cao</a></li>
-                        <li style="cursor: pointer;"><a class="dropdown-item" @click="selectOptionSort('highttolow')" >Giá: Cao đến Thấp</a></li>
+                        <li style="cursor: pointer;"><a class="dropdown-item" @click="selectOptionSort('lowtohight')">Giá:
+                          Thấp đến Cao</a></li>
+                        <li style="cursor: pointer;"><a class="dropdown-item" @click="selectOptionSort('highttolow')">Giá:
+                          Cao đến Thấp</a></li>
                       </ul>
                     </div>
                   </div>
@@ -452,7 +457,8 @@
                 </div>
                 <div class="card-search">
                   <div class="search-container">
-                    <input type="text" class="search-input" id="searchInput" placeholder="Tìm kiếm...">
+                    <input v-model="searchData" type="text" class="search-input" id="searchInput"
+                           placeholder="Tìm kiếm..." autocomplete="off">
                   </div>
                 </div>
 
@@ -488,20 +494,18 @@
                         </td>
                         <td>
                           <!-- Các nút "Sửa" và "Xóa" -->
-                          <a href="#" class="btn btn-primary btn-sm" data-toggle="modal"
-                             data-target="#edit{{this._id}}" data-product-title="Tiêu đề sản phẩm"
-                             data-product-price="Giá sản phẩm">Sửa</a>
+                          <a @click="openModalSuaSP(item)" class="btn btn-primary btn-sm" data-toggle="modal">Sửa</a>
                           <a href="#" class="btn btn-danger btn-sm" data-toggle="modal"
                              data-target="#delete{{this._id}}"
                              data-product-name="Tên sản phẩm">Xóa</a>
-                          <a href="/home/detail/{{this._id}}" class="btn btn-info btn-sm mt-1.5">Xem
+                          <a @click="XemChiTiet(item._id)" class="btn btn-info btn-sm mt-1.5">Xem
                             chi tiết</a>
                         </td>
                       </tr>
                       </tbody>
                     </table>
                   </div>
-                  <div class="box-size-table">
+                  <div class="box-size-table" v-if="toatalWare > 4">
                     <div class="text-box-size-table">\{{sizeTable(indexSize)}} của tổng số \{{toatalWare}}</div>
                     <div class="box-arrow">
                       <div class="box-extra-arrow" @click="backSize(dataWarehouseAll)">
@@ -572,6 +576,55 @@
       </div>
     </div>
   </div>
+  <div class="modal fade" id="SuaSP" tabindex="-1" role="dialog"
+       aria-labelledby="addProductModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="addProductModalLabel">Sửa sản phẩm</h5>
+          <button type="button" class="close" data-dismiss="modal"
+                  aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <form @submit.prevent="submitSua" class="mb-3" enctype="multipart/form-data">
+            <div style="display: flex;">
+              <div>
+                <img :src="dataSuaSanPham.product_image" style="height: 95px; width: 95px; border-radius: 5px;" alt="">
+              </div>
+              <div class="form-group" style="margin-left: 8px; width: 80%;">
+                <label for="product_image">Ảnh</label>
+                <input type="file" class="form-control" id="product_image" name="product_image" @change="handleImage"
+                       required>
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="product_title">Tiêu đề</label>
+              <input type="text" class="form-control" id="product_title" name="product_title"
+                     v-model="formData.product_title" required>
+            </div>
+            <div class="form-group">
+              <label for="product_price">Giá</label>
+              <input type="number" class="form-control" id="product_price" min="0" name="product_price"
+                     v-model="formData.product_price" required>
+            </div>
+            <div class="form-group">
+              <label for="product_category">Thể loại</label>
+              <select class="form-control" id="dateYearSelect" v-model="selectGender" @change="selectClickGender">
+                <option v-for="item in selectGenderClick" :value="item.value" :key="item.value">\{{ item.name }}
+                </option>
+              </select>
+            </div>
+            <div class="form-group">
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">Huỷ</button>
+              <button type="submit" class="btn btn-primary">Sửa</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
 
 </body>
@@ -587,6 +640,9 @@
       tinNhanMoi: 0,
       donHangMoi: 0,
       dataWarehouseAll: {},
+      dataSearch: {},
+      dataSuaSanPham: {},
+      dataXoaSanPham: {},
       toatalWare: 0,
       checkThongTin: true,
       checkInputNotificationAll: false,
@@ -595,7 +651,19 @@
       checkStatus: true,
       selectedValueGender: 'Tất cả',
       selectedValueMoney: 'Giá',
-      dataCate :'all'
+      dataCate: 'all',
+      searchData: '',
+      selectGender: 'Giới tính',
+      selectGenderClick: [
+        {value: 'men', name: 'Nam'},
+        {value: 'women', name: 'Nữ'},
+      ],
+      formData: {
+        product_image: "",
+        product_title: "",
+        product_price: "",
+        product_category: ""
+      },
     },
     mounted() {
       const socket = io();
@@ -618,16 +686,88 @@
         this.socket.disconnect();
       }
     },
+    watch: {
+      searchData(newKeyword) {
+        var self = this;
+        if (newKeyword === '') {
+          var dataAll = splitList(self.dataSearch, 4)
+          self.toatalWare = self.dataSearch.length
+          return self.dataWarehouseAll = dataAll
+        }
+        self.filterData(newKeyword);
+      }
+    },
 
     methods: {
-      selectOptionSort(value){
+      handleImage(event) {
+        var self = this;
+        const file = event.target.files[0];
+        self.formData.product_image = file;
+        console.log(file)
+      },
+      submitSua() {
+        var self = this;
+        fetch(`/home/edit/${self.dataSuaSanPham._id}`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(self.formData)
+        })
+            .then(response => response.json())
+            .then(data => {
+              console.log(data)
+            })
+            .catch(error => {
+              console.error(error);
+            });
+      },
+      selectClickGender() {
+        this.formData.product_category = this.selectGender
+      },
+      openModalSuaSP(data) {
+        this.formData.product_title = data.product_title
+        this.formData.product_price = data.product_price
+        this.formData.product_category = data.product_category
+
+        this.dataSuaSanPham = data
+        this.selectGender = data.product_category
+        $('#SuaSP').modal('show');
+      },
+      closeModalSuaSP() {
+        this.dataSuaSanPham = {};
+
+        $('#SuaSP').modal('hide');
+      },
+
+      openModalXoaSP(data) {
+        this.dataXoaSanPham = data
+        $('#XoaSP').modal('show');
+      },
+      closeModalXoaSP() {
+        this.dataXoaSanPham = {};
+        $('#XoaSP').modal('hide');
+      },
+      filterData(keyword) {
+        var self = this;
+        const key = keyword.toLowerCase();
+        const dataSreachs = self.dataSearch.filter(product => product.product_title.toLowerCase().includes(key));
+        var dataAll = splitList(dataSreachs, 4)
+        self.toatalWare = dataSreachs.length
+        return self.dataWarehouseAll = dataAll
+      },
+      XemChiTiet(data) {
+        console.log(data)
+        window.location.href = `/home/detail/${data}`;
+      },
+      selectOptionSort(value) {
         var self = this
         if (value === 'highttolow') {
           self.selectedValueMoney = 'Giá: Cao đến Thấp'
-          self.loadDataSortWarehouse(self.dataCate,'highttolow')
+          self.loadDataSortWarehouse(self.dataCate, 'highttolow')
         } else {
           self.selectedValueMoney = 'Giá: Thấp đến Cao'
-          self.loadDataSortWarehouse(self.dataCate,'lowtohight')
+          self.loadDataSortWarehouse(self.dataCate, 'lowtohight')
         }
       },
       selectOptionGender(value) {
@@ -735,7 +875,7 @@
       },
       GetDataWarehouse: function () {
         var self = this;
-         self.loadDataWarehouseLast();
+        self.loadDataWarehouseLast();
       },
 
 
@@ -751,6 +891,7 @@
             .then(data => {
               var dataAll = splitList(data, 4)
               self.dataWarehouseAll = dataAll
+              self.dataSearch = data
               self.toatalWare = data.length
             })
             .catch(error => {
@@ -771,6 +912,7 @@
               var dataAll = splitList(data, 4)
               self.dataWarehouseAll = dataAll
               self.toatalWare = data.length
+              self.dataSearch = data
               self.checkStatus = false
             })
             .catch(error => {
@@ -790,6 +932,7 @@
             .then(data => {
               const dataAll = splitList(data, 4);
               self.dataWarehouseAll = dataAll;
+              self.dataSearch = data
               self.totalWare = data.length;
             })
             .catch(error => {
