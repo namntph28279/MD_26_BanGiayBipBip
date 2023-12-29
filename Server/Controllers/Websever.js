@@ -603,11 +603,24 @@ app.post('/home/add', upload.single('product_image'), async(req, res) => {
 app.post('/home/edit/:id', upload.single('product_image'), async(req, res) => {
     const id = req.params.id;
     const { product_title, product_price, product_category } = req.body;
-    console.log(req.body)
-try {
+    let imagePath = "";
+    if (req.file) {
+        imagePath = req.file.path;
+    }
+    const imageUrl = `http://localhost/${path.normalize(imagePath).replace(/\\/g, '/')}`;
+    if (!product_title || !product_price) {
+        return res.status(400).send('Missing required fields');
+    }
 
+    try {
+        await Product.updateOne({ _id: id }, {
+            product_title,
+            product_price,
+            product_image: imageUrl,
+            product_category
+        }).lean();
 
-        res.json(true)
+        res.redirect('/warehouse')
     } catch (err) {
         console.error('Lỗi khi sửa dữ liệu:', err);
         res.sendStatus(500);

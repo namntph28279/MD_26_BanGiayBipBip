@@ -588,36 +588,48 @@
           </button>
         </div>
         <div class="modal-body">
-          <form @submit.prevent="submitSua" class="mb-3" enctype="multipart/form-data">
+          <form :action="'/home/edit/' + dataSuaSanPham._id" method="POST" class="mb-3"
+                id="addProductForm" enctype="multipart/form-data">
             <div style="display: flex;">
               <div>
-                <img :src="dataSuaSanPham.product_image" style="height: 95px; width: 95px; border-radius: 5px;" alt="">
+                <img :src="dataSuaSanPham.product_image"
+                     style="height: 95px; width: 95px; border-radius: 5px;"
+                     alt="">
               </div>
-              <div class="form-group" style="margin-left: 8px; width: 80%;">
+              <div class="form-group"
+                   style=" margin-left: 8px; width: 80%; ">
                 <label for="product_image">Ảnh</label>
-                <input type="file" class="form-control" id="product_image" name="product_image" @change="handleImage"
-                       required>
+                <input type="file" class="form-control"
+                       id="product_image" name="product_image"
+                       v-model="formData.product_image" required>
               </div>
             </div>
             <div class="form-group">
               <label for="product_title">Tiêu đề</label>
-              <input type="text" class="form-control" id="product_title" name="product_title"
+              <input type="text" class="form-control" id="product_title"
+                     name="product_title"
                      v-model="formData.product_title" required>
             </div>
             <div class="form-group">
               <label for="product_price">Giá</label>
-              <input type="number" class="form-control" id="product_price" min="0" name="product_price"
-                     v-model="formData.product_price" required>
+              <input type="number" class="form-control" id="product_price"
+                     min="0"
+                     v-model="formData.product_price" name="product_price"
+                     required>
             </div>
             <div class="form-group">
-              <label for="product_category">Thể loại</label>
-              <select class="form-control" id="dateYearSelect" v-model="selectGender" @change="selectClickGender">
-                <option v-for="item in selectGenderClick" :value="item.value" :key="item.value">\{{ item.name }}
-                </option>
-              </select>
-            </div>
-            <div class="form-group">
-              <button type="button" class="btn btn-secondary" data-dismiss="modal">Huỷ</button>
+
+              <div class="form-group">
+                <label for="product_category">Thể loại</label>
+                <select class="form-control" id="product_category" name="product_category" v-model="selectGender" @change="selectClickGender">
+                  <option v-for="item in selectGenderClick" :value="item.value" :key="item.value">\{{ item.name }}
+                  </option>
+                </select>
+              </div>
+
+              <button type="button" class="btn btn-secondary"
+                      data-dismiss="modal">Huỷ
+              </button>
               <button type="submit" class="btn btn-primary">Sửa</button>
             </div>
           </form>
