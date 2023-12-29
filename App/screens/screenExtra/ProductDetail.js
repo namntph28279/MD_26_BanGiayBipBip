@@ -246,8 +246,7 @@ function ProductDetail({ route, navigation }) {
                 };
 
                 await url.post('/cart/add', cartItem);
-
-                navigation.navigate('Cart');
+                navigation.navigate('Giỏ Hàng');
             } else {
                 console.log('chưa chọn màu sắc hoặc kích cỡ');
                 alert('chưa chọn màu sắc hoặc kích cỡ');

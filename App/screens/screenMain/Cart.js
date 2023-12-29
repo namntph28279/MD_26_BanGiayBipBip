@@ -29,7 +29,6 @@ function Cart({ navigation }) {
   const dataProduct = useSelector((state) => state.dataAll.dataSP);
   const [dataSP, setDataSP] = useState([]);
 
-
   useEffect(() => {
     fetchData();
     fetchColor();
@@ -175,66 +174,118 @@ function Cart({ navigation }) {
     } else {
       const item = dataSP.find((item) => item._id === product.product);
       const itemColor = color.find((item) => item._id === product.colorId);
-      if(itemColor == null){
-        handleRemoveProduct(product._id);
-      }else{
+      if (itemColor == null || item == null) {
         return (
-            <View key={product._id} style={styles.productContainer}>
-              <View style={styles.productBox}>
-                <View style={{ width: 45 }}>
-                  <CheckBox
-                    checked={product.selected}
-                    checkedColor="gray"
-                    style={styles.buttonCheckbox}
-                    onPress={() => handleToggleSwitch(product.id)}
-                  />
-                </View>
-    
-                <Image
-                  //uri product image
-                  source={{ uri: itemColor.color_image }}
-                  style={styles.productImage}
+          <View key={product._id} style={styles.productContainer}>
+            <View style={styles.productBox}>
+              <View style={{ width: 45 }}>
+                <CheckBox
+                  disabled
+                  checkedColor="gray"
+                  style={styles.buttonCheckbox}
                 />
-                <View style={styles.productInfo}>
-                  <Text style={styles.productName}>{item.product_title}</Text>
-                  <Text style={styles.productType}>
-                    Phân loại : {itemColor.color_name}/{product.size}
-                  </Text>
-                  {/* <Text style={styles.productPrice}>
-                  Giá: {getMonney(sumProductsPrice(item, product.quantity))}
-                </Text> */}
-                  <Text style={styles.productPrice}>
-                    Giá: {getMonney(item.product_price)}
-                  </Text>
-    
-                  <View style={styles.quantityContainer}>
-                    <TouchableOpacity
-                      style={styles.quantityButton}
-                      onPress={() => decreaseQuantity(product.id)}
-                    >
-                      <Text style={styles.quantityButtonText}>-</Text>
-                    </TouchableOpacity>
-                    <Text style={styles.quantityText}>{product.quantity}</Text>
-                    <TouchableOpacity
-                      style={styles.quantityButton}
-                      onPress={() => increaseQuantity(product.id)}
-                    >
-                      <Text style={styles.quantityButtonText}>+</Text>
-                    </TouchableOpacity>
-    
-                    <TouchableOpacity
-                      style={styles.buttonDel}
-                      onPress={() => showConfirmDialog(product._id)}
-                    >
-                      <Ionicons name="trash-outline" size={20} color="red" />
-                    </TouchableOpacity>
-                  </View>
+              </View>
+
+              <Image
+                //uri product image
+                source={require('../../image/logoapp1.png')}
+                style={styles.productImage}
+              />
+              <View style={styles.productInfo}>
+                <Text style={styles.productName}>Sản phẩm đã bị xóa</Text>
+                <Text style={styles.productType}>
+                  Phân loại : Không
+                </Text>
+                {/* <Text style={styles.productPrice}>
+                Giá: {getMonney(sumProductsPrice(item, product.quantity))}
+              </Text> */}
+                <Text style={styles.productPrice}>
+                  Giá: {getMonney(0)}
+                </Text>
+
+                <View style={styles.quantityContainer}>
+                  <TouchableOpacity
+                    style={styles.quantityButton}
+                    disabled
+                  >
+                    <Text style={styles.quantityButtonText}>-</Text>
+                  </TouchableOpacity>
+                  <Text style={styles.quantityText}>{product.quantity}</Text>
+                  <TouchableOpacity
+                    style={styles.quantityButton}
+                    disabled
+                  >
+                    <Text style={styles.quantityButtonText}>+</Text>
+                  </TouchableOpacity>
+
+                  <TouchableOpacity
+                    style={styles.buttonDel}
+                    onPress={() => showConfirmDialog(product._id)}
+                  >
+                    <Ionicons name="trash-outline" size={20} color="red" />
+                  </TouchableOpacity>
                 </View>
               </View>
             </View>
-          );
+          </View>
+        );
+      } else {
+        return (
+          <View key={product._id} style={styles.productContainer}>
+            <View style={styles.productBox}>
+              <View style={{ width: 45 }}>
+                <CheckBox
+                  checked={product.selected}
+                  checkedColor="gray"
+                  style={styles.buttonCheckbox}
+                  onPress={() => handleToggleSwitch(product.id)}
+                />
+              </View>
+
+              <Image
+                //uri product image
+                source={{ uri: itemColor.color_image }}
+                style={styles.productImage}
+              />
+              <View style={styles.productInfo}>
+                <Text style={styles.productName}>{item.product_title}</Text>
+                <Text style={styles.productType}>
+                  Phân loại : {itemColor.color_name}/{product.size}
+                </Text>
+                {/* <Text style={styles.productPrice}>
+                  Giá: {getMonney(sumProductsPrice(item, product.quantity))}
+                </Text> */}
+                <Text style={styles.productPrice}>
+                  Giá: {getMonney(item.product_price)}
+                </Text>
+
+                <View style={styles.quantityContainer}>
+                  <TouchableOpacity
+                    style={styles.quantityButton}
+                    onPress={() => decreaseQuantity(product.id)}
+                  >
+                    <Text style={styles.quantityButtonText}>-</Text>
+                  </TouchableOpacity>
+                  <Text style={styles.quantityText}>{product.quantity}</Text>
+                  <TouchableOpacity
+                    style={styles.quantityButton}
+                    onPress={() => increaseQuantity(product.id)}
+                  >
+                    <Text style={styles.quantityButtonText}>+</Text>
+                  </TouchableOpacity>
+
+                  <TouchableOpacity
+                    style={styles.buttonDel}
+                    onPress={() => showConfirmDialog(product._id)}
+                  >
+                    <Ionicons name="trash-outline" size={20} color="red" />
+                  </TouchableOpacity>
+                </View>
+              </View>
+            </View>
+          </View>
+        );
       }
-      
     }
   };
 
