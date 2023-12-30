@@ -8,10 +8,12 @@
   <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
   <style>
     body {
       font-family: 'Arial', sans-serif;
     }
+
     .table td {
       vertical-align: middle;
       font-size: 15px;
@@ -57,8 +59,7 @@
       display: flex;
       align-items: center;
       justify-content: end;
-      padding: 14px 0;
-      height: 13%;
+      padding: 0 7px;
       width: 100%;
     }
 
@@ -259,6 +260,70 @@
     .display_None {
       display: none;
     }
+
+    .icon_thaoTac {
+      width: 29px;
+      cursor: pointer;
+    }
+
+    .textUser {
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      overflow: hidden;
+    }
+
+    .card-body-product {
+      height: 89%;
+    }
+
+    .card-search {
+      width: 76%;
+    }
+
+    .search-container {
+      float: left;
+      justify-content: space-between;
+      line-height: 30px;
+      width: 100%;
+    }
+
+    .search-input {
+      padding: 2px 5px 2px 5px;
+      width: 100%;
+      border-radius: 5px;
+      border: 1px solid #ced4da;
+    }
+
+    .imgShowDetail {
+      width: 100%;
+      height: auto;
+      display: block;
+      margin: 0 auto;
+      margin-bottom: 10px;
+    }
+
+    .textShowDetail {
+      font-weight: bold;
+    }
+
+    .box-extra-one {
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .img-box-Detail {
+      width: 44%;
+      height: 100%;
+    }
+
+    .box-text-information {
+      width: 55%;
+      /* text-align: unset; */
+    }
+
+    .box-connect {
+      margin: 7px;
+    }
   </style>
 </head>
 
@@ -306,7 +371,8 @@
             <div class="mx-3 text-sm text-gray-100">Thông báo</div>
           </div>
         </a>
-        <a href="/accountManagement" class="cursor-pointer mess ml-3 mt-3 w-10/12" style="border-bottom-width: 1px; display: flex; text-decoration: none">
+        <a href="/accountManagement" class="cursor-pointer mess ml-3 mt-3 w-10/12"
+           style="border-bottom-width: 1px; display: flex; text-decoration: none">
           <div class="flex" style="padding: 12px;">
             <div>
               <img class="w-5 h-5 " src="iconuser.png" alt="">
@@ -344,15 +410,239 @@
           </div>
           <div :class="checkStatus ? 'display_None' : ' ' ">
             <div class="box-Main">
+              <div class="box-data">
+                <div class="card-header" style="height: 11%;display: flex;justify-content: space-between;">
 
+                  <div style=" display: flex; width: 23%;">
+                    <div class="dropdown">
+                      <button class="btn btn-outline-secondary dropdown-toggle float-left"
+                              type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        \{{ selectedValueStatus }}
+                      </button>
+                      <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" @click="selectOptionStatus('all')" style="cursor: pointer;">Tất cả
+                          trạng thái</a></li>
+                        <li><a class="dropdown-item" @click="selectOptionStatus('activity')" style="cursor: pointer;">Đang
+                          hoạt động</a></li>
+                        <li><a class="dropdown-item" @click="selectOptionStatus('block')" style="cursor: pointer;">Đã
+                          chặn</a></li>
+                      </ul>
+                    </div>
+
+                    <div class="dropdown">
+                      <button class="btn btn-outline-secondary dropdown-toggle float-left" type="button"
+                              data-bs-toggle="dropdown" aria-expanded="false" style="margin-left:10px; ">
+                        \{{selectedValueSort}}
+                      </button>
+                      <ul class="dropdown-menu">
+                        <li style="cursor: pointer;"><a class="dropdown-item" @click="selectOptionSort('lowtohight')">Cũ
+                          nhất</a></li>
+                        <li style="cursor: pointer;"><a class="dropdown-item" @click="selectOptionSort('highttolow')">Mới
+                          nhất</a></li>
+                      </ul>
+                    </div>
+                  </div>
+
+                  <div class="card-search">
+                    <div class="search-container">
+                      <input v-model="searchData" type="text" class="search-input" id="searchInput"
+                             placeholder="Tìm kiếm..." autocomplete="off">
+                    </div>
+                  </div>
+                </div>
+                <div class="card-body-product">
+                  <div style="height: 93%;padding: 8px 24px;">
+                    <table class="table table-bordered ">
+                      <thead>
+                      <tr>
+                        <th>STT</th>
+                        <th style="text-align: center;width: 16%;">Tên</th>
+                        <th style="text-align: center;">Email</th>
+                        <th style="text-align: center">Trạng thái</th>
+                        <th style="text-align: center;width: 10%">Thao tác</th>
+                      </tr>
+                      </thead>
+                      <tbody>
+
+                      <tr v-for="(item,index) in dataUserAll[indexSize-1]">
+                        <td>\{{((indexSize-1) * 8)+index+1}}</td>
+                        <td class="textUser">
+                          <div v-if="item.profile.length>0">
+                            \{{item.profile[0].fullname}}
+                          </div>
+                          <div v-if="item.profile.length<0">
+
+                          </div>
+                        </td>
+                        <td>\{{item.username}}</td>
+                        <td>
+                          <div v-if="item.status === false">
+                            Đang hoạt động
+                          </div>
+                          <div v-if="item.status === true">
+                            Đã bị chặn
+                          </div>
+                        </td>
+
+                        <td style="display: flex;justify-content: space-around">
+                          <div>
+                            <img v-if="item.status === false"
+                                 @click="openTransferStatusBlock(dataUserAll[indexSize-1][index])" class="icon_thaoTac"
+                                 src="unlock.png">
+                            <img v-if="item.status === true"
+                                 @click="openTransferStatusUnBlock(dataUserAll[indexSize-1][index])"
+                                 class="icon_thaoTac"
+                                 src="lock.png">
+                          </div>
+                          <div>
+                            <img @click="openShowProfile(dataUserAll[indexSize-1][index])" class="icon_thaoTac"
+                                 src="show.png">
+                          </div>
+
+                        </td>
+                      </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                  <div class="box-size-table" v-if="toatalWare > 8">
+                    <div class="text-box-size-table">\{{sizeTable(indexSize)}} của tổng số \{{toatalWare}}</div>
+                    <div class="box-arrow">
+                      <div class="box-extra-arrow" @click="backSize(dataUserAll)">
+                        <img src="next.png" style="width: 24px" alt="">
+                      </div>
+                      <div class="box-extra-arrow" @click="arrowBackSize(dataUserAll)">
+                        <img src="back-arrow.png" style="width: 24px" alt="">
+                      </div>
+                      <div class="box-extra-arrow" @click="arrowNextSize(dataUserAll)">
+                        <img src="right-arrow.png" style="width: 24px" alt="">
+                      </div>
+                      <div class="box-extra-arrow" @click="nextSize(dataUserAll)">
+                        <img src="back.png" style="width: 24px" alt="">
+                      </div>
+                    </div>
+                  </div>
+
+                </div>
+              </div>
             </div>
           </div>
         </div>
       </div>
     </div>
+  </div>
 
+  <div class="modal fade" id="unBlock" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+       aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Bỏ chặn người dùng</h5>
+          <button type="button" class="close" @click="closeTransferStatusUnBlock" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <p>Bạn có chắc chắn muốn bỏ chặn người dùng có tài khoản \{{dataBlock.username}} không?</p>
+        </div>
+        <div class="modal-footer">
+          <form @submit.prevent="submitUnBlock">
+            <button type="button" class="btn btn-secondary" @click="closeTransferStatusUnBlock">Hủy</button>
+            <button type="submit" class="btn btn-primary">Bỏ chặn</button>
+          </form>
+
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="modal fade" id="block" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+       aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Chặn người dùng</h5>
+          <button type="button" class="close" @click="closeTransferStatusBlock()" data-dismiss="modal"
+                  aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <form @submit.prevent="submitBlock">
+          <div class="modal-body">
+            <label>Email người dùng: \{{dataBlock.username}}</label>
+            <br>
+            <label for="blockReason">Nhập nội dung chặn:</label>
+            <input type="text" class="form-control" v-model="formData.blockReason" required>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal" @click="closeTransferStatusBlock">Hủy
+            </button>
+            <button type="submit" class="btn btn-primary">Chặn</button>
+          </div>
+        </form>
+      </div>
+    </div>
 
   </div>
+  <div class="modal fade" id="detailUser" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Thông tin chi tiết người dùng</h5>
+          <button type="button" class="close" data-dismiss="modal" @click="closeShowProfile" aria-label="Đóng">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div>
+
+            <div class="box-extra-one">
+              <div class="img-box-Detail">
+                <img :src="dataBlock.profile && dataBlock.profile.length > 0 ? dataBlock.profile[0].avatar : ''"
+                     alt="Avatar"
+                     class="imgShowDetail">
+              </div>
+              <div class="box-text-information">
+                <div class="textShowDetail">Họ và tên: \{{dataBlock.profile && dataBlock.profile.length > 0 ?
+                  dataBlock.profile[0].fullname : ''}}
+                </div>
+                <div class="textShowDetail">Giới tính: \{{dataBlock.profile && dataBlock.profile.length > 0 ?
+                  dataBlock.profile[0].gender : ''}}
+                </div>
+                <div class="textShowDetail">Ngày sinh: \{{dataBlock.profile && dataBlock.profile.length > 0 ?
+                  dataBlock.profile[0].birthday : ''}}
+                </div>
+                <div class="textShowDetail">Email: \{{dataBlock.username}}</div>
+              </div>
+            </div>
+            <div style="display: flex; width: 23%; justify-content: space-between;" v-if="dataAddres.length > 1">
+              <div>
+                Địa chỉ số
+              </div>
+              <div>
+                <select class="dropdown-Op" v-model="selectNumber" >
+                  <option v-for="(item,index) in dataAddres" :value="index+1" :key="index+1">\{{index+1}}</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="box-connect">
+              <div class="textShowDetail" v-if="dataAddres.length > 0">Số điện thoại: \{{dataAddres && dataAddres.length
+                > 0 ? dataAddres[selectNumber-1].phone :
+                ''}}
+              </div>
+              <div class="textShowDetail" v-if="dataAddres.length > 0">Địa chỉ: \{{dataAddres && dataAddres.length > 0 ?
+                dataAddres[selectNumber-1].address :
+                ''}}
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" @click="closeShowProfile" data-dismiss="modal">Đóng</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
 </div>
 
 </body>
@@ -367,31 +657,22 @@
       indexSize: 1,
       tinNhanMoi: 0,
       donHangMoi: 0,
-      dataWarehouseAll: {},
+      dataUserAll: {},
       dataSearch: {},
-      dataSuaSanPham: {},
-      dataXoaSanPham: {},
       toatalWare: 0,
-      checkThongTin: true,
-      checkInputNotificationAll: false,
-      checkInputNotificationOne: false,
-      checkInputUserNameOne: false,
+      selectNumber: 1,
       checkStatus: true,
-      selectedValueGender: 'Tất cả',
-      selectedValueMoney: 'Giá',
-      dataCate: 'all',
+      selectedValueStatus: 'Tất cả trạng thái',
+      selectedValueSort: 'Tài khoản',
+      dataCate: true,
+      dataCateTwo: false,
       searchData: '',
-      selectGender: 'Giới tính',
-      selectGenderClick: [
-        {value: 'men', name: 'Nam'},
-        {value: 'women', name: 'Nữ'},
-      ],
       formData: {
-        product_image: "",
-        product_title: "",
-        product_price: "",
-        product_category: ""
+        userId: "",
+        blockReason: "",
       },
+      dataBlock: {},
+      dataAddres: {},
     },
     mounted() {
       const socket = io();
@@ -400,9 +681,7 @@
         self.GetAllDataChat();
         self.GetDataCart();
         self.GetDataNameUser();
-        if (self.idUser.length > 0) {
-          self.OpenChatUser(self.idUser);
-        }
+        self.GetDataCart();
       });
 
       this.socket = socket;
@@ -418,18 +697,41 @@
       searchData(newKeyword) {
         var self = this;
         if (newKeyword === '') {
-          var dataAll = splitList(self.dataSearch, 4)
+          var dataAll = splitList(self.dataSearch, 8)
           self.toatalWare = self.dataSearch.length
-          return self.dataWarehouseAll = dataAll
+          return self.dataUserAll = dataAll
         }
         self.filterData(newKeyword);
       }
     },
 
     methods: {
-      submitDeleteContentChat() {
+      submitUnBlock() {
         var self = this;
-        fetch(`/home/delete/${self.dataXoaSanPham._id}`, {
+        fetch('/unblock', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            userId: self.dataBlock._id,
+          }),
+        })
+            .then(response => response.json())
+            .then(data => {
+              if (data) {
+                self.closeTransferStatusUnBlock()
+                self.GetDatUser()
+              }
+            })
+            .catch(error => {
+              console.error(error);
+            });
+      },
+      submitBlock() {
+        var self = this;
+        self.formData.userId = self.dataBlock._id
+        fetch(`/block`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
@@ -438,75 +740,107 @@
         })
             .then(response => response.json())
             .then(data => {
-              self.loadDataWarehouseLast()
-              self.closeModalXoaSP()
+              if (data) {
+                self.GetDatUser()
+                self.closeTransferStatusBlock()
+              }
             })
             .catch(error => {
               console.error(error);
             });
       },
-      selectClickGender() {
-        this.formData.product_category = this.selectGender
+      openShowProfile(data) {
+        var self = this
+        self.dataBlock = data
+        fetch(`/addressOneUser/${data._id}`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+        })
+            .then(response => response.json())
+            .then(data => {
+              if (data) {
+                self.dataAddres = data
+              }
+            })
+            .catch(error => {
+              console.error(error);
+            });
+        $('#detailUser').modal('show');
       },
-      openModalSuaSP(data) {
-        this.formData.product_title = data.product_title
-        this.formData.product_price = data.product_price
-        this.formData.product_category = data.product_category
-
-        this.dataSuaSanPham = data
-        this.selectGender = data.product_category
-        $('#SuaSP').modal('show');
+      closeShowProfile() {
+        this.dataBlock = {};
+        $('#detailUser').modal('hide');
       },
-      closeModalSuaSP() {
-        this.dataSuaSanPham = {};
-
-        $('#SuaSP').modal('hide');
+      openTransferStatusUnBlock(data) {
+        var self = this
+        self.dataBlock = data
+        $('#unBlock').modal('show');
       },
-
-      openModalXoaSP(data) {
-        this.dataXoaSanPham = data
-        $('#XoaSP').modal('show');
+      closeTransferStatusUnBlock() {
+        this.dataBlock = {};
+        $('#unBlock').modal('hide');
       },
-      closeModalXoaSP() {
-        this.dataXoaSanPham = {};
-        $('#XoaSP').modal('hide');
+      openTransferStatusBlock(data) {
+        var self = this
+        self.dataBlock = data
+        $('#block').modal('show');
+      },
+      closeTransferStatusBlock() {
+        this.dataBlock = {};
+        $('#block').modal('hide');
       },
       filterData(keyword) {
         var self = this;
         const key = keyword.toLowerCase();
-        const dataSreachs = self.dataSearch.filter(product => product.product_title.toLowerCase().includes(key));
-        var dataAll = splitList(dataSreachs, 4)
+        const dataSreachs = self.dataSearch.filter(product => product.username.toLowerCase().includes(key));
+        var dataAll = splitList(dataSreachs, 8)
         self.toatalWare = dataSreachs.length
-        return self.dataWarehouseAll = dataAll
-      },
-      XemChiTiet(data) {
-        console.log(data)
-        window.location.href = `/home/detail/${data}`;
+        return self.dataUserAll = dataAll
       },
       selectOptionSort(value) {
         var self = this
         if (value === 'highttolow') {
-          self.selectedValueMoney = 'Giá: Cao đến Thấp'
-          self.loadDataSortWarehouse(self.dataCate, 'highttolow')
+          self.selectedValueSort = 'Mới nhất';
+          const dataSreachs = self.dataSearch.filter(user => user.status === self.dataCate || user.status === self.dataCateTwo).sort((a, b) => new Date(b.date) - new Date(a.date));
+          var dataAll = splitList(dataSreachs, 8);
+          self.toatalWare = dataSreachs.length;
+          self.dataUserAll = dataAll;
         } else {
-          self.selectedValueMoney = 'Giá: Thấp đến Cao'
-          self.loadDataSortWarehouse(self.dataCate, 'lowtohight')
+          self.selectedValueSort = 'Cũ nhất';
+          const dataSreachs = self.dataSearch.filter(user => user.status === self.dataCate || user.status === self.dataCateTwo).sort((a, b) => new Date(a.date) - new Date(b.date));
+          var dataAll = splitList(dataSreachs, 8);
+          self.toatalWare = dataSreachs.length;
+          self.dataUserAll = dataAll;
         }
       },
-      selectOptionGender(value) {
+      selectOptionStatus(value) {
         var self = this
         if (value === 'all') {
-          self.dataCate = 'all'
-          self.selectedValueGender = 'Tất cả'
-          self.loadDataWarehouseLast();
-        } else if (value === 'men') {
-          self.selectedValueGender = 'Nam'
-          self.dataCate = 'men'
-          self.loadDataWarehouse('men')
+          self.dataCate = false
+          self.dataCateTwo = true
+          self.selectedValueStatus = 'Tất cả trạng thái'
+          const dataSreachs = self.dataSearch;
+          var dataAll = splitList(dataSreachs, 8)
+          self.toatalWare = dataSreachs.length;
+          self.dataUserAll = dataAll
+        } else if (value === 'activity') {
+          self.dataCate = false
+          self.dataCateTwo = false
+          self.selectedValueStatus = 'Đang hoạt động'
+          const dataSreachs = self.dataSearch.filter(user => user.status === false);
+          var dataAll = splitList(dataSreachs, 8)
+          self.toatalWare = dataSreachs.length;
+          self.dataUserAll = dataAll
         } else {
-          self.selectedValueGender = 'Nữ'
-          self.dataCate = 'women'
-          self.loadDataWarehouse('women')
+          self.dataCate = true
+          self.dataCateTwo = true
+          self.selectedValueStatus = 'Đã chặn'
+          const dataSreachs = self.dataSearch.filter(user => user.status === true);
+          var dataAll = splitList(dataSreachs, 8)
+          self.toatalWare = dataSreachs.length;
+          self.dataUserAll = dataAll
         }
       },
       formatPrice(value) {
@@ -514,8 +848,8 @@
         return val.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + " đ";
       },
       sizeTable(vale) {
-        const start = (vale - 1) * 4 + 1
-        const end = (vale - 1) * 4 + 4
+        const start = (vale - 1) * 8 + 1
+        const end = (vale - 1) * 8 + 8
         return `${start} - ${end}`;
       },
 
@@ -542,19 +876,7 @@
         var self = this
         self.indexSize = 1
       },
-      openModal() {
-        $('#xacNhan').modal('show');
-      },
-      closeModal() {
-        $('#xacNhan').modal('hide');
-      },
 
-      openModalXoa() {
-        $('#xacNhanXoa').modal('show');
-      },
-      closeModalXoa() {
-        $('#xacNhanXoa').modal('hide');
-      },
 
       GetAllDataChat: function () {
         var self = this;
@@ -595,15 +917,15 @@
               console.error(error);
             });
       },
-      GetDataWarehouse: function () {
+      GetDatUser: function () {
         var self = this;
-        self.loadDataWarehouseLast();
+        self.loadDataUserLast();
       },
 
 
-      loadDataWarehouse(value) {
+      loadDataUserLast() {
         var self = this
-        fetch(`/warehouse/${value}`, {
+        fetch(`/dataTK`, {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json'
@@ -611,28 +933,9 @@
         })
             .then(response => response.json())
             .then(data => {
-              var dataAll = splitList(data, 4)
-              self.dataWarehouseAll = dataAll
-              self.dataSearch = data
-              self.toatalWare = data.length
-            })
-            .catch(error => {
-              console.error(error);
-            });
-      },
-
-      loadDataWarehouseLast() {
-        var self = this
-        fetch(`/dataWarehouse`, {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-        })
-            .then(response => response.json())
-            .then(data => {
-              var dataAll = splitList(data, 4)
-              self.dataWarehouseAll = dataAll
+              var dataAll = splitList(data, 8)
+              console.log("Start")
+              self.dataUserAll = dataAll
               self.toatalWare = data.length
               self.dataSearch = data
               self.checkStatus = false
@@ -642,28 +945,10 @@
             });
       },
 
-      loadDataSortWarehouse(cate, sort) {
-        const self = this;
-        fetch(`/warehouse/${cate}/${sort}`, {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-        })
-            .then(response => response.json())
-            .then(data => {
-              const dataAll = splitList(data, 4);
-              self.dataWarehouseAll = dataAll;
-              self.dataSearch = data
-              self.totalWare = data.length;
-            })
-            .catch(error => {
-              console.error(error);
-            });
-      }
+
     }
   })
-  vm.GetDataWarehouse();
+  vm.GetDatUser();
   vm.GetAllDataChat();
   vm.GetDataCart();
 

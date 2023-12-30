@@ -139,6 +139,45 @@ app.get('/statistic', async(req, res) => {
     }
 
 });
+
+
+app.get('/dataTK', async(req, res) => {
+    try {
+        const data = await User.aggregate([
+            {$sort: {date: -1}},{
+            $lookup: {
+                from: "profiles",
+                localField: "_id",
+                foreignField: "user",
+                as: "profile"
+            }
+        },
+            {
+                $project: {
+                    _id: 1,
+                    username: 1,
+                    password: 1,
+                    role: 1,
+                    status: 1,
+                    date: 1,
+                    block_reason: 1,
+                    "profile.fullname": 1,
+                    "profile.gender": 1,
+                    "profile.avatar": 1,
+                    "profile.birthday": 1,
+                    "profile.email": 1,
+                    "profile.phone": 1,
+                    "profile.username": "$username",
+                    "profile.status": "$status",
+                }
+            }
+        ]);
+        res.json(data);
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Lỗi rồi');
+    }
+});
 app.get('/customer', async(req, res) => {
     try {
         const data = await User.aggregate([{
@@ -276,6 +315,7 @@ app.get('/customer/:userId', async(req, res) => {
 app.post('/block', async(req, res) => {
     let userId = req.body.userId;
     const blockReason = req.body.blockReason;
+    console.log(req.body)
     if (!mongoose.Types.ObjectId.isValid(userId)) {
         return res.status(400).json({ message: 'UserId không hợp lệ', userId, blockReason });
 
@@ -300,7 +340,7 @@ app.post('/block', async(req, res) => {
             console.log("fail");
         }
 
-        res.redirect('/customer');
+        res.json(true);
     } catch (error) {
         console.error(error);
         return res.status(500).json({ message: 'Lỗi rồi' });
@@ -341,7 +381,7 @@ app.post('/unblock', async(req, res) => {
         user.block_reason = 'Đã bỏ chặn';
         await user.save();
 
-        res.status(200).json({ message: 'Người dùng đã được bỏ chặn thành công' });
+        res.json(true);
     } catch (error) {
         console.error(error);
         return res.status(500).json({ message: 'Lỗi rồi' });
