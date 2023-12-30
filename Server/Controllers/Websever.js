@@ -635,6 +635,15 @@ app.post('/home/delete/:id', async(req, res) => {
         await Product.deleteOne({ _id: id });
         await FavouriteItem.deleteMany({ product: id });
         await CartItem.deleteMany({ product: id });
+
+        await checkClient.findOneAndUpdate({ user: id }, {
+            $push: {
+                client: {
+                    status: false
+                }
+            }
+        }, { new: true, upsert: true });
+       
         const { io } = require('../server');
 
         if (io) {

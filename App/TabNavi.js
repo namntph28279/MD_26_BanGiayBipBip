@@ -34,21 +34,8 @@ const Tab = createBottomTabNavigator();
 
 const TabNavi = ({ navigation }) => {
     const dispatch = useDispatch();
-    const dataUserID = useSelector((state) => state.dataAll.dataUserID);
-    const tokenApp = useSelector((state) => state.dataAll.dataTokenApp);
+    
 
-    const handleLogout = async () => {
-        if(dataUserID == "" || tokenApp == ""){
-            console.log("rỗng");
-        }else{
-            await url.post("/checkClientUser", { user: String(dataUserID), IdClient: String(tokenApp), status: false });
-            await AsyncStorage.setItem("Email", "");
-            await AsyncStorage.setItem("DefaultAddress", "");
-            dispatch(fetchDataAndSetToRedux());
-            console.log("Đăng xuất thành công");
-        }
-        
-    };
 
     useEffect(() => {
         
@@ -62,9 +49,8 @@ const TabNavi = ({ navigation }) => {
                     const idFromAsyncStorage = await AsyncStorage.getItem("Email");
 
                     if (idFromAsyncStorage === data.userId) {
-                        handleLogout();
-                        // await AsyncStorage.setItem("Email", "");
-                        // await AsyncStorage.setItem("DefaultAddress", "");
+                        await AsyncStorage.setItem("Email", "");
+                        await AsyncStorage.setItem("DefaultAddress", "");
                         navigation.navigate('Login');
                         
                     }
