@@ -15,6 +15,11 @@ import {useDispatch} from "react-redux";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import {Dropdown} from "react-native-element-dropdown";
 
+import io from 'socket.io-client';
+import { getUrl } from "../../api/socketio";
+import { useDispatch , useSelector} from 'react-redux';
+import {fetchDataAndSetToRedux} from "../../redux/AllData";
+
 const EditProfile = ({navigation}) => {
     const dispatch = useDispatch();
     const [fullname, setFullname] = useState("");
@@ -22,6 +27,44 @@ const EditProfile = ({navigation}) => {
     const [avatar, setAvatar] = useState("");
     const [birthday, setBirthday] = useState(new Date());
     const [showPicker, setShowPicker] = useState(false);
+
+
+
+
+    useEffect(() => {
+
+        const fetchData = async () => {
+
+            const socket = io(getUrl());
+
+            socket.on('data-block', async (data) => {
+                console.log('Nhận được sự kiện data-block:', data);
+                try {
+                    const idFromAsyncStorage = await AsyncStorage.getItem("Email");
+
+                    if (idFromAsyncStorage === data.userId) {
+                        await AsyncStorage.setItem("Email", "");
+                        await AsyncStorage.setItem("DefaultAddress", "");
+                        navigation.navigate('Login');
+
+                    }
+
+                } catch (error) {
+                    console.error('Lỗi khi lấy dữ liệu từ AsyncStorage:', error);
+                }
+            });
+            socket.on('data-deleted', (data) => {
+                dispatch(fetchDataAndSetToRedux());
+            });
+
+            return () => {
+                socket.disconnect();
+            };
+        };
+
+        fetchData();
+    }, [navigation]);
+
 
     const onChange = (event, selectedDate) => {
         const currentDate = selectedDate || birthday;

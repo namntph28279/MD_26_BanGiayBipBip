@@ -17,6 +17,11 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import url from '../../api/url';
 import { getMonney } from '../../util/money';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+
+import io from 'socket.io-client';
+import { getUrl } from "../../api/socketio";
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchDataAndSetToRedux } from "../../redux/AllData";
 const Order = ({ route }) => {
     const [orderProductsList, setOrderProductsList] = useState([]);
     const [status, setStatus] = useState('Chờ xác nhận');
@@ -26,6 +31,44 @@ const Order = ({ route }) => {
     const [isSuccessModalVisible, setSuccessModalVisible] = useState(false);
     const [isReturnReasonVisible, setReturnReasonVisible] = useState(false);
     const [returnReason, setReturnReason] = useState('');
+
+
+
+    const dispatch = useDispatch();
+    useEffect(() => {
+
+        const fetchData = async () => {
+
+            const socket = io(getUrl());
+
+            socket.on('data-block', async (data) => {
+                console.log('Nhận được sự kiện data-block:', data);
+                try {
+                    const idFromAsyncStorage = await AsyncStorage.getItem("Email");
+
+                    if (idFromAsyncStorage === data.userId) {
+                        await AsyncStorage.setItem("Email", "");
+                        await AsyncStorage.setItem("DefaultAddress", "");
+                        navigation.navigate('Login');
+
+                    }
+
+                } catch (error) {
+                    console.error('Lỗi khi lấy dữ liệu từ AsyncStorage:', error);
+                }
+            });
+            socket.on('data-deleted', (data) => {
+                dispatch(fetchDataAndSetToRedux());
+            });
+
+            return () => {
+                socket.disconnect();
+            };
+        };
+
+        fetchData();
+    }, [navigation]);
+
 
     useEffect(() => {
         fetchDataList();
@@ -199,7 +242,7 @@ const Order = ({ route }) => {
             }
             const response = await url.post(`/order/return/${orderId}`, {
                 noiDung: returnReason,
-                
+
             }, {
                 headers: {
                     'Content-Type': 'application/json',

@@ -22,6 +22,7 @@ import { io } from "socket.io-client";
 import { getUrl } from "../../api/socketio";
 
 
+
 export default function OrderMain({ navigation }) {
     const layout = useWindowDimensions();
     const dataOrder = useSelector((state) => state.dataAll.dataDonHang);
@@ -36,6 +37,41 @@ export default function OrderMain({ navigation }) {
     const [returnReason, setReturnReason] = useState('');
     const [socket, setSocket] = useState(null);
     const [receivedOrders, setReceivedOrders] = useState([]);
+
+
+    useEffect(() => {
+
+        const fetchData = async () => {
+
+            const socket = io(getUrl());
+
+            socket.on('data-block', async (data) => {
+                console.log('Nhận được sự kiện data-block:', data);
+                try {
+                    const idFromAsyncStorage = await AsyncStorage.getItem("Email");
+
+                    if (idFromAsyncStorage === data.userId) {
+                        await AsyncStorage.setItem("Email", "");
+                        await AsyncStorage.setItem("DefaultAddress", "");
+                        navigation.navigate('Login');
+
+                    }
+
+                } catch (error) {
+                    console.error('Lỗi khi lấy dữ liệu từ AsyncStorage:', error);
+                }
+            });
+            socket.on('data-deleted', (data) => {
+                dispatch(fetchDataAndSetToRedux());
+            });
+
+            return () => {
+                socket.disconnect();
+            };
+        };
+
+        fetchData();
+    }, [navigation]);
 
     const fetchData = async () => {
         console.log("start")//Khi component được tạo, gọi fetchData để lấy dữ liệu đơn hàng từ Redux store thông qua useSelector và dispatch.
@@ -211,7 +247,7 @@ export default function OrderMain({ navigation }) {
 
         // Chuẩn bị nội dung tin nhắn
         let currentDate = new Date();
-        let formattedDate = `${currentDate.toLocaleDateString()} ${currentDate.toLocaleTimeString()}`;    
+        let formattedDate = `${currentDate.toLocaleDateString()} ${currentDate.toLocaleTimeString()}`;
         //Tạo một biến returnMessage chứa nội dung tin nhắn.
 
         let returnMessage = `Đã yêu cầu trả hàng với mã đơn hàng: ${item._id},${formattedDate} . Lý do: `;
@@ -311,8 +347,8 @@ export default function OrderMain({ navigation }) {
                 </View>
 
                 <View style={styles.buttonContainer22}>
-                    {item.status === 3  && (
-                         <Text>Lưu ý: Đơn hàng chỉ được hoàn trả trong 7 ngày! </Text>
+                    {item.status === 3 && (
+                        <Text>Lưu ý: Đơn hàng chỉ được hoàn trả trong 7 ngày! </Text>
                     )}
                 </View>
 
@@ -334,12 +370,12 @@ export default function OrderMain({ navigation }) {
                     )} */}
                 </View>
 
-               
+
                 <View style={styles.buttonContainer22}>
-                    {item.status === 5  && (
-                        
-                         <Text>Lưu ý: Đơn hàng chỉ được hoàn trả trong 7 ngày! </Text>
-                        
+                    {item.status === 5 && (
+
+                        <Text>Lưu ý: Đơn hàng chỉ được hoàn trả trong 7 ngày! </Text>
+
                     )}
                 </View>
 
@@ -349,7 +385,7 @@ export default function OrderMain({ navigation }) {
                         <Text style={styles.cancelOrderButtonText2}>Đang yêu cầu trả hàng</Text>
                     )}
                 </View>
-                
+
 
                 <View style={styles.buttonContainer}>
                     {item.status === 7 && (

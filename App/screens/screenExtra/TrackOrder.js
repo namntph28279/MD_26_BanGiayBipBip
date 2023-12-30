@@ -3,6 +3,12 @@ import {View, Text, Image, StyleSheet, ScrollView, FlatList} from 'react-native'
 import {getMonney} from "../../util/money";
 import Icon from 'react-native-vector-icons/FontAwesome';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+
+
+import io from 'socket.io-client';
+import { getUrl } from "../../api/socketio";
+import { useDispatch , useSelector} from 'react-redux';
+import {fetchDataAndSetToRedux} from "../../redux/AllData";
 const TrackOrder = ({ route }) => {
     const { orderData } = route.params;
     const { orderProductsList } = route.params;
@@ -17,6 +23,40 @@ const TrackOrder = ({ route }) => {
         { title: 'Đã Nhận Hàng', icon: 'circle', color: '#f1f109' },
     ];
 
+    const dispatch = useDispatch();
+    useEffect(() => {
+
+        const fetchData = async () => {
+
+            const socket = io(getUrl());
+
+            socket.on('data-block', async (data) => {
+                console.log('Nhận được sự kiện data-block:', data);
+                try {
+                    const idFromAsyncStorage = await AsyncStorage.getItem("Email");
+
+                    if (idFromAsyncStorage === data.userId) {
+                        await AsyncStorage.setItem("Email", "");
+                        await AsyncStorage.setItem("DefaultAddress", "");
+                        navigation.navigate('Login');
+
+                    }
+
+                } catch (error) {
+                    console.error('Lỗi khi lấy dữ liệu từ AsyncStorage:', error);
+                }
+            });
+            socket.on('data-deleted', (data) => {
+                dispatch(fetchDataAndSetToRedux());
+            });
+
+            return () => {
+                socket.disconnect();
+            };
+        };
+
+        fetchData();
+    }, [navigation]);
     useEffect(() => {
         const getStatus = async () => {
             const storedStatus = await AsyncStorage.getItem('orderData1');

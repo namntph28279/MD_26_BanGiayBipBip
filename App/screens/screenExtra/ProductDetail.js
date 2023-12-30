@@ -20,8 +20,11 @@ import { getMonney } from "../../util/money";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import url from "../../api/url";
 import ipAddress from "../../api/config";
+
 import io from 'socket.io-client';
 import { getUrl } from "../../api/socketio";
+import { useDispatch , useSelector} from 'react-redux';
+import {fetchDataAndSetToRedux} from "../../redux/AllData";
 
 function ProductDetail({ route, navigation }) {
     const { productId } = route.params;
@@ -46,10 +49,27 @@ function ProductDetail({ route, navigation }) {
     const [availableSizes, setAvailableSizes] = useState([]);
 
     // const userId = '64ab9784b65d14d1076c3477';
+    const dispatch = useDispatch();
     useEffect(() => {
         const socket = io(getUrl());
         socket.on('data-deleted', (data) => {
             navigation.navigate('Home');
+        });
+        socket.on('data-block', async (data) => {
+            console.log('Nhận được sự kiện data-block:', data);
+            try {
+                const idFromAsyncStorage = await AsyncStorage.getItem("Email");
+
+                if (idFromAsyncStorage === data.userId) {
+                    await AsyncStorage.setItem("Email", "");
+                    await AsyncStorage.setItem("DefaultAddress", "");
+                    navigation.navigate('Login');
+
+                }
+
+            } catch (error) {
+                console.error('Lỗi khi lấy dữ liệu từ AsyncStorage:', error);
+            }
         });
         return () => {
             socket.disconnect();

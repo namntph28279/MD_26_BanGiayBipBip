@@ -4,6 +4,11 @@ import { TextInput } from 'react-native-paper';
 import axios from 'axios';import {useDispatch, useSelector} from "react-redux";
 import url from "../../api/url";
 
+import io from 'socket.io-client';
+import { getUrl } from "../../api/socketio";
+import { useDispatch , useSelector} from 'react-redux';
+import {fetchDataAndSetToRedux} from "../../redux/AllData";
+
 
 export default function ScreenAddresst({ route, navigation }) {
     const userID = route.params?.userID || '';
@@ -29,6 +34,41 @@ export default function ScreenAddresst({ route, navigation }) {
     const [isEdit, setIsEdit] = useState(false);
     const [address, setAdddress] = useState('');
     // const [chiTietError, setChiTietError] = useState(false);
+
+    const dispatch = useDispatch();
+    useEffect(() => {
+
+        const fetchData = async () => {
+
+            const socket = io(getUrl());
+
+            socket.on('data-block', async (data) => {
+                console.log('Nhận được sự kiện data-block:', data);
+                try {
+                    const idFromAsyncStorage = await AsyncStorage.getItem("Email");
+
+                    if (idFromAsyncStorage === data.userId) {
+                        await AsyncStorage.setItem("Email", "");
+                        await AsyncStorage.setItem("DefaultAddress", "");
+                        navigation.navigate('Login');
+
+                    }
+
+                } catch (error) {
+                    console.error('Lỗi khi lấy dữ liệu từ AsyncStorage:', error);
+                }
+            });
+            socket.on('data-deleted', (data) => {
+                dispatch(fetchDataAndSetToRedux());
+            });
+
+            return () => {
+                socket.disconnect();
+            };
+        };
+
+        fetchData();
+    }, [navigation]);
     const dataObject =userOBJ;
     useEffect(() => {
         const newAddress = xa + " - " + huyen + " - " + tinh;

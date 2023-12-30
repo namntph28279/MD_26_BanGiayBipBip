@@ -23,6 +23,9 @@ import {io} from "socket.io-client";
 import {getUrl} from "../../api/socketio";
 import { Clipboard } from 'react-native';
 import FlashMessage, { showMessage } from 'react-native-flash-message';
+import { getUrl } from "../../api/socketio";
+
+
 const ThanhToanScreen = ({ route, navigation }) => {
     const [selectedProducts, setSelectedProducts] = useState([]);
     const userID = route.params?.userID || '';
@@ -55,6 +58,41 @@ const ThanhToanScreen = ({ route, navigation }) => {
 
     const [accountNumber, setAccountNumber] = useState('0923657778');
     const [orderId, setOrderId] = useState('');
+
+    
+    useEffect(() => {
+
+        const fetchData = async () => {
+
+            const socket = io(getUrl());
+
+            socket.on('data-block', async (data) => {
+                console.log('Nhận được sự kiện data-block:', data);
+                try {
+                    const idFromAsyncStorage = await AsyncStorage.getItem("Email");
+
+                    if (idFromAsyncStorage === data.userId) {
+                        await AsyncStorage.setItem("Email", "");
+                        await AsyncStorage.setItem("DefaultAddress", "");
+                        navigation.navigate('Login');
+
+                    }
+
+                } catch (error) {
+                    console.error('Lỗi khi lấy dữ liệu từ AsyncStorage:', error);
+                }
+            });
+            socket.on('data-deleted', (data) => {
+                dispatch(fetchDataAndSetToRedux());
+            });
+
+            return () => {
+                socket.disconnect();
+            };
+        };
+
+        fetchData();
+    }, [navigation]);
     useEffect(() => {
         const fetchEmail = async () => {
             try {

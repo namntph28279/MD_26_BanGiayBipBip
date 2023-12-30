@@ -32,16 +32,44 @@ function Home({ route, navigation }) {
 
   const [dataSP, setDataSP] = useState([]);
   const [dataSwiper, setDataSwiper] = useState([]);
-  useEffect(() => { 
-    const socket = io(getUrl());
-    socket.on('data-deleted', (data) => {
-        console.log('Nhận được sự kiện data-deleted:', data);
-        dispatch(fetchDataAndSetToRedux());
-    });
-    return () => {
-        socket.disconnect();
-    };
-}, []);
+  
+
+
+
+    useEffect(() => {
+
+        const fetchData = async () => {
+
+            const socket = io(getUrl());
+
+            socket.on('data-block', async (data) => {
+                console.log('Nhận được sự kiện data-block:', data);
+                try {
+                    const idFromAsyncStorage = await AsyncStorage.getItem("Email");
+
+                    if (idFromAsyncStorage === data.userId) {
+                        await AsyncStorage.setItem("Email", "");
+                        await AsyncStorage.setItem("DefaultAddress", "");
+                        navigation.navigate('Login');
+
+                    }
+
+                } catch (error) {
+                    console.error('Lỗi khi lấy dữ liệu từ AsyncStorage:', error);
+                }
+            });
+            socket.on('data-deleted', (data) => {
+                dispatch(fetchDataAndSetToRedux());
+            });
+
+            return () => {
+                socket.disconnect();
+            };
+        };
+
+        fetchData();
+    }, [navigation]);
+
   useEffect(() => {
     setDataSP(dataSP1);
     setDataSwiper(dataSP1);
