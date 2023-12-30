@@ -94,7 +94,28 @@ const ChatScreen = ({ navigation, route }) => {
         return `${currentDate.toLocaleDateString()} ${currentDate.toLocaleTimeString()}`;
     };
 
+    const checkUserStatus = async () => {
 
+        try {
+            const email = await AsyncStorage.getItem("Email");
+
+            if (email !== null) {
+                const response = await url.get(`/user/${email}`);
+                const userData = response.data;
+
+                if (userData.status) {
+                    const { date, block_reason } = userData;
+                    console.log(`Tài khoản đã bị khóa. ngày: ${date}, nội dung: ${block_reason}`);
+                    alert('Tài khoản của bạn đã bị chặn vào lúc: \n'+ userData.date);
+                    await AsyncStorage.removeItem("Email");
+
+                    navigation.navigate('Login');
+                }
+            }
+        } catch (error) {
+            console.error(error);
+        }
+    };
 
     const handleSendMessage = async () => {
         if (message.length > 0) {
@@ -110,6 +131,11 @@ const ChatScreen = ({ navigation, route }) => {
                 fetchData();
             }
         }
+    };
+
+    const checkChat = () => {
+        checkUserStatus();
+        handleSendMessage();
     };
 
     const renderItem = ({ item }) => {
@@ -161,7 +187,7 @@ const ChatScreen = ({ navigation, route }) => {
                         value={message}
                         onChangeText={setMessage}
                     />
-                    <TouchableOpacity style={styles.sendButton} onPress={handleSendMessage}>
+                    <TouchableOpacity style={styles.sendButton} onPress={checkChat}>
                         <Text style={styles.sendButtonText}>Gửi</Text>
                     </TouchableOpacity>
                 </View>
