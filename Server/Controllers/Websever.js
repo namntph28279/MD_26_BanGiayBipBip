@@ -354,10 +354,22 @@ app.get('/mess', async(req, res) => {
         res.status(500).json({ message: error.message });
     }
 });
+
+app.get('/dataWarehouse', async(req, res) => {
+    try {
+        const products = await Product.find().sort({ data_product: -1 });
+        res.json(products)
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
+
+
+
 app.get('/warehouse', async(req, res) => {
     try {
-        const products = await Product.find().lean();
-        res.render('../Views/screenWarehouse.hbs', { products });
+        res.render('../Views/screenWarehouse.hbs');
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
@@ -370,11 +382,9 @@ app.get('/warehouse/:cate', async(req, res) => {
             category = "Nam";
         } else if (cate === "women") {
             category = "Nữ";
-        } else if (cate === "children") {
-            category = "Trẻ em";
         }
-        const products = await Product.find({ product_category: cate }).lean();
-        res.render('../Views/screenWarehouse.hbs', { products, category, cate });
+        const products = await Product.find({ product_category: cate }).sort({ data_product: -1 });
+        res.json(products);
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
@@ -397,13 +407,13 @@ app.get('/warehouse/:cate/:sort', async(req, res) => {
             sortName = "Giá: Cao đến Thấp";
         }
         if (cate === "all") {
-            const products = await Product.find().lean();
+            const products = await Product.find().sort({ data_product: -1 });
             const sortProducts = sort === "lowtohight" ? products.slice().sort((a, b) => a.product_price - b.product_price) : products.slice().sort((a, b) => b.product_price - a.product_price);
-            res.render('../Views/screenWarehouse.hbs', { products: sortProducts, category, sortName, cate });
+            res.json(sortProducts)
         } else {
-            const products = await Product.find({ product_category: cate }).lean();
+            const products = await Product.find({ product_category: cate }).sort({ data_product: -1 });
             const sortProducts = sort === "lowtohight" ? products.slice().sort((a, b) => a.product_price - b.product_price) : products.slice().sort((a, b) => b.product_price - a.product_price);
-            res.render('../Views/screenWarehouse.hbs', { products: sortProducts, category, sortName, cate });
+            res.json(sortProducts)
         }
 
 
@@ -418,7 +428,7 @@ app.post('/screenWarehouse/search', async(req, res) => {
     try {
         const searchString = String(title);
 
-        const products = await Product.find({ product_title: { $regex: searchString, $options: 'i' } }).lean();
+        const products = await Product.find({ product_title: { $regex: searchString, $options: 'i' } }).sort({ data_product: -1 });
         res.render('../Views/screenWarehouse.hbs', { products });
 
     } catch (error) {
@@ -619,6 +629,7 @@ app.post('/home/edit/:id', upload.single('product_image'), async(req, res) => {
 
 
 app.post('/home/delete/:id', async(req, res) => {
+    console.log(1)
     const id = req.params.id;
 
     try {
@@ -634,7 +645,7 @@ app.post('/home/delete/:id', async(req, res) => {
             console.log("fail");
         }
 
-        res.redirect('/warehouse')
+        res.json(true)
     } catch (err) {
         console.error('Lỗi khi xoá dữ liệu:', err);
         res.sendStatus(500);

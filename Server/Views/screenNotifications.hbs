@@ -231,31 +231,37 @@
       width: 100%;
       text-align: center;
     }
+
     .box-Main {
       margin: 14px 8px;
       width: 99%;
       height: 96%;
     }
+
     .box-Main-Notification {
       display: flex;
       height: 100%;
       width: 100%;
       justify-content: space-around;
     }
+
     .form-submit {
       height: 21%;
       width: 97%;
       margin: 0 9px;
     }
+
     .box-content-Notification {
       height: 70%;
       padding: 10px 0;
       width: 100%;
     }
-    .css-buttom{
+
+    .css-buttom {
       margin-top: 8px;
     }
-    .display_None{
+
+    .display_None {
       display: none;
     }
   </style>
@@ -297,7 +303,8 @@
           </div>
           <span class="badge" style="color: white;font-size: 14px;">\{{tinNhanMoi}}</span>
         </a>
-        <a href="/notifications" class="cursor-pointer mess ml-3 mt-3 w-10/12" style="border-bottom-width: 1px;text-decoration: none">
+        <a href="/notifications" class="cursor-pointer mess ml-3 mt-3 w-10/12"
+           style="border-bottom-width: 1px;text-decoration: none">
           <div class="flex" style=" padding: 12px;">
             <div>
               <img class="w-5 h-5" src="notifications.png" alt="">
@@ -339,11 +346,11 @@
         <!--Top navbar-->
         <div class="box-order-Main">
 
-          <div   :class="checkStatus ? ' ' : 'display_None' " class="load-Spinner">
+          <div :class="checkStatus ? ' ' : 'display_None' " class="load-Spinner">
             <div class="spinner-border text-primary"></div>
           </div>
 
-          <div id="hienThidata"  :class="checkStatus ? 'display_None' : ' ' ">
+          <div id="hienThidata" :class="checkStatus ? 'display_None' : ' ' ">
             <div class="box-Main">
               <div class="box-Main-Notification">
                 <div class="width-tab">
@@ -351,7 +358,7 @@
                     Thông báo tất cả
                   </div>
                   <div class="form-submit">
-                    <form @submit.prevent="submitNotificationAllApp" >
+                    <form @submit.prevent="submitNotificationAllApp">
                       <div>
                     <textarea rows="4" cols="50" :class="checkInputNotificationAll ?  'input-err' : 'text-inputform' "
                               type="text"
@@ -382,7 +389,7 @@
                   <div class="text-title-Notification">
                     Thông báo cho 1 người dùng
                   </div>
-                  <div  class="form-submit">
+                  <div class="form-submit">
                     <form @submit.prevent="submitOneNotification">
                       <div>
                     <textarea rows="4" cols="50" :class="checkInputNotificationOne ?  'input-err' : 'text-inputform' "
@@ -400,7 +407,7 @@
                           </div>
 
 
-                            <button class="btn btn-primary" type="submit">Gửi</button>
+                          <button class="btn btn-primary" type="submit">Gửi</button>
 
                         </div>
                         <div :class="{'displayNone':checkThongTin}"
@@ -504,7 +511,7 @@
       checkInputNotificationAll: false,
       checkInputNotificationOne: false,
       checkInputUserNameOne: false,
-      checkStatus:true
+      checkStatus: true
     },
     mounted() {
       const socket = io();
@@ -550,7 +557,7 @@
         const year = date.getFullYear();
 
         const formattedDate = `${day < 10 ? '0' + day : day}/${month < 10 ? '0' + month : month}/${year}`;
-        const formattedTime = date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        const formattedTime = date.toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'});
 
         return `${formattedDate} - ${formattedTime}`;
       },
@@ -711,10 +718,10 @@
           if (self.formData.userName.trim() === '' && self.formData.noiDung.trim() === '') {
             self.checkInputNotificationOne = true
             self.checkInputUserNameOne = true
-          }else if (self.formData.userName.trim() === ''){
+          } else if (self.formData.userName.trim() === '') {
             self.checkInputNotificationOne = false
             self.checkInputUserNameOne = true
-          }else{
+          } else {
             self.checkInputNotificationOne = true
             self.checkInputUserNameOne = false
           }
