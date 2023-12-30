@@ -990,6 +990,16 @@ app.get('/address/:userId', async (req, res) => {
     }
 });
 
+app.get('/addressOneUser/:userId', async (req, res) => {
+    const userId = req.params.userId;
+
+    try {
+        const addresses = await Address.find({user: userId});
+        res.json(addresses);
+    } catch (error) {
+        res.status(500).json({message: error.message});
+    }
+});
 
 // Định nghĩa endpoint để sửa địa chỉ
 app.put('/address/edit/:id', async (req, res) => {
