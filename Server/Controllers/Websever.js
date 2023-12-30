@@ -629,7 +629,6 @@ app.post('/home/edit/:id', upload.single('product_image'), async(req, res) => {
 
 
 app.post('/home/delete/:id', async(req, res) => {
-    console.log(1)
     const id = req.params.id;
 
     try {

@@ -12,6 +12,12 @@ import { useIsFocused } from "@react-navigation/native";
 import * as Notifications from "expo-notifications";
 import { Alert, Platform } from "react-native";
 import url from "./api/url";
+import io from 'socket.io-client';
+import { getUrl } from "./api/socketio";
+import { useDispatch , useSelector} from 'react-redux';
+import {fetchDataAndSetToRedux} from "./redux/AllData";
+
+
 
 Notifications.setNotificationHandler({
     handleNotification: async () => {
@@ -27,72 +33,57 @@ const Tab = createBottomTabNavigator();
 
 
 const TabNavi = ({ navigation }) => {
-    const checkUserStatus = async () => {
+    const dispatch = useDispatch();
+    const dataUserID = useSelector((state) => state.dataAll.dataUserID);
+    const tokenApp = useSelector((state) => state.dataAll.dataTokenApp);
 
-        try {
-            const email = await AsyncStorage.getItem("Email");
-
-            if (email !== null) {
-                const response = await url.get(`/user/${email}`);
-                const userData = response.data;
-
-                if (userData.status) {
-                    const { date, block_reason } = userData;
-                    console.log(`Tài khoản đã bị khóa. ngày: ${date}, nội dung: ${block_reason}`);
-                    Alert.alert('Thông báo', 'Tài khoản của bạn đã bị chặn vào lúc: \n'+ userData.date);
-                    await AsyncStorage.removeItem("Email");
-
-                    navigation.navigate('Login');
-                }
-            }
-        } catch (error) {
-            console.error(error);
+    const handleLogout = async () => {
+        if(dataUserID == "" || tokenApp == ""){
+            console.log("rỗng");
+        }else{
+            await url.post("/checkClientUser", { user: String(dataUserID), IdClient: String(tokenApp), status: false });
+            await AsyncStorage.setItem("Email", "");
+            await AsyncStorage.setItem("DefaultAddress", "");
+            dispatch(fetchDataAndSetToRedux());
+            console.log("Đăng xuất thành công");
         }
+        
     };
-    const [userID, setUserID] = useState('');
 
-    // useEffect(() => {
-    //     // Gọi getUserId ban đầu
-    //     getUserId();
-    //
-    //     // Thiết lập interval để gọi getUserId mỗi 2 giây
-    //     const intervalId = setInterval(() => {
-    //         getUserId();
-    //     }, 1000);
-    //
-    //     // Kiểm tra giá trị storedIsBlocked từ AsyncStorage
-    //
-    //
-    //     // Gọi hàm kiểm tra mỗi khi component được render hoặc re-render
-    //     checkIsBlocked();
-    //
-    //     // Trong trường hợp component bị hủy, bạn cần xóa interval để ngăn chặn việc gọi không cần thiết.
-    //     return () => {
-    //         clearInterval(intervalId);
-    //     };
-    // }, [navigation]);
+    useEffect(() => {
+        
+        const fetchData = async () => {
+            
+            const socket = io(getUrl());
 
-    // const getUserId = async () => {
-    //     try {
-    //         const user = await AsyncStorage.getItem('Email');
-    //         setUserID(user);
-    //     } catch (error) {
-    //         console.error('Error while fetching user ID:', error);
-    //     }
-    // };
-     // const checkIsBlocked = async () => {
-     //        try {
-     //            const storedIsBlockedString = await AsyncStorage.getItem('1');
-     //            const storedIsBlocked = JSON.parse(storedIsBlockedString);
-     //            console.log('status user', storedIsBlocked)
-     //            if (storedIsBlocked === true) {
-     //                await AsyncStorage.removeItem('1');
-     //                navigation.navigate('Login');  // Chuyển hướng đến màn hình Login nếu blocked
-     //            }
-     //        } catch (error) {
-     //            console.error('Error while checking block status:', error);
-     //        }
-     //    };
+            socket.on('data-block', async (data) => {
+                console.log('Nhận được sự kiện data-block:', data);
+                try {
+                    const idFromAsyncStorage = await AsyncStorage.getItem("Email");
+
+                    if (idFromAsyncStorage === data.userId) {
+                        handleLogout();
+                        // await AsyncStorage.setItem("Email", "");
+                        // await AsyncStorage.setItem("DefaultAddress", "");
+                        navigation.navigate('Login');
+                        
+                    }
+
+                } catch (error) {
+                    console.error('Lỗi khi lấy dữ liệu từ AsyncStorage:', error);
+                }
+            });
+            socket.on('data-deleted', (data) => {
+                dispatch(fetchDataAndSetToRedux());
+            });
+
+            return () => {
+                socket.disconnect();
+            };
+        };
+
+        fetchData();
+    }, [navigation]);
 
     return (
         <Tab.Navigator
@@ -105,51 +96,35 @@ const TabNavi = ({ navigation }) => {
                 tabBarLabelPosition: 'below-icon', // Đặt vị trí của title
             }}>
             <Tab.Screen name="Home" component={Home}
-                initialParams={{ userID }}
+
                 options={{
                     tabBarIcon: ({ color, size }) => <Ionicons name='home' color={color} size={size} />
                 }}
-                        listeners={{
-                            focus: () => {
-                                checkUserStatus();
-                            },
-                        }}
+
             />
             <Tab.Screen name={"Tìm Kiếm"} component={Search}
                 options={{
-                    
+
                     tabBarIcon: ({ color, size }) => <Ionicons name='search' color={color} size={size} />
 
                 }}
-                        listeners={{
-                            focus: () => {
-                                checkUserStatus();
-                            },
-                        }}
+
             />
             <Tab.Screen name={"Yêu Thích"} component={Favourite}
-                initialParams={{ userID }}
+
                 options={{
                     tabBarIcon: ({ color, size }) => <Ionicons name='heart' color={color} size={size} />
                 }}
-                        listeners={{
-                            focus: () => {
-                                checkUserStatus();
-                            },
-                        }}
+
             />
             <Tab.Screen
                 name="Giỏ Hàng"
                 component={Cart}
-                initialParams={{ userID }}
+
                 options={{
                     tabBarIcon: ({ color, size }) => <Ionicons name='cart' color={color} size={size} />
                 }}
-                listeners={{
-                    focus: () => {
-                        checkUserStatus();
-                    },
-                }}
+
             />
 
             <Tab.Screen
@@ -159,11 +134,7 @@ const TabNavi = ({ navigation }) => {
                     tabBarLabel: 'Tài Khoản',
                     tabBarIcon: ({ color, size }) => <Ionicons name='person' color={color} size={size} />
                 }}
-                listeners={{
-                    focus: () => {
-                        checkUserStatus();
-                    },
-                }}
+
             />
 
         </Tab.Navigator>
