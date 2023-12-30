@@ -495,9 +495,7 @@
                         <td>
                           <!-- Các nút "Sửa" và "Xóa" -->
                           <a @click="openModalSuaSP(item)" class="btn btn-primary btn-sm" data-toggle="modal">Sửa</a>
-                          <a href="#" class="btn btn-danger btn-sm" data-toggle="modal"
-                             data-target="#delete{{this._id}}"
-                             data-product-name="Tên sản phẩm">Xóa</a>
+                          <a @click="openModalXoaSP(item)" class="btn btn-danger btn-sm" data-toggle="modal">Xóa</a>
                           <a @click="XemChiTiet(item._id)" class="btn btn-info btn-sm mt-1.5">Xem
                             chi tiết</a>
                         </td>
@@ -544,7 +542,7 @@
                           </div>
                           <div class="form-group">
                             <label for="product_title">Tiêu đề</label>
-                            <input type="text" class="form-control" id="product_title"
+                            <input type="text" class="form-control" id="product_title" autocomplete="off"
                                    name="product_title" required>
                           </div>
                           <div class="form-group">
@@ -558,7 +556,6 @@
                                     name="product_category" required>
                               <option value="men">Nam</option>
                               <option value="women">Nữ</option>
-                              <option value="children">Trẻ em</option>
                             </select>
                           </div>
                           <button type="submit" class="btn btn-primary">Thêm</button>
@@ -576,13 +573,41 @@
       </div>
     </div>
   </div>
+
+  <div class="modal fade" id="XoaSP" tabindex="-1" role="dialog"
+       aria-labelledby="deleteProductModalLabel">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="deleteProductModalLabel">Xóa sản phẩm
+          </h5>
+          <button type="button" class="close" @click="closeModalXoaSP" data-dismiss="modal"
+                  aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <p>Bạn có chắc chắn muốn xóa sản phẩm \{{dataXoaSanPham.product_title}} ?</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary"
+                  data-dismiss="modal">Huỷ
+          </button>
+          <form @submit.prevent="submitDeleteContentChat">
+            <button type="submit" class="btn btn-danger">Xóa</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <div class="modal fade" id="SuaSP" tabindex="-1" role="dialog"
        aria-labelledby="addProductModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
       <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title" id="addProductModalLabel">Sửa sản phẩm</h5>
-          <button type="button" class="close" data-dismiss="modal"
+          <button type="button" class="close" @click="closeModalSuaSP" data-dismiss="modal"
                   aria-label="Close">
             <span aria-hidden="true">&times;</span>
           </button>
@@ -607,7 +632,7 @@
             <div class="form-group">
               <label for="product_title">Tiêu đề</label>
               <input type="text" class="form-control" id="product_title"
-                     name="product_title"
+                     name="product_title" autocomplete="off"
                      v-model="formData.product_title" required>
             </div>
             <div class="form-group">
@@ -621,7 +646,8 @@
 
               <div class="form-group">
                 <label for="product_category">Thể loại</label>
-                <select class="form-control" id="product_category" name="product_category" v-model="selectGender" @change="selectClickGender">
+                <select class="form-control" id="product_category" name="product_category" v-model="selectGender"
+                        @change="selectClickGender">
                   <option v-for="item in selectGenderClick" :value="item.value" :key="item.value">\{{ item.name }}
                   </option>
                 </select>
@@ -638,7 +664,6 @@
     </div>
   </div>
 </div>
-
 </body>
 
 <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
@@ -711,15 +736,9 @@
     },
 
     methods: {
-      handleImage(event) {
+      submitDeleteContentChat() {
         var self = this;
-        const file = event.target.files[0];
-        self.formData.product_image = file;
-        console.log(file)
-      },
-      submitSua() {
-        var self = this;
-        fetch(`/home/edit/${self.dataSuaSanPham._id}`, {
+        fetch(`/home/delete/${self.dataXoaSanPham._id}`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
@@ -728,7 +747,8 @@
         })
             .then(response => response.json())
             .then(data => {
-              console.log(data)
+              self.loadDataWarehouseLast()
+              self.closeModalXoaSP()
             })
             .catch(error => {
               console.error(error);
@@ -818,7 +838,6 @@
         if (0 < i && i < arr.length) {
           self.indexSize = i + 1
         }
-        console.log(i)
       },
       arrowBackSize(arr) {
         var self = this

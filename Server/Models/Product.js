@@ -22,6 +22,10 @@ const useScheme = new mongoose.Schema({
     },
     product_category:{
         type: String
+    },
+    data_product:{
+        type: Date,
+        default: Date.now
     }
 })
 //câu lệnh tạo bảng
