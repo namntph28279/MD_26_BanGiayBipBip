@@ -3,10 +3,10 @@ import { View, FlatList, TextInput, TouchableOpacity, StyleSheet, Text, Image, S
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import url from "../../api/url";
-import { useSelector } from "react-redux";
+
 import { io } from "socket.io-client";
 import { getUrl } from "../../api/socketio";
-
+import { useDispatch , useSelector} from 'react-redux';
 
 const ChatScreen = ({ navigation, route }) => {
     const [message, setMessage] = useState('');

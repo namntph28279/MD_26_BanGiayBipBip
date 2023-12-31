@@ -20,7 +20,6 @@ import ipAddress from "../../api/config";
 import { useDispatch, useSelector } from "react-redux";
 import {fetchDataAndSetToRedux, fetchDataOrder} from "../../redux/AllData";
 import {io} from "socket.io-client";
-import {getUrl} from "../../api/socketio";
 import { Clipboard } from 'react-native';
 import FlashMessage, { showMessage } from 'react-native-flash-message';
 import { getUrl } from "../../api/socketio";

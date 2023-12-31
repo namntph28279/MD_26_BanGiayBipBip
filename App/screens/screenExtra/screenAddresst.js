@@ -6,7 +6,7 @@ import url from "../../api/url";
 
 import io from 'socket.io-client';
 import { getUrl } from "../../api/socketio";
-import { useDispatch , useSelector} from 'react-redux';
+
 import {fetchDataAndSetToRedux} from "../../redux/AllData";
 
 

@@ -11,14 +11,14 @@ import RNPickerSelect from "react-native-picker-select";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import url from "../../api/url";
 import {fetchDataAndSetToRedux, fetchDataUser} from "../../redux/AllData";
-import {useDispatch} from "react-redux";
+
 import DateTimePicker from "@react-native-community/datetimepicker";
 import {Dropdown} from "react-native-element-dropdown";
 
 import io from 'socket.io-client';
 import { getUrl } from "../../api/socketio";
 import { useDispatch , useSelector} from 'react-redux';
-import {fetchDataAndSetToRedux} from "../../redux/AllData";
+
 
 const EditProfile = ({navigation}) => {
     const dispatch = useDispatch();
