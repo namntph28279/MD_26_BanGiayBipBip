@@ -324,6 +324,26 @@
     .box-connect {
       margin: 7px;
     }
+    .th-No {
+      width: 55px;
+      text-align: center;
+    }
+    .text_Align {
+      padding: 4px 14px;
+      text-align: center;
+    }
+    .table td {
+      padding: 5px !important;
+      vertical-align: middle !important;
+    }
+    .th-Status{
+      width: 200px;
+      text-align: center;
+    }
+    .th-Username{
+      width: 300px;
+      text-align: center;
+    }
   </style>
 </head>
 
@@ -455,17 +475,17 @@
                     <table class="table table-bordered ">
                       <thead>
                       <tr>
-                        <th>STT</th>
-                        <th style="text-align: center;width: 16%;">Tên</th>
+                        <th class="th-No">STT</th>
+                        <th class="th-Username ">Tên</th>
                         <th style="text-align: center;">Email</th>
-                        <th style="text-align: center">Trạng thái</th>
+                        <th class="th-Status">Trạng thái</th>
                         <th style="text-align: center;width: 10%">Thao tác</th>
                       </tr>
                       </thead>
                       <tbody>
 
                       <tr v-for="(item,index) in dataUserAll[indexSize-1]">
-                        <td>\{{((indexSize-1) * 8)+index+1}}</td>
+                        <td class="text_Align">\{{((indexSize-1) * 8)+index+1}}</td>
                         <td class="textUser">
                           <div v-if="item.profile.length>0">
                             \{{item.profile[0].fullname}}
@@ -475,7 +495,7 @@
                           </div>
                         </td>
                         <td>\{{item.username}}</td>
-                        <td>
+                        <td  class="text_Align">
                           <div v-if="item.status === false">
                             Đang hoạt động
                           </div>
@@ -487,15 +507,15 @@
                         <td style="display: flex;justify-content: space-around">
                           <div>
                             <img v-if="item.status === false"
-                                 @click="openTransferStatusBlock(dataUserAll[indexSize-1][index])" class="icon_thaoTac"
+                                 @click="openTransferStatusBlock(item)" class="icon_thaoTac"
                                  src="unlock.png">
                             <img v-if="item.status === true"
-                                 @click="openTransferStatusUnBlock(dataUserAll[indexSize-1][index])"
+                                 @click="openTransferStatusUnBlock(item)"
                                  class="icon_thaoTac"
                                  src="lock.png">
                           </div>
                           <div>
-                            <img @click="openShowProfile(dataUserAll[indexSize-1][index])" class="icon_thaoTac"
+                            <img @click="openShowProfile(item)" class="icon_thaoTac"
                                  src="show.png">
                           </div>
 
@@ -697,7 +717,7 @@
       searchData(newKeyword) {
         var self = this;
         if (newKeyword === '') {
-          var dataAll = splitList(self.dataSearch, 8)
+          var dataAll = splitList(self.dataSearch)
           self.toatalWare = self.dataSearch.length
           return self.dataUserAll = dataAll
         }
@@ -795,7 +815,7 @@
         var self = this;
         const key = keyword.toLowerCase();
         const dataSreachs = self.dataSearch.filter(product => product.username.toLowerCase().includes(key));
-        var dataAll = splitList(dataSreachs, 8)
+        var dataAll = splitList(dataSreachs)
         self.toatalWare = dataSreachs.length
         return self.dataUserAll = dataAll
       },
@@ -804,13 +824,13 @@
         if (value === 'highttolow') {
           self.selectedValueSort = 'Mới nhất';
           const dataSreachs = self.dataSearch.filter(user => user.status === self.dataCate || user.status === self.dataCateTwo).sort((a, b) => new Date(b.date) - new Date(a.date));
-          var dataAll = splitList(dataSreachs, 8);
+          var dataAll = splitList(dataSreachs);
           self.toatalWare = dataSreachs.length;
           self.dataUserAll = dataAll;
         } else {
           self.selectedValueSort = 'Cũ nhất';
           const dataSreachs = self.dataSearch.filter(user => user.status === self.dataCate || user.status === self.dataCateTwo).sort((a, b) => new Date(a.date) - new Date(b.date));
-          var dataAll = splitList(dataSreachs, 8);
+          var dataAll = splitList(dataSreachs);
           self.toatalWare = dataSreachs.length;
           self.dataUserAll = dataAll;
         }
@@ -822,7 +842,7 @@
           self.dataCateTwo = true
           self.selectedValueStatus = 'Tất cả trạng thái'
           const dataSreachs = self.dataSearch;
-          var dataAll = splitList(dataSreachs, 8)
+          var dataAll = splitList(dataSreachs)
           self.toatalWare = dataSreachs.length;
           self.dataUserAll = dataAll
         } else if (value === 'activity') {
@@ -830,7 +850,7 @@
           self.dataCateTwo = false
           self.selectedValueStatus = 'Đang hoạt động'
           const dataSreachs = self.dataSearch.filter(user => user.status === false);
-          var dataAll = splitList(dataSreachs, 8)
+          var dataAll = splitList(dataSreachs)
           self.toatalWare = dataSreachs.length;
           self.dataUserAll = dataAll
         } else {
@@ -838,7 +858,7 @@
           self.dataCateTwo = true
           self.selectedValueStatus = 'Đã chặn'
           const dataSreachs = self.dataSearch.filter(user => user.status === true);
-          var dataAll = splitList(dataSreachs, 8)
+          var dataAll = splitList(dataSreachs)
           self.toatalWare = dataSreachs.length;
           self.dataUserAll = dataAll
         }
@@ -848,8 +868,8 @@
         return val.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + " đ";
       },
       sizeTable(vale) {
-        const start = (vale - 1) * 8 + 1
-        const end = (vale - 1) * 8 + 8
+        const start = (vale - 1) * 10 + 1
+        const end = (vale - 1) * 10 + 10
         return `${start} - ${end}`;
       },
 
@@ -933,7 +953,7 @@
         })
             .then(response => response.json())
             .then(data => {
-              var dataAll = splitList(data, 8)
+              var dataAll = splitList(data)
               console.log("Start")
               self.dataUserAll = dataAll
               self.toatalWare = data.length
@@ -952,10 +972,10 @@
   vm.GetAllDataChat();
   vm.GetDataCart();
 
-  function splitList(arr, size) {
+  function splitList(arr) {
     let result = [];
-    for (let i = 0; i < arr.length; i += size) {
-      let chunk = arr.slice(i, i + size);
+    for (let i = 0; i < arr.length; i += 10) {
+      let chunk = arr.slice(i, i + 10);
       result.push(chunk);
     }
     return result;

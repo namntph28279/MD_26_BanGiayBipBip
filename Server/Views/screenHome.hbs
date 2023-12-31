@@ -14,8 +14,8 @@
     body {
       font-family: 'Arial', sans-serif;
     }
+
     .table td {
-      vertical-align: middle;
       font-size: 15px;
     }
 
@@ -59,7 +59,7 @@
       display: flex;
       align-items: center;
       justify-content: end;
-      padding: 14px 0;
+      padding: 0 14px;
       height: 13%;
       width: 100%;
     }
@@ -244,7 +244,7 @@
 
     .table-order {
       width: 100%;
-      height: 87%;
+      height: 93%;
     }
 
     .item-click {
@@ -260,6 +260,48 @@
 
     .display_None {
       display: none;
+    }
+
+    .th-No {
+      width: 55px;
+    }
+
+    .th-MHD {
+      text-align: center;
+      width: 321px;
+    }
+
+    .th-User {
+      width: 399px;
+      text-align: center;
+    }
+
+    .total-Size {
+      width: 100px;
+      text-align: center;
+    }
+
+    .th-Money {
+      width: 146px;
+      text-align: center;
+    }
+
+    .th-view {
+      width: 80px;
+      text-align: center;
+    }
+
+    .th-TT {
+      text-align: center;
+    }
+
+    .table td {
+      padding: 5px !important;
+      vertical-align: middle !important;
+    }
+
+    .text_Align {
+      text-align: center;
     }
   </style>
 </head>
@@ -309,7 +351,8 @@
             <div class="mx-3 text-sm text-gray-100">Thông báo</div>
           </div>
         </a>
-        <a href="/accountManagement" class="cursor-pointer mess ml-3 mt-3 w-10/12" style="display: flex; text-decoration: none">
+        <a href="/accountManagement" class="cursor-pointer mess ml-3 mt-3 w-10/12"
+           style="display: flex; text-decoration: none">
           <div class="flex" style="padding: 12px;">
             <div>
               <img class="w-5 h-5 " src="iconuser.png" alt="">
@@ -421,32 +464,31 @@
 
                 <div id="choXacNhan" :class="{display_Block:statusChoXacNhan}" class="check_Status">
                   <div class="box-table">
-                    <div class="table-order">
                       <table class="table table-bordered">
                         <thead>
                         <tr>
-                          <th style="text-align: center;width: 110px">STT</th>
-                          <th style="text-align: center;">Mã Đơn Hàng</th>
-                          <th style="text-align: center;">Tài khoản đặt</th>
-                          <th style="text-align: center;width: 120px">Số lượng</th>
-                          <th style="text-align: center;width: 130px">Giá tiền</th>
-                          <th style="text-align: center;width: 100px">Chi tiết</th>
-                          <th style="text-align: center;width: 145px;">Thao tác</th>
+                          <th class="th-No">STT</th>
+                          <th class="th-MHD">Mã Đơn Hàng</th>
+                          <th class="th-User">Tài khoản đặt</th>
+                          <th class="total-Size">Số lượng</th>
+                          <th class="th-Money">Giá tiền</th>
+                          <th class="th-view">Chi tiết</th>
+                          <th class="th-TT">Thao tác</th>
                         </tr>
                         </thead>
                         <tbody>
 
                         <tr v-for="(item, index) in choXacNhan[indexSize-1]">
-                          <td>\{{((indexSize-1) * 7)+index+1}}</td>
+                          <td class="text_Align">\{{((indexSize-1) * 10)+index+1}}</td>
                           <td>\{{item._id}}</td>
                           <td>\{{item.customer_email}}</td>
-                          <td>\{{item.total_quantity}}</td>
-                          <td>\{{formatPrice(item.total_amount)}}</td>
-                          <td>
+                          <td class="text_Align">\{{item.total_quantity}}</td>
+                          <td class="text_Align">\{{formatPrice(item.total_amount)}}</td>
+                          <td class="text_Align">
                             <img width="40px" src="detail.png" class="btn btn-primary btn-sm"
                                  @click="openModalXemChiTiet(choXacNhan[indexSize-1][index])"/>
                           </td>
-                          <td>
+                          <td class="text_Align">
                             <img width="40px" src="tick.png" class="btn btn-success btn-sm"
                                  @click="openModalXacNhanDon(choXacNhan[indexSize-1][index])"/>
                             <img width="40px" src="close.png" class="btn btn-danger btn-sm"
@@ -455,8 +497,7 @@
                         </tr>
                         </tbody>
                       </table>
-                    </div>
-                    <div class="box-size-table" v-if="sizechoXacNhan > 7">
+                    <div class="box-size-table" v-if="sizechoXacNhan > 10">
                       <div class="text-box-size-table">\{{sizeTable(indexSize)}} của tổng số \{{sizechoXacNhan}}</div>
                       <div class="box-arrow">
                         <div class="box-extra-arrow" @click="backSize(choXacNhan)">
@@ -481,28 +522,28 @@
                     <table class="table table-bordered">
                       <thead>
                       <tr>
-                        <th style="text-align: center;width: 110px">STT</th>
-                        <th style="text-align: center;">Mã Đơn Hàng</th>
-                        <th style="text-align: center;">Tài khoản đặt</th>
-                        <th style="text-align: center;width: 120px">Số lượng</th>
-                        <th style="text-align: center;width: 130px">Giá tiền</th>
-                        <th style="text-align: center;width: 100px">Chi tiết</th>
-                        <th style="text-align: center;width: 145px;">Thao tác</th>
+                        <th class="th-No">STT</th>
+                        <th class="th-MHD">Mã Đơn Hàng</th>
+                        <th class="th-User">Tài khoản đặt</th>
+                        <th class="total-Size">Số lượng</th>
+                        <th class="th-Money">Giá tiền</th>
+                        <th class="th-view">Chi tiết</th>
+                        <th class="th-TT">Thao tác</th>
                       </tr>
                       </thead>
                       <tbody>
 
                       <tr v-for="(item, index) in choLayHang[indexSize-1]">
-                        <td>\{{((indexSize-1) * 7)+index+1}}</td>
+                        <td class="text_Align">\{{((indexSize-1) * 10)+index+1}}</td>
                         <td>\{{item._id}}</td>
                         <td>\{{item.customer_email}}</td>
-                        <td>\{{item.total_quantity}}</td>
-                        <td>\{{formatPrice(item.total_amount)}}</td>
-                        <td>
+                        <td class="text_Align">\{{item.total_quantity}}</td>
+                        <td class="text_Align">\{{formatPrice(item.total_amount)}}</td>
+                        <td class="text_Align">
                           <img width="40px" src="detail.png" class="btn btn-primary btn-sm"
                                @click="openModalXemChiTiet(choLayHang[indexSize-1][index])"/>
                         </td>
-                        <td>
+                        <td class="text_Align">
                           <img width="40px" src="tick.png" class="btn btn-success btn-sm"
                                @click="openModalXacNhanDon(choLayHang[indexSize-1][index])"/>
                           <img width="40px" src="close.png" class="btn btn-danger btn-sm"
@@ -511,7 +552,7 @@
                       </tr>
                       </tbody>
                     </table>
-                    <div class="box-size-table" v-if="sizechoLayHang >7">
+                    <div class="box-size-table" v-if="sizechoLayHang >10">
                       <div class="text-box-size-table">\{{sizeTable(indexSize)}} của tổng số \{{sizechoLayHang}}</div>
                       <div class="box-arrow">
                         <div class="box-extra-arrow" @click="backSize(choLayHang)">
@@ -536,30 +577,30 @@
                     <table class="table table-bordered">
                       <thead>
                       <tr>
-                        <th style="text-align: center;width: 110px">STT</th>
-                        <th style="text-align: center;">Mã Đơn Hàng</th>
+                        <th class="th-No">STT</th>
+                        <th  class="th-MHD">Mã Đơn Hàng</th>
                         <th style="text-align: center;">Tài khoản đặt</th>
-                        <th style="text-align: center;width: 120px">Số lượng</th>
-                        <th style="text-align: center;width: 130px">Giá tiền</th>
+                        <th  class="total-Size">Số lượng</th>
+                        <th class="th-Money">Giá tiền</th>
                         <th style="text-align: center;width: 100px">Chi tiết</th>
                       </tr>
                       </thead>
                       <tbody>
 
                       <tr v-for="(item, index) in donHuy[indexSize-1]">
-                        <td>\{{((indexSize-1) * 7)+index+1}}</td>
+                        <td class="text_Align">\{{((indexSize-1) * 10)+index+1}}</td>
                         <td>\{{item._id}}</td>
                         <td>\{{item.customer_email}}</td>
-                        <td>\{{item.total_quantity}}</td>
-                        <td>\{{formatPrice(item.total_amount)}}</td>
-                        <td>
+                        <td class="text_Align">\{{item.total_quantity}}</td>
+                        <td class="text_Align">\{{formatPrice(item.total_amount)}}</td>
+                        <td class="text_Align">
                           <img width="40px" src="detail.png" class="btn btn-primary btn-sm"
                                @click="openModalXemChiTiet(donHuy[indexSize-1][index])"/>
                         </td>
                       </tr>
                       </tbody>
                     </table>
-                    <div class="box-size-table" v-if="sizedonHuy > 7">
+                    <div class="box-size-table" v-if="sizedonHuy > 10">
                       <div class="text-box-size-table">\{{sizeTable(indexSize)}} của tổng số \{{sizedonHuy}}</div>
                       <div class="box-arrow">
                         <div class="box-extra-arrow" @click="backSize(donHuy)">
@@ -584,28 +625,28 @@
                     <table class="table table-bordered">
                       <thead>
                       <tr>
-                        <th style="text-align: center;width: 110px">STT</th>
-                        <th style="text-align: center;">Mã Đơn Hàng</th>
-                        <th style="text-align: center;">Tài khoản đặt</th>
-                        <th style="text-align: center;width: 120px">Số lượng</th>
-                        <th style="text-align: center;width: 130px">Giá tiền</th>
-                        <th style="text-align: center;width: 100px">Chi tiết</th>
-                        <th style="text-align: center;width: 145px;">Thao tác</th>
+                        <th class="th-No">STT</th>
+                        <th class="th-MHD">Mã Đơn Hàng</th>
+                        <th class="th-User">Tài khoản đặt</th>
+                        <th class="total-Size">Số lượng</th>
+                        <th class="th-Money">Giá tiền</th>
+                        <th class="th-view">Chi tiết</th>
+                        <th class="th-TT">Thao tác</th>
                       </tr>
                       </thead>
                       <tbody>
 
                       <tr v-for="(item, index) in choGiaoHang[indexSize-1]">
-                        <td>\{{((indexSize-1) * 7)+index+1}}</td>
+                        <td class="text_Align">\{{((indexSize-1) * 10)+index+1}}</td>
                         <td>\{{item._id}}</td>
                         <td>\{{item.customer_email}}</td>
-                        <td>\{{item.total_quantity}}</td>
-                        <td>\{{formatPrice(item.total_amount)}}</td>
-                        <td>
+                        <td class="text_Align">\{{item.total_quantity}}</td>
+                        <td class="text_Align">\{{formatPrice(item.total_amount)}}</td>
+                        <td class="text_Align">
                           <img width="40px" src="detail.png" class="btn btn-primary btn-sm"
                                @click="openModalXemChiTiet(choGiaoHang[indexSize-1][index])"/>
                         </td>
-                        <td>
+                        <td class="text_Align">
                           <img width="40px" src="tick.png" class="btn btn-success btn-sm"
                                @click="openModalXacNhanDon(choGiaoHang[indexSize-1][index])"/>
                           <img width="40px" src="close.png" class="btn btn-danger btn-sm"
@@ -614,7 +655,7 @@
                       </tr>
                       </tbody>
                     </table>
-                    <div class="box-size-table" v-if="sizechoGiaoHang > 7">
+                    <div class="box-size-table" v-if="sizechoGiaoHang > 10">
                       <div class="text-box-size-table">\{{sizeTable(indexSize)}} của tổng số \{{sizechoGiaoHang}}</div>
                       <div class="box-arrow">
                         <div class="box-extra-arrow" @click="backSize(choGiaoHang)">
@@ -639,30 +680,30 @@
                     <table class="table table-bordered">
                       <thead>
                       <tr>
-                        <th style="text-align: center;width: 110px">STT</th>
-                        <th style="text-align: center;">Mã Đơn Hàng</th>
+                        <th class="th-No">STT</th>
+                        <th  class="th-MHD">Mã Đơn Hàng</th>
                         <th style="text-align: center;">Tài khoản đặt</th>
-                        <th style="text-align: center;width: 120px">Số lượng</th>
-                        <th style="text-align: center;width: 130px">Giá tiền</th>
+                        <th  class="total-Size">Số lượng</th>
+                        <th class="th-Money">Giá tiền</th>
                         <th style="text-align: center;width: 100px">Chi tiết</th>
                       </tr>
                       </thead>
                       <tbody>
 
                       <tr v-for="(item, index) in daGiao[indexSize-1]">
-                        <td>\{{((indexSize-1) * 7)+index+1}}</td>
+                        <td class="text_Align">\{{((indexSize-1) * 10)+index+1}}</td>
                         <td>\{{item._id}}</td>
                         <td>\{{item.customer_email}}</td>
-                        <td>\{{item.total_quantity}}</td>
-                        <td>\{{formatPrice(item.total_amount)}}</td>
-                        <td>
+                        <td class="text_Align">\{{item.total_quantity}}</td>
+                        <td class="text_Align">\{{formatPrice(item.total_amount)}}</td>
+                        <td class="text_Align">
                           <img width="40px" src="detail.png" class="btn btn-primary btn-sm"
                                @click="openModalXemChiTiet(daGiao[indexSize-1][index])"/>
                         </td>
                       </tr>
                       </tbody>
                     </table>
-                    <div class="box-size-table" v-if="sizedaGiao > 7">
+                    <div class="box-size-table" v-if="sizedaGiao > 10">
                       <div class="text-box-size-table">\{{sizeTable(indexSize)}} của tổng số \{{sizedaGiao}}</div>
                       <div class="box-arrow">
                         <div class="box-extra-arrow" @click="backSize(daGiao)">
@@ -687,28 +728,28 @@
                     <table class="table table-bordered">
                       <thead>
                       <tr>
-                        <th style="text-align: center;width: 110px">STT</th>
-                        <th style="text-align: center;">Mã Đơn Hàng</th>
-                        <th style="text-align: center;">Tài khoản đặt</th>
-                        <th style="text-align: center;width: 120px">Số lượng</th>
-                        <th style="text-align: center;width: 130px">Giá tiền</th>
-                        <th style="text-align: center;width: 100px">Chi tiết</th>
-                        <th style="text-align: center;width: 145px;">Thao tác</th>
+                        <th class="th-No">STT</th>
+                        <th class="th-MHD">Mã Đơn Hàng</th>
+                        <th class="th-User">Tài khoản đặt</th>
+                        <th class="total-Size">Số lượng</th>
+                        <th class="th-Money">Giá tiền</th>
+                        <th class="th-view">Chi tiết</th>
+                        <th class="th-TT">Thao tác</th>
                       </tr>
                       </thead>
                       <tbody>
 
                       <tr v-for="(item, index) in traHang[indexSize-1]">
-                        <td>\{{((indexSize-1) * 7)+index+1}}</td>
+                        <td class="text_Align">\{{((indexSize-1) * 10)+index+1}}</td>
                         <td>\{{item._id}}</td>
                         <td>\{{item.customer_email}}</td>
-                        <td>\{{item.total_quantity}}</td>
-                        <td>\{{formatPrice(item.total_amount)}}</td>
-                        <td>
+                        <td class="text_Align">\{{item.total_quantity}}</td>
+                        <td class="text_Align">\{{formatPrice(item.total_amount)}}</td>
+                        <td class="text_Align">
                           <img width="40px" src="detail.png" class="btn btn-primary btn-sm"
                                @click="openModalXemChiTiet(traHang[indexSize-1][index])"/>
                         </td>
-                        <td>
+                        <td class="text_Align">
                           <img width="40px" src="tick.png" class="btn btn-success btn-sm"
                                @click="openModalXacNhanDon(traHang[indexSize-1][index])"/>
                           <img width="40px" src="close.png" class="btn btn-danger btn-sm"
@@ -717,7 +758,7 @@
                       </tr>
                       </tbody>
                     </table>
-                    <div class="box-size-table" v-if="sizetraHang > 7">
+                    <div class="box-size-table" v-if="sizetraHang > 10">
                       <div class="text-box-size-table">\{{sizeTable(indexSize)}} của tổng số \{{sizetraHang}}</div>
                       <div class="box-arrow">
                         <div class="box-extra-arrow" @click="backSize(traHang)">
@@ -742,23 +783,23 @@
                     <table class="table table-bordered">
                       <thead>
                       <tr>
-                        <th style="text-align: center;width: 110px">STT</th>
-                        <th style="text-align: center;">Mã Đơn Hàng</th>
+                        <th class="th-No">STT</th>
+                        <th  class="th-MHD">Mã Đơn Hàng</th>
                         <th style="text-align: center;">Tài khoản đặt</th>
-                        <th style="text-align: center;width: 120px">Số lượng</th>
-                        <th style="text-align: center;width: 130px">Giá tiền</th>
+                        <th  class="total-Size">Số lượng</th>
+                        <th class="th-Money">Giá tiền</th>
                         <th style="text-align: center;width: 100px">Chi tiết</th>
                       </tr>
                       </thead>
                       <tbody>
 
                       <tr v-for="(item, index) in donHoan[indexSize-1]">
-                        <td>\{{((indexSize-1) * 7)+index+1}}</td>
+                        <td class="text_Align">\{{((indexSize-1) * 10)+index+1}}</td>
                         <td>\{{item._id}}</td>
                         <td>\{{item.customer_email}}</td>
-                        <td>\{{item.total_quantity}}</td>
-                        <td>\{{formatPrice(item.total_amount)}}</td>
-                        <td>
+                        <td class="text_Align">\{{item.total_quantity}}</td>
+                        <td class="text_Align">\{{formatPrice(item.total_amount)}}</td>
+                        <td class="text_Align">
                           <img width="40px" src="detail.png" class="btn btn-primary btn-sm"
                                @click="openModalXemChiTiet(donHoan[indexSize-1][index])"/>
                         </td>
@@ -766,7 +807,7 @@
                       </tr>
                       </tbody>
                     </table>
-                    <div class="box-size-table" v-if="sizedonHoan > 7">
+                    <div class="box-size-table" v-if="sizedonHoan > 10">
                       <div class="text-box-size-table">\{{sizeTable(indexSize)}} của tổng số \{{sizedonHoan}}</div>
                       <div class="box-arrow">
                         <div class="box-extra-arrow" @click="backSize(donHoan)">
@@ -1080,8 +1121,8 @@
     },
     methods: {
       sizeTable(vale) {
-        const start = (vale - 1) * 7 + 1
-        const end = (vale - 1) * 7 + 7
+        const start = (vale - 1) * 10 + 1
+        const end = (vale - 1) * 10 + 10
         return `${start} - ${end}`;
       },
 
@@ -1158,7 +1199,7 @@
         })
             .then(response => response.json())
             .then(data => {
-              var dataChoXacNhan = splitList(data, 7)
+              var dataChoXacNhan = splitList(data)
               self.choXacNhan = dataChoXacNhan
 
               self.sizechoXacNhan = data.length
@@ -1177,7 +1218,7 @@
         })
             .then(response => response.json())
             .then(data => {
-              var dataChoLayHang = splitList(data, 7)
+              var dataChoLayHang = splitList(data)
               self.choLayHang = dataChoLayHang
               self.sizechoLayHang = data.length
             })
@@ -1193,7 +1234,7 @@
         })
             .then(response => response.json())
             .then(data => {
-              var dataChoGiaoHang = splitList(data, 7)
+              var dataChoGiaoHang = splitList(data)
               self.choGiaoHang = dataChoGiaoHang
               self.sizechoGiaoHang = data.length
             })
@@ -1209,7 +1250,7 @@
         })
             .then(response => response.json())
             .then(data => {
-              var dataTraHang = splitList(data, 7)
+              var dataTraHang = splitList(data)
               self.traHang = dataTraHang
               self.sizetraHang = data.length
             })
@@ -1225,7 +1266,7 @@
         })
             .then(response => response.json())
             .then(data => {
-              var dataDaGiao = splitList(data, 7)
+              var dataDaGiao = splitList(data)
               self.daGiao = dataDaGiao
               self.sizedaGiao = data.length
             })
@@ -1241,7 +1282,7 @@
         })
             .then(response => response.json())
             .then(data => {
-              var dataDonHuy = splitList(data, 7)
+              var dataDonHuy = splitList(data)
               self.donHuy = dataDonHuy
               self.sizedonHuy = data.length
             })
@@ -1258,7 +1299,7 @@
         })
             .then(response => response.json())
             .then(data => {
-              var dataDonHoan = splitList(data, 7)
+              var dataDonHoan = splitList(data)
               self.donHoan = dataDonHoan
               self.sizedonHoan = data.length
             })
@@ -1423,10 +1464,10 @@
   vmCart.GetAllDataChat();
   vmCart.GetDataCart();
 
-  function splitList(arr, size) {
+  function splitList(arr) {
     let result = [];
-    for (let i = 0; i < arr.length; i += size) {
-      let chunk = arr.slice(i, i + size);
+    for (let i = 0; i < arr.length; i += 10) {
+      let chunk = arr.slice(i, i + 10);
       result.push(chunk);
     }
     return result;

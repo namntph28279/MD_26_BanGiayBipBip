@@ -267,8 +267,7 @@
     }
 
     .card-search {
-      padding: 7px 14px;
-      height: 8%;
+      width: 83%;
     }
 
     .search-container {
@@ -293,13 +292,13 @@
     }
 
     .img_product {
-      height: 70px;
-      width: 70px;
+      height: 50px;
+      width: 50px;
       border-radius: 8px;
     }
 
     .card-body-product {
-      height: 80%;
+      height: 88%;
       padding: 8px 14px;
     }
 
@@ -332,6 +331,67 @@
 
     .box-extra-arrow:hover {
       background: #dedede
+    }
+    .box-sort-sreach{
+      display: flex;
+      height: 11%;
+      justify-content: space-between;
+    }
+    .icon_thaoTac {
+      width: 29px;
+      cursor: pointer;
+    }
+    .table td{
+      padding: 2px !important;
+      vertical-align:middle !important;
+    }
+    .text_Align {
+      padding: 4px 14px;
+      text-align: center;
+    }
+    .th-No {
+      width: 55px;
+    }
+
+    .th-img {
+      text-align: center;
+    }
+
+    .th-img {
+      width: 83px;
+    }
+
+    .th-NameProduct {
+      width: 567px;
+      text-align: center;
+    }
+
+    .th-Money {
+      text-align: center;
+      width: 135px;
+    }
+
+    .th-Color {
+      text-align: center;
+      width: 83px;
+    }
+
+    .th-Size {
+      text-align: center;
+      width: 97px;
+    }
+
+    .th-Loai {
+      text-align: center;
+      width: 67px;
+    }
+
+    .th-thaoTac {
+      text-align: center;
+    }
+
+    .td-nameProduct{
+      padding: 0 14px;
     }
   </style>
 </head>
@@ -424,91 +484,118 @@
           <div id="hienThidata" :class="checkStatus ? 'display_None' : ' ' ">
             <div class="box-Main">
               <div class="box-data">
-                <div class="card-header" style="height: 11%">
+                <div class="card-header box-sort-sreach" >
 
-                  <div>
-                    <div class="dropdown">
-                      <button class="btn btn-outline-secondary dropdown-toggle float-left" style="width: 80px;"
-                              type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                        \{{ selectedValueGender }}
-                      </button>
-                      <ul class="dropdown-menu">
-                        <li><a class="dropdown-item" @click="selectOptionGender('all')" style="cursor: pointer;">Tất
-                          cả</a></li>
-                        <li><a class="dropdown-item" @click="selectOptionGender('men')" style="cursor: pointer;">Nam</a>
-                        </li>
-                        <li><a class="dropdown-item" @click="selectOptionGender('women')"
-                               style="cursor: pointer;">Nữ</a></li>
-                      </ul>
+                  <div style="width: 81%;display: flex;">
+                    <div style="display: flex;width: 32%;">
+                      <div class="dropdown">
+                        <button class="btn btn-outline-secondary dropdown-toggle float-left" style="width: 80px;"
+                                type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                          \{{ selectedValueGender }}
+                        </button>
+                        <ul class="dropdown-menu">
+                          <li><a class="dropdown-item" @click="selectOptionGender('all')" style="cursor: pointer;">Tất
+                            cả</a></li>
+                          <li><a class="dropdown-item" @click="selectOptionGender('men')" style="cursor: pointer;">Nam</a>
+                          </li>
+                          <li><a class="dropdown-item" @click="selectOptionGender('women')"
+                                 style="cursor: pointer;">Nữ</a></li>
+                        </ul>
+                      </div>
+
+                      <div class="dropdown">
+                        <button class="btn btn-outline-secondary dropdown-toggle float-left" type="button"
+                                data-bs-toggle="dropdown" aria-expanded="false" style="margin-left:10px; ">
+                          \{{selectedValueMoney}}
+                        </button>
+                        <ul class="dropdown-menu">
+                          <li style="cursor: pointer;"><a class="dropdown-item" @click="selectOptionSort('lowtohight')">Giá:
+                            Thấp đến Cao</a></li>
+                          <li style="cursor: pointer;"><a class="dropdown-item" @click="selectOptionSort('highttolow')">Giá:
+                            Cao đến Thấp</a></li>
+                        </ul>
+                      </div>
                     </div>
-
-                    <div class="dropdown">
-                      <button class="btn btn-outline-secondary dropdown-toggle float-left" type="button"
-                              data-bs-toggle="dropdown" aria-expanded="false" style="margin-left:10px; ">
-                        \{{selectedValueMoney}}
-                      </button>
-                      <ul class="dropdown-menu">
-                        <li style="cursor: pointer;"><a class="dropdown-item" @click="selectOptionSort('lowtohight')">Giá:
-                          Thấp đến Cao</a></li>
-                        <li style="cursor: pointer;"><a class="dropdown-item" @click="selectOptionSort('highttolow')">Giá:
-                          Cao đến Thấp</a></li>
-                      </ul>
+                    <div class="card-search">
+                      <div class="search-container">
+                        <input v-model="searchData" type="text" class="search-input" id="searchInput"
+                               placeholder="Tìm kiếm..." autocomplete="off">
+                      </div>
                     </div>
                   </div>
-
                   <button class="btn btn-primary float-right" data-toggle="modal" data-target="#addProductModal">Thêm
                     sản phẩm
                   </button>
                 </div>
-                <div class="card-search">
-                  <div class="search-container">
-                    <input v-model="searchData" type="text" class="search-input" id="searchInput"
-                           placeholder="Tìm kiếm..." autocomplete="off">
-                  </div>
-                </div>
+
 
                 <div class="card-body-product">
                   <div style="height: 93%;">
                     <table class="table table-bordered " style="margin-bottom:0px">
                       <thead>
                       <tr>
-                        <th>STT</th>
-                        <th style="text-align: center;width: 110px">Ảnh</th>
-                        <th style="text-align: center;">Tên sản phẩm</th>
-                        <th style="text-align: center;width: 110px">Giá</th>
-                        <th style="text-align: center;width: 130px">Số màu</th>
-                        <th style="text-align: center;width: 130px">Số lượng</th>
-                        <th style="text-align: center;width: 100px;">Loại</th>
-                        <th style="text-align: center;width: 140px;">Thao tác</th>
+                        <th class="th-No">STT</th>
+                        <th class="th-img">Ảnh</th>
+                        <th class="th-NameProduct">Tên sản phẩm</th>
+                        <th class="th-Money">Giá</th>
+                        <th class="th-Color">Số màu</th>
+                        <th class="th-Size">Số lượng</th>
+                        <th class="th-Loai">Loại</th>
+                        <th class="th-thaoTac">Thao tác</th>
                       </tr>
                       </thead>
                       <tbody>
 
                       <tr v-for="(item,index) in dataWarehouseAll[indexSize-1]">
-                        <td>\{{((indexSize-1) * 4)+index+1}}</td>
                         <td>
-                          <img :src="item.product_image" class="img_product"/>
-                        </td>
-                        <td>\{{item.product_title}}</td>
-                        <td>\{{formatPrice(item.product_price)}}</td>
-                        <td>\{{item.product_quantityColor}}</td>
-                        <td>\{{item.product_quantity}}</td>
-                        <td>
-                          <div v-if="item.product_category == 'men'"> Nam</div>
-                          <div v-if="item.product_category == 'women'"> Nữ</div>
+                          <div class="text_Align">
+                            \{{((indexSize-1) * 7)+index+1}}
+                          </div>
                         </td>
                         <td>
-                          <!-- Các nút "Sửa" và "Xóa" -->
-                          <a @click="openModalSuaSP(item)" class="btn btn-primary btn-sm" data-toggle="modal">Sửa</a>
-                          <a @click="openModalXoaSP(item)" class="btn btn-danger btn-sm" data-toggle="modal">Xóa</a>
-                          <a @click="XemChiTiet(item._id)" class="btn btn-info btn-sm mt-1.5">Xem
-                            chi tiết</a>
+                          <div class="text_Align">
+                            <img :src="item.product_image" class="img_product"/>
+                          </div>
+                        </td>
+                        <td>
+                          <div class="td-nameProduct">
+                            \{{item.product_title}}
+                          </div>
+                        </td>
+                        <td>
+                          <div class="text_Align">
+                          \{{formatPrice(item.product_price)}}
+                        </div>
+                        </td>
+                        <td>
+                          <div class="text_Align">
+                            \{{item.product_quantityColor}}
+                          </div>
+                        </td>
+                        <td>
+                          <div class="text_Align">
+                            \{{item.product_quantity}}
+                          </div>
+                        </td>
+                        <td>
+                          <div v-if="item.product_category == 'men'"  class="text_Align"> Nam</div>
+                          <div v-if="item.product_category == 'women'"  class="text_Align"> Nữ</div>
+                        </td>
+                        <td>
+                          <div  style="display: flex;justify-content: space-around">
+                            <img @click="openModalSuaSP(item)" class="icon_thaoTac"
+                                 src="pen.png">
+                            <img @click="openModalXoaSP(item)" class="icon_thaoTac"
+                                 src="delete.png">
+                            <img @click="XemChiTiet(item._id)" class="icon_thaoTac"
+                                 src="show.png">
+                          </div>
                         </td>
                       </tr>
                       </tbody>
                     </table>
                   </div>
-                  <div class="box-size-table" v-if="toatalWare > 4">
+                  <div class="box-size-table" v-if="toatalWare > 7">
                     <div class="text-box-size-table">\{{sizeTable(indexSize)}} của tổng số \{{toatalWare}}</div>
                     <div class="box-arrow">
                       <div class="box-extra-arrow" @click="backSize(dataWarehouseAll)">
@@ -730,7 +817,7 @@
       searchData(newKeyword) {
         var self = this;
         if (newKeyword === '') {
-          var dataAll = splitList(self.dataSearch, 4)
+          var dataAll = splitList(self.dataSearch)
           self.toatalWare = self.dataSearch.length
           return self.dataWarehouseAll = dataAll
         }
@@ -787,7 +874,7 @@
         var self = this;
         const key = keyword.toLowerCase();
         const dataSreachs = self.dataSearch.filter(product => product.product_title.toLowerCase().includes(key));
-        var dataAll = splitList(dataSreachs, 4)
+        var dataAll = splitList(dataSreachs)
         self.toatalWare = dataSreachs.length
         return self.dataWarehouseAll = dataAll
       },
@@ -801,14 +888,14 @@
           self.selectedValueMoney = 'Giá: Cao đến Thấp'
           const dataSreachs = self.dataSearch.filter(product => product.product_category === self.dataCate || product.product_category === self.dataCateTwo).sort((a, b) => b.product_price - a.product_price);
 
-          var dataAll = splitList(dataSreachs, 4)
+          var dataAll = splitList(dataSreachs)
           self.dataWarehouseAll = dataAll
           self.toatalWare = dataSreachs.length
         } else {
           self.selectedValueMoney = 'Giá: Thấp đến Cao'
           const dataSreachs = self.dataSearch.filter(product => product.product_category === self.dataCate || product.product_category === self.dataCateTwo).sort((a, b) => a.product_price - b.product_price);
 
-          var dataAll = splitList(dataSreachs, 4)
+          var dataAll = splitList(dataSreachs)
           self.dataWarehouseAll = dataAll
           self.toatalWare = dataSreachs.length
         }
@@ -820,7 +907,7 @@
           self.dataCateTwo = 'women'
           self.selectedValueGender = 'Tất cả'
           const dataSreachs = self.dataSearch;
-          var dataAll = splitList(dataSreachs, 4)
+          var dataAll = splitList(dataSreachs)
           self.dataWarehouseAll = dataAll
           self.toatalWare = dataSreachs.length
         } else if (value === 'men') {
@@ -828,7 +915,7 @@
           self.dataCate = 'men'
           self.dataCateTwo = 'men'
           const dataSreachs = self.dataSearch.filter(product => product.product_category === 'men');
-          var dataAll = splitList(dataSreachs, 4)
+          var dataAll = splitList(dataSreachs)
           self.dataWarehouseAll = dataAll
           self.toatalWare = dataSreachs.length
         } else {
@@ -836,7 +923,7 @@
           self.dataCate = 'women'
           self.dataCateTwo = 'women'
           const dataSreachs = self.dataSearch.filter(product => product.product_category === 'women');
-          var dataAll = splitList(dataSreachs, 4)
+          var dataAll = splitList(dataSreachs)
           self.dataWarehouseAll = dataAll
           self.toatalWare = dataSreachs.length
         }
@@ -846,8 +933,8 @@
         return val.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + " đ";
       },
       sizeTable(vale) {
-        const start = (vale - 1) * 4 + 1
-        const end = (vale - 1) * 4 + 4
+        const start = (vale - 1) * 7 + 1
+        const end = (vale - 1) * 7 + 7
         return `${start} - ${end}`;
       },
 
@@ -943,7 +1030,7 @@
         })
             .then(response => response.json())
             .then(data => {
-              var dataAll = splitList(data, 4)
+              var dataAll = splitList(data)
               self.dataWarehouseAll = dataAll
               self.dataSearch = data
               self.toatalWare = data.length
@@ -963,7 +1050,7 @@
         })
             .then(response => response.json())
             .then(data => {
-              var dataAll = splitList(data, 4)
+              var dataAll = splitList(data)
               self.dataWarehouseAll = dataAll
               self.toatalWare = data.length
               self.dataSearch = data
@@ -974,35 +1061,17 @@
             });
       },
 
-      loadDataSortWarehouse(cate, sort) {
-        const self = this;
-        fetch(`/warehouse/${cate}/${sort}`, {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-        })
-            .then(response => response.json())
-            .then(data => {
-              const dataAll = splitList(data, 4);
-              self.dataWarehouseAll = dataAll;
-              self.dataSearch = data
-              self.totalWare = data.length;
-            })
-            .catch(error => {
-              console.error(error);
-            });
-      }
+
     }
   })
   vm.GetDataWarehouse();
   vm.GetAllDataChat();
   vm.GetDataCart();
 
-  function splitList(arr, size) {
+  function splitList(arr) {
     let result = [];
-    for (let i = 0; i < arr.length; i += size) {
-      let chunk = arr.slice(i, i + size);
+    for (let i = 0; i < arr.length; i += 7) {
+      let chunk = arr.slice(i, i + 7);
       result.push(chunk);
     }
     return result;
