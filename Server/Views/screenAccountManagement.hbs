@@ -613,7 +613,6 @@
         </div>
         <div class="modal-body">
           <div>
-
             <div class="box-extra-one">
               <div class="img-box-Detail">
                 <img :src="dataBlock.profile && dataBlock.profile.length > 0 ? dataBlock.profile[0].avatar : ''"
@@ -653,6 +652,9 @@
                 dataAddres[selectNumber-1].address :
                 ''}}
               </div>
+            </div>
+            <div v-if="dataBlock.status === true">
+              Lý do bị chặn: \{{dataBlock.block_reason}}
             </div>
           </div>
         </div>
