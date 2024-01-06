@@ -76,7 +76,6 @@ function Home() {
     ];
     //Chưa có nổi bật nên chỉ sắp sếp theo giá
     const sortByPrice = (item) => {
-        console.log(item._index)
         setValueSortBy(item.value);
         const dataSort = [...dataSP1];
 
@@ -93,7 +92,6 @@ function Home() {
     };
     const filterByCategory = (item) => {
         setValueFilter(item.value);
-        console.log(item)
         const dataCategory = [...dataSP1];
 
         if (item._index === 0) {

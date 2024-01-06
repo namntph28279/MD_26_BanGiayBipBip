@@ -248,8 +248,6 @@ const Order = ({ route }) => {
                     'Content-Type': 'application/json',
                 },
             });
-            console.log('returnReason:', returnReason);
-            console.log('Server Response:', response); // Log the response
 
             if (response.status === 200) {
                 setCancelModalVisible(false);

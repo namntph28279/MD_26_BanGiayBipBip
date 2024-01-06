@@ -119,9 +119,8 @@ const getTokenApp = async () => {
         if (email !== null) {
             console.log(1)
             await url.post(`/checkClientUser`, {user: email, IdClient: idApp, status: true})
-            console.log(pushTokenData.data)
+
         }
-        console.log(pushTokenData.data)
         return pushTokenData.data;
     } catch (error) {
         return [];

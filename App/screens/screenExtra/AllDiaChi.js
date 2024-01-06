@@ -110,7 +110,6 @@
                 .then((response) => {
                 console.log("Dữ liệu đã được gửi thành công lên máy chủ:", response.data);
                 removeAddress(item);
-                console.log(addresses.length);
                 
                 })  
                 .catch((error) => {
