@@ -105,7 +105,6 @@ const ThanhToanScreen = ({ route, navigation }) => {
     }, []);
     useEffect(() => {
         const socketInstance = io(getUrl());
-        console.log(socketInstance)
         setSocket(socketInstance);
         return () => {
             socketInstance.disconnect();
@@ -312,7 +311,6 @@ const ThanhToanScreen = ({ route, navigation }) => {
             }
         });
         if(productIds.length>0){
-            console.log(productIds);
             for (product of productIds){
                 const response = await url.delete(`/cart/delete/${product}`);
             }
@@ -348,7 +346,6 @@ const ThanhToanScreen = ({ route, navigation }) => {
                     }
                 }
             );
-            console.log(products)
 
             const orderData = {
                 user: userID || '',
@@ -442,7 +439,6 @@ const ThanhToanScreen = ({ route, navigation }) => {
                     }
                 }
             );
-            console.log(products)
 
             const orderData = {
                 user: userID || '',

@@ -26,6 +26,7 @@ import { getUrl } from "../../api/socketio";
 export default function OrderMain({ navigation }) {
     const layout = useWindowDimensions();
     const dataOrder = useSelector((state) => state.dataAll.dataDonHang);
+    const dataUserID = useSelector((state) => state.dataAll.dataUserID);
     const dispatch = useDispatch();
     const [choXacNhanDon, setChoXacNhan] = useState([]);
     const [cholayHangDon, setlayHang] = useState([]);
@@ -241,7 +242,7 @@ export default function OrderMain({ navigation }) {
     };
 
 
-    const handleReturnOrderAndNavigate = (item, returnReason) => {
+    const handleReturnOrderAndNavigate = async (item, returnReason) => {
         // Thực hiện xử lý trả hàng
         confirmReturnOrder(item);
 
@@ -258,11 +259,12 @@ export default function OrderMain({ navigation }) {
                 returnMessage += 'Tôi muốn trả đơn hàng.';
                 break;
         }
+        const name = await AsyncStorage.getItem('Name');
+        await url.post("/home/chatShop", { user: dataUserID, fullName: name, beLong: "user", conTenMain: returnMessage, status: "true" });
+
+        socket.emit('client-send');
         // Chuyển màn hình InformationLine và gửi tin nhắn
-        navigation.navigate("ChatScreen", {
-            orderId: item._id,
-            initialMessage: returnMessage,
-        });
+        navigation.navigate("ChatScreen");
     };
 
     const getStatusText = (status) => {

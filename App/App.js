@@ -75,7 +75,7 @@ export default function App() {
   return (
       <Provider store={store}>
         <NavigationContainer>
-          <Stack.Navigator initialRouteName='TabNavi'
+          <Stack.Navigator initialRouteName='SplashScreen'
            screenOptions={{gestureEnabled: false,
            }}>
             <Stack.Screen name='SplashScreen' component={SplashScreen} options={{ headerShown: false }} />

@@ -320,7 +320,6 @@ function ProductDetail({ route, navigation }) {
             //ảnh
             setSelectedColorImage(colorImages[color]);
         }
-        console.log('màu của color', selectedColorData)
     };
 
     const selectSize = (size) => {

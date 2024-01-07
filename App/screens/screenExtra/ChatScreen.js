@@ -8,7 +8,7 @@ import { io } from "socket.io-client";
 import { getUrl } from "../../api/socketio";
 import { useDispatch , useSelector} from 'react-redux';
 
-const ChatScreen = ({ navigation, route }) => {
+const ChatScreen = ({ navigation}) => {
     const [message, setMessage] = useState('');
     const [dataAll, setDataALL] = useState();
     const [dataName, setDataName] = useState();
@@ -17,7 +17,6 @@ const ChatScreen = ({ navigation, route }) => {
     const tokenApp = useSelector((state) => state.dataAll.dataTokenApp);
 
     const [socket, setSocket] = useState(null);
-    const { orderId, initialMessage } = route.params || {};
 
     const dispatch = useDispatch();
 
@@ -63,32 +62,10 @@ const ChatScreen = ({ navigation, route }) => {
         const socketInstance = io(getUrl());
         setSocket(socketInstance);
 
-        // Check if there's an initial message to send
-        if (initialMessage) {
-            handleInitialMessage(initialMessage);
-        }
-
         return () => {
             socketInstance.disconnect();
         };
     }, []);
-
-    const handleInitialMessage = async (initialMessage) => {
-        // Send the initial message when the component mounts
-        await url.post("/home/chatShop", {
-            user: dataUserID,
-            fullName: dataName,
-            beLong: "user",
-            conTenMain: initialMessage,
-            status: "true",
-        });
-
-        if (socket) {
-            socket.emit('client-send');
-        } else {
-            fetchData();
-        }
-    };
 
     const fetchData = async () => {
         try {
@@ -158,10 +135,6 @@ const ChatScreen = ({ navigation, route }) => {
 
     const handleSendMessage = async () => {
         if (message.length > 0) {
-            // Tạo biến isReturnOrder và gán giá trị true. Có vẻ như biến này được sử dụng để xác định xem người dùng đang gửi tin nhắn về việc trả đơn hàng hay không.
-            // Tạo biến content chứa nội dung thực sự của tin nhắn dựa trên giá trị của isReturnOrder
-            const isReturnOrder = true;
-            let content = isReturnOrder ? `Bạn muốn trả đơn hàng vào lúc ${getCurrentFormattedDateTime()}? orderId: ${orderId}` : message;
             await url.post("/home/chatShop", { user: dataUserID, fullName: dataName, beLong: "user", conTenMain: message, status: "true" });
             setMessage('')
             if (socket) {

@@ -95,7 +95,7 @@ const Login = ({ navigation }) => {
                         const pushTokenData = await Notifications.getExpoPushTokenAsync();
                         await AsyncStorage.setItem("TokenApp", pushTokenData.data);
                         await url.post("/checkClientUser", {user: userID, IdClient: pushTokenData.data, status: true});
-                        console.log(pushTokenData);
+
                         dispatch(fetchDataAndSetToRedux());
                         navigation.navigate('TabNavi', {screen: 'Home' });
  
