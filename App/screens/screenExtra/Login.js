@@ -1,11 +1,11 @@
-import React, { useState,useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, TouchableOpacity, Image, Alert, StyleSheet } from 'react-native';
 import axios from 'axios';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as Notifications from "expo-notifications";
 import url from "../../api/url";
-import {fetchDataAndSetToRedux} from "../../redux/AllData";
-import {useDispatch} from "react-redux";
+import { fetchDataAndSetToRedux } from "../../redux/AllData";
+import { useDispatch } from "react-redux";
 import { io } from 'socket.io-client';
 import { getUrl } from "../../api/socketio";
 
@@ -67,10 +67,10 @@ const Login = ({ navigation }) => {
                 const response = await url.post(
                     "/login",
                     {
-                      username: userName,
-                       password,
+                        username: userName,
+                        password,
                     },
-                  );
+                );
 
 
                 if (response.status === 200) {
@@ -81,7 +81,9 @@ const Login = ({ navigation }) => {
                     console.log("sờ ta tus ", userData.status);
 
                     if (isBlocked === true) {
-                        Alert.alert('Thông báo', 'Tài khoản của bạn đã bị chặn vào lúc: \n'+ userData.date);
+                        const formattedDate = new Date(userData.date).toLocaleDateString('vi-VN'); // Định dạng ngày tháng năm theo định dạng Việt Nam (dd/mm/yyyy)
+                        Alert.alert('Thông báo', `Tài khoản của bạn đã bị chặn `);
+
                         return;  // Dừng việc tiếp tục xử lý
                     }
 
@@ -89,16 +91,16 @@ const Login = ({ navigation }) => {
 
                         const username = userName.split('@')[0];
                         await AsyncStorage.setItem("Email", userID);
-                        await AsyncStorage.setItem("Name",username);
-                        await AsyncStorage.setItem("Name1",Name);
+                        await AsyncStorage.setItem("Name", username);
+                        await AsyncStorage.setItem("Name1", Name);
                         await AsyncStorage.setItem('1', JSON.stringify(isBlocked));
                         const pushTokenData = await Notifications.getExpoPushTokenAsync();
                         await AsyncStorage.setItem("TokenApp", pushTokenData.data);
-                        await url.post("/checkClientUser", {user: userID, IdClient: pushTokenData.data, status: true});
+                        await url.post("/checkClientUser", { user: userID, IdClient: pushTokenData.data, status: true });
 
                         dispatch(fetchDataAndSetToRedux());
-                        navigation.navigate('TabNavi', {screen: 'Home' });
- 
+                        navigation.navigate('TabNavi', { screen: 'Home' });
+
                     } else {
                         console.error('Không nhận được ID người dùng từ phản hồi JSON');
                         Alert.alert('Lỗi', 'Không nhận được ID người dùng từ phản hồi JSON');
@@ -123,9 +125,9 @@ const Login = ({ navigation }) => {
                     }
                 } else {
                     console.error('Lỗi:', error);
-                Alert.alert('Lỗi', 'Đã xảy ra lỗi trong quá trình gửi yêu cầu');
+                    Alert.alert('Lỗi', 'Đã xảy ra lỗi trong quá trình gửi yêu cầu');
                 }
-                
+
             }
         }
     };
@@ -310,7 +312,7 @@ const styles = StyleSheet.create({
         color: 'black'
     },
     skipButton: {
-        marginTop:50,
+        marginTop: 50,
         position: 'absolute',
         top: 10,
         right: 10,
