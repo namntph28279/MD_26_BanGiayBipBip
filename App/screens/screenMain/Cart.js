@@ -25,6 +25,7 @@ function Cart({ navigation }) {
   const [cartProducts, setCartProducts] = useState([]);
   const [selectedProducts, setSelectedProducts] = useState([]);
   const [color, setColor] = useState("");
+  const [size, setSize] = useState("");
 
   const dispatch = useDispatch(); //trả về một đối tượng điều phối
   const dataProduct = useSelector((state) => state.dataAll.dataSP);
@@ -32,7 +33,8 @@ function Cart({ navigation }) {
 
   useEffect(() => {
     fetchData();
-    fetchColor();
+    fetchColors();
+    fetchSizes();
     setDataSP(dataProduct);
   }, [dataProduct, useIsFocused()]);
 
@@ -53,13 +55,26 @@ function Cart({ navigation }) {
     }
   };
 
-  const fetchColor = async () => {
+  const fetchColors = async () => {
     try {
       const response = await url.get("/colors/getAll");
       const data = response.data;
 
       if (data.length > 0) {
         setColor(data);
+      } else {
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+  const fetchSizes = async () => {
+    try {
+      const response = await url.get("/sizes/getAll");
+      const data = response.data;
+
+      if (data.length > 0) {
+        setSize(data);
       } else {
       }
     } catch (error) {
@@ -120,10 +135,11 @@ function Cart({ navigation }) {
     return cartProducts.length;
   };
 
-  const increaseQuantity = (productId) => {
+  const increaseQuantity = (productItem) => {
+    const itemSize = size.find((item) => item._id === productItem.sizeId);
     setCartProducts((prevCartProducts) => {
       const updatedProducts = prevCartProducts.map((product) => {
-        if (product.id === productId) {
+        if (product.id === productItem.id && product.quantity<itemSize.size_quantity) {
           return { ...product, quantity: product.quantity + 1 };
         }
         return product;
@@ -270,7 +286,7 @@ function Cart({ navigation }) {
                   <Text style={styles.quantityText}>{product.quantity}</Text>
                   <TouchableOpacity
                     style={styles.quantityButton}
-                    onPress={() => increaseQuantity(product.id)}
+                    onPress={() => increaseQuantity(product)}
                   >
                     <Text style={styles.quantityButtonText}>+</Text>
                   </TouchableOpacity>
