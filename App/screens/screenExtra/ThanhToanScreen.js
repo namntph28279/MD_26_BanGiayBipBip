@@ -221,23 +221,25 @@ const ThanhToanScreen = ({ route, navigation }) => {
                     <Text>Giày: {item.product_title}</Text>
                     <Text>Màu: {product.color}</Text>
                     <Text>Kích thước: {product.size}</Text>
+                    
                     <Text>Giá: {getMonney(item.product_price)}</Text>
+                    
                     {/*<Text>id color: {product.selectedColorId}</Text>*/}
                     <View style={styles.quantityContainer}>
-                        <TouchableOpacity onPress={() => handleQuantityChange(product.id, 'decrease')}>
+                        {/* <TouchableOpacity onPress={() => handleQuantityChange(product.id, 'decrease')}>
                             <Text style={styles.quantityButton}>-</Text>
-                        </TouchableOpacity>
-                        <Text style={styles.quantity}>{product.quantity}</Text>
-                        <TouchableOpacity onPress={() => handleQuantityChange(product.id, 'increase')}>
+                        </TouchableOpacity> */}
+                        <Text style={styles.quantity}>x{product.quantity}</Text>
+                        {/* <TouchableOpacity onPress={() => handleQuantityChange(product.id, 'increase')}>
                             <Text style={styles.quantityButton}>+</Text>
-                        </TouchableOpacity>
+                        </TouchableOpacity> */}
                     </View>
                 </View>
-                <TouchableOpacity style={styles.removeButtonContainer} onPress={() => handleRemoveProduct(product.id)}>
+                {/* <TouchableOpacity style={styles.removeButtonContainer} onPress={() => handleRemoveProduct(product.id)}>
                     <View style={styles.removeButton}>
                         <Icon name="trash-o" size={20} color="white" />
                     </View>
-                </TouchableOpacity>
+                </TouchableOpacity> */}
             </View>
         )
     };
@@ -703,18 +705,14 @@ const styles = StyleSheet.create({
         position: 'absolute',
         bottom: 0,
         right: 0,
-        marginBottom: 8,
-        marginRight: 8,
+        marginBottom: 0,
+        marginRight: 20,
         alignSelf: 'flex-end',
     },
-    quantityButton: {
-        fontSize: 18,
-        fontWeight: 'bold',
-        marginHorizontal: 8,
-        color: '#3498db',
-    },
     quantity: {
-        fontSize: 16,
+        color:'#696969',
+        marginBottom:0,
+        fontWeight:'bold',
     },
     flashMessageTitle: {
         fontSize: 16,
