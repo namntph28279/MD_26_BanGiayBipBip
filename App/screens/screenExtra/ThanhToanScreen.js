@@ -694,10 +694,12 @@ const ThanhToanScreen = ({ route, navigation }) => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
+        backgroundColor:'#EEEEEE',
     },
     scrollContainer: {
         flex: 1,
-        padding: 16,
+        paddingLeft: 8,
+        paddingRight: 8,
     },
     quantityContainer: {
         flexDirection: 'row',
@@ -730,13 +732,9 @@ const styles = StyleSheet.create({
         borderBottomWidth: 1,
         borderBottomColor: '#ddd',
         paddingBottom: 16,
-        backgroundColor: '#cbb9b9',
+        backgroundColor:'white',
         borderRadius: 8,
     },
-    productItemContainer: {
-        position: 'relative',
-    },
-
     infoContainer: {
         flexDirection: 'row',
         alignItems: 'center',
@@ -778,8 +776,8 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     productImage: {
-        width: 80,
-        height: 80,
+        width: 100,
+        height: 100,
         marginRight: 16,
         marginTop: 10,
         marginLeft: 10,
