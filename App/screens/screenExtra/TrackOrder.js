@@ -3,13 +3,14 @@ import {View, Text, Image, StyleSheet, ScrollView, FlatList} from 'react-native'
 import {getMonney} from "../../util/money";
 import Icon from 'react-native-vector-icons/FontAwesome';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import ipAddress from "../../api/config";
 
 
 import io from 'socket.io-client';
 import { getUrl } from "../../api/socketio";
 import { useDispatch , useSelector} from 'react-redux';
 import {fetchDataAndSetToRedux} from "../../redux/AllData";
-const TrackOrder = ({ route }) => {
+const TrackOrder = ({ route , navigation}) => {
     const { orderData } = route.params;
     const { orderProductsList } = route.params;
     const [orderDataList, setOrderDataList] = useState(orderProductsList);
@@ -85,7 +86,7 @@ const TrackOrder = ({ route }) => {
     const statusIndex = orderData1[0]?.status;
     const renderProduct = ({ item }) => (
         <View style={styles.productItem} key={item.id}>
-            <Image source={{ uri: item.img_product }} style={styles.productImage} />
+            <Image source={{ uri: item.img_product.replace('http://localhost', ipAddress) }} style={styles.productImage} />
             <View style={styles.productText}>
                 <Text style={styles.productName}>{`Sản Phẩm: ${item.name_Product}`}</Text>
                 <Text>{`SL: ${item.quantityProduct}`}</Text>

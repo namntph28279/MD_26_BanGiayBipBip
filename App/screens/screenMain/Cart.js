@@ -19,6 +19,7 @@ import url from "../../api/url";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import NoProduct from "../../components/NoProduct";
 import { useIsFocused } from "@react-navigation/native";
+import ipAddress from "../../api/config";
 
 function Cart({ navigation }) {
   const [cartProducts, setCartProducts] = useState([]);
@@ -244,7 +245,7 @@ function Cart({ navigation }) {
 
               <Image
                 //uri product image
-                source={{ uri: itemColor.color_image }}
+                source={{ uri: itemColor.color_image.replace('http://localhost', ipAddress) }}
                 style={styles.productImage}
               />
               <View style={styles.productInfo}>

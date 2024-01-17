@@ -16,6 +16,7 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { Button } from 'react-native-elements';
 import moment from 'moment';
+import ipAddress from "../../api/config";
 
 import Toast from 'react-native-toast-message';
 const InformationLine = ({ route, navigation }) => {
@@ -158,7 +159,7 @@ const InformationLine = ({ route, navigation }) => {
               {item.products.map((product) => (
                 <View key={product.id} style={styles.productBox}>
                   <View style={styles.productItemContainer}>
-                    <Image source={{ uri: product.img_product }} style={styles.productImage} />
+                    <Image source={{ uri: product.img_product.replace('http://localhost', ipAddress) }} style={styles.productImage} />
                     <View style={styles.productInfo}>
                       <Text style={styles.productName}>{`${product.name_Product}`}</Text>
                       <Text>{`Màu: ${product.name_Color}`}</Text>
@@ -324,7 +325,7 @@ const styles = StyleSheet.create({
     marginBottom: 7,
   },
   productScrollView: {
-    maxHeight: 200,
+    height: "40%",
     marginBottom: 10,
   },
   button2: {
@@ -512,6 +513,7 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     paddingVertical: 12,
     borderRadius: 55,
+
   },
   paymentMethodContainer_chat1: {
     padding: 16,

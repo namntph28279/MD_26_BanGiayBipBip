@@ -42,7 +42,7 @@ function Search({ navigation }) {
       (product) => product !== null
     );
 
-    setTopSellingInProducts(filteredTopSellingInProducts);
+    setTopSellingInProducts(products.slice(0, 4));
 
     //console.log("Số phần tử trong topSellingInProducts:", limitedTopSellingInProducts.length);
   }, [topSellingProducts, products]);
@@ -176,7 +176,7 @@ function Search({ navigation }) {
         {filteredProducts.length === 0 && (
           <View style={{ display: "flex" }}>
             <Text style={{ fontSize: 18, fontWeight: "500", marginLeft: 20 , marginTop: 3 , marginBottom: 3 }}>
-              Sản phẩm bán chạy
+              Sản phẩm mới
             </Text>
 
           
@@ -233,7 +233,7 @@ export default Search;
 const styles = StyleSheet.create({
   container: {
     paddingTop: 15,
-    backgroundColor: "#dddddd",
+    
     marginBottom: "15%",
   },
   searchContainer: {

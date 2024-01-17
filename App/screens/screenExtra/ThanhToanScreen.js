@@ -666,7 +666,7 @@ const ThanhToanScreen = ({ route, navigation }) => {
                         </View>
                         <View style={styles.infoContainer}>
                             <Text style={styles.labelText}>Tổng tiền:</Text>
-                            <Text style={styles.orderIdText} onPress={copyOrdertotalPaymentClipboard}>
+                            <Text style={styles.orderIdTextTT} onPress={copyOrdertotalPaymentClipboard}>
                                 {getMonney(productTotal + insuranceFee)}
                             </Text>
                         </View>
@@ -745,12 +745,12 @@ const styles = StyleSheet.create({
         marginBottom: 10,
     },
     labelText: {
-        fontSize: 14,
+        fontSize: 18,
         fontWeight: 'bold',
         marginRight: 10,
     },
     accountNumberText: {
-        fontSize: 10,
+        fontSize: 14,
         marginVertical: 5,
     },
     removeButtonContainer: {
@@ -847,7 +847,7 @@ const styles = StyleSheet.create({
         marginBottom: 8,
     },
     totalAmountText: {
-        fontSize: 14,
+        fontSize: 18,
         fontWeight: 'bold',
         marginRight: 15,
     },
@@ -870,7 +870,7 @@ const styles = StyleSheet.create({
         backgroundColor: 'rgba(0, 0, 0, 0.5)',
     },
     modalTitle: {
-        fontSize: 18,
+        fontSize: 20,
         fontWeight: 'bold',
         marginBottom: 10,
     },
@@ -961,8 +961,14 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
     },
     orderIdText: {
-        fontSize: 10,
+        fontSize: 16,
         marginVertical: 5,
+        
+    },
+    orderIdTextTT: {
+        fontSize: 16,
+        marginVertical: 5,
+        fontWeight: 'bold',
     },
     buttonContainer: {
         flexDirection: 'row',

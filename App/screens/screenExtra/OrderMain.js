@@ -20,7 +20,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import url from "../../api/url";
 import { io } from "socket.io-client";
 import { getUrl } from "../../api/socketio";
-
+import ipAddress from "../../api/config";
 
 
 export default function OrderMain({ navigation }) {
@@ -303,9 +303,8 @@ export default function OrderMain({ navigation }) {
         >
             <View style={styles.productBox}>
                 {item.products.map((product) => (
-
                     <View key={product._id} style={styles.productItemContainer}>
-                        <Image source={{ uri: product.img_product }} style={styles.productImage} />
+                        <Image source={{ uri: product.img_product.replace('http://localhost', ipAddress) }} style={styles.productImage} />
                         <View style={styles.productInfo}>
                             {/* <Text style={styles.productName}>{`ID sản phẩm: ${product.product}`}</Text> */}
                             <Text style={styles.productName}>{`${product.name_Product}`}</Text>
@@ -396,7 +395,7 @@ export default function OrderMain({ navigation }) {
                 </View>
                 <View style={styles.buttonContainer}>
                     {item.status === 9 && (
-                        <Text style={styles.cancelOrderButtonText2}>Từ chối trả hàng</Text>
+                        <Text style={styles.cancelOrderButtonText3}>Từ chối trả hàng</Text>
                     )}
                 </View>
 
@@ -407,7 +406,7 @@ export default function OrderMain({ navigation }) {
                                 navigation.navigate("ChatScreen");
                             }}
                         >
-                            <Text style={styles.cancelOrderButtonText1}>Mọi thắc mắc về đơn hàng hãy liên hệ đến shop ngay !</Text>
+                            <Text style={styles.cancelOrderButtonText1}>Hãy liên hệ với shop để được hỗ trợ !</Text>
                         </TouchableOpacity>
                     ) : null}
                 </View>
@@ -703,13 +702,20 @@ const styles = StyleSheet.create({
     },
     cancelOrderButtonText1: {
         color: 'black',
-        fontSize: 12,
+        fontSize: 14,
         fontWeight: 'bold',
         marginLeft: 4,
     },
     cancelOrderButtonText2: {
         color: 'black',
-        fontSize: 12,
+        fontSize: 14,
+        fontWeight: 'bold',
+        marginLeft: 4,
+        marginTop: 4,
+    },
+    cancelOrderButtonText3: {
+        color: 'red',
+        fontSize: 14,
         fontWeight: 'bold',
         marginLeft: 4,
         marginTop: 4,

@@ -42,6 +42,7 @@ function Home() {
 
     React.useEffect(() => {
         return navigation.addListener("focus", () => {
+            
             dispatch(fetchDataAndSetToRedux());
         });
     }, [navigation]);
@@ -348,6 +349,7 @@ const styles = StyleSheet.create({
         width: "48%", // Display two items per row
         marginTop: 10,
         marginLeft: 7,
+    
     },
     slide: {
         height: 200,
