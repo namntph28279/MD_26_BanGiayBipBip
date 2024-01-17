@@ -1,7 +1,7 @@
 export function getUrl() {
 
 
-    return 'http://192.168.1.8';
+    return 'http://192.168.0.101';
 
 
 }

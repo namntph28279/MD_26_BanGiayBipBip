@@ -312,7 +312,7 @@ export default function OrderMain({ navigation }) {
                             <Text>{`Size: ${product.name_Size}`}</Text>
                             <View style={styles.quantityAndPriceContainer}>
                                 <Text>{`SL: ${product.quantityProduct}`}</Text>
-                                <Text style={{ color: '#FF0000', fontWeight: 'bold' }}>{`Giá: ${getMonney(product.name_Price)}`}</Text>
+                                <Text style={{ color: '#FF0000', fontWeight: 'bold' , marginRight:10}}>{`Giá: ${getMonney(product.name_Price)}`}</Text>
                             </View>
 
                             {/* <View><Text style={styles.productItemContainer1}></Text></View> */}
@@ -597,10 +597,12 @@ const styles = StyleSheet.create({
     list: {
         width: '100%',
         height: '100%',
+        
     },
     frame: {
         marginRight: '3%',
         marginLeft: '3%',
+        
     },
     title: {
         fontSize: 18,
@@ -614,6 +616,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         backgroundColor: 'rgba(0, 0, 0, 0.5)',
+        
     },
     modalContainer: {
         backgroundColor: 'white',
@@ -657,12 +660,12 @@ const styles = StyleSheet.create({
         width: '95%',
     },
     productImage: {
-        width: 80,
-        height: 70,
-        marginRight: 16,
+        width: 120,
+        height: 100,
+        
         // marginTop: 5,
         alignItems: 'center',
-        marginLeft: 10,
+       
         borderRadius: 8,
     },
     productName: {
@@ -737,11 +740,13 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         marginBottom: 10,
         // borderWidthColor: '#ddd',
-        borderColor: '#CECDCD',
+        borderColor: '#EEEEEE',
         borderRadius: 10,
         borderWidth: 1,
         // borderBottomWidth: 1,
         marginVertical: 5, // Adjust the margin as needed
+        backgroundColor:'#EEEEEE',
+        height:100
     },
     // productItemContainer1: {
     //     flexDirection: 'row',
@@ -761,7 +766,7 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
     },
     orderStatusContainer: {
-        // marginTop: 5,
+       
     },
     orderStatus: {
         marginLeft: 110,

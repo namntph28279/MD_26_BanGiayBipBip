@@ -346,14 +346,14 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   productBox: {
-    backgroundColor: '#CCC',
-    borderRadius: 20,
+    backgroundColor: '#CCCCCC',
+    borderRadius: 10,
     flexDirection: 'column',
     alignItems: 'center',
     padding: 8,
     width: '100%',
     marginTop: 10,
-    marginBottom: 10,
+    height:116
   },
   productBox1: {
     backgroundColor: 'white',
@@ -367,10 +367,7 @@ const styles = StyleSheet.create({
   productImage: {
     width: 100,
     height: 100,
-    marginRight: 16,
-    marginTop: 10,
-    marginLeft: 10,
-    borderRadius: 8,
+    borderRadius: 10,
   },
   productName: {
     fontWeight: 'bold',
@@ -409,7 +406,6 @@ const styles = StyleSheet.create({
   },
   productItemContainer: {
     flexDirection: 'row',
-    alignItems: 'center',
     marginBottom: 10,
   },
   productInfo: {
