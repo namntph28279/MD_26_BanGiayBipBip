@@ -47,7 +47,7 @@ function ProductDetail({ route, navigation }) {
     const [selectedColorData, setSelectedColorData] = useState(null);
     const [selectedColorImage, setSelectedColorImage] = useState(null);
     const [availableSizes, setAvailableSizes] = useState([]);
-
+    
     // const userId = '64ab9784b65d14d1076c3477';
     const dispatch = useDispatch();
     useEffect(() => {
@@ -319,15 +319,19 @@ function ProductDetail({ route, navigation }) {
             fetchSizesForColor(colorData._id);
             //ảnh
             setSelectedColorImage(colorImages[color]);
+            setQuantity(1);
         }
     };
 
     const selectSize = (size) => {
         setSelectedSize(size);
+        setQuantity(1);
     };
 
     const increaseQuantity = () => {
-        setQuantity(quantity + 1);
+        if(quantity < selectedSize.size_quantity){
+            setQuantity(quantity + 1);
+        }
     };
 
     const decreaseQuantity = () => {
@@ -557,6 +561,7 @@ const styles = StyleSheet.create({
         borderRadius: 8,
         marginVertical: 4,
         marginRight: 10,
+       
     },
     selectedOption: {
         backgroundColor: 'grey',

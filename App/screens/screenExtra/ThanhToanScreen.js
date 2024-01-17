@@ -891,8 +891,7 @@ const styles = StyleSheet.create({
     },
     modalContent: {
         backgroundColor: 'white',
-        borderTopLeftRadius: 20,
-        borderTopRightRadius: 20,
+        borderRadius:20,
         padding: 20,
         alignItems: 'center',
         justifyContent: 'space-between',
