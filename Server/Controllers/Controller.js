@@ -107,7 +107,6 @@ app.put('/edit/:id', async (req, res) => {
     }
 });
 
-const io = require('../server');
 
 // Định nghĩa endpoint để xoá dữ liệu
 app.delete('/delete/:id', async (req, res) => {

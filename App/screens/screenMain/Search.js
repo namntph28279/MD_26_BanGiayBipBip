@@ -213,7 +213,7 @@ function Search({ navigation }) {
           style={[
             styles.prodList,
             {
-              height: filteredProducts.length === 0 ? "80%" : "100%",
+              height: filteredProducts.length === 0 ? "100%" : "100%",
               marginTop: filteredProducts.length === 7 ? -10 : 0,
               
             //s paddingBottom: filteredProducts.length === 0 ? "200%" : 0,
