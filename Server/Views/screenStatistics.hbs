@@ -560,7 +560,7 @@
                       <table class="table table-bordered">
                         <thead>
                         <tr>
-                          <th style="text-align: center;width: 110px">STT</th>
+                          <th style="text-align: center;width: 50px">STT</th>
                           <th style="text-align: center;">Mã Đơn Hàng</th>
                           <th style="text-align: center;">Tài khoản đặt</th>
                           <th style="text-align: center;width: 120px">Số lượng</th>
@@ -571,16 +571,16 @@
                         </thead>
                         <tbody>
                         <tr v-for="(item,index) in dataOrderNews[indexSize-1]">
-                          <td>\{{((indexSize-1) * 4)+index+1}}</td>
+                          <td style="text-align: center;">\{{((indexSize-1) * 4)+index+1}}</td>
                           <td>\{{item._id}}</td>
                           <td>\{{item.customer_email}}</td>
-                          <td>\{{item.total_quantity}}</td>
-                          <td>\{{formatPrice(item.total_amount)}}</td>
-                          <td>
+                          <td style="text-align: center;">\{{item.total_quantity}}</td>
+                          <td style="text-align: center;">\{{formatPrice(item.total_amount)}}</td>
+                          <td style="text-align: center;">
                             <img width="40px" src="detail.png" class="btn btn-primary btn-sm"
                                  @click="openModalXemChiTiet(dataOrderNews[indexSize-1][index])"/>
                           </td>
-                          <td>Chờ xác nhận</td>
+                          <td style="text-align: center;">Chờ xác nhận</td>
                         </tr>
                         </tbody>
                       </table>
