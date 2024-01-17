@@ -79,7 +79,7 @@ app.post('/add', async (req, res) => {
 // getAll
 app.get('/', async (req, res) => {
     try {
-        const produt = await Product.find().sort({ data_product: -1 });
+        const produt = await Product.find({ product_quantity: { $gt: 0 } }).sort({ data_product: -1 });
         res.json(produt);
     } catch (error) {
         res.status(500).json({message: error.message});
